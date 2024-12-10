@@ -32,7 +32,7 @@ COPY . .
 # Sync the project
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync
+    uv sync --frozen
 
 ARG UVICORN_PORT
 
@@ -41,8 +41,6 @@ EXPOSE ${UVICORN_PORT}
 FROM production as dev
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --all-groups
+    uv sync --frozen --all-groups
 
 ENV PATH="/app/.venv/bin:$PATH"

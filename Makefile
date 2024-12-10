@@ -3,14 +3,14 @@ SRC_DIR := app
 PWD = $(shell pwd)
 PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
 
-DEV_IMAGE := backend-dev:latest
+DEV_IMAGE := $(DOCKER_IMAGE_BACKEND)-dev:latest
 DEV_COMMAND_CONTAINER := docker run --rm $(DEV_IMAGE) sh -c
 
 install:
 	docker compose build
 
 run:
-	docker compose up
+	docker compose up --build
 
 stop:
 	docker compose down
@@ -48,3 +48,9 @@ coverage.html:
 	$(DEV_COMMAND_CONTAINER) 'coverage run -m pytest & coverage html'
 
 check: lint test
+
+# Dishka
+.PHONY: plot-data
+
+plot-data:
+	python scripts/dishka/plot_dependencies_data.py

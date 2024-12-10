@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from fastapi.requests import Request
 
-from app.presentation.user.router_auth import auth_router
-from app.presentation.user.router_users import users_router
+from app.presentation.api.routes.auth import auth_router
+from app.presentation.api.routes.labor_session import labor_router
 
 api_v1_router = APIRouter(
     prefix="/api/v1",
@@ -16,7 +16,7 @@ async def healthcheck(_: Request) -> dict[str, str]:
 
 api_v1_sub_routers = (
     auth_router,
-    users_router,
+    labor_router,
 )
 
 for router in api_v1_sub_routers:

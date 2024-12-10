@@ -3,73 +3,196 @@
 contraction-tracker-backend/
 ├── app/
 │   ├── __init__.py
-│   ├── main.py                      # FastAPI application entry point
-│   ├── core/                        # Core configurations and utilities
+│   ├── main.py                     # Entry point for the FastAPI app
+│   ├── core/
 │   │   ├── __init__.py
-│   │   ├── config.py                # Application settings and configurations
-│   │   ├── dependencies.py          # Dependency injection setup
-│   │   ├── exceptions.py            # Custom exceptions
-│   │   ├── security.py              # Authentication and authorization utilities
-│   ├── domain/                      # Domain layer (business rules)
-│   │   ├── __init__.py
-│   │   ├── models/                  # Domain models/entities
+│   │   ├── config.py               # Configuration settings
+│   │   ├── errors.py               # Custom error definitions
+│   │   └── dependencies.py         # Shared dependencies (e.g., database, authentication)
+|   |
+│   ├── domain/
+│   │   ├── entities/
 │   │   │   ├── __init__.py
-│   │   │   ├── contraction.py       # Contraction entity definition
-│   │   │   ├── user.py              # User entity definition
-│   │   ├── repositories/            # Abstract repository interfaces
-│   │       ├── __init__.py
-│   │       ├── contraction_repo.py  # Contraction repository interface
-│   │       ├── user_repo.py         # User repository interface
-│   ├── application/                 # Application layer (use cases/interactors)
-│   │   ├── __init__.py
-│   │   ├── use_cases/               # Business logic for use cases
-│   │       ├── __init__.py
-│   │       ├── track_contraction.py # Use case to track a contraction
-│   │       ├── get_contractions.py  # Use case to fetch contractions
-│   │   ├── services/                # Domain services
-│   │       ├── __init__.py
-│   │       ├── notification_service.py  # Notify users (e.g., alert on frequent contractions)
-│   ├── infrastructure/              # Infrastructure layer (database, external APIs)
-│   │   ├── __init__.py
-│   │   ├── database/                # Database setup and models
+│   │   │   ├── user.py                 # User aggregate root
+│   │   │   ├── contraction.py          # Contraction entity
+│   │   │   └── labor_session.py        # LaborSession aggregate root
+│   │   │
+│   │   ├── value_objects/
 │   │   │   ├── __init__.py
-│   │   │   ├── base.py              # SQLAlchemy base model
-│   │   │   ├── contraction_model.py # Contraction database model
-│   │   │   ├── user_model.py        # User database model
-│   │   ├── repositories/            # Repository implementations
+│   │   │   ├── email.py
+│   │   │   ├── password.py
+│   │   │   └── duration.py             # For contraction duration
+│   │   │
+│   │   └── repositories/
 │   │       ├── __init__.py
-│   │       ├── contraction_repo_impl.py  # Contraction repository implementation
-│   │       ├── user_repo_impl.py         # User repository implementation
-│   │   ├── external_services/       # Communication with external APIs
-│   │       ├── __init__.py
-│   │       ├── sms_service.py       # Service to send SMS notifications
-│   ├── interfaces/                  # Presentation layer (API endpoints)
+│   │       ├── user_repository.py
+│   │       └── labor_session_repository.py
+|   |
+│   ├── application/
 │   │   ├── __init__.py
-│   │   ├── api_v1/                  # API versioning
+│   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   ├── auth_service.py         # Authentication service
+│   │   │   ├── labor_tracker_service.py # Core labor tracking logic
+│   │   │   └── notification_service.py  # Hospital notification service
+│   │   │
+│   │   └── dtos/
 │   │       ├── __init__.py
-│   │       ├── endpoints/           # API route handlers
-│   │       │   ├── __init__.py
-│   │       │   ├── contraction.py   # Endpoints for contraction tracking
-│   │       │   ├── user.py          # Endpoints for user management
-│   │       ├── schemas/             # Pydantic models for request/response
-│   │           ├── __init__.py
-│   │           ├── contraction.py   # Schemas for contractions
-│   │           ├── user.py          # Schemas for user data
-│   ├── tests/                       # Test cases
+│   │       ├── user_dto.py
+│   │       └── contraction_dto.py
+|   |
+│   ├── infrastructure/
+│   │   ├── __init__.py
+│   │   ├── persistence/
+│   │   │   ├── __init__.py
+│   │   │   ├── models/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── user_model.py
+│   │   │   │   └── labor_session_model.py
+│   │   │   │
+│   │   │   └── repositories/
+│   │   │       ├── __init__.py
+│   │   │       ├── sqlalchemy_user_repository.py
+│   │   │       └── sqlalchemy_labor_session_repository.py
+│   │   │
+│   │   ├── external_services/
+│   │   |    ├── __init__.py
+│   │   |    ├── email_service.py        # Email notification implementation
+│   │   |    └── sms_service.py          # SMS notification implementation
+|   |   |   
+│   │   └── security/
+│   │       ├── __init__.py
+│   │       ├── auth.py             # Authentication logic
+│   │       └── jwt.py              # JWT utilities
+|   |
+│   ├── presentation/
+│   │   ├── __init__.py
+│   │   ├── api/
+│   │   │   ├── __init__.py
+│   │   │   ├── routes/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── contraction.py  # API routes for contractions
+│   │   │   │   └── user.py         # API routes for users
+│   │   │   └── middlewares.py
+│   │   ├── schemas/
+│   │   │   ├── __init__.py
+│   │   │   ├── contraction.py      # Pydantic schemas for API input/output
+│   │   │   └── user.py
+│   │   └── controllers/
+│   │       ├── __init__.py
+│   │       ├── contraction_controller.py  # Coordinates use cases for contractions
+│   │       └── user_controller.py         # Coordinates use cases for users
+|   |
+│   └── tests/
 │       ├── __init__.py
-│       ├── test_main.py             # Tests for main FastAPI app
-│       ├── unit/                    # Unit tests
+│       ├── test_contraction.py     # Unit tests for contraction domain logic
+│       ├── test_user.py            # Unit tests for user domain logic
+│       ├── test_routes.py          # API endpoint tests
+│       └── test_integration.py     # Integration tests
+├── .env                            # Environment variables
+├── .gitignore                      # Git ignore file
+├── pyproject.toml                  # Project dependencies and settings
+├── README.md                       # Project documentation
+└── requirements.txt                # Python dependencies (if not using pyproject.toml)
+
+
+contraction_tracker/
+│
+├── src/
+│   ├── domain/
+│   │   ├── entities/
+│   │   │   ├── __init__.py
+│   │   │   ├── user.py                 # User aggregate root
+│   │   │   ├── contraction.py          # Contraction entity
+│   │   │   └── labor_session.py        # LaborSession aggregate root
+│   │   │
+│   │   ├── value_objects/
+│   │   │   ├── __init__.py
+│   │   │   ├── email.py
+│   │   │   ├── password.py
+│   │   │   └── duration.py             # For contraction duration
+│   │   │
+│   │   └── repositories/
+│   │       ├── __init__.py
+│   │       ├── user_repository.py
+│   │       └── labor_session_repository.py
+│   │
+│   ├── application/
+│   │   ├── __init__.py
+│   │   ├── interfaces/
+│   │   │   ├── __init__.py
+│   │   │   ├── iuser_repository.py
+│   │   │   └── ilabor_session_repository.py
+│   │   │
+│   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   ├── auth_service.py         # Authentication service
+│   │   │   ├── labor_tracker_service.py # Core labor tracking logic
+│   │   │   └── notification_service.py  # Hospital notification service
+│   │   │
+│   │   └── dtos/
+│   │       ├── __init__.py
+│   │       ├── user_dto.py
+│   │       └── contraction_dto.py
+│   │
+│   ├── infrastructure/
+│   │   ├── __init__.py
+│   │   ├── persistence/
+│   │   │   ├── __init__.py
+│   │   │   ├── models/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── user_model.py
+│   │   │   │   └── labor_session_model.py
+│   │   │   │
+│   │   │   └── repositories/
+│   │   │       ├── __init__.py
+│   │   │       ├── sqlalchemy_user_repository.py
+│   │   │       └── sqlalchemy_labor_session_repository.py
+│   │   │
+│   │   └── external_services/
+│   │       ├── __init__.py
+│   │       ├── email_service.py        # Email notification implementation
+│   │       └── sms_service.py          # SMS notification implementation
+│   │
+│   └── interfaces/
+│       ├── __init__.py
+│       ├── api/
 │       │   ├── __init__.py
-│       │   ├── test_contraction.py  # Unit tests for contractions
-│       ├── integration/             # Integration tests
+│       │   ├── middleware/
+│       │   │   ├── __init__.py
+│       │   │   └── auth_middleware.py
+│       │   │
+│       │   └── routes/
+│       │       ├── __init__.py
+│       │       ├── auth_routes.py
+│       │       └── labor_routes.py
+│       │
+│       └── events/
 │           ├── __init__.py
-│           ├── test_contraction_api.py  # Tests for contraction-related API endpoints
-├── alembic/                         # Database migration tool configuration
-│   ├── env.py
-│   ├── script.py.mako
+│           └── websocket_handler.py     # Real-time updates
+│
+├── tests/
+│   ├── __init__.py
+│   ├── unit/
+│   │   ├── __init__.py
+│   │   ├── domain/
+│   │   ├── application/
+│   │   └── infrastructure/
+│   │
+│   └── integration/
+│       ├── __init__.py
+│       └── api/
+│
+├── alembic/                            # Database migrations
 │   ├── versions/
-├── .env                             # Environment variables
-├── .gitignore                       # Git ignore file
-├── Dockerfile                       # Docker configuration
-├── requirements.txt                 # Python dependencies
-├── README.md                        # Project documentation
+│   └── env.py
+│
+├── config/
+│   ├── __init__.py
+│   └── settings.py                     # Configuration settings
+│
+├── requirements.txt
+├── README.md
+├── .env.example
+├── .gitignore
+└── main.py

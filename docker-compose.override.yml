@@ -29,7 +29,7 @@ services:
       # Enable the Traefik log, for configurations and errors
       - --log
       # Enable debug logging for local development
-      - --log.level=DEBUG
+      # - --log.level=DEBUG
       # Enable the Dashboard and API
       - --api
       # Enable the Dashboard and API in insecure mode for local development
@@ -59,13 +59,15 @@ services:
     restart: "no"
     ports:
       - "8000:8000"
+      - "5678:5678"
     volumes:
-      - ./backend/htmlcov:/app/htmlcov
+      - ./htmlcov:/app/htmlcov
     environment:
       SMTP_HOST: "mailcatcher"
       SMTP_PORT: "1025"
       SMTP_TLS: "false"
       EMAILS_FROM_EMAIL: "noreply@example.com"
+    command: [ "debugpy", "--listen", "0.0.0.0:5678", "-m", "app.run" ]
 
   mailcatcher:
     image: schickling/mailcatcher

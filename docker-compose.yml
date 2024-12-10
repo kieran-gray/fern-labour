@@ -96,8 +96,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - SENTRY_DSN=${SENTRY_DSN}
     volumes:
-      - ./backend/${SRC_DIR}:/app/${SRC_DIR}
-      - ./backend/${CONFIG_TOML}:/${CONFIG_TOML}
+      - ./${SRC_DIR}:/app/${SRC_DIR}
+      - ./${CONFIG_TOML}:/${CONFIG_TOML}
       - ./.env:/app/.env
     command: [ "python", "-m", "app.run" ]
     healthcheck:
@@ -126,13 +126,13 @@ services:
   backend-base:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}'
     build:
-      context: ./backend
+      context: .
       target: production
   
   backend-dev:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}-dev'
     build:
-      context: ./backend
+      context: .
       target: dev
 
 volumes:

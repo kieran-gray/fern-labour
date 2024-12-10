@@ -1,7 +1,7 @@
 import pytest
 
-from app.setup.config.settings import Settings
-from tests.unit.app.setup.config.conftest import MockConfigReader
+from app.core.settings import Settings
+from tests.unit.app.core.config.conftest import MockConfigReader
 
 
 @pytest.fixture
