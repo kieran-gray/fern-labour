@@ -44,7 +44,7 @@ def create_app(settings: Settings) -> FastAPI:
             "usePkceWithAuthorizationCodeGrant": True,
             "clientId": settings.security.keycloak.client_id,
             "clientSecret": settings.security.keycloak.client_secret,  # ATTENTION: NOT FOR PRODUCTION
-        }
+        },
     )
     configure_app(new_app, settings)
     return new_app
@@ -84,5 +84,5 @@ def configure_keycloak(new_app: FastAPI, settings: Settings) -> None:
             "/openapi.json",
             "/docs",
         ],
-        add_swagger_auth=True
+        add_swagger_auth=True,
     )

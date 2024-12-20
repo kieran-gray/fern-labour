@@ -8,13 +8,12 @@ from app.domain.labour.exceptions import LabourCompleted, LabourHasActiveContrac
 
 
 class StartContractionService:
-
     def start_contraction(
         self,
         birthing_person: BirthingPerson,
         intensity: int,
         start_time: datetime | None = None,
-        notes: str | None = None
+        notes: str | None = None,
     ) -> Labour:
         active_labour = birthing_person.active_labour
 
@@ -28,9 +27,7 @@ class StartContractionService:
             raise LabourCompleted()
 
         active_labour.start_contraction(
-            intensity=intensity,
-            start_time=start_time or datetime.now(),
-            notes=notes
+            intensity=intensity, start_time=start_time or datetime.now(), notes=notes
         )
 
         # TODO trigger domain event

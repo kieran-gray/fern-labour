@@ -10,10 +10,7 @@ from fastapi.responses import ORJSONResponse
 from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
-from app.application.exceptions import (
-    AuthenticationError,
-    AuthorizationError,
-)
+from app.application.exceptions import AuthenticationError, AuthorizationError
 from app.domain.base.exceptions import DomainError
 
 log = logging.getLogger(__name__)

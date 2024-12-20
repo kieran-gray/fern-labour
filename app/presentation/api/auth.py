@@ -20,7 +20,7 @@ keycloak_openid = KeycloakOpenID(
     realm_name=settings.security.keycloak.realm,
     client_id=settings.security.keycloak.client_id,
     client_secret_key=settings.security.keycloak.client_secret,
-    verify=True
+    verify=True,
 )
 
 
@@ -42,7 +42,7 @@ async def get_payload(token: str = Security(oauth2_scheme)) -> dict:
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(e), # "Invalid authentication credentials",
+            detail=str(e),  # "Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -56,11 +56,11 @@ async def get_user_info(payload: dict = Depends(get_payload)) -> KeycloakUser:
             first_name=payload.get("given_name"),
             last_name=payload.get("family_name"),
             realm_roles=payload.get("realm_access", {}).get("roles", []),
-            client_roles=payload.get("realm_access", {}).get("roles", [])
+            client_roles=payload.get("realm_access", {}).get("roles", []),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e), # "Invalid authentication credentials",
+            detail=str(e),  # "Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )

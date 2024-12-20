@@ -31,9 +31,7 @@ def upgrade() -> None:
         sa.Column("password_hash", sa.LargeBinary(), nullable=False),
         sa.Column(
             "roles",
-            sa.ARRAY(
-                postgresql.ENUM("ADMIN", "USER", name="userroleenum", create_type=False)
-            ),
+            sa.ARRAY(postgresql.ENUM("ADMIN", "USER", name="userroleenum", create_type=False)),
             nullable=False,
         ),
         sa.Column("is_active", sa.Boolean(), nullable=False),

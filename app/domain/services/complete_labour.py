@@ -6,12 +6,11 @@ from app.domain.labour.entity import Labour
 
 
 class CompleteLabourService:
-
     def complete_labour(
         self,
         birthing_person: BirthingPerson,
         end_time: datetime | None = None,
-        notes: str | None = None
+        notes: str | None = None,
     ) -> Labour:
         active_labour = birthing_person.active_labour
 

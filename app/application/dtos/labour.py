@@ -34,7 +34,9 @@ class LabourDTO:
             current_phase=labour.current_phase.value,
             notes=labour.notes,
             contractions=[ContractionDTO.from_domain(c) for c in labour.contractions],
-            pattern=LabourPatternDTO.from_domain(contraction_pattern) if contraction_pattern else None,
+            pattern=LabourPatternDTO.from_domain(contraction_pattern)
+            if contraction_pattern
+            else None,
         )
 
     def to_dict(self) -> dict:

@@ -32,7 +32,13 @@ users_table = Table(
     ),
     Column("is_active", Boolean, default=True, nullable=False),
     Column("created_at", DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")),
-    Column("updated_at", DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), onupdate=text("CURRENT_TIMESTAMP")),
+    Column(
+        "updated_at",
+        DateTime,
+        nullable=False,
+        server_default=text("CURRENT_TIMESTAMP"),
+        onupdate=text("CURRENT_TIMESTAMP"),
+    ),
 )
 
 

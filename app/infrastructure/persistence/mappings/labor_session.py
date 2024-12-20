@@ -16,7 +16,7 @@ mapper_registry.map_imperatively(
         "id_": composite(ContractionId, contractions_table.c.id),
         "duration": composite(
             Duration, contractions_table.c.start_time, contractions_table.c.end_time
-        )
+        ),
     },
     column_prefix="_",
 )
@@ -30,7 +30,7 @@ mapper_registry.map_imperatively(
             Contraction,
             order_by=contractions_table.c.start_time,
             cascade="all, delete-orphan",
-        )
+        ),
     },
     column_prefix="_",
 )

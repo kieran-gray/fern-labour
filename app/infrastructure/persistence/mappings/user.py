@@ -27,11 +27,12 @@ mapper_registry.map_imperatively(
         "id_": composite(UserId, users_table.c.id),
         "username": composite(Username, users_table.c.username),
         "password_hash": composite(UserPasswordHash, users_table.c.password_hash),
-        "sessions": relationship(UserSession, back_populates="user", cascade="all", passive_deletes=True),
+        "sessions": relationship(
+            UserSession, back_populates="user", cascade="all", passive_deletes=True
+        ),
         "roles": users_table.c.roles,
         "is_active": users_table.c.is_active,
         "created_at": users_table.c.created_at,
-
     },
     column_prefix="_",
 )

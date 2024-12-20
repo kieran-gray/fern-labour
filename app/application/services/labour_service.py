@@ -20,11 +20,10 @@ class LabourService:
     def __init__(
         self,
         birthing_person_repository: BirthingPersonRepository,
-        labour_repository: LabourRepository
+        labour_repository: LabourRepository,
     ):
         self._birthing_person_repository = birthing_person_repository
         self._labour_repository = labour_repository
-
 
     async def begin_labour(
         self, birthing_person_id: str, first_labour: bool | None = None
@@ -34,69 +33,54 @@ class LabourService:
         if not birthing_person:
             raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
 
-        BeginLabourService().begin_labour(birthing_person=birthing_person, first_labour=first_labour)
+        BeginLabourService().begin_labour(
+            birthing_person=birthing_person, first_labour=first_labour
+        )
         await self._birthing_person_repository.save(birthing_person)
         return LabourDTO.from_domain(birthing_person.active_labour)
 
-
     async def complete_labour(
-        self,
-        birthing_person_id: str,
-        end_time: datetime | None = None,
-        notes: str | None = None
+        self, birthing_person_id: str, end_time: datetime | None = None, notes: str | None = None
     ) -> Labour:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
         labour = CompleteLabourService().complete_labour(
-            birthing_person=birthing_person,
-            end_time=end_time,
-            notes=notes
+            birthing_person=birthing_person, end_time=end_time, notes=notes
         )
         await self._labour_repository.save(labour)
         return LabourDTO.from_domain(labour)
-
 
     async def start_contraction(
         self,
         birthing_person_id: str,
         intensity: int,
         start_time: datetime | None = None,
-        notes: str | None = None
+        notes: str | None = None,
     ) -> Labour:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
         labour = StartContractionService().start_contraction(
-            birthing_person=birthing_person,
-            intensity=intensity,
-            start_time=start_time,
-            notes=notes
+            birthing_person=birthing_person, intensity=intensity, start_time=start_time, notes=notes
         )
         await self._labour_repository.save(labour)
         return LabourDTO.from_domain(labour)
-
 
     async def end_contraction(
         self,
         birthing_person_id: str,
         intensity: int | None = None,
         end_time: datetime | None = None,
-        notes: str | None = None
+        notes: str | None = None,
     ) -> Labour:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
         labour = EndContractionService().end_contraction(
-            birthing_person=birthing_person,
-            intensity=intensity,
-            end_time=end_time,
-            notes=notes
+            birthing_person=birthing_person, intensity=intensity, end_time=end_time, notes=notes
         )
         await self._labour_repository.save(labour)
         return LabourDTO.from_domain(labour)
 
-
-    async def get_active_labour_summary(
-        self, birthing_person_id: str
-    ) -> LabourSummaryDTO | None:
+    async def get_active_labour_summary(self, birthing_person_id: str) -> LabourSummaryDTO | None:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
         active_labour = birthing_person.active_labour

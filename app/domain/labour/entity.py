@@ -14,9 +14,7 @@ from app.domain.labour.constants import (
     TIME_BETWEEN_CONTRACTIONS_PAROUS,
 )
 from app.domain.labour.enums import LabourPhase
-from app.domain.labour.exceptions import (
-    CannotCompleteLabourWithActiveContraction,
-)
+from app.domain.labour.exceptions import CannotCompleteLabourWithActiveContraction
 from app.domain.labour.vo_labor_session_id import LabourId
 
 
@@ -26,6 +24,7 @@ class Labour(Entity[LabourId]):
     Aggregate root for tracking labour.
     Maintains consistency across all contractions and enforces labour-specific rules.
     """
+
     birthing_person_id: BirthingPersonId
     start_time: datetime
     first_labor: bool
@@ -130,7 +129,7 @@ class Labour(Entity[LabourId]):
         self,
         intensity: int | None = None,
         end_time: datetime | None = None,
-        notes: str | None = None
+        notes: str | None = None,
     ) -> None:
         """End the currently active contraction"""
         self.active_contraction.end(end_time or datetime.now())

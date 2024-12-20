@@ -28,7 +28,9 @@ class LabourSummaryDTO:
             contraction_count=len(labour.contractions),
             current_phase=labour.current_phase.value,
             hospital_recommended=labour.should_go_to_hospital,
-            pattern=LabourPatternDTO.from_domain(contraction_pattern) if contraction_pattern else None,
+            pattern=LabourPatternDTO.from_domain(contraction_pattern)
+            if contraction_pattern
+            else None,
         )
 
     def to_dict(self) -> dict:

@@ -2,14 +2,8 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 
-from app.application.dtos.requests.contraction import (
-    EndContractionRequest,
-    StartContractionRequest,
-)
-from app.application.dtos.requests.labour import (
-    BeginLabourRequest,
-    CompleteLabourRequest,
-)
+from app.application.dtos.requests.contraction import EndContractionRequest, StartContractionRequest
+from app.application.dtos.requests.labour import BeginLabourRequest, CompleteLabourRequest
 from app.application.dtos.responses.labour import (
     BeginLabourResponse,
     CompleteLabourResponse,

@@ -7,13 +7,12 @@ from app.domain.labour.exceptions import LabourHasNoActiveContraction
 
 
 class EndContractionService:
-
     def end_contraction(
         self,
         birthing_person: BirthingPerson,
         intensity: int | None = None,
         end_time: datetime | None = None,
-        notes: str | None = None
+        notes: str | None = None,
     ) -> Labour:
         active_labour = birthing_person.active_labour
 

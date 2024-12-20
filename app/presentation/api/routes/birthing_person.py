@@ -37,9 +37,7 @@ async def register(
 ) -> RegisterBirthingPersonResponse:
     """Start a new labor session for the current user"""
     birthing_person = await service.register(
-        birthing_person_id=user.id,
-        name=request_data.name,
-        first_labour=request_data.first_labor
+        birthing_person_id=user.id, name=request_data.name, first_labour=request_data.first_labor
     )
     return RegisterBirthingPersonResponse(birthing_person=birthing_person)
 

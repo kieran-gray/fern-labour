@@ -5,12 +5,7 @@ from dishka.dependency_source.composite import CompositeDependencySource
 
 from app.core.cookie_params import CookieParams
 from app.core.settings import Settings, SqlaEngineSettings
-from app.infrastructure.custom_types import (
-    AuthScheme,
-    JwtAlgorithm,
-    OAuth2Scheme,
-    PostgresDsn,
-)
+from app.infrastructure.custom_types import AuthScheme, JwtAlgorithm, OAuth2Scheme, PostgresDsn
 
 log = logging.getLogger(__name__)
 

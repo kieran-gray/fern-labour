@@ -1,4 +1,3 @@
-
 from app.application.base.exceptions import ApplicationError
 
 

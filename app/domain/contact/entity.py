@@ -15,11 +15,13 @@ class Contact(Entity[ContactId]):
     contact_methods: list[ContactMethod] = field(default_factory=list)
 
     @classmethod
-    def create(cls, *, name: str, phone_number: str, email: str, contact_methods: list[str]) -> Self:
+    def create(
+        cls, *, name: str, phone_number: str, email: str, contact_methods: list[str]
+    ) -> Self:
         return cls(
             id_=uuid4(),
             name=name,
             phone_number=phone_number,
             email=email,
-            contact_methods=[ContactMethod(method) for method in contact_methods]
+            contact_methods=[ContactMethod(method) for method in contact_methods],
         )
