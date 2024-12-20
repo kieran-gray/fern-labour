@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from app.domain.entities.user import User, UserRoleEnum
-from app.domain.value_objects.user_id import UserId
+from app.domain.birthing_person.entity import BirthingPerson, UserRoleEnum
+from app.domain.birthing_person.vo_birthing_person_id import UserId
 from app.domain.value_objects.user_username import Username
 from app.domain.value_objects.user_password_hash import UserPasswordHash
 
@@ -17,7 +17,7 @@ def test_user_init():
     vo_username = Username(username)
     vo_password_hash = UserPasswordHash(password_hash)
 
-    direct_user = User(
+    direct_user = BirthingPerson(
         id_=vo_user_id,
         username=vo_username,
         password_hash=vo_password_hash,
@@ -25,11 +25,11 @@ def test_user_init():
         is_active=is_active,
     )
 
-    indirect_user = User.create(
+    indirect_user = BirthingPerson.create(
         user_id=user_id, username=username, password_hash=password_hash
     )
 
-    assert isinstance(indirect_user, User)
+    assert isinstance(indirect_user, BirthingPerson)
     assert direct_user.id_ == vo_user_id == indirect_user.id_
     assert direct_user.username == vo_username == indirect_user.username
     assert (

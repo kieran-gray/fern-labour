@@ -50,10 +50,12 @@ services:
     ports:
       - "5432:5432"
 
-  adminer:
+  keycloak:
     restart: "no"
     ports:
       - "8080:8080"
+      - "9000:9000"
+    command: start-dev
 
   backend:
     restart: "no"

@@ -1,8 +1,8 @@
-from sqlalchemy.orm import relationship, composite
+from sqlalchemy.orm import composite, relationship
 
-from app.domain.entities.user import User
+from app.domain.birthing_person.entity import BirthingPerson
+from app.domain.birthing_person.vo_birthing_person_id import UserId
 from app.domain.entities.user_session import UserSession
-from app.domain.value_objects.user_id import UserId
 from app.domain.value_objects.user_password_hash import UserPasswordHash
 from app.domain.value_objects.user_username import Username
 from app.infrastructure.persistence.orm_registry import mapper_registry
@@ -21,7 +21,7 @@ mapper_registry.map_imperatively(
 )
 
 mapper_registry.map_imperatively(
-    User,
+    BirthingPerson,
     users_table,
     properties={
         "id_": composite(UserId, users_table.c.id),

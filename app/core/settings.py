@@ -1,9 +1,8 @@
 import logging
-from datetime import timedelta
 from pathlib import Path
-from typing import Any, Literal, Self
+from typing import Literal, Self
 
-from pydantic import BaseModel, Field, PostgresDsn, computed_field, field_validator
+from pydantic import BaseModel, Field, PostgresDsn, computed_field
 
 from app.core.constants import BASE_DIR
 from app.core.readers.abstract import ConfigReader
@@ -12,12 +11,11 @@ from app.core.readers.toml import TomlConfigReader
 log = logging.getLogger(__name__)
 
 
-class PasswordSecuritySettings(BaseModel):
-    pepper: str = Field(alias="PASSWORD_PEPPER")
-
-
-class SessionSettings(BaseModel):
-    jwt_secret: str = Field(alias="JWT_SECRET")
+class KeycloakSettings(BaseModel):
+    server_url: str = Field(alias="KEYCLOAK_SERVER_URL")
+    realm: str = Field(alias="KEYCLOAK_REALM")
+    client_id: str = Field(alias="KEYCLOAK_CLIENT_ID")
+    client_secret: str = Field(alias="KEYCLOAK_CLIENT_SECRET")
     jwt_algorithm: Literal[
         "HS256",
         "HS384",
@@ -26,30 +24,6 @@ class SessionSettings(BaseModel):
         "RS384",
         "RS512",
     ] = Field(alias="JWT_ALGORITHM")
-    session_ttl_min: timedelta = Field(alias="SESSION_TTL_MIN")
-    session_refresh_threshold: float = Field(alias="SESSION_REFRESH_THRESHOLD")
-
-    @field_validator("session_ttl_min", mode="before")
-    @classmethod
-    def convert_session_ttl_min(cls, v: Any) -> timedelta:
-        if isinstance(v, int | float):
-            if v < 1:
-                raise ValueError("SESSION_TTL_MIN must be at least 1 (n of minutes).")
-            return timedelta(minutes=v)
-        else:
-            raise ValueError("SESSION_TTL_MIN must be a number (n of minutes, n >= 1).")
-
-    @field_validator("session_refresh_threshold", mode="before")
-    @classmethod
-    def validate_session_refresh_threshold(cls, v: Any) -> float:
-        if isinstance(v, int | float):
-            if not 0 < v < 1:
-                raise ValueError("SESSION_REFRESH_THRESHOLD must be between 0 and 1, exclusive.")
-            return v
-        else:
-            raise ValueError(
-                "SESSION_REFRESH_THRESHOLD must be a number " "(fraction, 0 < fraction < 1)."
-            )
 
 
 class CookiesSettings(BaseModel):
@@ -66,10 +40,9 @@ class CORSSettings(BaseModel):
 
 
 class SecuritySettings(BaseModel):
-    password: PasswordSecuritySettings
-    session: SessionSettings
     cookies: CookiesSettings
     cors: CORSSettings
+    keycloak: KeycloakSettings
 
 
 class LoggingSettings(BaseModel):

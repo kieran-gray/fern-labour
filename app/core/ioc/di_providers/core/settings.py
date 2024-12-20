@@ -6,12 +6,10 @@ from dishka.dependency_source.composite import CompositeDependencySource
 from app.core.cookie_params import CookieParams
 from app.core.settings import Settings, SqlaEngineSettings
 from app.infrastructure.custom_types import (
-    JwtAccessTokenTtlMin,
+    AuthScheme,
     JwtAlgorithm,
-    JwtSecret,
-    PasswordPepper,
+    OAuth2Scheme,
     PostgresDsn,
-    SessionRefreshThreshold,
 )
 
 log = logging.getLogger(__name__)
@@ -21,24 +19,28 @@ class SettingsProvider(Provider):
     settings: CompositeDependencySource = from_context(provides=Settings, scope=Scope.RUNTIME)
 
     @provide(scope=Scope.APP)
-    def provide_password_pepper(self, settings: Settings) -> PasswordPepper:
-        return PasswordPepper(settings.security.password.pepper)
-
-    @provide(scope=Scope.APP)
-    def provide_jwt_secret(self, settings: Settings) -> JwtSecret:
-        return JwtSecret(settings.security.session.jwt_secret)
-
-    @provide(scope=Scope.APP)
     def provide_jwt_algorithm(self, settings: Settings) -> JwtAlgorithm:
-        return settings.security.session.jwt_algorithm
+        return settings.security.keycloak.jwt_algorithm
 
     @provide(scope=Scope.APP)
-    def provide_jwt_access_token_ttl_min(self, settings: Settings) -> JwtAccessTokenTtlMin:
-        return JwtAccessTokenTtlMin(settings.security.session.session_ttl_min)
+    def provide_keycloak_auth_scheme(self, settings: Settings) -> AuthScheme:
+        return AuthScheme(
+            server_url=settings.security.keycloak.server_url,
+            realm=settings.security.keycloak.realm,
+            client_id=settings.security.keycloak.client_id,
+            client_secret=settings.security.keycloak.client_secret,
+        )
 
     @provide(scope=Scope.APP)
-    def provide_session_refresh_threshold(self, settings: Settings) -> SessionRefreshThreshold:
-        return SessionRefreshThreshold(settings.security.session.session_refresh_threshold)
+    def provide_oauth2_scheme(self, settings: Settings) -> OAuth2Scheme:
+        base_url = f"{settings.security.keycloak.server_url}"
+        realm_url = f"{base_url}/realms/{settings.security.keycloak.realm}"
+        protocol_url = f"{realm_url}/protocol/openid-connect"
+        return OAuth2Scheme(
+            authorizationUrl=f"{protocol_url}/auth",
+            tokenUrl=f"{protocol_url}/token",
+            refreshUrl=f"{protocol_url}/token",
+        )
 
     @provide(scope=Scope.APP)
     def provide_cookie_params(self, settings: Settings) -> CookieParams:

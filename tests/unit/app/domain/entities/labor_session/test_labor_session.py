@@ -1,10 +1,10 @@
 from uuid import UUID
 
-from app.domain.entities.labor_session import LaborSession
-from app.domain.entities.contraction import Contraction
-from app.domain.exceptions.labor_session import LaborSessionCompleted, CannotCompleteLaborSessionWithActiveContraction, LaborSessionHasActiveContraction, LaborSessionHasNoActiveContraction
-from app.domain.value_objects.labor_session_id import LaborSessionId
-from app.domain.constants.contraction import CONTRACTION_MIN_TIME, CONTRACTION_MAX_INTENSITY
+from app.domain.labour.entity import Labour
+from app.domain.contraction.entity import Contraction
+from app.domain.labour.exceptions import LaborSessionCompleted, CannotCompleteLaborSessionWithActiveContraction, LaborSessionHasActiveContraction, LaborSessionHasNoActiveContraction
+from app.domain.labour.vo_labor_session_id import LabourId
+from app.domain.contraction.constants import CONTRACTION_MIN_TIME, CONTRACTION_MAX_INTENSITY
 from datetime import datetime
 
 import pytest
@@ -15,23 +15,23 @@ def test_labor_session_init():
     user_id: UUID = UUID("87654321-4321-1234-8765-567812345678")
     start_time: datetime = datetime.now()
 
-    vo_session_id = LaborSessionId(session_id)
+    vo_session_id = LabourId(session_id)
 
-    direct_session = LaborSession(
+    direct_session = Labour(
         id_=vo_session_id,
-        user_id=user_id,
+        birthing_person_id=user_id,
         start_time=start_time,
         first_labor=True,
     )
 
-    indirect_session = LaborSession.start(
+    indirect_session = Labour.begin(
         session_id=session_id,
-        user_id=user_id,
+        birthing_person_id=user_id,
         first_labor=True,
         start_time=start_time,
     )
 
-    assert isinstance(indirect_session, LaborSession)
+    assert isinstance(indirect_session, Labour)
     assert direct_session.id_ == vo_session_id == indirect_session.id_
     assert direct_session == indirect_session
 

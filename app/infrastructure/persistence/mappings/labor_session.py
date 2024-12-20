@@ -1,15 +1,13 @@
 from sqlalchemy.orm import composite, relationship
 
-from app.domain.entities.contraction import Contraction
-from app.domain.entities.labor_session import LaborSession
-from app.domain.value_objects.contraction_duration import Duration
-from app.domain.value_objects.contraction_id import ContractionId
-from app.domain.value_objects.labor_session_id import LaborSessionId
+from app.domain.contraction.entity import Contraction
+from app.domain.contraction.vo_contraction_duration import Duration
+from app.domain.contraction.vo_contraction_id import ContractionId
+from app.domain.labour.entity import Labour
+from app.domain.labour.vo_labor_session_id import LabourId
 from app.infrastructure.persistence.orm_registry import mapper_registry
 from app.infrastructure.persistence.tables.contractions import contractions_table
 from app.infrastructure.persistence.tables.labor_sessions import labor_sessions_table
-from app.infrastructure.persistence.orm_registry import mapper_registry
-
 
 mapper_registry.map_imperatively(
     Contraction,
@@ -24,10 +22,10 @@ mapper_registry.map_imperatively(
 )
 
 mapper_registry.map_imperatively(
-    LaborSession,
+    Labour,
     labor_sessions_table,
     properties={
-        "id_": composite(LaborSessionId, labor_sessions_table.c.id),
+        "id_": composite(LabourId, labor_sessions_table.c.id),
         "contractions": relationship(
             Contraction,
             order_by=contractions_table.c.start_time,

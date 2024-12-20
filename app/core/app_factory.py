@@ -1,4 +1,3 @@
-# pylint: disable=C0301 (line-too-long)
 __all__ = ("initialize_mapping", "create_app_with_container")
 
 from collections.abc import AsyncIterator
@@ -8,18 +7,18 @@ from dishka import AsyncContainer, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+from fastapi_keycloak_middleware import KeycloakConfiguration, setup_keycloak_middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.ioc.ioc_registry import get_providers
 from app.core.settings import Settings
 from app.infrastructure.persistence import initialize_mapping
+from app.presentation.api.routes.router_root import root_router
 from app.presentation.exception_handler import (
     ExceptionHandler,
     ExceptionMapper,
     ExceptionMessageProvider,
 )
-from app.presentation.http_controllers.router_root import root_router
-from app.presentation.http_middleware.middleware_auth import AuthMiddleware
 
 
 @asynccontextmanager
@@ -28,9 +27,32 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await app.state.dishka_container.close()  # noqa; app.state is the place where dishka_container lives
 
 
+def create_app_with_container(settings: Settings) -> FastAPI:
+    new_app = create_app(settings)
+    async_container: AsyncContainer = make_async_container(
+        *get_providers(), context={Settings: settings}
+    )
+    setup_dishka(async_container, new_app)
+    return new_app
+
+
+def create_app(settings: Settings) -> FastAPI:
+    new_app: FastAPI = FastAPI(
+        lifespan=lifespan,
+        default_response_class=ORJSONResponse,
+        swagger_ui_init_oauth={
+            "usePkceWithAuthorizationCodeGrant": True,
+            "clientId": settings.security.keycloak.client_id,
+            "clientSecret": settings.security.keycloak.client_secret,  # ATTENTION: NOT FOR PRODUCTION
+        }
+    )
+    configure_app(new_app, settings)
+    return new_app
+
+
 def configure_app(new_app: FastAPI, settings: Settings) -> None:
     new_app.include_router(root_router)
-    new_app.add_middleware(AuthMiddleware)  # noqa
+    # configure_keycloak(new_app, settings)
     new_app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.security.cors.all_cors_origins,
@@ -47,16 +69,20 @@ def configure_app(new_app: FastAPI, settings: Settings) -> None:
     exception_handler.setup_handlers()
 
 
-def create_app(settings: Settings) -> FastAPI:
-    new_app: FastAPI = FastAPI(lifespan=lifespan, default_response_class=ORJSONResponse)
-    configure_app(new_app, settings)
-    return new_app
-
-
-def create_app_with_container(settings: Settings) -> FastAPI:
-    new_app = create_app(settings)
-    async_container: AsyncContainer = make_async_container(
-        *get_providers(), context={Settings: settings}
+def configure_keycloak(new_app: FastAPI, settings: Settings) -> None:
+    keycloak_config = KeycloakConfiguration(
+        url=settings.security.keycloak.server_url,
+        realm=settings.security.keycloak.realm,
+        client_id=settings.security.keycloak.client_id,
+        client_secret=settings.security.keycloak.client_secret,
     )
-    setup_dishka(async_container, new_app)
-    return new_app
+    setup_keycloak_middleware(
+        new_app,
+        keycloak_configuration=keycloak_config,
+        exclude_patterns=[
+            "/api/v1/health",
+            "/openapi.json",
+            "/docs",
+        ],
+        add_swagger_auth=True
+    )

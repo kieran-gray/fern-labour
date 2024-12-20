@@ -3,7 +3,7 @@ from uuid import UUID
 import pytest
 from datetime import datetime
 
-from app.domain.entities.contraction import Contraction
+from app.domain.contraction.entity import Contraction
 
 
 @pytest.fixture

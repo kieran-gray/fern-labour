@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.domain.entities.labor_session import LaborPhase
+from app.domain.labour.entity import LaborPhase
 from app.infrastructure.persistence.orm_registry import mapper_registry
 
 labor_sessions_table = Table(

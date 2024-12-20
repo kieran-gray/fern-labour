@@ -3,16 +3,16 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.entities.user import User
-from app.domain.repositories.user_repository import UserRepository
+from app.domain.birthing_person.entity import BirthingPerson
+from app.domain.birthing_person.repository import BirthingPersonRepository
 from app.infrastructure.persistence.tables.user import users_table
 
 
-class SQLAlchemyUserRepository(UserRepository):
+class SQLAlchemyUserRepository(BirthingPersonRepository):
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def save(self, user: User) -> None:
+    async def save(self, user: BirthingPerson) -> None:
         """
         Save or update a user.
 
@@ -22,7 +22,7 @@ class SQLAlchemyUserRepository(UserRepository):
         self._session.add(user)
         await self._session.commit()
 
-    async def delete(self, user: User) -> None:
+    async def delete(self, user: BirthingPerson) -> None:
         """
         Delete a user.
 
@@ -33,7 +33,7 @@ class SQLAlchemyUserRepository(UserRepository):
         self._session.delete(user)
         await self._session.commit()
 
-    async def get_by_id(self, user_id: UUID) -> User | None:
+    async def get_by_id(self, user_id: UUID) -> BirthingPerson | None:
         """
         Retrieve a user by their ID.
 
@@ -43,12 +43,12 @@ class SQLAlchemyUserRepository(UserRepository):
         Returns:
             The user if found, None otherwise
         """
-        stmt = select(User).where(users_table.c.id == user_id)
+        stmt = select(BirthingPerson).where(users_table.c.id == user_id)
 
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_by_email(self, email: str) -> User | None:
+    async def get_by_email(self, email: str) -> BirthingPerson | None:
         """
         Retrieve a user by their email address.
 
@@ -59,7 +59,7 @@ class SQLAlchemyUserRepository(UserRepository):
             The user if found, None otherwise
         """
 
-        stmt = select(User).where(users_table.c.username == email)
+        stmt = select(BirthingPerson).where(users_table.c.username == email)
 
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()

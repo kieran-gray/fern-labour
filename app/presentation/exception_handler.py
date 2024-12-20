@@ -11,17 +11,10 @@ from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
 from app.application.exceptions import (
-    AdapterError,
     AuthenticationError,
     AuthorizationError,
-    SessionExpired,
 )
 from app.domain.base.exceptions import DomainError
-from app.domain.exceptions.user import (
-    UsernameAlreadyExists,
-    UserNotFoundById,
-    UserNotFoundByUsername,
-)
 
 log = logging.getLogger(__name__)
 
@@ -48,14 +41,9 @@ class ExceptionMapper:
         self.exceptions_status_code_map: dict[type[Exception], int] = {
             pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
             AuthenticationError: status.HTTP_401_UNAUTHORIZED,
-            SessionExpired: status.HTTP_401_UNAUTHORIZED,
             AuthorizationError: status.HTTP_403_FORBIDDEN,
-            UserNotFoundById: status.HTTP_404_NOT_FOUND,
-            UserNotFoundByUsername: status.HTTP_404_NOT_FOUND,
-            UsernameAlreadyExists: status.HTTP_409_CONFLICT,
             DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
             ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-            AdapterError: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

@@ -1,8 +1,21 @@
-from sqlalchemy import ARRAY, UUID, Boolean, Column, Enum, LargeBinary, String, Table, event, ExecutionContext, DateTime, text
+from sqlalchemy import (
+    ARRAY,
+    UUID,
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    ExecutionContext,
+    LargeBinary,
+    String,
+    Table,
+    event,
+    text,
+)
 from sqlalchemy.ext.mutable import MutableSet
 
+from app.domain.birthing_person.entity import BirthingPerson, UserRoleEnum
 from app.domain.constants.user import USERNAME_MAX_LEN
-from app.domain.entities.user import UserRoleEnum, User
 from app.infrastructure.persistence.orm_registry import mapper_registry
 
 users_table = Table(
@@ -23,6 +36,6 @@ users_table = Table(
 )
 
 
-@event.listens_for(User, "load")
-def receive_load(target: User, _: ExecutionContext) -> None:
+@event.listens_for(BirthingPerson, "load")
+def receive_load(target: BirthingPerson, _: ExecutionContext) -> None:
     target.roles = set(target.roles) if isinstance(target.roles, list) else target.roles
