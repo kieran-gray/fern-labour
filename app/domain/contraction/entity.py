@@ -24,6 +24,13 @@ class Contraction(Entity[ContractionId]):
     intensity: int | None = None
     notes: str | None = None
 
+    def __post_init__(self):
+        if not self.intensity:
+            return
+
+        if self.intensity < CONTRACTION_MIN_INTENSITY or self.intensity > CONTRACTION_MAX_INTENSITY:
+            raise ContractionIntensityInvalid()
+
     @classmethod
     def start(
         cls,

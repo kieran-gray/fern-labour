@@ -37,12 +37,12 @@ class Labour(Entity[LabourId]):
         cls,
         birthing_person_id: BirthingPersonId,
         first_labour: bool,
-        session_id: UUID | None = None,
+        labour_id: UUID | None = None,
         start_time: datetime | None = None,
     ) -> Self:
         """Begin a new labour."""
         return cls(
-            id_=LabourId(session_id or uuid4()),
+            id_=LabourId(labour_id or uuid4()),
             birthing_person_id=birthing_person_id,
             start_time=start_time or datetime.now(),
             first_labour=first_labour,

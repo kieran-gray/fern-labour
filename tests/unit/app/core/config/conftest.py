@@ -10,20 +10,18 @@ class MockConfigReader(ConfigReader):
     def read(self, path: Path) -> dict[str, Any]:
         return {
             "security": {
-                "password": {
-                    "PASSWORD_PEPPER": "test_pepper",
-                },
-                "session": {
-                    "JWT_SECRET": "test_secret",
-                    "JWT_ALGORITHM": "HS256",
-                    "SESSION_TTL_MIN": 123,
-                    "SESSION_REFRESH_THRESHOLD": 0.5,
-                },
                 "cookies": {
                     "SECURE": 0,
                 },
                 "cors": {
                     "BACKEND_CORS_ORIGINS": "http://localhost",
+                },
+                "keycloak": {
+                    "KEYCLOAK_SERVER_URL": "http://localhost",
+                    "KEYCLOAK_REALM": "test",
+                    "KEYCLOAK_CLIENT_ID": "test_client",
+                    "KEYCLOAK_CLIENT_SECRET": "ABC123",
+                    "JWT_ALGORITHM": "RS256",
                 }
             },
             "logging": {

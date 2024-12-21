@@ -10,7 +10,7 @@ class EndContractionService:
     def end_contraction(
         self,
         birthing_person: BirthingPerson,
-        intensity: int | None = None,
+        intensity: int,
         end_time: datetime | None = None,
         notes: str | None = None,
     ) -> Labour:

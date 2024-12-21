@@ -1,4 +1,3 @@
-from datetime import timedelta
 from pathlib import Path
 
 import pytest
@@ -7,7 +6,6 @@ from pydantic import PostgresDsn, ValidationError
 from app.setup.readers.abstract import ConfigReader
 from app.setup.settings import (
     LoggingSettings,
-    SessionSettings,
     Settings,
 )
 
@@ -20,11 +18,6 @@ def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):
         reader=mock_config_reader,
     )
 
-    assert settings.security.password.pepper == "test_pepper"
-    assert settings.security.session.jwt_secret == "test_secret"
-    assert settings.security.session.jwt_algorithm == "HS256"
-    assert settings.security.session.session_ttl_min == timedelta(minutes=123)
-    assert settings.security.password.pepper == "test_pepper"
     assert settings.security.cookies.secure is False
 
     assert settings.logging.level == "WARNING"
@@ -80,79 +73,9 @@ def test_settings_with_env_variables(
     assert settings.uvicorn.port != 9999
 
 
-def test_jwt_algorithm_validation():
-    for algo in (
-        "HS256",
-        "HS384",
-        "HS512",
-        "RS256",
-        "RS384",
-        "RS512",
-    ):
-        SessionSettings(
-            JWT_SECRET="test_secret",
-            JWT_ALGORITHM=algo,  # type: ignore
-            SESSION_TTL_MIN=123,  # type: ignore
-            SESSION_REFRESH_THRESHOLD=0.5,
-        )
-
-    with pytest.raises(ValidationError):
-        SessionSettings(
-            JWT_SECRET="test_secret",
-            JWT_ALGORITHM="TEST1",  # type: ignore
-            SESSION_TTL_MIN=123,  # type: ignore
-            SESSION_REFRESH_THRESHOLD=0.5,
-        )
-
-
 def test_logging_settings_validation():
     for level in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
         LoggingSettings(LOG_LEVEL=level)  # type: ignore
 
     with pytest.raises(ValidationError):
         LoggingSettings(LOG_LEVEL="INVALID_LEVEL")  # type: ignore
-
-
-def test_session_ttl_min_invalid_value():
-    with pytest.raises(ValueError, match="SESSION_TTL_MIN must be at least 1"):
-        SessionSettings(
-            SESSION_TTL_MIN=0.5,  # type: ignore
-            JWT_SECRET="secret",
-            JWT_ALGORITHM="HS256",
-            SESSION_REFRESH_THRESHOLD=1,
-        )
-
-
-def test_session_ttl_min_invalid_type():
-    with pytest.raises(ValueError, match="SESSION_TTL_MIN must be a number"):
-        SessionSettings(
-            SESSION_TTL_MIN="one",  # type: ignore
-            JWT_SECRET="secret",
-            JWT_ALGORITHM="HS256",
-            SESSION_REFRESH_THRESHOLD=1,
-        )
-
-
-def test_session_refresh_threshold_invalid_value():
-    with pytest.raises(
-        ValueError,
-        match="SESSION_REFRESH_THRESHOLD must be between 0 and 1, exclusive",
-    ):
-        SessionSettings(
-            SESSION_TTL_MIN=2,  # type: ignore
-            JWT_SECRET="secret",
-            JWT_ALGORITHM="HS256",
-            SESSION_REFRESH_THRESHOLD=1.5,
-        )
-
-
-def test_session_refresh_threshold_invalid_type():
-    with pytest.raises(
-        ValueError, match="SESSION_REFRESH_THRESHOLD must be a number"
-    ):
-        SessionSettings(
-            SESSION_TTL_MIN=2,  # type: ignore
-            JWT_SECRET="secret",
-            JWT_ALGORITHM="HS256",
-            SESSION_REFRESH_THRESHOLD="high",  # type: ignore
-        )

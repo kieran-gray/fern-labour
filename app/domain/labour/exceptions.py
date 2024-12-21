@@ -20,7 +20,7 @@ class LabourHasNoActiveContraction(DomainError):
 
 class LabourCompleted(DomainError):
     def __init__(self):
-        super().__init__("Cannot add contractions to a completed labour")
+        super().__init__("Cannot start contraction for completed labour")
 
 
 class LabourNotFoundById(DomainError):

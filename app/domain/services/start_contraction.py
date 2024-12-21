@@ -11,7 +11,7 @@ class StartContractionService:
     def start_contraction(
         self,
         birthing_person: BirthingPerson,
-        intensity: int,
+        intensity: int | None = None,
         start_time: datetime | None = None,
         notes: str | None = None,
     ) -> Labour:
