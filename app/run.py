@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-from app.core.app_factory import create_app_with_container
-from app.core.logs import configure_logging
-from app.core.settings import Settings
+from app.setup.app_factory import create_app_with_container
+from app.setup.logs import configure_logging
+from app.setup.settings import Settings
 
 settings: Settings = Settings.from_file()
 configure_logging(level=settings.logging.level)

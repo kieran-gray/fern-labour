@@ -3,9 +3,9 @@ import logging
 from dishka import Provider, Scope, from_context, provide
 from dishka.dependency_source.composite import CompositeDependencySource
 
-from app.core.cookie_params import CookieParams
-from app.core.settings import Settings, SqlaEngineSettings
 from app.infrastructure.custom_types import AuthScheme, JwtAlgorithm, OAuth2Scheme, PostgresDsn
+from app.setup.cookie_params import CookieParams
+from app.setup.settings import Settings, SqlaEngineSettings
 
 log = logging.getLogger(__name__)
 

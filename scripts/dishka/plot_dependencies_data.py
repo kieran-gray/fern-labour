@@ -2,8 +2,8 @@ import dishka.plotter
 import uvloop
 from dishka import AsyncContainer, make_async_container
 
-from app.core.settings import Settings
-from app.core.ioc.ioc_registry import get_providers
+from app.setup.settings import Settings
+from app.setup.ioc.ioc_registry import get_providers
 
 
 def make_plot_data_container(settings: Settings) -> AsyncContainer:

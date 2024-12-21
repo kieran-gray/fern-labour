@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 from typing import Self
-from uuid import UUID
 
 from app.domain.contact.entity import Contact
 
 
 @dataclass
 class ContactDTO:
-    id: UUID
+    id: str
     name: str
     phone_number: str | None
     email: str | None

@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import rtoml
 
-from app.core.readers.toml import TomlConfigReader
+from app.setup.readers.toml import TomlConfigReader
 
 
 def test_read_valid_toml(

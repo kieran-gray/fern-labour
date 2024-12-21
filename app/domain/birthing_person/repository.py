@@ -17,12 +17,12 @@ class BirthingPersonRepository(ABC):
         """
 
     @abstractmethod
-    async def delete(self, birthing_person_id: BirthingPersonId) -> None:
+    async def delete(self, birthing_person: BirthingPerson) -> None:
         """
-        Delete a birthing_person by their ID.
+        Delete a birthing_person.
 
         Args:
-            birthing_person_id: The ID of the birthing_person to delete
+            birthing_person: The birthing_person to delete
         """
 
     @abstractmethod

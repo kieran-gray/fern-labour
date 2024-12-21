@@ -1,3 +1,3 @@
-__all__ = ("labor_session", "user")
+__all__ = ("labour", "birthing_person")
 
-from app.infrastructure.persistence.mappings import labor_session, user
+from app.infrastructure.persistence.mappings import birthing_person, labour

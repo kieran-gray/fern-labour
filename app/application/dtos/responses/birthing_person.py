@@ -9,3 +9,7 @@ class RegisterBirthingPersonResponse(BaseModel):
 
 class AddContactResponse(BaseModel):
     birthing_person: BirthingPersonDTO
+
+
+class GetBirthingPersonResponse(BaseModel):
+    birthing_person: BirthingPersonDTO

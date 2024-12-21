@@ -8,7 +8,7 @@ from app.domain.contraction.constants import CONTRACTION_MAX_INTENSITY, CONTRACT
 from app.domain.contraction.exceptions import ContractionIntensityInvalid
 from app.domain.contraction.vo_contraction_duration import Duration
 from app.domain.contraction.vo_contraction_id import ContractionId
-from app.domain.labour.vo_labor_session_id import LabourId
+from app.domain.labour.vo_labour_id import LabourId
 
 
 @dataclass(eq=False, kw_only=True)

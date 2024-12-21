@@ -3,6 +3,7 @@ from datetime import datetime
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
 from app.domain.labour.entity import Labour
+from app.domain.labour.exceptions import CannotCompleteLabourWithActiveContraction
 
 
 class CompleteLabourService:
@@ -16,6 +17,9 @@ class CompleteLabourService:
 
         if not active_labour:
             raise BirthingPersonDoesNotHaveActiveLabour(birthing_person.id_)
+
+        if active_labour.has_active_contraction:
+            raise CannotCompleteLabourWithActiveContraction()
 
         active_labour.complete_labour(end_time=end_time or datetime.now(), notes=notes)
 

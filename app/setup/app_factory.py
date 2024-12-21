@@ -10,8 +10,6 @@ from fastapi.responses import ORJSONResponse
 from fastapi_keycloak_middleware import KeycloakConfiguration, setup_keycloak_middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from app.core.ioc.ioc_registry import get_providers
-from app.core.settings import Settings
 from app.infrastructure.persistence import initialize_mapping
 from app.presentation.api.routes.router_root import root_router
 from app.presentation.exception_handler import (
@@ -19,6 +17,8 @@ from app.presentation.exception_handler import (
     ExceptionMapper,
     ExceptionMessageProvider,
 )
+from app.setup.ioc.ioc_registry import get_providers
+from app.setup.settings import Settings
 
 
 @asynccontextmanager

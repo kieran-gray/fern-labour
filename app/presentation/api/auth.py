@@ -2,8 +2,8 @@ from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from keycloak import KeycloakOpenID
 
-from app.core.settings import Settings
 from app.infrastructure.custom_types import KeycloakUser
+from app.setup.settings import Settings
 
 settings = Settings.from_file()
 

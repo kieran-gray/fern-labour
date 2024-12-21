@@ -14,8 +14,7 @@ from app.domain.labour.constants import (
     TIME_BETWEEN_CONTRACTIONS_PAROUS,
 )
 from app.domain.labour.enums import LabourPhase
-from app.domain.labour.exceptions import CannotCompleteLabourWithActiveContraction
-from app.domain.labour.vo_labor_session_id import LabourId
+from app.domain.labour.vo_labour_id import LabourId
 
 
 @dataclass(eq=False, kw_only=True)
@@ -27,7 +26,7 @@ class Labour(Entity[LabourId]):
 
     birthing_person_id: BirthingPersonId
     start_time: datetime
-    first_labor: bool
+    first_labour: bool
     contractions: list[Contraction] = field(default_factory=list)
     current_phase: LabourPhase = LabourPhase.EARLY
     end_time: datetime | None = None
@@ -37,7 +36,7 @@ class Labour(Entity[LabourId]):
     def begin(
         cls,
         birthing_person_id: BirthingPersonId,
-        first_labor: bool,
+        first_labour: bool,
         session_id: UUID | None = None,
         start_time: datetime | None = None,
     ) -> Self:
@@ -46,7 +45,7 @@ class Labour(Entity[LabourId]):
             id_=LabourId(session_id or uuid4()),
             birthing_person_id=birthing_person_id,
             start_time=start_time or datetime.now(),
-            first_labor=first_labor,
+            first_labour=first_labour,
             contractions=[],
         )
 
@@ -70,7 +69,7 @@ class Labour(Entity[LabourId]):
     @property
     def should_go_to_hospital(self) -> bool:
         """
-        When to go to the hospital depends on if this is a first labor or not.
+        When to go to the hospital depends on if this is a first labour or not.
         For a first time mum we should wait until contractions are well
         established. This means using the 3-1-1 rule:
         Contractions every 3 minutes, lasting 1 minute each, for 1 hour
@@ -79,11 +78,11 @@ class Labour(Entity[LabourId]):
         when contractions are once every 5 minutes for 30 minutes.
         """
         required_number_of_contractions = (
-            CONTRACTIONS_REQUIRED_NULLIPAROUS if self.first_labor else CONTRACTIONS_REQUIRED_PAROUS
+            CONTRACTIONS_REQUIRED_NULLIPAROUS if self.first_labour else CONTRACTIONS_REQUIRED_PAROUS
         )
         required_time_between_contractions = (
             TIME_BETWEEN_CONTRACTIONS_NULLIPAROUS
-            if self.first_labor
+            if self.first_labour
             else TIME_BETWEEN_CONTRACTIONS_PAROUS
         )
 
@@ -117,7 +116,7 @@ class Labour(Entity[LabourId]):
     ) -> Contraction:
         """Start a new contraction in this session"""
         contraction = Contraction.start(
-            labor_session_id=self.id_.value,
+            labour_id=self.id_,
             start_time=start_time,
             intensity=intensity,
             notes=notes,
@@ -132,16 +131,16 @@ class Labour(Entity[LabourId]):
         notes: str | None = None,
     ) -> None:
         """End the currently active contraction"""
-        self.active_contraction.end(end_time or datetime.now())
         if intensity:
             self.active_contraction.intensity = intensity
         if notes:
             self.active_contraction.notes = notes
-        self._update_labor_phase()
+        self.active_contraction.end(end_time or datetime.now())
+        self._update_labour_phase()
 
-    def _update_labor_phase(self) -> None:
+    def _update_labour_phase(self) -> None:
         """
-        Update the labor phase based on contraction patterns.
+        Update the labour phase based on contraction patterns.
         This is a simplified version - in reality, this would likely involve
         additional medical data like dilation measurements.
         """
@@ -161,10 +160,7 @@ class Labour(Entity[LabourId]):
             self.current_phase = LabourPhase.ACTIVE
 
     def complete_labour(self, end_time: datetime | None = None, notes: str | None = None) -> None:
-        """Mark the labor session as complete"""
-        if self.has_active_contraction:
-            raise CannotCompleteLabourWithActiveContraction()
-
+        """Mark the labour as complete"""
         self.end_time = end_time or datetime.now()
         self.current_phase = LabourPhase.COMPLETE
         if notes:

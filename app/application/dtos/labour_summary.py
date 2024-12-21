@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Self
-from uuid import UUID
 
 from app.application.dtos.labour_pattern import LabourPatternDTO
 from app.domain.labour.entity import Labour
@@ -11,7 +10,7 @@ from app.domain.labour.entity import Labour
 class LabourSummaryDTO:
     """Data Transfer Object for Labour aggregate"""
 
-    id: UUID
+    id: str
     duration: float
     contraction_count: int
     current_phase: str

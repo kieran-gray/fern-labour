@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 from pydantic import PostgresDsn, ValidationError
 
-from app.core.readers.abstract import ConfigReader
-from app.core.settings import (
+from app.setup.readers.abstract import ConfigReader
+from app.setup.settings import (
     LoggingSettings,
     SessionSettings,
     Settings,

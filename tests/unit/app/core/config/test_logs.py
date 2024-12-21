@@ -1,7 +1,7 @@
 import logging
 from io import StringIO
 
-from app.core.logs import configure_logging
+from app.setup.logs import configure_logging
 
 
 def test_configure_logging_debug():

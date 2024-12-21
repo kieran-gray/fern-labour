@@ -3,7 +3,7 @@ from uuid import UUID
 from app.domain.labour.entity import Labour
 from app.domain.contraction.entity import Contraction
 from app.domain.labour.exceptions import LaborSessionCompleted, CannotCompleteLaborSessionWithActiveContraction, LaborSessionHasActiveContraction, LaborSessionHasNoActiveContraction
-from app.domain.labour.vo_labor_session_id import LabourId
+from app.domain.labour.vo_labour_id import LabourId
 from app.domain.contraction.constants import CONTRACTION_MIN_TIME, CONTRACTION_MAX_INTENSITY
 from datetime import datetime
 

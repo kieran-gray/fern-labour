@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Self
-from uuid import UUID
 
 from app.application.dtos.contact import ContactDTO
 from app.application.dtos.labour import LabourDTO
@@ -11,7 +10,7 @@ from app.domain.birthing_person.entity import BirthingPerson
 class BirthingPersonDTO:
     """Data Transfer Object for Birthing Person aggregate"""
 
-    id: UUID
+    id: str
     name: str
     first_labour: bool
     labours: list[LabourDTO]

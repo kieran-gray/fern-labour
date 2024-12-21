@@ -4,9 +4,9 @@ from typing import Literal, Self
 
 from pydantic import BaseModel, Field, PostgresDsn, computed_field
 
-from app.core.constants import BASE_DIR
-from app.core.readers.abstract import ConfigReader
-from app.core.readers.toml import TomlConfigReader
+from app.setup.constants import BASE_DIR
+from app.setup.readers.abstract import ConfigReader
+from app.setup.readers.toml import TomlConfigReader
 
 log = logging.getLogger(__name__)
 

@@ -53,3 +53,11 @@ class BirthingPersonService:
         birthing_person.add_contact(contact=contact)
         await self._birthing_person_repository.save(birthing_person)
         return BirthingPersonDTO.from_domain(birthing_person)
+
+    async def get_birthing_person(self, birthing_person_id: str) -> BirthingPersonDTO:
+        domain_id = BirthingPersonId(birthing_person_id)
+        birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
+        if not birthing_person:
+            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
+
+        return BirthingPersonDTO.from_domain(birthing_person)

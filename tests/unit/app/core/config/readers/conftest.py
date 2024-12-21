@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.readers.toml import TomlConfigReader
+from app.setup.readers.toml import TomlConfigReader
 
 
 @pytest.fixture

@@ -11,8 +11,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.core.settings import SqlaEngineSettings
 from app.infrastructure.custom_types import PostgresDsn
+from app.setup.settings import SqlaEngineSettings
 
 log = logging.getLogger(__name__)
 

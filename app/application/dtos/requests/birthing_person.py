@@ -1,7 +1,5 @@
 from pydantic import BaseModel
 
-from app.application.dtos.contact import ContactDTO
-
 
 class RegisterBirthingPersonRequest(BaseModel):
     name: str
@@ -9,4 +7,7 @@ class RegisterBirthingPersonRequest(BaseModel):
 
 
 class AddContactRequest(BaseModel):
-    contact: ContactDTO
+    name: str
+    phone_number: str | None
+    email: str | None
+    contact_methods: list[str]

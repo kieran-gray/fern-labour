@@ -12,12 +12,11 @@ from app.domain.labour.entity import Labour
 class LabourDTO:
     """Data Transfer Object for Labour aggregate"""
 
-    id: UUID
-    user_id: UUID
+    id: str
+    birthing_person_id: UUID
     start_time: datetime
     end_time: datetime | None
     current_phase: str
-    hospital_notified: bool
     notes: str | None
     contractions: list[ContractionDTO]
     pattern: LabourPatternDTO | None
@@ -28,7 +27,7 @@ class LabourDTO:
         contraction_pattern = labour.get_contraction_pattern()
         return cls(
             id=labour.id_.value,
-            user_id=labour.birthing_person_id,
+            birthing_person_id=labour.birthing_person_id,
             start_time=labour.start_time,
             end_time=labour.end_time,
             current_phase=labour.current_phase.value,
@@ -43,11 +42,10 @@ class LabourDTO:
         """Convert DTO to dictionary for JSON serialization"""
         return {
             "id": str(self.id),
-            "user_id": str(self.user_id),
+            "birthing_person_id": str(self.birthing_person_id),
             "start_time": self.start_time.isoformat(),
             "end_time": self.end_time.isoformat() if self.end_time else None,
             "current_phase": self.current_phase,
-            "hospital_notified": self.hospital_notified,
             "notes": self.notes,
             "contractions": [c.to_dict() for c in self.contractions],
             "pattern": self.pattern.to_dict() if self.pattern else None,

@@ -1,7 +1,6 @@
 from typing import Any
 
 from app.domain.base.exceptions import DomainError
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 
 
 class BirthingPersonNotFoundById(DomainError):
@@ -9,7 +8,7 @@ class BirthingPersonNotFoundById(DomainError):
         super().__init__(f"Birthing Person with id '{birthing_person_id}' is not found.")
 
 
-class c(DomainError):
+class BirthingPersonExistsWithID(DomainError):
     def __init__(self, birthing_person_id: Any):
         super().__init__(f"Birthing Person with id '{birthing_person_id}' already exists.")
 
@@ -25,13 +24,13 @@ class ContactDoesNotExist(DomainError):
 
 
 class BirthingPersonHasActiveLabour(DomainError):
-    def __init__(self, id: BirthingPersonId):
-        super().__init__(f"Birthing Person '{id}' already has an active labour")
+    def __init__(self, birthing_person_id: Any):
+        super().__init__(f"Birthing Person '{birthing_person_id}' already has an active labour")
 
 
 class BirthingPersonDoesNotHaveActiveLabour(DomainError):
-    def __init__(self, id: BirthingPersonId):
-        super().__init__(f"Birthing Person '{id}' does not have an active labour")
+    def __init__(self, birthing_person_id: Any):
+        super().__init__(f"Birthing Person '{birthing_person_id}' does not have an active labour")
 
 
 class LabourAlreadyExists(DomainError):

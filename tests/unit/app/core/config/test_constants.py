@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app.core.constants import BASE_DIR
+from app.setup.constants import BASE_DIR
 
 
 def test_base_dir():

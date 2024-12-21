@@ -8,6 +8,7 @@ from app.application.dtos.requests.birthing_person import (
 )
 from app.application.dtos.responses.birthing_person import (
     AddContactResponse,
+    GetBirthingPersonResponse,
     RegisterBirthingPersonResponse,
 )
 from app.application.services.birthing_person_service import BirthingPersonService
@@ -35,7 +36,6 @@ async def register(
     service: FromDishka[BirthingPersonService],
     user: KeycloakUser = Depends(get_user_info),
 ) -> RegisterBirthingPersonResponse:
-    """Start a new labor session for the current user"""
     birthing_person = await service.register(
         birthing_person_id=user.id, name=request_data.name, first_labour=request_data.first_labor
     )
@@ -59,13 +59,31 @@ async def add_contact(
     service: FromDishka[BirthingPersonService],
     user: KeycloakUser = Depends(get_user_info),
 ) -> AddContactResponse:
-    """Start a new labor session for the current user"""
-    contact = request_data.contact
     birthing_person = await service.add_contact(
         birthing_person_id=user.id,
-        name=contact.name,
-        contact_methods=contact.contact_methods,
-        phone_number=contact.phone_number,
-        email=contact.email,
+        name=request_data.name,
+        contact_methods=request_data.contact_methods,
+        phone_number=request_data.phone_number,
+        email=request_data.email,
     )
     return AddContactResponse(birthing_person=birthing_person)
+
+
+@birthing_person_router.get(
+    "/",
+    responses={
+        status.HTTP_200_OK: {"model": GetBirthingPersonResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_birthing_person(
+    service: FromDishka[BirthingPersonService],
+    user: KeycloakUser = Depends(get_user_info),
+) -> GetBirthingPersonResponse:
+    birthing_person = await service.get_birthing_person(birthing_person_id=user.id)
+    return GetBirthingPersonResponse(birthing_person=birthing_person)

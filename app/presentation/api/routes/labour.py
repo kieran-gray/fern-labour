@@ -8,6 +8,8 @@ from app.application.dtos.responses.labour import (
     BeginLabourResponse,
     CompleteLabourResponse,
     EndContractionResponse,
+    GetActiveLabourResponse,
+    GetActiveLabourSummaryResponse,
     StartContractionResponse,
 )
 from app.application.services.labour_service import LabourService
@@ -36,8 +38,8 @@ async def begin_labour(
     user: KeycloakUser = Depends(get_user_info),
 ) -> BeginLabourResponse:
     """Begin labour for the current user"""
-    session = await service.begin_labour(user.id, request_data.first_labour)
-    return BeginLabourResponse(labor_session=session)
+    labour = await service.begin_labour(user.id, request_data.first_labour)
+    return BeginLabourResponse(labour=labour)
 
 
 @labour_router.post(
@@ -115,4 +117,44 @@ async def complete_labour(
     labour = await service.complete_labour(
         birthing_person_id=user.id, end_time=request_data.end_time, notes=request_data.notes
     )
-    CompleteLabourResponse(labour=labour)
+    return CompleteLabourResponse(labour=labour)
+
+
+@labour_router.get(
+    "/active",
+    responses={
+        status.HTTP_200_OK: {"model": GetActiveLabourResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_active_labour(
+    service: FromDishka[LabourService],
+    user: KeycloakUser = Depends(get_user_info),
+) -> GetActiveLabourResponse:
+    labour = await service.get_active_labour(birthing_person_id=user.id)
+    return GetActiveLabourResponse(labour=labour)
+
+
+@labour_router.get(
+    "/active/summary",
+    responses={
+        status.HTTP_200_OK: {"model": GetActiveLabourSummaryResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_active_labour_summary(
+    service: FromDishka[LabourService],
+    user: KeycloakUser = Depends(get_user_info),
+) -> GetActiveLabourSummaryResponse:
+    labour = await service.get_active_labour_summary(birthing_person_id=user.id)
+    return GetActiveLabourSummaryResponse(labour=labour)

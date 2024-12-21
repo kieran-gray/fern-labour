@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Self
-from uuid import UUID
 
 from app.domain.contraction.entity import Contraction
 
@@ -10,8 +9,8 @@ from app.domain.contraction.entity import Contraction
 class ContractionDTO:
     """Data Transfer Object for Contraction entity"""
 
-    id: UUID
-    labour_id: UUID
+    id: str
+    labour_id: str
     start_time: datetime
     end_time: datetime
     duration_minutes: float

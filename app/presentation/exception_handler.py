@@ -12,6 +12,22 @@ from pydantic_core import ErrorDetails
 from app.application.base.exceptions import ApplicationError
 from app.application.exceptions import AuthenticationError, AuthorizationError
 from app.domain.base.exceptions import DomainError
+from app.domain.birthing_person.exceptions import (
+    BirthingPersonDoesNotHaveActiveLabour,
+    BirthingPersonExistsWithID,
+    BirthingPersonHasActiveLabour,
+    BirthingPersonNotFoundById,
+    ContactAlreadyExists,
+    ContactDoesNotExist,
+    LabourAlreadyExists,
+)
+from app.domain.labour.exceptions import (
+    CannotCompleteLabourWithActiveContraction,
+    LabourCompleted,
+    LabourHasActiveContraction,
+    LabourHasNoActiveContraction,
+    LabourNotFoundById,
+)
 
 log = logging.getLogger(__name__)
 
@@ -41,6 +57,18 @@ class ExceptionMapper:
             AuthorizationError: status.HTTP_403_FORBIDDEN,
             DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
             ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+            BirthingPersonNotFoundById: status.HTTP_404_NOT_FOUND,
+            BirthingPersonExistsWithID: status.HTTP_409_CONFLICT,
+            ContactDoesNotExist: status.HTTP_404_NOT_FOUND,
+            ContactAlreadyExists: status.HTTP_409_CONFLICT,
+            BirthingPersonHasActiveLabour: status.HTTP_400_BAD_REQUEST,
+            BirthingPersonDoesNotHaveActiveLabour: status.HTTP_404_NOT_FOUND,
+            LabourAlreadyExists: status.HTTP_409_CONFLICT,
+            LabourNotFoundById: status.HTTP_404_NOT_FOUND,
+            LabourHasActiveContraction: status.HTTP_400_BAD_REQUEST,
+            LabourHasNoActiveContraction: status.HTTP_400_BAD_REQUEST,
+            LabourCompleted: status.HTTP_400_BAD_REQUEST,
+            CannotCompleteLabourWithActiveContraction: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

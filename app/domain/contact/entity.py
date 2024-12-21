@@ -19,7 +19,7 @@ class Contact(Entity[ContactId]):
         cls, *, name: str, phone_number: str, email: str, contact_methods: list[str]
     ) -> Self:
         return cls(
-            id_=uuid4(),
+            id_=ContactId(uuid4()),
             name=name,
             phone_number=phone_number,
             email=email,

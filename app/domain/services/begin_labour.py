@@ -12,7 +12,7 @@ class BeginLabourService:
 
         labour = Labour.begin(
             birthing_person_id=birthing_person.id_,
-            first_labor=first_labour or birthing_person.first_labour,
+            first_labour=first_labour or birthing_person.first_labour,
         )
 
         birthing_person.add_labour(labour)
