@@ -15,9 +15,7 @@ def test_empty_value_object_raises_error():
 
         EmptyValueObject()
 
-    assert (
-        str(exc_info.value) == "EmptyValueObject must have at least one field!"
-    )
+    assert str(exc_info.value) == "EmptyValueObject must have at least one field!"
 
 
 def test_single_field_repr(single_field_value_object):
@@ -25,10 +23,7 @@ def test_single_field_repr(single_field_value_object):
 
 
 def test_multi_field_repr(multi_field_value_object):
-    assert (
-        repr(multi_field_value_object)
-        == "MultiFieldValueObject(value1=123, value2='abc')"
-    )
+    assert repr(multi_field_value_object) == "MultiFieldValueObject(value1=123, value2='abc')"
 
 
 def test_get_fields_single_field(single_field_value_object):

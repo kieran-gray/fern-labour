@@ -4,10 +4,7 @@ import pytest
 from pydantic import PostgresDsn, ValidationError
 
 from app.setup.readers.abstract import ConfigReader
-from app.setup.settings import (
-    LoggingSettings,
-    Settings,
-)
+from app.setup.settings import LoggingSettings, Settings
 
 
 def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):
@@ -56,18 +53,14 @@ def test_settings_from_file_not_found(mock_config_reader: ConfigReader):
         Settings.from_file(fake_path, mock_config_reader)
 
 
-def test_settings_with_env_variables(
-    monkeypatch, mock_config_reader: ConfigReader, tmp_path: Path
-):
+def test_settings_with_env_variables(monkeypatch, mock_config_reader: ConfigReader, tmp_path: Path):
     monkeypatch.setenv("UVICORN_HOST", "127.0.0.1")
     monkeypatch.setenv("UVICORN_PORT", "9999")
 
     fake_path: Path = tmp_path / "test_config.toml"
     fake_path.touch()
 
-    settings: Settings = Settings.from_file(
-        path=fake_path, reader=mock_config_reader
-    )
+    settings: Settings = Settings.from_file(path=fake_path, reader=mock_config_reader)
 
     assert settings.uvicorn.host != "127.0.0.1"
     assert settings.uvicorn.port != 9999

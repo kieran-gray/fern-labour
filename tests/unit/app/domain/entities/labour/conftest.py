@@ -1,7 +1,7 @@
+from datetime import datetime
 from uuid import UUID
 
 import pytest
-from datetime import datetime
 
 from app.domain.labour.entity import Labour
 
@@ -30,4 +30,3 @@ def sample_labour() -> Labour:
         first_labour=False,
         start_time=start_time,
     )
-

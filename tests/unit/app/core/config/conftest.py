@@ -22,7 +22,7 @@ class MockConfigReader(ConfigReader):
                     "KEYCLOAK_CLIENT_ID": "test_client",
                     "KEYCLOAK_CLIENT_SECRET": "ABC123",
                     "JWT_ALGORITHM": "RS256",
-                }
+                },
             },
             "logging": {
                 "LOG_LEVEL": "WARNING",

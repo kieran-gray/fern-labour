@@ -1,5 +1,6 @@
 # Makefile variables
 SRC_DIR := app
+TEST_DIR := tests
 PWD = $(shell pwd)
 PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
 
@@ -30,9 +31,9 @@ lint:
 		bandit -r $(SRC_DIR) -c $(PYPROJECT_TOML)'
 
 format:
-	ruff check $(SRC_DIR) --fix
-	ruff format $(SRC_DIR)
-	isort $(SRC_DIR)
+	ruff check $(SRC_DIR) $(TEST_DIR) --fix
+	ruff format $(SRC_DIR) $(TEST_DIR)
+	isort $(SRC_DIR) $(TEST_DIR)
 
 test:
 	$(DEV_COMMAND_CONTAINER) 'pytest tests -v'

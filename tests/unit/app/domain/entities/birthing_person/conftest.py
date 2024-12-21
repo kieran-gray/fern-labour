@@ -1,5 +1,3 @@
-from uuid import UUID
-
 import pytest
 
 from app.domain.birthing_person.entity import BirthingPerson

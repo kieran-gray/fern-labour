@@ -1,14 +1,11 @@
 import pytest
 
-from app.domain.labour.enums import LabourPhase
 from app.domain.birthing_person.entity import BirthingPerson
-
-from app.domain.labour.exceptions import LabourCompleted, LabourHasActiveContraction, LabourHasNoActiveContraction
-
 from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
+from app.domain.labour.enums import LabourPhase
+from app.domain.labour.exceptions import LabourCompleted, LabourHasActiveContraction
 from app.domain.services.begin_labour import BeginLabourService
 from app.domain.services.start_contraction import StartContractionService
-from app.domain.services.end_contraction import EndContractionService
 
 
 def test_can_start_contraction(sample_birthing_person: BirthingPerson):
