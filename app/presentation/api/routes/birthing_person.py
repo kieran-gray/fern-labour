@@ -2,14 +2,14 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 
-from app.application.dtos.requests.birthing_person import (
-    AddContactRequest,
-    RegisterBirthingPersonRequest,
-)
-from app.application.dtos.responses.birthing_person import BirthingPersonResponse
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.infrastructure.custom_types import KeycloakUser
 from app.presentation.api.auth import get_user_info
+from app.presentation.api.schemas.requests.birthing_person import (
+    AddContactRequest,
+    RegisterBirthingPersonRequest,
+)
+from app.presentation.api.schemas.responses.birthing_person import BirthingPersonResponse
 from app.presentation.exception_handler import ExceptionSchema
 
 birthing_person_router = APIRouter(prefix="/birthing-person", tags=["Birthing Person"])

@@ -23,6 +23,4 @@ class CompleteLabourService:
 
         active_labour.complete_labour(end_time=end_time or datetime.now(), notes=notes)
 
-        # TODO trigger domain event
-
         return active_labour

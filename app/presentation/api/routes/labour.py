@@ -2,12 +2,15 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 
-from app.application.dtos.requests.contraction import EndContractionRequest, StartContractionRequest
-from app.application.dtos.requests.labour import BeginLabourRequest, CompleteLabourRequest
-from app.application.dtos.responses.labour import LabourResponse, LabourSummaryResponse
 from app.application.services.labour_service import LabourService
 from app.infrastructure.custom_types import KeycloakUser
 from app.presentation.api.auth import get_user_info
+from app.presentation.api.schemas.requests.contraction import (
+    EndContractionRequest,
+    StartContractionRequest,
+)
+from app.presentation.api.schemas.requests.labour import BeginLabourRequest, CompleteLabourRequest
+from app.presentation.api.schemas.responses.labour import LabourResponse, LabourSummaryResponse
 from app.presentation.exception_handler import ExceptionSchema
 
 labour_router = APIRouter(prefix="/labour", tags=["Labour Tracking"])

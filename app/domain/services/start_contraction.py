@@ -30,6 +30,4 @@ class StartContractionService:
             intensity=intensity, start_time=start_time or datetime.now(), notes=notes
         )
 
-        # TODO trigger domain event
-
         return active_labour

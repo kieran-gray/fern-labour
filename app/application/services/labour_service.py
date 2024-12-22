@@ -3,6 +3,7 @@ from datetime import datetime
 
 from app.application.dtos.labour import LabourDTO
 from app.application.dtos.labour_summary import LabourSummaryDTO
+from app.application.interfaces.notfication_gateway import NotificationGateway
 from app.domain.birthing_person.exceptions import (
     BirthingPersonDoesNotHaveActiveLabour,
     BirthingPersonNotFoundById,
@@ -23,9 +24,11 @@ class LabourService:
         self,
         birthing_person_repository: BirthingPersonRepository,
         labour_repository: LabourRepository,
+        notification_gateway: NotificationGateway,
     ):
         self._birthing_person_repository = birthing_person_repository
         self._labour_repository = labour_repository
+        self._notification_gateway = notification_gateway
 
     async def begin_labour(
         self, birthing_person_id: str, first_labour: bool | None = None
@@ -40,6 +43,13 @@ class LabourService:
         )
         await self._birthing_person_repository.save(birthing_person)
         assert birthing_person.active_labour
+
+        # TODO instead of handling domain events here, add them to a Kafka producer and handle them
+        # in a dedictead consumer
+
+        for event in birthing_person.active_labour.clear_domain_events():
+            self._notification_gateway.send(event.to_dict())
+
         return LabourDTO.from_domain(birthing_person.active_labour)
 
     async def complete_labour(
@@ -54,6 +64,13 @@ class LabourService:
             birthing_person=birthing_person, end_time=end_time, notes=notes
         )
         await self._labour_repository.save(labour)
+
+        # TODO instead of handling domain events here, add them to a Kafka producer and handle them
+        # in a dedictead consumer
+
+        for event in labour.clear_domain_events():
+            self._notification_gateway.send(event.to_dict())
+
         return LabourDTO.from_domain(labour)
 
     async def start_contraction(
@@ -73,6 +90,14 @@ class LabourService:
         )
 
         await self._labour_repository.save(labour)
+
+        # TODO instead of handling domain events here, add them to a Kafka producer and handle them
+        # in a dedictead consumer
+
+        for event in birthing_person.active_labour.clear_domain_events():
+            self._notification_gateway.send(event.to_dict())
+
+
         return LabourDTO.from_domain(labour)
 
     async def end_contraction(
@@ -91,6 +116,13 @@ class LabourService:
             birthing_person=birthing_person, intensity=intensity, end_time=end_time, notes=notes
         )
         await self._labour_repository.save(labour)
+
+        # TODO instead of handling domain events here, add them to a Kafka producer and handle them
+        # in a dedictead consumer
+
+        for event in birthing_person.active_labour.clear_domain_events():
+            self._notification_gateway.send(event.to_dict())
+
         return LabourDTO.from_domain(labour)
 
     async def get_active_labour(self, birthing_person_id: str) -> LabourDTO:

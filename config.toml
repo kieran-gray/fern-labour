@@ -62,3 +62,14 @@ PYPROJECT_TOML = "pyproject.toml"
 # CORS
 [security.cors]
 BACKEND_CORS_ORIGINS = "http://localhost,https://localhost,http://localhost.kg.com"
+
+# Used by App
+[notification.email]
+SMTP_HOST = "mailcatcher"
+SMTP_USER = ""
+SMTP_PASSWORD = ""
+EMAILS_FROM_EMAIL = "noreply@example.com"
+EMAILS_FROM_NAME = "kieran"
+SMTP_SSL = false
+SMTP_TLS = false
+SMTP_PORT = 1025

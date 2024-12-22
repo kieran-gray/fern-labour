@@ -27,7 +27,7 @@ def upgrade() -> None:
     sa.Enum("EMAIL", "SMS", name="contactmethod").create(op.get_bind())
     op.create_table(
         "birthing_persons",
-        sa.Column("id", sa.UUID(), nullable=False),
+        sa.Column("id", sa.String(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("first_labour", sa.Boolean(), nullable=True),
         sa.Column(
@@ -41,7 +41,7 @@ def upgrade() -> None:
     op.create_table(
         "contacts",
         sa.Column("id", sa.UUID(), nullable=False),
-        sa.Column("birthing_person_id", sa.UUID(), nullable=False),
+        sa.Column("birthing_person_id", sa.String(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("phone_number", sa.String(), nullable=True),
         sa.Column("email", sa.String(), nullable=True),
@@ -60,7 +60,7 @@ def upgrade() -> None:
     op.create_table(
         "labours",
         sa.Column("id", sa.UUID(), nullable=False),
-        sa.Column("birthing_person_id", sa.UUID(), nullable=False),
+        sa.Column("birthing_person_id", sa.String(), nullable=False),
         sa.Column("first_labour", sa.Boolean(), nullable=False),
         sa.Column("start_time", sa.DateTime(), nullable=False),
         sa.Column("end_time", sa.DateTime(), nullable=True),

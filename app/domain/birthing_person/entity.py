@@ -1,11 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Self
 
-from app.domain.base.entity import Entity
+from app.domain.base.aggregate_root import AggregateRoot
 from app.domain.birthing_person.exceptions import (
     ContactAlreadyExists,
     ContactDoesNotExist,
-    LabourAlreadyExists,
 )
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contact.entity import Contact
@@ -13,7 +12,7 @@ from app.domain.labour.entity import Labour
 
 
 @dataclass(eq=False, kw_only=True)
-class BirthingPerson(Entity[BirthingPersonId]):
+class BirthingPerson(AggregateRoot[BirthingPersonId]):
     name: str
     first_labour: bool
     labours: list[Labour] = field(default_factory=list)
@@ -42,6 +41,4 @@ class BirthingPerson(Entity[BirthingPersonId]):
         self.contacts.remove(contact)
 
     def add_labour(self, labour: Labour) -> None:
-        if labour in self.labours:
-            raise LabourAlreadyExists()
         self.labours.append(labour)

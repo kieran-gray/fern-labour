@@ -94,10 +94,30 @@ class DbSettings(BaseModel):
     sqla_engine: SqlaEngineSettings
 
 
+class EmailSettings(BaseModel):
+    smtp_host: str | None = Field(alias="SMTP_HOST", default=None)
+    smtp_user: str | None = Field(alias="SMTP_USER", default=None)
+    smtp_password: str | None = Field(alias="SMTP_PASSWORD", default=None)
+    emails_from_email: str | None = Field(alias="EMAILS_FROM_EMAIL", default=None)
+    emails_from_name: str | None = Field(alias="EMAILS_FROM_NAME", default=None)
+    smtp_tls: bool = Field(alias="SMTP_TLS", default=True)
+    smtp_ssl: bool = Field(alias="SMTP_SSL", default=False)
+    smtp_port: int = Field(alias="SMTP_PORT", default = 587)
+
+    @property
+    def emails_enabled(self) -> bool:
+        return self.smtp_host and self.emails_from_email
+
+
+class NotificationSettings(BaseModel):
+    email: EmailSettings
+
+
 class Settings(BaseModel):
     security: SecuritySettings
     logging: LoggingSettings
     uvicorn: UvicornSettings
+    notification: NotificationSettings
     db: DbSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"

@@ -17,6 +17,4 @@ class BeginLabourService:
 
         birthing_person.add_labour(labour)
 
-        # TODO trigger domain event
-
         return birthing_person

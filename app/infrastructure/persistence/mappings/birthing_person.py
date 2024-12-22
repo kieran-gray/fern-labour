@@ -1,3 +1,6 @@
+from typing import Any
+
+from sqlalchemy import event
 from sqlalchemy.orm import composite, relationship
 
 from app.domain.birthing_person.entity import BirthingPerson
@@ -35,3 +38,9 @@ mapper_registry.map_imperatively(
     },
     column_prefix="_",
 )
+
+
+@event.listens_for(BirthingPerson, 'load')
+def initialize_domain_events(target: Any, context: Any) -> None:
+    if not hasattr(target, '_domain_events'):
+        target._domain_events = []

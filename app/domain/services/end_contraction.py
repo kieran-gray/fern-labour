@@ -26,6 +26,4 @@ class EndContractionService:
             intensity=intensity, end_time=end_time or datetime.now(), notes=notes
         )
 
-        # TODO trigger domain event
-
         return active_labour

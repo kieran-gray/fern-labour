@@ -1,9 +1,11 @@
 from copy import deepcopy
+from typing import Any
 
 import pytest
 import pytest_asyncio
 from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
 
+from app.application.interfaces.notfication_gateway import NotificationGateway
 from app.application.services.labour_service import LabourService
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import (
@@ -57,6 +59,11 @@ class MockBirthingPersonRepository(BirthingPersonRepository):
         return self._data.get(birthing_person_id.value, None)
 
 
+class MockNotificationGateway(NotificationGateway):
+    def send(self, data: dict[str, Any]) -> None:
+        print(data)
+
+
 class MockLabourRepositoryProvider(Provider):
     scope = Scope.APP
 
@@ -73,10 +80,20 @@ class MockBirthingPersonRepositoryProvider(Provider):
         return MockBirthingPersonRepository()
 
 
+class MockNotificationGatewayProvider(Provider):
+    scope = Scope.APP
+
+    @provide
+    def get_notification_gateway(self) -> NotificationGateway:
+        return MockNotificationGateway()
+
+
 @pytest_asyncio.fixture
 async def container():
     container = make_async_container(
-        MockLabourRepositoryProvider(), MockBirthingPersonRepositoryProvider()
+        MockLabourRepositoryProvider(),
+        MockBirthingPersonRepositoryProvider(),
+        MockNotificationGatewayProvider(),
     )
     yield container
     await container.close()
@@ -97,11 +114,20 @@ async def birthing_person_repo(container: AsyncContainer):
 
 
 @pytest_asyncio.fixture
+async def notification_gateway(container: AsyncContainer):
+    return await container.get(NotificationGateway)
+
+
+@pytest_asyncio.fixture
 async def labour_service(
-    labour_repo: LabourRepository, birthing_person_repo: BirthingPersonRepository
+    labour_repo: LabourRepository,
+    birthing_person_repo: BirthingPersonRepository,
+    notification_gateway: NotificationGateway,
 ) -> LabourService:
     return LabourService(
-        birthing_person_repository=birthing_person_repo, labour_repository=labour_repo
+        birthing_person_repository=birthing_person_repo,
+        labour_repository=labour_repo,
+        notification_gateway=notification_gateway,
     )
 
 

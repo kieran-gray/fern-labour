@@ -3,15 +3,21 @@ from datetime import datetime
 from typing import Any, Self
 from uuid import UUID, uuid4
 
-from app.domain.base.entity import Entity
+from app.domain.base.aggregate_root import AggregateRoot
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.entity import Contraction
 from app.domain.labour.enums import LabourPhase
+from app.domain.labour.events import (
+    ContractionEnded,
+    ContractionStarted,
+    LabourBegun,
+    LabourCompleted,
+)
 from app.domain.labour.vo_labour_id import LabourId
 
 
 @dataclass(eq=False, kw_only=True)
-class Labour(Entity[LabourId]):
+class Labour(AggregateRoot[LabourId]):
     """
     Aggregate root for tracking labour.
     Maintains consistency across all contractions and enforces labour-specific rules.
@@ -34,13 +40,24 @@ class Labour(Entity[LabourId]):
         start_time: datetime | None = None,
     ) -> Self:
         """Begin a new labour."""
-        return cls(
+        labour = cls(
             id_=LabourId(labour_id or uuid4()),
             birthing_person_id=birthing_person_id,
             start_time=start_time or datetime.now(),
             first_labour=first_labour,
             contractions=[],
         )
+        labour.add_domain_event(
+            LabourBegun.create(
+                data={
+                    "labour_id": str(labour.id_.value),
+                    "birthing_person_id": labour.birthing_person_id.value,
+                    "start_time": labour.start_time.isoformat(),
+                    "notes": labour.notes if labour.notes else "",
+                }
+            )
+        )
+        return labour
 
     @property
     def is_active(self) -> bool:
@@ -73,6 +90,7 @@ class Labour(Entity[LabourId]):
             notes=notes,
         )
         self.contractions.append(contraction)
+        self.add_domain_event(ContractionStarted.from_contraction(contraction=contraction))
         return contraction
 
     def end_contraction(
@@ -83,12 +101,14 @@ class Labour(Entity[LabourId]):
     ) -> None:
         """End the currently active contraction"""
         assert self.active_contraction
+        active_contraction = self.active_contraction
         if intensity:
-            self.active_contraction.intensity = intensity
+            active_contraction.intensity = intensity
         if notes:
-            self.active_contraction.notes = notes
-        self.active_contraction.end(end_time or datetime.now())
+            active_contraction.notes = notes
+        active_contraction.end(end_time or datetime.now())
         self._update_labour_phase()
+        self.add_domain_event(ContractionEnded.from_contraction(contraction=active_contraction))
 
     def _update_labour_phase(self) -> None:
         """
@@ -116,6 +136,16 @@ class Labour(Entity[LabourId]):
         self.current_phase = LabourPhase.COMPLETE
         if notes:
             self.notes = notes
+        self.add_domain_event(
+            LabourCompleted.create(
+                data={
+                    "labour_id": str(self.id_.value),
+                    "birthing_person_id": self.birthing_person_id.value,
+                    "end_time": self.end_time.isoformat(),
+                    "notes": self.notes if self.notes else "",
+                }
+            )
+        )
 
     def get_contraction_pattern(self) -> dict[str, Any] | None:
         """Analyze the current contraction pattern"""
