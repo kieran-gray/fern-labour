@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Self
+from typing import Any, Self
 
 from app.application.dtos.labour_pattern import LabourPatternDTO
 from app.domain.labour.entity import Labour
+from app.domain.services.should_go_to_hospital import ShouldGoToHospitalService
 
 
 @dataclass
@@ -21,21 +22,22 @@ class LabourSummaryDTO:
     def from_domain(cls, labour: Labour) -> Self:
         """Create DTO from domain aggregate"""
         contraction_pattern = labour.get_contraction_pattern()
+        hospital_recommended = ShouldGoToHospitalService().should_go_to_hospital(labour)
         return cls(
-            id=labour.id_.value,
+            id=str(labour.id_.value),
             duration=(datetime.now() - labour.start_time).total_seconds() / 3600,
             contraction_count=len(labour.contractions),
             current_phase=labour.current_phase.value,
-            hospital_recommended=labour.should_go_to_hospital,
+            hospital_recommended=hospital_recommended,
             pattern=LabourPatternDTO.from_domain(contraction_pattern)
             if contraction_pattern
             else None,
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert DTO to dictionary for JSON serialization"""
         return {
-            "id": str(self.id),
+            "id": self.id,
             "duration": self.duration,
             "contraction_count": self.contraction_count,
             "current_phase": self.current_phase,

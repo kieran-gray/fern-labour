@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pytest
 import pytest_asyncio
 from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
@@ -15,6 +17,10 @@ from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 
 class MockBirthingPersonRepository(BirthingPersonRepository):
     _data = {}
+    _initial_data = {}
+
+    def reset(self) -> None:
+        self._data = deepcopy(self._initial_data)
 
     async def save(self, birthing_person: BirthingPerson) -> None:
         self._data[birthing_person.id_.value] = birthing_person
@@ -44,7 +50,7 @@ async def container():
 @pytest_asyncio.fixture
 async def birthing_person_repo(container: AsyncContainer):
     repo = await container.get(BirthingPersonRepository)
-    repo._data = {}
+    repo.reset()
     return repo
 
 
@@ -55,7 +61,6 @@ async def birthing_person_service(
     return BirthingPersonService(birthing_person_repo)
 
 
-@pytest.mark.asyncio
 async def test_register_birthing_person(birthing_person_service: BirthingPersonService):
     birthing_person = await birthing_person_service.register("test", "User Name", True)
     assert isinstance(birthing_person, BirthingPersonDTO)
@@ -66,7 +71,6 @@ async def test_register_birthing_person(birthing_person_service: BirthingPersonS
     assert birthing_person.contacts == []
 
 
-@pytest.mark.asyncio
 async def test_cannot_register_multiple_birthing_persons_with_same_id(
     birthing_person_service: BirthingPersonService,
 ):
@@ -75,7 +79,6 @@ async def test_cannot_register_multiple_birthing_persons_with_same_id(
         await birthing_person_service.register("test", "User Name", True)
 
 
-@pytest.mark.asyncio
 async def test_can_add_contact(birthing_person_service: BirthingPersonService):
     birthing_person_id = "test"
     birthing_person: BirthingPersonDTO = await birthing_person_service.register(
@@ -99,7 +102,6 @@ async def test_can_add_contact(birthing_person_service: BirthingPersonService):
     assert contact.contact_methods == []
 
 
-@pytest.mark.asyncio
 async def test_cannot_add_contact_to_non_existent_birthing_person(
     birthing_person_service: BirthingPersonService,
 ):
@@ -113,7 +115,6 @@ async def test_cannot_add_contact_to_non_existent_birthing_person(
         )
 
 
-@pytest.mark.asyncio
 async def test_get_birthing_person(birthing_person_service: BirthingPersonService):
     birthing_person_id = "test"
     await birthing_person_service.register(birthing_person_id, "User Name", True)
@@ -122,7 +123,6 @@ async def test_get_birthing_person(birthing_person_service: BirthingPersonServic
     assert isinstance(birthing_person, BirthingPersonDTO)
 
 
-@pytest.mark.asyncio
 async def test_cannot_get_non_existent_birthing_person(
     birthing_person_service: BirthingPersonService,
 ):

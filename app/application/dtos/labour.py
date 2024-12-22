@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Self
-from uuid import UUID
+from typing import Any, Self
 
 from app.application.dtos.contraction import ContractionDTO
 from app.application.dtos.labour_pattern import LabourPatternDTO
@@ -13,7 +12,7 @@ class LabourDTO:
     """Data Transfer Object for Labour aggregate"""
 
     id: str
-    birthing_person_id: UUID
+    birthing_person_id: str
     start_time: datetime
     end_time: datetime | None
     current_phase: str
@@ -26,8 +25,8 @@ class LabourDTO:
         """Create DTO from domain aggregate"""
         contraction_pattern = labour.get_contraction_pattern()
         return cls(
-            id=labour.id_.value,
-            birthing_person_id=labour.birthing_person_id,
+            id=str(labour.id_.value),
+            birthing_person_id=labour.birthing_person_id.value,
             start_time=labour.start_time,
             end_time=labour.end_time,
             current_phase=labour.current_phase.value,
@@ -38,11 +37,11 @@ class LabourDTO:
             else None,
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert DTO to dictionary for JSON serialization"""
         return {
-            "id": str(self.id),
-            "birthing_person_id": str(self.birthing_person_id),
+            "id": self.id,
+            "birthing_person_id": self.birthing_person_id,
             "start_time": self.start_time.isoformat(),
             "end_time": self.end_time.isoformat() if self.end_time else None,
             "current_phase": self.current_phase,

@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from keycloak import KeycloakOpenID
@@ -24,7 +26,7 @@ keycloak_openid = KeycloakOpenID(
 )
 
 
-async def get_idp_public_key():
+async def get_idp_public_key() -> str:
     return (
         "-----BEGIN PUBLIC KEY-----\n"
         f"{keycloak_openid.public_key()}"
@@ -32,12 +34,12 @@ async def get_idp_public_key():
     )
 
 
-async def get_payload(token: str = Security(oauth2_scheme)) -> dict:
+async def get_payload(token: str = Security(oauth2_scheme)) -> Any:
     try:
         return keycloak_openid.decode_token(
             token,
             key=await get_idp_public_key(),
-            validate=False,  # WARNING NEEDS TO BE TRUE
+            validate=False,  # TODO WARNING NEEDS TO BE TRUE
         )
     except Exception as e:
         raise HTTPException(
@@ -47,14 +49,14 @@ async def get_payload(token: str = Security(oauth2_scheme)) -> dict:
         )
 
 
-async def get_user_info(payload: dict = Depends(get_payload)) -> KeycloakUser:
+async def get_user_info(payload: dict[str, Any] = Depends(get_payload)) -> KeycloakUser:
     try:
         return KeycloakUser(
-            id=payload.get("sub"),
-            username=payload.get("preferred_username"),
-            email=payload.get("email"),
-            first_name=payload.get("given_name"),
-            last_name=payload.get("family_name"),
+            id=payload.get("sub"),  # type: ignore
+            username=payload.get("preferred_username"),  # type: ignore
+            email=payload.get("email"),  # type: ignore
+            first_name=payload.get("given_name"),  # type: ignore
+            last_name=payload.get("family_name"),  # type: ignore
             realm_roles=payload.get("realm_access", {}).get("roles", []),
             client_roles=payload.get("realm_access", {}).get("roles", []),
         )

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Self
+from typing import Any, Self
 
 from app.application.dtos.contact import ContactDTO
 from app.application.dtos.labour import LabourDTO
@@ -27,7 +27,7 @@ class BirthingPersonDTO:
             contacts=[ContactDTO.from_domain(contact) for contact in birthing_person.contacts],
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert DTO to dictionary for JSON serialization"""
         return {
             "id": str(self.id),

@@ -15,7 +15,7 @@ class Duration(ValueObject):
     start_time: datetime
     end_time: datetime
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate the duration upon initialization"""
         super().__post_init__()
 

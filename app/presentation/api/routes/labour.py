@@ -4,14 +4,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.application.dtos.requests.contraction import EndContractionRequest, StartContractionRequest
 from app.application.dtos.requests.labour import BeginLabourRequest, CompleteLabourRequest
-from app.application.dtos.responses.labour import (
-    BeginLabourResponse,
-    CompleteLabourResponse,
-    EndContractionResponse,
-    GetActiveLabourResponse,
-    GetActiveLabourSummaryResponse,
-    StartContractionResponse,
-)
+from app.application.dtos.responses.labour import LabourResponse, LabourSummaryResponse
 from app.application.services.labour_service import LabourService
 from app.infrastructure.custom_types import KeycloakUser
 from app.presentation.api.auth import get_user_info
@@ -23,7 +16,7 @@ labour_router = APIRouter(prefix="/labour", tags=["Labour Tracking"])
 @labour_router.post(
     "/begin",
     responses={
-        status.HTTP_200_OK: {"model": BeginLabourRequest},
+        status.HTTP_200_OK: {"model": LabourResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
@@ -36,16 +29,16 @@ async def begin_labour(
     request_data: BeginLabourRequest,
     service: FromDishka[LabourService],
     user: KeycloakUser = Depends(get_user_info),
-) -> BeginLabourResponse:
+) -> LabourResponse:
     """Begin labour for the current user"""
     labour = await service.begin_labour(user.id, request_data.first_labour)
-    return BeginLabourResponse(labour=labour)
+    return LabourResponse(labour=labour)
 
 
 @labour_router.post(
     "/contraction/start",
     responses={
-        status.HTTP_200_OK: {"model": StartContractionResponse},
+        status.HTTP_200_OK: {"model": LabourResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
@@ -58,7 +51,7 @@ async def start_contraction(
     request_data: StartContractionRequest,
     service: FromDishka[LabourService],
     user: KeycloakUser = Depends(get_user_info),
-) -> StartContractionResponse:
+) -> LabourResponse:
     """Start a new contraction in the given labor session"""
     labour = await service.start_contraction(
         birthing_person_id=user.id,
@@ -66,13 +59,13 @@ async def start_contraction(
         intensity=request_data.intensity,
         notes=request_data.notes,
     )
-    return StartContractionResponse(labour=labour)
+    return LabourResponse(labour=labour)
 
 
 @labour_router.put(
     "/contraction/end",
     responses={
-        status.HTTP_200_OK: {"model": EndContractionResponse},
+        status.HTTP_200_OK: {"model": LabourResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
@@ -85,7 +78,7 @@ async def end_contraction(
     request_data: EndContractionRequest,
     service: FromDishka[LabourService],
     user: KeycloakUser = Depends(get_user_info),
-) -> EndContractionResponse:
+) -> LabourResponse:
     """End the currently active contraction in the given session"""
     labour = await service.end_contraction(
         birthing_person_id=user.id,
@@ -93,13 +86,13 @@ async def end_contraction(
         end_time=request_data.end_time,
         notes=request_data.notes,
     )
-    return EndContractionResponse(labour=labour)
+    return LabourResponse(labour=labour)
 
 
 @labour_router.put(
     "/complete",
     responses={
-        status.HTTP_200_OK: {"model": CompleteLabourResponse},
+        status.HTTP_200_OK: {"model": LabourResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
@@ -112,18 +105,18 @@ async def complete_labour(
     request_data: CompleteLabourRequest,
     service: FromDishka[LabourService],
     user: KeycloakUser = Depends(get_user_info),
-) -> CompleteLabourResponse:
+) -> LabourResponse:
     """Mark a labor session as complete"""
     labour = await service.complete_labour(
         birthing_person_id=user.id, end_time=request_data.end_time, notes=request_data.notes
     )
-    return CompleteLabourResponse(labour=labour)
+    return LabourResponse(labour=labour)
 
 
 @labour_router.get(
     "/active",
     responses={
-        status.HTTP_200_OK: {"model": GetActiveLabourResponse},
+        status.HTTP_200_OK: {"model": LabourResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
@@ -135,15 +128,15 @@ async def complete_labour(
 async def get_active_labour(
     service: FromDishka[LabourService],
     user: KeycloakUser = Depends(get_user_info),
-) -> GetActiveLabourResponse:
+) -> LabourResponse:
     labour = await service.get_active_labour(birthing_person_id=user.id)
-    return GetActiveLabourResponse(labour=labour)
+    return LabourResponse(labour=labour)
 
 
 @labour_router.get(
     "/active/summary",
     responses={
-        status.HTTP_200_OK: {"model": GetActiveLabourSummaryResponse},
+        status.HTTP_200_OK: {"model": LabourSummaryResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
@@ -155,6 +148,6 @@ async def get_active_labour(
 async def get_active_labour_summary(
     service: FromDishka[LabourService],
     user: KeycloakUser = Depends(get_user_info),
-) -> GetActiveLabourSummaryResponse:
+) -> LabourSummaryResponse:
     labour = await service.get_active_labour_summary(birthing_person_id=user.id)
-    return GetActiveLabourSummaryResponse(labour=labour)
+    return LabourSummaryResponse(labour=labour)

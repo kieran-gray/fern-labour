@@ -30,7 +30,7 @@ class SQLAlchemyBirthingPersonRepository(BirthingPersonRepository):
             birthing_person: The birthing person to delete
         """
 
-        self._session.delete(birthing_person)
+        await self._session.delete(birthing_person)
         await self._session.commit()
 
     async def get_by_id(self, birthing_person_id: BirthingPersonId) -> BirthingPerson | None:
@@ -45,10 +45,7 @@ class SQLAlchemyBirthingPersonRepository(BirthingPersonRepository):
         """
         stmt = (
             select(BirthingPerson)
-            .options(
-                selectinload(BirthingPerson.contacts),
-                selectinload(BirthingPerson.labours),
-            )
+            .options(selectinload(BirthingPerson.contacts), selectinload(BirthingPerson.labours))  # type: ignore
             .where(birthing_persons_table.c.id == birthing_person_id.value)
         )
 

@@ -7,7 +7,6 @@ from dishka import AsyncContainer, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from fastapi_keycloak_middleware import KeycloakConfiguration, setup_keycloak_middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from app.infrastructure.persistence import initialize_mapping
@@ -52,7 +51,6 @@ def create_app(settings: Settings) -> FastAPI:
 
 def configure_app(new_app: FastAPI, settings: Settings) -> None:
     new_app.include_router(root_router)
-    # configure_keycloak(new_app, settings)
     new_app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.security.cors.all_cors_origins,
@@ -67,22 +65,3 @@ def configure_app(new_app: FastAPI, settings: Settings) -> None:
         new_app, exception_message_provider, exception_mapper
     )
     exception_handler.setup_handlers()
-
-
-def configure_keycloak(new_app: FastAPI, settings: Settings) -> None:
-    keycloak_config = KeycloakConfiguration(
-        url=settings.security.keycloak.server_url,
-        realm=settings.security.keycloak.realm,
-        client_id=settings.security.keycloak.client_id,
-        client_secret=settings.security.keycloak.client_secret,
-    )
-    setup_keycloak_middleware(
-        new_app,
-        keycloak_configuration=keycloak_config,
-        exclude_patterns=[
-            "/api/v1/health",
-            "/openapi.json",
-            "/docs",
-        ],
-        add_swagger_auth=True,
-    )

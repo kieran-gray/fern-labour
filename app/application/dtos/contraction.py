@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Self
+from typing import Any, Self
 
 from app.domain.contraction.entity import Contraction
 
@@ -14,7 +14,7 @@ class ContractionDTO:
     start_time: datetime
     end_time: datetime
     duration_minutes: float
-    intensity: int
+    intensity: int | None
     notes: str | None
     is_active: bool
 
@@ -22,8 +22,8 @@ class ContractionDTO:
     def from_domain(cls, contraction: Contraction) -> Self:
         """Create DTO from domain entity"""
         return cls(
-            id=contraction.id_.value,
-            labour_id=contraction.labour_id,
+            id=str(contraction.id_.value),
+            labour_id=str(contraction.labour_id.value),
             start_time=contraction.start_time,
             end_time=contraction.end_time,
             duration_minutes=contraction.duration.duration_minutes,
@@ -32,11 +32,11 @@ class ContractionDTO:
             is_active=contraction.is_active,
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert DTO to dictionary for JSON serialization"""
         return {
-            "id": str(self.id),
-            "labour_id": str(self.labour_id),
+            "id": self.id,
+            "labour_id": self.labour_id,
             "start_time": self.start_time.isoformat(),
             "end_time": self.end_time.isoformat(),
             "duration_minutes": self.duration_minutes,

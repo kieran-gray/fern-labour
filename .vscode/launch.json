@@ -19,6 +19,16 @@
                 }
             ],
             "justMyCode": false,
+        },
+        {
+            "name": "Attach Local",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "0.0.0.0",
+                "port": 5678,
+            },
+            "justMyCode": false,
         }
     ]
 }

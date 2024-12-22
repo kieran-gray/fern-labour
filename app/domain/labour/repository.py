@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from uuid import UUID
 
 from app.domain.labour.entity import Labour
+from app.domain.labour.vo_labour_id import LabourId
 
 
 class LabourRepository(ABC):
@@ -26,7 +26,7 @@ class LabourRepository(ABC):
         """
 
     @abstractmethod
-    async def get_by_id(self, labour_id: UUID) -> Labour | None:
+    async def get_by_id(self, labour_id: LabourId) -> Labour | None:
         """
         Retrieve a labor by its ID.
 

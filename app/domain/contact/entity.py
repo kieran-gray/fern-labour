@@ -16,7 +16,12 @@ class Contact(Entity[ContactId]):
 
     @classmethod
     def create(
-        cls, *, name: str, phone_number: str, email: str, contact_methods: list[str]
+        cls,
+        *,
+        name: str,
+        phone_number: str | None = None,
+        email: str | None = None,
+        contact_methods: list[str],
     ) -> Self:
         return cls(
             id_=ContactId(uuid4()),

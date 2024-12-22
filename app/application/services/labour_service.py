@@ -9,7 +9,6 @@ from app.domain.birthing_person.exceptions import (
 )
 from app.domain.birthing_person.repository import BirthingPersonRepository
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
-from app.domain.labour.entity import Labour
 from app.domain.labour.repository import LabourRepository
 from app.domain.services.begin_labour import BeginLabourService
 from app.domain.services.complete_labour import CompleteLabourService
@@ -40,13 +39,17 @@ class LabourService:
             birthing_person=birthing_person, first_labour=first_labour
         )
         await self._birthing_person_repository.save(birthing_person)
+        assert birthing_person.active_labour
         return LabourDTO.from_domain(birthing_person.active_labour)
 
     async def complete_labour(
         self, birthing_person_id: str, end_time: datetime | None = None, notes: str | None = None
-    ) -> Labour:
+    ) -> LabourDTO:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
+        if not birthing_person:
+            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
+
         labour = CompleteLabourService().complete_labour(
             birthing_person=birthing_person, end_time=end_time, notes=notes
         )
@@ -56,27 +59,34 @@ class LabourService:
     async def start_contraction(
         self,
         birthing_person_id: str,
-        intensity: int,
+        intensity: int | None = None,
         start_time: datetime | None = None,
         notes: str | None = None,
-    ) -> Labour:
+    ) -> LabourDTO:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
+        if not birthing_person:
+            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
+
         labour = StartContractionService().start_contraction(
             birthing_person=birthing_person, intensity=intensity, start_time=start_time, notes=notes
         )
+
         await self._labour_repository.save(labour)
         return LabourDTO.from_domain(labour)
 
     async def end_contraction(
         self,
         birthing_person_id: str,
-        intensity: int | None = None,
+        intensity: int,
         end_time: datetime | None = None,
         notes: str | None = None,
-    ) -> Labour:
+    ) -> LabourDTO:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
+        if not birthing_person:
+            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
+
         labour = EndContractionService().end_contraction(
             birthing_person=birthing_person, intensity=intensity, end_time=end_time, notes=notes
         )

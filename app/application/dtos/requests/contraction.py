@@ -10,6 +10,6 @@ class StartContractionRequest(BaseModel):
 
 
 class EndContractionRequest(BaseModel):
-    intensity: int | None = None
+    intensity: int
     end_time: datetime | None = None
     notes: str | None = None

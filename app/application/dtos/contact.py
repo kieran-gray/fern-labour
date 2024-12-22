@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Self
+from typing import Any, Self
 
 from app.domain.contact.entity import Contact
 
@@ -16,17 +16,17 @@ class ContactDTO:
     def from_domain(cls, contact: Contact) -> Self:
         """Create DTO from domain entity"""
         return cls(
-            id=contact.id_.value,
+            id=str(contact.id_.value),
             name=contact.name,
             phone_number=contact.phone_number,
             email=contact.email,
             contact_methods=[method.value for method in contact.contact_methods],
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert DTO to dictionary for JSON serialization"""
         return {
-            "id": str(self.id),
+            "id": self.id,
             "name": self.name,
             "phone_number": self.phone_number,
             "email": self.email,

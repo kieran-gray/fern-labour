@@ -1,18 +1,11 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Self
+from datetime import datetime
+from typing import Any, Self
 from uuid import UUID, uuid4
 
 from app.domain.base.entity import Entity
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.entity import Contraction
-from app.domain.labour.constants import (
-    CONTRACTIONS_REQUIRED_NULLIPAROUS,
-    CONTRACTIONS_REQUIRED_PAROUS,
-    LENGTH_OF_CONTRACTIONS_MINUTES,
-    TIME_BETWEEN_CONTRACTIONS_NULLIPAROUS,
-    TIME_BETWEEN_CONTRACTIONS_PAROUS,
-)
 from app.domain.labour.enums import LabourPhase
 from app.domain.labour.vo_labour_id import LabourId
 
@@ -66,48 +59,6 @@ class Labour(Entity[LabourId]):
         """Check if there's currently an active contraction"""
         return any(contraction.is_active for contraction in self.contractions)
 
-    @property
-    def should_go_to_hospital(self) -> bool:
-        """
-        When to go to the hospital depends on if this is a first labour or not.
-        For a first time mum we should wait until contractions are well
-        established. This means using the 3-1-1 rule:
-        Contractions every 3 minutes, lasting 1 minute each, for 1 hour
-
-        Otherwise we don't want to wait as long and should go to the hospital
-        when contractions are once every 5 minutes for 30 minutes.
-        """
-        required_number_of_contractions = (
-            CONTRACTIONS_REQUIRED_NULLIPAROUS if self.first_labour else CONTRACTIONS_REQUIRED_PAROUS
-        )
-        required_time_between_contractions = (
-            TIME_BETWEEN_CONTRACTIONS_NULLIPAROUS
-            if self.first_labour
-            else TIME_BETWEEN_CONTRACTIONS_PAROUS
-        )
-
-        if len(self.contractions) < required_number_of_contractions:
-            return False
-
-        recent_contractions = self.contractions[-required_number_of_contractions:]
-
-        # Check if contractions are consistently 5 minutes apart or less
-        for prev, curr in zip(recent_contractions, recent_contractions[1:], strict=False):
-            time_between = (curr.start_time - prev.end_time).total_seconds() / 60
-            if time_between > required_time_between_contractions:
-                return False
-
-        # Check if contractions are lasting about 1 minute
-        if not all(
-            c.duration.duration_minutes >= LENGTH_OF_CONTRACTIONS_MINUTES
-            for c in recent_contractions
-        ):
-            return False
-
-        # TODO this won't work if the contractions are hapening at a faster rate
-        pattern_duration = recent_contractions[-1].end_time - recent_contractions[0].start_time
-        return pattern_duration >= timedelta(hours=1)
-
     def start_contraction(
         self,
         intensity: int | None = None,
@@ -131,6 +82,7 @@ class Labour(Entity[LabourId]):
         notes: str | None = None,
     ) -> None:
         """End the currently active contraction"""
+        assert self.active_contraction
         if intensity:
             self.active_contraction.intensity = intensity
         if notes:
@@ -144,11 +96,10 @@ class Labour(Entity[LabourId]):
         This is a simplified version - in reality, this would likely involve
         additional medical data like dilation measurements.
         """
-        if not self.contractions:
-            return
-
         recent_contractions = self.contractions[-5:]  # Look at last 5 contractions
-        avg_intensity = sum(c.intensity for c in recent_contractions) / len(recent_contractions)
+        avg_intensity = sum(c.intensity for c in recent_contractions if c.intensity) / len(
+            recent_contractions
+        )
         avg_duration = sum(c.duration.duration_minutes for c in recent_contractions) / len(
             recent_contractions
         )
@@ -166,7 +117,7 @@ class Labour(Entity[LabourId]):
         if notes:
             self.notes = notes
 
-    def get_contraction_pattern(self) -> dict | None:
+    def get_contraction_pattern(self) -> dict[str, Any] | None:
         """Analyze the current contraction pattern"""
         if len(self.contractions) < 3:
             return None
@@ -174,7 +125,7 @@ class Labour(Entity[LabourId]):
         recent = self.contractions[-3:]
 
         avg_duration = sum(c.duration.duration_minutes for c in recent) / len(recent)
-        avg_intensity = sum(c.intensity for c in recent) / len(recent)
+        avg_intensity = sum(c.intensity for c in recent if c.intensity) / len(recent)
 
         # Calculate average time between contractions
         intervals = []
@@ -188,5 +139,4 @@ class Labour(Entity[LabourId]):
             "average_intensity": round(avg_intensity, 1),
             "average_interval_minutes": round(avg_interval, 1),
             "phase": self.current_phase.value,
-            "hospital_recommended": self.should_go_to_hospital,
         }

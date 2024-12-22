@@ -24,7 +24,7 @@ class Contraction(Entity[ContractionId]):
     intensity: int | None = None
     notes: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.intensity:
             return
 
