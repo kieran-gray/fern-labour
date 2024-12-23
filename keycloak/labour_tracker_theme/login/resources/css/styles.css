@@ -1,0 +1,213 @@
+* {
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+}
+
+.pf-v5-c-login__container {
+    grid-template-columns: 34rem;
+    grid-template-areas: "header"
+                         "main"
+}
+
+.login-pf body {
+    background-color: #fbe6e6;
+
+}
+
+div.kc-logo-text {
+    background-image: url(../img/keycloak-logo-text.png);
+    background-repeat: no-repeat;
+    height: 63px;
+    width: 300px;
+    margin: 0 auto;
+}
+
+div.kc-logo-text span {
+    display: none;
+}
+
+.pf-v5-c-login__main {
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: #555;
+}
+
+.pf-v5-c-form-control {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: white;
+}
+
+.pf-v5-c-form-control:hover {
+    --pf-v5-c-form-control--after--BorderBottomColor: #FFB5A8;
+}
+
+.pf-v5-c-button.pf-m-primary {
+    background: #FF8C7A;
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+    background: #E57A6B;
+}
+
+.pf-v5-c-button.pf-m-secondary {
+    background: white;
+    color: #FF8C7A;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.pf-v5-c-button.pf-m-secondary::after {
+    border-color: #FF8C7A;
+}
+
+.pf-v5-c-button.pf-m-secondary:hover {
+    background: #FF8C7A;
+    color: white;
+}
+
+.pf-v5-c-form-control:focus-within {
+    outline: none;
+    border-color: #FFB5A8;
+    --pf-v5-c-form-control--after--BorderBottomColor: white;
+    --pf-v5-c-form-control--after--BorderBottomWidth: white;
+}
+
+.pf-v5-c-form-control.input:focus {
+    --input--after--outline: white;
+}
+
+.pf-v5-c-button.pf-m-control {
+    background: #FF8C7A;
+    color: white;
+    border: none;
+}
+
+.pf-v5-c-button.pf-m-control:hover {
+    background: #E57A6B;
+    color: white;
+    border: none;
+}
+
+.pf-v5-c-input-group__item {
+    border-inline-start: none;
+}
+
+.pf-v5-c-check__input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #FFB5A8;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.pf-v5-c-check__input:checked {
+    background: #FF8C7A;
+    border-color: #FF8C7A;
+}
+
+.pf-v5-c-check__input:checked::after {
+    content: "✓";
+    color: white;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+}
+
+.pf-v5-c-check__label {
+    color: #555
+}
+
+input:focus {
+    outline: none !important; 
+}
+
+.kc-login-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.kc-login-tooltip .kc-tooltip-text{
+    top:-3px;
+    left:160%;
+    background-color: black;
+    visibility: hidden;
+    color: #fff;
+
+    min-width:130px;
+    text-align: center;
+    border-radius: 2px;
+    box-shadow:0 1px 8px rgba(0,0,0,0.6);
+    padding: 5px;
+
+    position: absolute;
+    opacity:0;
+    transition:opacity 0.5s;
+}
+
+/* Show tooltip */
+.kc-login-tooltip:hover .kc-tooltip-text {
+    visibility: visible;
+    opacity:0.7;
+}
+
+/* Arrow for tooltip */
+.kc-login-tooltip .kc-tooltip-text::after {
+    content: " ";
+    position: absolute;
+    top: 15px;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+}
+
+#kc-recovery-codes-list {
+    columns: 2;
+}
+
+#certificate_subjectDN {
+    overflow-wrap: break-word
+}
+
+#kc-header-wrapper {
+    font-size: 29px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    line-height: 1.2em;
+    white-space: normal;
+    color: #333 !important;
+    text-align: center;
+}
+
+hr {
+    margin-top: var(--pf-v5-global--spacer--sm);
+    margin-bottom: var(--pf-v5-global--spacer--md);
+}
+
+@media (min-width: 768px) {
+    div.pf-v5-c-login__main-header {
+        grid-template-columns: 70% 30%;
+    }
+}

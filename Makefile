@@ -14,6 +14,9 @@ build-dev:
 build-prod:
 	docker build --target production -t $(DOCKER_IMAGE_BACKEND) .
 
+build-keycloak:
+	docker build -t $(DOCKER_IMAGE_BACKEND)-keycloak ./keycloak -f ./keycloak/Dockerfile --no-cache
+
 build: build-dev build-prod
 
 run:
