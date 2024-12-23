@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from app.application.interfaces.notfication_gateway import NotificationGateway
+from app.application.notifications.notfication_gateway import NotificationGateway
 
 
 class LocalStorageNotificationGateway(NotificationGateway):

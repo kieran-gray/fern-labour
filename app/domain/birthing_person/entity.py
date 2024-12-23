@@ -5,6 +5,7 @@ from app.domain.base.aggregate_root import AggregateRoot
 from app.domain.birthing_person.exceptions import (
     ContactAlreadyExists,
     ContactDoesNotExist,
+    LabourAlreadyExists,
 )
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contact.entity import Contact
@@ -41,4 +42,6 @@ class BirthingPerson(AggregateRoot[BirthingPersonId]):
         self.contacts.remove(contact)
 
     def add_labour(self, labour: Labour) -> None:
+        if labour in self.labours:
+            raise LabourAlreadyExists()
         self.labours.append(labour)

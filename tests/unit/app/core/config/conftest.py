@@ -47,6 +47,8 @@ class MockConfigReader(ConfigReader):
                     "SQLA_MAX_OVERFLOW": 0,
                 },
             },
+            "notifications": {"email": {}, "twilio": {}},
+            "events": {"kafka_producer": {}}
         }
 
 

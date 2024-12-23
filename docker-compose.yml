@@ -53,6 +53,9 @@ services:
       backend-pre-start:
         condition: service_completed_successfully
         restart: false
+      init-kafka:
+        condition: service_completed_successfully
+        restart: false
       keycloak:
         condition: service_started
     env_file:
@@ -141,21 +144,67 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-keycloak-admin-https.tls.certresolver=le
       - traefik.http.services.${STACK_NAME?Variable not set}-keycloak.loadbalancer.server.port=9000
 
+  zookeeper:
+    restart: always
+    container_name: zookeeper
+    image: docker.io/bitnami/zookeeper:3.8
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper-volume:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - default
 
-  backend-base:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}'
-    build:
-      context: .
-      target: production
-  
-  backend-dev:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}-dev'
-    build:
-      context: .
-      target: dev
+  kafka:
+    restart: always
+    container_name: kafka
+    image: docker.io/bitnami/kafka:3.9
+    ports:
+      - "9093:9093"
+      - "9092:9092"
+    volumes:
+      - "kafka-volume:/bitnami"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+    depends_on:
+      - zookeeper
+    networks:
+      - default
+
+  init-kafka:
+    image: docker.io/bitnami/kafka:3.9
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics.sh --bootstrap-server kafka:9092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic labour_tracker.labour.begun --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic labour_tracker.labour.completed --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic labour_tracker.contraction.started --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic labour_tracker.contraction.ended --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics.sh --bootstrap-server kafka:9092 --list
+      "
+    networks:
+      - default
 
 volumes:
   app-db-data:
+  kafka-volume:
+  zookeeper-volume:
 
 networks:
   traefik-public:

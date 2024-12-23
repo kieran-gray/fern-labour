@@ -1,12 +1,13 @@
 from copy import deepcopy
-from typing import Any
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
 from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
 
-from app.application.interfaces.notfication_gateway import NotificationGateway
+from app.application.events.producer import EventProducer
 from app.application.services.labour_service import LabourService
+from app.domain.base.event import DomainEvent
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import (
     BirthingPersonDoesNotHaveActiveLabour,
@@ -59,11 +60,6 @@ class MockBirthingPersonRepository(BirthingPersonRepository):
         return self._data.get(birthing_person_id.value, None)
 
 
-class MockNotificationGateway(NotificationGateway):
-    def send(self, data: dict[str, Any]) -> None:
-        print(data)
-
-
 class MockLabourRepositoryProvider(Provider):
     scope = Scope.APP
 
@@ -80,20 +76,11 @@ class MockBirthingPersonRepositoryProvider(Provider):
         return MockBirthingPersonRepository()
 
 
-class MockNotificationGatewayProvider(Provider):
-    scope = Scope.APP
-
-    @provide
-    def get_notification_gateway(self) -> NotificationGateway:
-        return MockNotificationGateway()
-
-
 @pytest_asyncio.fixture
 async def container():
     container = make_async_container(
         MockLabourRepositoryProvider(),
         MockBirthingPersonRepositoryProvider(),
-        MockNotificationGatewayProvider(),
     )
     yield container
     await container.close()
@@ -114,20 +101,20 @@ async def birthing_person_repo(container: AsyncContainer):
 
 
 @pytest_asyncio.fixture
-async def notification_gateway(container: AsyncContainer):
-    return await container.get(NotificationGateway)
+def event_producer():
+    return AsyncMock()
 
 
 @pytest_asyncio.fixture
 async def labour_service(
     labour_repo: LabourRepository,
     birthing_person_repo: BirthingPersonRepository,
-    notification_gateway: NotificationGateway,
+    event_producer: EventProducer,
 ) -> LabourService:
     return LabourService(
         birthing_person_repository=birthing_person_repo,
         labour_repository=labour_repo,
-        notification_gateway=notification_gateway,
+        event_producer=event_producer,
     )
 
 
@@ -171,41 +158,3 @@ async def test_can_end_contraction(labour_service: LabourService) -> None:
 async def test_cannot_end_contraction_for_non_existent_user(labour_service: LabourService) -> None:
     with pytest.raises(BirthingPersonNotFoundById):
         await labour_service.end_contraction("TEST123456", intensity=5)
-
-
-async def test_can_get_active_labour(labour_service: LabourService) -> None:
-    await labour_service.begin_labour(BIRTHING_PERSON)
-    await labour_service.get_active_labour(BIRTHING_PERSON)
-
-
-async def test_cannot_get_active_labour_for_non_existent_birthing_person(
-    labour_service: LabourService,
-) -> None:
-    with pytest.raises(BirthingPersonNotFoundById):
-        await labour_service.get_active_labour("TEST123456")
-
-
-async def test_cannot_get_active_labour_for_birthing_person_without_active_labour(
-    labour_service: LabourService,
-) -> None:
-    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
-        await labour_service.get_active_labour(BIRTHING_PERSON)
-
-
-async def test_can_get_active_labour_summary(labour_service: LabourService) -> None:
-    await labour_service.begin_labour(BIRTHING_PERSON)
-    await labour_service.get_active_labour_summary(BIRTHING_PERSON)
-
-
-async def test_cannot_get_active_labour_summary_for_non_existent_birthing_person(
-    labour_service: LabourService,
-) -> None:
-    with pytest.raises(BirthingPersonNotFoundById):
-        await labour_service.get_active_labour_summary("TEST123456")
-
-
-async def test_cannot_get_active_labour_summary_for_birthing_person_without_active_labour(
-    labour_service: LabourService,
-) -> None:
-    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
-        await labour_service.get_active_labour_summary(BIRTHING_PERSON)

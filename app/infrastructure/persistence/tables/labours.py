@@ -8,9 +8,7 @@ labours_table = Table(
     "labours",
     mapper_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
-    Column(
-        "birthing_person_id", String, ForeignKey("birthing_persons.id"), nullable=False
-    ),
+    Column("birthing_person_id", String, ForeignKey("birthing_persons.id"), nullable=False),
     Column("first_labour", Boolean, nullable=False),
     Column("start_time", DateTime, nullable=False),
     Column("end_time", DateTime, nullable=True),

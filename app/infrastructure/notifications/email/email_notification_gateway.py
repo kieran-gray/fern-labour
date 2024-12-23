@@ -1,10 +1,14 @@
 import json
-from typing import Any
-import emails
+import logging
 from dataclasses import dataclass
+from typing import Any
 
-from app.application.interfaces.notfication_gateway import NotificationGateway
+import emails
+
+from app.application.notifications.notfication_gateway import EmailNotificationGateway
 from app.setup.settings import Settings
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -17,14 +21,14 @@ def generate_email(data: dict[str, Any]) -> EmailData:
     return EmailData(html_content=json.dumps(data), subject="TEST 123456")
 
 
-class EmailNotificationGateway(NotificationGateway):
+class SFTPEmailNotificationGateway(EmailNotificationGateway):
     """Notification gateway that sends emails"""
 
     def __init__(self, settings: Settings):
         self._settings = settings
 
     def send(self, data: dict[str, Any]) -> None:
-        email_settings = self._settings.notification.email
+        email_settings = self._settings.notifications.email
         assert email_settings.emails_enabled
 
         email_data = generate_email(data)
@@ -44,3 +48,5 @@ class EmailNotificationGateway(NotificationGateway):
         if email_settings.smtp_password:
             smtp_options["password"] = email_settings.smtp_password
         message.send(to="test123@example.com", smtp=smtp_options)
+
+        log.info(f"Sent email notification of event {data["type"]} to contact")

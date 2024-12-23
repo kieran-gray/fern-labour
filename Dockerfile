@@ -38,7 +38,7 @@ ARG UVICORN_PORT
 
 EXPOSE ${UVICORN_PORT}
 
-FROM production as dev
+FROM production AS dev
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --all-groups

@@ -7,11 +7,17 @@ PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
 DEV_IMAGE := $(DOCKER_IMAGE_BACKEND)-dev:latest
 DEV_COMMAND_CONTAINER := docker run --rm $(DEV_IMAGE) sh -c
 
-install:
-	docker compose build
+
+build-dev:
+	docker build --target dev -t $(DOCKER_IMAGE_BACKEND)-dev .
+
+build-prod:
+	docker build --target production -t $(DOCKER_IMAGE_BACKEND) .
+
+build: build-dev build-prod
 
 run:
-	docker compose up --build
+	docker compose up
 
 stop:
 	docker compose down

@@ -51,7 +51,7 @@ mapper_registry.map_imperatively(
 )
 
 
-@event.listens_for(Labour, 'load')
-def initialize_domain_events(target: Any, context: Any) -> None:
-    if not hasattr(target, '_domain_events'):
+@event.listens_for(Labour, "load")
+def initialize_domain_events(target: Any, _: Any) -> None:
+    if not hasattr(target, "_domain_events"):
         target._domain_events = []

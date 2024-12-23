@@ -3,6 +3,7 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 
 from app.application.services.labour_service import LabourService
+from app.application.services.get_labour_service import GetLabourService
 from app.infrastructure.custom_types import KeycloakUser
 from app.presentation.api.auth import get_user_info
 from app.presentation.api.schemas.requests.contraction import (
@@ -129,7 +130,7 @@ async def complete_labour(
 )
 @inject
 async def get_active_labour(
-    service: FromDishka[LabourService],
+    service: FromDishka[GetLabourService],
     user: KeycloakUser = Depends(get_user_info),
 ) -> LabourResponse:
     labour = await service.get_active_labour(birthing_person_id=user.id)
@@ -149,7 +150,7 @@ async def get_active_labour(
 )
 @inject
 async def get_active_labour_summary(
-    service: FromDishka[LabourService],
+    service: FromDishka[GetLabourService],
     user: KeycloakUser = Depends(get_user_info),
 ) -> LabourSummaryResponse:
     labour = await service.get_active_labour_summary(birthing_person_id=user.id)

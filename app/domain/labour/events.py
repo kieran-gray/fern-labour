@@ -9,7 +9,7 @@ from app.domain.contraction.entity import Contraction
 class LabourBegun(DomainEvent):
     @classmethod
     def create(cls, data: dict[str, Any]) -> Self:
-        event_type = "labour_tracker.labour.begun"
+        event_type = "labour.begun"
         return super().create(event_type=event_type, data=data)
 
 
@@ -17,7 +17,7 @@ class LabourBegun(DomainEvent):
 class LabourCompleted(DomainEvent):
     @classmethod
     def create(cls, data: dict[str, Any]) -> Self:
-        event_type = "labour_tracker.labour.completed"
+        event_type = "labour.completed"
         return super().create(event_type=event_type, data=data)
 
 
@@ -25,7 +25,7 @@ class LabourCompleted(DomainEvent):
 class ContractionStarted(DomainEvent):
     @classmethod
     def from_contraction(cls, contraction: Contraction) -> Self:
-        event_type = "labour_tracker.contraction.started"
+        event_type = "contraction.started"
         data = {
             "labour_id": str(contraction.id_.value),
             "start_time": contraction.start_time.isoformat(),
@@ -38,7 +38,7 @@ class ContractionStarted(DomainEvent):
 class ContractionEnded(DomainEvent):
     @classmethod
     def from_contraction(cls, contraction: Contraction) -> Self:
-        event_type = "labour_tracker.contraction.ended"
+        event_type = "contraction.ended"
         data = {
             "labour_id": str(contraction.labour_id.value),
             "end_time": contraction.end_time.isoformat(),

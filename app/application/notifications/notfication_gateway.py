@@ -3,7 +3,7 @@ from typing import Any
 
 
 class NotificationGateway(ABC):
-    """Repository interface for LaborSession aggregate root"""
+    """Abstract Base Class for notification gateways."""
 
     @abstractmethod
     async def send(self, data: dict[str, Any]) -> None:
@@ -13,3 +13,11 @@ class NotificationGateway(ABC):
         Args:
             data: The data to send
         """
+
+
+class EmailNotificationGateway(NotificationGateway):
+    pass
+
+
+class SMSNotificationGateway(NotificationGateway):
+    pass

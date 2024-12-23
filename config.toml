@@ -1,12 +1,12 @@
 # Used by app
 [security.keycloak]
-AUTH_URL = "http://localhost:8080/realms/contraction_tracker/protocol/openid-connect/auth"
-TOKEN_URL = "http://localhost:8080/realms/contraction_tracker/protocol/openid-connect/token"
-REFRESH_URL = "http://localhost:8080/realms/contraction_tracker/protocol/openid-connect/token"
+AUTH_URL = "http://localhost:8080/realms/labour_tracker/protocol/openid-connect/auth"
+TOKEN_URL = "http://localhost:8080/realms/labour_tracker/protocol/openid-connect/token"
+REFRESH_URL = "http://localhost:8080/realms/labour_tracker/protocol/openid-connect/token"
 KEYCLOAK_SERVER_URL = "http://localhost:8080"
-KEYCLOAK_REALM  = "contraction_tracker"
-KEYCLOAK_CLIENT_ID  = "contraction_tracker_backend"
-KEYCLOAK_CLIENT_SECRET  = "lVAF65cRED5tKkWHlSkIJnVSdwOMDqpl"
+KEYCLOAK_REALM  = "labour_tracker"
+KEYCLOAK_CLIENT_ID  = "labour_tracker_backend"
+KEYCLOAK_CLIENT_SECRET  = "QdeBa4bKrDfLyzc0RowdzQ5gXXWALPcq"
 # JWT_ALGORITHM can be set to "HS256", "HS384", "HS512", "RS256", "RS384", "RS512"
 JWT_ALGORITHM = "HS256"
 
@@ -64,7 +64,7 @@ PYPROJECT_TOML = "pyproject.toml"
 BACKEND_CORS_ORIGINS = "http://localhost,https://localhost,http://localhost.kg.com"
 
 # Used by App
-[notification.email]
+[notifications.email]
 SMTP_HOST = "mailcatcher"
 SMTP_USER = ""
 SMTP_PASSWORD = ""
@@ -73,3 +73,18 @@ EMAILS_FROM_NAME = "kieran"
 SMTP_SSL = false
 SMTP_TLS = false
 SMTP_PORT = 1025
+
+
+# Used by App
+[notifications.twilio]
+TWILIO_ACCOUNT_SID = ""
+TWILIO_AUTH_TOKEN = ""
+SMS_FROM_NUMBER = ""
+
+
+# Used by App
+[events.kafka_producer]
+KAFKA_BOOTSTRAP_SERVERS = ["kafka:9092"]
+KAFKA_TOPIC_PREFIX = "labour_tracker"
+KAFKA_PRODUCER_RETRIES = 3
+KAFKA_PRODUCER_ACKS = "all"

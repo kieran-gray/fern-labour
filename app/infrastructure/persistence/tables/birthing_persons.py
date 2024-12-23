@@ -1,4 +1,4 @@
-from sqlalchemy import UUID, Boolean, Column, DateTime, String, Table, text
+from sqlalchemy import Boolean, Column, DateTime, String, Table, text
 
 from app.infrastructure.persistence.orm_registry import mapper_registry
 

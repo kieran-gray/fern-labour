@@ -7,9 +7,7 @@ contacts_table = Table(
     "contacts",
     mapper_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
-    Column(
-        "birthing_person_id", String, ForeignKey("birthing_persons.id"), nullable=False
-    ),
+    Column("birthing_person_id", String, ForeignKey("birthing_persons.id"), nullable=False),
     Column("name", String, nullable=False),
     Column("phone_number", String, nullable=True),
     Column("email", String, nullable=True),

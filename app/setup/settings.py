@@ -102,22 +102,49 @@ class EmailSettings(BaseModel):
     emails_from_name: str | None = Field(alias="EMAILS_FROM_NAME", default=None)
     smtp_tls: bool = Field(alias="SMTP_TLS", default=True)
     smtp_ssl: bool = Field(alias="SMTP_SSL", default=False)
-    smtp_port: int = Field(alias="SMTP_PORT", default = 587)
+    smtp_port: int = Field(alias="SMTP_PORT", default=587)
 
     @property
     def emails_enabled(self) -> bool:
         return self.smtp_host and self.emails_from_email
 
 
+class TwilioSettings(BaseModel):
+    account_sid: str | None = Field(alias="TWILIO_ACCOUNT_SID", default=None)
+    auth_token: str | None = Field(alias="TWILIO_AUTH_TOKEN", default=None)
+    sms_from_number: str | None = Field(alias="SMS_FROM_NUMBER", default=None)
+
+    @property
+    def twilio_enabled(self) -> bool:
+        return self.account_sid and self.auth_token and self.sms_from_number
+
+
 class NotificationSettings(BaseModel):
     email: EmailSettings
+    twilio: TwilioSettings
+
+
+class KafkaProducerSettings(BaseModel):
+    bootstrap_servers: list[str] = Field(alias="KAFKA_BOOTSTRAP_SERVERS", default_factory=list)
+    topic_prefix: str = Field(alias="KAFKA_TOPIC_PREFIX", default="labour_tracker")
+    retries: int = Field(alias="KAFKA_PRODUCER_RETRIES", default=3)
+    acks: str = Field(alias="KAFKA_PRODUCER_ACKS", default="all")
+
+    @property
+    def kafka_enabled(self) -> bool:
+        return bool(self.bootstrap_servers)
+
+
+class EventSettings(BaseModel):
+    kafka_producer: KafkaProducerSettings
 
 
 class Settings(BaseModel):
     security: SecuritySettings
     logging: LoggingSettings
     uvicorn: UvicornSettings
-    notification: NotificationSettings
+    notifications: NotificationSettings
+    events: EventSettings
     db: DbSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"

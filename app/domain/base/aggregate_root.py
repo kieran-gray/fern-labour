@@ -14,7 +14,9 @@ class AggregateRoot(Entity[T], Generic[T]):
     Base class for aggregate root entities
     """
 
-    _domain_events: list[DomainEvent] = field(default_factory=list, init=False, repr=False, compare=False)
+    _domain_events: list[DomainEvent] = field(
+        default_factory=list, init=False, repr=False, compare=False
+    )
 
     def __init__(self) -> None:
         super().__init__(self)

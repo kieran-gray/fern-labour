@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app.application.dtos.labour import LabourDTO
 from app.application.dtos.labour_summary import LabourSummaryDTO
-from app.application.interfaces.notfication_gateway import NotificationGateway
+from app.application.events.producer import EventProducer
 from app.domain.birthing_person.exceptions import (
     BirthingPersonDoesNotHaveActiveLabour,
     BirthingPersonNotFoundById,
@@ -24,11 +24,11 @@ class LabourService:
         self,
         birthing_person_repository: BirthingPersonRepository,
         labour_repository: LabourRepository,
-        notification_gateway: NotificationGateway,
+        event_producer: EventProducer,
     ):
         self._birthing_person_repository = birthing_person_repository
         self._labour_repository = labour_repository
-        self._notification_gateway = notification_gateway
+        self._event_producer = event_producer
 
     async def begin_labour(
         self, birthing_person_id: str, first_labour: bool | None = None
@@ -44,11 +44,7 @@ class LabourService:
         await self._birthing_person_repository.save(birthing_person)
         assert birthing_person.active_labour
 
-        # TODO instead of handling domain events here, add them to a Kafka producer and handle them
-        # in a dedictead consumer
-
-        for event in birthing_person.active_labour.clear_domain_events():
-            self._notification_gateway.send(event.to_dict())
+        await self._event_producer.publish_batch(birthing_person.active_labour.clear_domain_events())
 
         return LabourDTO.from_domain(birthing_person.active_labour)
 
@@ -65,11 +61,7 @@ class LabourService:
         )
         await self._labour_repository.save(labour)
 
-        # TODO instead of handling domain events here, add them to a Kafka producer and handle them
-        # in a dedictead consumer
-
-        for event in labour.clear_domain_events():
-            self._notification_gateway.send(event.to_dict())
+        await self._event_producer.publish_batch(labour.clear_domain_events())
 
         return LabourDTO.from_domain(labour)
 
@@ -91,12 +83,7 @@ class LabourService:
 
         await self._labour_repository.save(labour)
 
-        # TODO instead of handling domain events here, add them to a Kafka producer and handle them
-        # in a dedictead consumer
-
-        for event in birthing_person.active_labour.clear_domain_events():
-            self._notification_gateway.send(event.to_dict())
-
+        await self._event_producer.publish_batch(birthing_person.active_labour.clear_domain_events())
 
         return LabourDTO.from_domain(labour)
 
@@ -117,34 +104,6 @@ class LabourService:
         )
         await self._labour_repository.save(labour)
 
-        # TODO instead of handling domain events here, add them to a Kafka producer and handle them
-        # in a dedictead consumer
-
-        for event in birthing_person.active_labour.clear_domain_events():
-            self._notification_gateway.send(event.to_dict())
+        await self._event_producer.publish_batch(birthing_person.active_labour.clear_domain_events())
 
         return LabourDTO.from_domain(labour)
-
-    async def get_active_labour(self, birthing_person_id: str) -> LabourDTO:
-        domain_id = BirthingPersonId(birthing_person_id)
-        birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
-        if not birthing_person:
-            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
-
-        active_labour = birthing_person.active_labour
-        if not active_labour:
-            raise BirthingPersonDoesNotHaveActiveLabour(birthing_person_id=birthing_person_id)
-
-        return LabourDTO.from_domain(active_labour)
-
-    async def get_active_labour_summary(self, birthing_person_id: str) -> LabourSummaryDTO:
-        domain_id = BirthingPersonId(birthing_person_id)
-        birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
-        if not birthing_person:
-            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
-
-        active_labour = birthing_person.active_labour
-        if not active_labour:
-            raise BirthingPersonDoesNotHaveActiveLabour(birthing_person_id=birthing_person_id)
-
-        return LabourSummaryDTO.from_domain(active_labour)
