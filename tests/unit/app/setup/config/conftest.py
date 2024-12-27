@@ -12,6 +12,7 @@ class MockConfigReader(ConfigReader):
             "security": {
                 "cors": {
                     "BACKEND_CORS_ORIGINS": "http://localhost",
+                    "FRONTEND_HOST": "http://localhost",
                 },
                 "keycloak": {
                     "KEYCLOAK_SERVER_URL": "http://localhost",
