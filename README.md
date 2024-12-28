@@ -1,6 +1,6 @@
 # Labour Tracker
 
-A FastAPI-based backend service for tracking labour-related data, built with Domain-Driven Design principles and clean architecture.
+A FastAPI-based backend service for tracking labour-related data, built as a first attempt to use Domain-Driven Design principles and clean architecture.
 
 ## Features
 
@@ -14,7 +14,7 @@ A FastAPI-based backend service for tracking labour-related data, built with Dom
 
 ## Architecture
 
-This project is a primitive attempt to follow Domain-Driven Design principles and clean architecture patterns. The application is structured in layers:
+The application is structured in the following layers:
 
 - **Domain Layer**: Contains business logic and domain models
 - **Application Layer**: Orchestrates use cases and application flow
@@ -23,15 +23,19 @@ This project is a primitive attempt to follow Domain-Driven Design principles an
 
 ### Event-Driven System
 
-The application uses Apache Kafka for asynchronous event processing, primarily enabling the
-decoupling of notification handling (sending emails and texts) from the triggers of the
-notifications.
+The application uses Kafka for asynchronous event processing, for two different reasons:
+- Decoupling notification handling (sending emails and texts) from the triggers of the notifications (endpoints).
+- Triggering side-effects across multiple aggregates.
+  - The event types used for this purpose are:
+    - `subscriber.subscribed_to`
+    - `subscriber.unsubscribed_from`
+  - These events are triggered in the `Subscriber` aggregate, and cause additional logic to run on the `BirthingPerson` aggregate.
 
 ## Technical Stack
 
 - **Framework**: FastAPI
 - **Database**: PostgreSQL
-- **Message Broker**: Apache Kafka
+- **Message Broker**: Kafka
 - **Dependency Injection**: Dishka
 - **Notifications**:
   - Twilio SDK for SMS
@@ -40,3 +44,17 @@ notifications.
   - Ruff for linting and formatting
   - isort for import sorting
   - mypy for static type checking
+ 
+## Installation
+
+TODO
+
+## Acknowledgements
+
+This project's structure was inspired by and built upon the following template repositories:
+
+[fastapi-clean-example by Ivan Borovets](https://github.com/ivan-borovets/fastapi-clean-example)
+
+[full-stack-fastapi-template by FastAPI](https://github.com/fastapi/full-stack-fastapi-template)
+
+Please checkout the first repo, firstly for the brilliant README, but mainly for a better example of using clean architecture and DDD than this repo.
