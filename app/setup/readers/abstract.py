@@ -1,8 +1,6 @@
-from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 
-class ConfigReader(ABC):
-    @abstractmethod
+class ConfigReader(Protocol):
     def read(self, path: Path) -> dict[str, Any]: ...

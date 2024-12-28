@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
+from app.domain.base.aggregate_root import AggregateRoot
 from app.domain.base.entity import Entity
 from app.domain.base.value_object import ValueObject
 
@@ -27,6 +28,11 @@ class SampleEntity(Entity[SingleFieldValueObject]):
     name: str
 
 
+@dataclass(eq=False, slots=True)
+class SampleAggregateRoot(AggregateRoot[SingleFieldValueObject]):
+    name: str
+
+
 @pytest.fixture
 def single_field_value_object() -> SingleFieldValueObject:
     return SingleFieldValueObject(value=123)
@@ -47,3 +53,8 @@ def sample_entity(
     single_field_value_object: SingleFieldValueObject,
 ) -> SampleEntity:
     return SampleEntity(id_=single_field_value_object, name="def")
+
+
+@pytest.fixture
+def sample_aggregate_root(single_field_value_object: SingleFieldValueObject):
+    return SampleAggregateRoot(id_=single_field_value_object, name="def")

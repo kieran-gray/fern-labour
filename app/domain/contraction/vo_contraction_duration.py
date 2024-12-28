@@ -26,17 +26,6 @@ class Duration(ValueObject):
         if self.start_time > self.end_time:
             raise ContractionStartTimeAfterEndTime()
 
-        # duration = self.end_time - self.start_time
-
-        # if duration > CONTRACTION_MAX_TIME:
-        #     raise ContractionDurationExceedsMaxDuration()
-
-        # if duration < CONTRACTION_MIN_TIME:
-        #     raise ContractionDurationLessThanMinDuration()
-
-        # TODO add a valid: bool = True flag so I can mark contractions as invalid if they
-        #   fail validation. We need to be able to end contractions even if they are invalid.
-
     @property
     def duration_seconds(self) -> float:
         """Get the duration in seconds"""

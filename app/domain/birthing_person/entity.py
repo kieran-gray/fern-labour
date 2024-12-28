@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from typing import Self
 
 from app.domain.base.aggregate_root import AggregateRoot
-from app.domain.birthing_person.exceptions import LabourAlreadyExists
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.entity import Labour
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
@@ -44,6 +43,5 @@ class BirthingPerson(AggregateRoot[BirthingPersonId]):
             self.subscribers.remove(subscriber)
 
     def add_labour(self, labour: Labour) -> None:
-        if labour in self.labours:
-            raise LabourAlreadyExists()
-        self.labours.append(labour)
+        if labour not in self.labours:
+            self.labours.append(labour)

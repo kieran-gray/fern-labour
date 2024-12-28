@@ -21,8 +21,3 @@ class BirthingPersonHasActiveLabour(DomainError):
 class BirthingPersonDoesNotHaveActiveLabour(DomainError):
     def __init__(self, birthing_person_id: Any) -> None:
         super().__init__(f"Birthing Person '{birthing_person_id}' does not have an active labour")
-
-
-class LabourAlreadyExists(DomainError):
-    def __init__(self) -> None:
-        super().__init__("Labour already exists on birthing person")

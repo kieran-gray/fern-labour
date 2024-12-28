@@ -1,10 +1,5 @@
-from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
 
-class EventHandler(ABC):
-    topic: str
-
-    @abstractmethod
-    async def handle(self, event: dict[str, Any]) -> None:
-        pass
+class EventHandler(Protocol):
+    async def handle(self, event: dict[str, Any]) -> None: ...

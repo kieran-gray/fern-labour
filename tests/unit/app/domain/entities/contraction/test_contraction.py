@@ -61,6 +61,15 @@ def test_cannot_init_contraction_with_invalid_intensity():
         Contraction.start(labour_id=labour_id, intensity=CONTRACTION_MAX_INTENSITY + 1)
 
 
+def test_can_update_contraction_intensity(sample_contraction: Contraction):
+    sample_contraction.update_intensity(CONTRACTION_MAX_INTENSITY)
+
+
+def test_can_set_contraction_notes(sample_contraction: Contraction):
+    sample_contraction.add_notes("Test")
+    assert sample_contraction.notes == "Test"
+
+
 def test_cannot_update_contraction_to_invalid_intensity(sample_contraction: Contraction):
     with pytest.raises(ContractionIntensityInvalid):
         sample_contraction.update_intensity(CONTRACTION_MAX_INTENSITY + 1)
@@ -69,3 +78,12 @@ def test_cannot_update_contraction_to_invalid_intensity(sample_contraction: Cont
 def test_cannot_end_contraction_before_start_time(sample_contraction: Contraction):
     with pytest.raises(ContractionStartTimeAfterEndTime):
         sample_contraction.end(sample_contraction.start_time - CONTRACTION_MIN_TIME)
+
+
+def test_contraction_duration_str(sample_contraction: Contraction):
+    assert str(sample_contraction.duration) == "0m 0s"
+
+    sample_contraction.duration = Duration(
+        start_time=datetime(2020, 1, 1, 1, 0), end_time=datetime(2020, 1, 1, 1, 1, 40)
+    )
+    assert str(sample_contraction.duration) == "1m 40s"

@@ -10,21 +10,18 @@ from fastapi.responses import ORJSONResponse
 from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
-from app.application.exceptions import AuthenticationError, AuthorizationError
 from app.domain.base.exceptions import DomainError
 from app.domain.birthing_person.exceptions import (
     BirthingPersonDoesNotHaveActiveLabour,
     BirthingPersonExistsWithID,
     BirthingPersonHasActiveLabour,
     BirthingPersonNotFoundById,
-    LabourAlreadyExists,
 )
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
     LabourCompleted,
     LabourHasActiveContraction,
     LabourHasNoActiveContraction,
-    LabourNotFoundById,
 )
 from app.domain.subscriber.exceptions import (
     SubscriberAlreadySubscribedToBirthingPerson,
@@ -58,16 +55,12 @@ class ExceptionMapper:
     def __init__(self) -> None:
         self.exceptions_status_code_map: dict[type[Exception], int] = {
             pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
-            AuthenticationError: status.HTTP_401_UNAUTHORIZED,
-            AuthorizationError: status.HTTP_403_FORBIDDEN,
             DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
             ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
             BirthingPersonNotFoundById: status.HTTP_404_NOT_FOUND,
             BirthingPersonExistsWithID: status.HTTP_409_CONFLICT,
             BirthingPersonHasActiveLabour: status.HTTP_400_BAD_REQUEST,
             BirthingPersonDoesNotHaveActiveLabour: status.HTTP_404_NOT_FOUND,
-            LabourAlreadyExists: status.HTTP_409_CONFLICT,
-            LabourNotFoundById: status.HTTP_404_NOT_FOUND,
             LabourHasActiveContraction: status.HTTP_400_BAD_REQUEST,
             LabourHasNoActiveContraction: status.HTTP_400_BAD_REQUEST,
             LabourCompleted: status.HTTP_400_BAD_REQUEST,

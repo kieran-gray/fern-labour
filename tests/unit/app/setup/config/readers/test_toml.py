@@ -14,7 +14,7 @@ def test_read_valid_toml(
     test_config: Path = tmp_path / "test_config.toml"
     with open(test_config, "w") as f:
         rtoml.dump(test_toml_data, f)
-    result: dict = toml_reader.read(test_config, override=False)
+    result: dict = toml_reader.read(test_config)
     assert result == test_toml_data
 
 

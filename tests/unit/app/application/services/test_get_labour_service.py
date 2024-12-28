@@ -1,9 +1,8 @@
-from copy import deepcopy
 from datetime import datetime
 
 import pytest
 import pytest_asyncio
-from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
+from dishka import AsyncContainer
 
 from app.application.services.get_labour_service import GetLabourService
 from app.domain.birthing_person.entity import BirthingPerson
@@ -20,9 +19,10 @@ BIRTHING_PERSON = "bp_id"
 BIRTHING_PERSON_IN_LABOUR = "bp_2_id"
 
 
-class MockBirthingPersonRepository(BirthingPersonRepository):
-    _data = {}
-    _initial_data = {
+@pytest_asyncio.fixture
+async def birthing_person_repo(container: AsyncContainer):
+    repo = await container.get(BirthingPersonRepository)
+    repo._data = {
         BIRTHING_PERSON: BirthingPerson(
             id_=BirthingPersonId(BIRTHING_PERSON),
             first_name="Name",
@@ -45,41 +45,6 @@ class MockBirthingPersonRepository(BirthingPersonRepository):
             ],
         ),
     }
-
-    def reset(self) -> None:
-        self._data = deepcopy(self._initial_data)
-
-    async def save(self, birthing_person: BirthingPerson) -> None:
-        self._data[birthing_person.id_.value] = birthing_person
-
-    async def delete(self, birthing_person: BirthingPerson) -> None:
-        self._data.pop(birthing_person.id_.value)
-
-    async def get_by_id(self, birthing_person_id: BirthingPersonId) -> BirthingPerson | None:
-        return self._data.get(birthing_person_id.value, None)
-
-
-class MockBirthingPersonRepositoryProvider(Provider):
-    scope = Scope.APP
-
-    @provide
-    def get_birthing_person_repository(self) -> BirthingPersonRepository:
-        return MockBirthingPersonRepository()
-
-
-@pytest_asyncio.fixture
-async def container():
-    container = make_async_container(
-        MockBirthingPersonRepositoryProvider(),
-    )
-    yield container
-    await container.close()
-
-
-@pytest_asyncio.fixture
-async def birthing_person_repo(container: AsyncContainer):
-    repo = await container.get(BirthingPersonRepository)
-    repo.reset()
     return repo
 
 

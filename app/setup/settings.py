@@ -1,6 +1,7 @@
 import logging
+import os
 from pathlib import Path
-from typing import Literal, Self
+from typing import Any, Literal, Self
 
 from pydantic import BaseModel, Field, PostgresDsn, computed_field
 
@@ -38,7 +39,8 @@ class CORSSettings(BaseModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def all_cors_origins(self) -> list[str]:
-        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS.split(",")]
+        all_origins = self.BACKEND_CORS_ORIGINS.split(",") + [self.FRONTEND_HOST]
+        return [str(origin).rstrip("/") for origin in all_origins]
 
 
 class SecuritySettings(BaseModel):
@@ -166,10 +168,23 @@ class Settings(BaseModel):
         path: Path = _cfg_toml_path,
         reader: ConfigReader = TomlConfigReader(),
         strict: bool = False,
+        override: bool = True,
     ) -> Self:
         if not path.is_file():
             raise FileNotFoundError(f"The file does not exist at the specified path: {path}")
         config_data = reader.read(path)
+        if override:
+            config_data = cls.override_from_env(toml=config_data)
         settings = cls.model_validate(config_data, strict=strict)
         log.debug(f"Settings read from {path=}.")
         return settings
+
+    @classmethod
+    def override_from_env(cls, toml: dict[str, Any]) -> dict[str, Any]:
+        """Override any values in the config.toml that are set in the environment."""
+        for key, value in toml.items():
+            if isinstance(value, dict):
+                cls.override_from_env(value)
+            if value := os.getenv(key):
+                toml[key] = value
+        return toml

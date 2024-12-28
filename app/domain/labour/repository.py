@@ -1,13 +1,12 @@
-from abc import ABC, abstractmethod
+from typing import Protocol
 
 from app.domain.labour.entity import Labour
 from app.domain.labour.vo_labour_id import LabourId
 
 
-class LabourRepository(ABC):
+class LabourRepository(Protocol):
     """Repository interface for LaborSession aggregate root"""
 
-    @abstractmethod
     async def save(self, labour: Labour) -> None:
         """
         Save or update a labor.
@@ -16,7 +15,6 @@ class LabourRepository(ABC):
             labour: The labor to save
         """
 
-    @abstractmethod
     async def delete(self, labour: Labour) -> None:
         """
         Delete a labor session.
@@ -25,7 +23,6 @@ class LabourRepository(ABC):
             labour: The labor to delete
         """
 
-    @abstractmethod
     async def get_by_id(self, labour_id: LabourId) -> Labour | None:
         """
         Retrieve a labor by its ID.

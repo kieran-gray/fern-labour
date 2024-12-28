@@ -3,7 +3,7 @@ __all__ = ("initialize_mapping", "create_app_with_container")
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from dishka import make_async_container
+from dishka import AsyncContainer, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -26,9 +26,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await app.state.dishka_container.close()  # noqa; app.state is the place where dishka_container lives
 
 
+def create_dishka_container(settings: Settings) -> AsyncContainer:
+    return make_async_container(*get_providers(), context={Settings: settings})
+
+
 def create_app_with_container(settings: Settings) -> FastAPI:
     new_app = create_app(settings)
-    async_container = make_async_container(*get_providers(), context={Settings: settings})
+    async_container = create_dishka_container(settings)
     setup_dishka(async_container, new_app)
     return new_app
 

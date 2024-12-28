@@ -48,4 +48,3 @@ class SubscriberDTO:
             return self.phone_number
         if contact_method_enum is ContactMethod.EMAIL:
             return self.email
-        return None

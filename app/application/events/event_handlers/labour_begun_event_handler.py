@@ -23,9 +23,11 @@ class LabourBegunEventHandler(EventHandler):
         self._notification_service = notification_service
 
     async def handle(self, event: dict[str, Any]) -> None:
+        birthing_person_id = event["data"]["birthing_person_id"]
         birthing_person = await self._birthing_person_service.get_birthing_person(
-            event["data"]["birthing_person_id"]
+            birthing_person_id
         )
+
         # TODO refactor this event handler to trigger a notification event for each subscriber to
         # prevent failure when one subscriber in list is missing etc
         for subscriber_id in birthing_person.subscribers:

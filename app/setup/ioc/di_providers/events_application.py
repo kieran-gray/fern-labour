@@ -26,7 +26,7 @@ from app.infrastructure.notifications.email.logger_email_notification_gateway im
 from app.infrastructure.notifications.email.smtp_email_notification_gateway import (
     SMTPEmailNotificationGateway,
 )
-from app.infrastructure.notifications.sms.logger_email_notification_gateway import (
+from app.infrastructure.notifications.sms.logger_sms_notification_gateway import (
     LoggerSMSNotificationGateway,
 )
 from app.infrastructure.notifications.sms.twilio_sms_notification_gateway import (

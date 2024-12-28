@@ -1,11 +1,9 @@
-from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
 
-class NotificationGateway(ABC):
+class NotificationGateway(Protocol):
     """Abstract Base Class for notification gateways."""
 
-    @abstractmethod
     async def send(self, data: dict[str, Any]) -> None:
         """
         Send a notification.
@@ -15,9 +13,7 @@ class NotificationGateway(ABC):
         """
 
 
-class EmailNotificationGateway(NotificationGateway):
-    pass
+class EmailNotificationGateway(NotificationGateway): ...
 
 
-class SMSNotificationGateway(NotificationGateway):
-    pass
+class SMSNotificationGateway(NotificationGateway): ...

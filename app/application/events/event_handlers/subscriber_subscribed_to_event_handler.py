@@ -2,6 +2,7 @@ import logging
 from typing import Any
 
 from app.application.events.event_handler import EventHandler
+from app.domain.birthing_person.exceptions import BirthingPersonNotFoundById
 from app.domain.birthing_person.repository import BirthingPersonRepository
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
@@ -18,9 +19,7 @@ class SubscriberSubscribedToEventHandler(EventHandler):
         subscriber_id = SubscriberId(event["data"]["subscriber_id"])
         birthing_person = await self._birthing_person_repository.get_by_id(birthing_person_id)
         if not birthing_person:
-            # TODO should probably raise an error instead?
-            log.error(f"Could not find birthing person by id '{birthing_person_id.value}'")
-            return
+            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
 
         birthing_person.add_subscriber(subscriber_id)
         await self._birthing_person_repository.save(birthing_person)

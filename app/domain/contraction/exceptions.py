@@ -1,25 +1,10 @@
-from app.domain.base.exceptions import DomainError, DomainValidationError
+from app.domain.base.exceptions import DomainValidationError
 from app.domain.contraction.constants import CONTRACTION_MAX_INTENSITY, CONTRACTION_MIN_INTENSITY
-
-
-class ContractionOverlaps(DomainError):
-    def __init__(self) -> None:
-        super().__init__("Contractions cannot overlap")
 
 
 class ContractionStartTimeAfterEndTime(DomainValidationError):
     def __init__(self) -> None:
         super().__init__("Start time cannot be after end time")
-
-
-class ContractionDurationExceedsMaxDuration(DomainValidationError):
-    def __init__(self) -> None:
-        super().__init__("Contraction duration cannot exceed maximum length")
-
-
-class ContractionDurationLessThanMinDuration(DomainValidationError):
-    def __init__(self) -> None:
-        super().__init__("Contraction duration under minimum length")
 
 
 class ContractionIntensityInvalid(DomainValidationError):

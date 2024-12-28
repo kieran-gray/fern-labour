@@ -1,11 +1,9 @@
-from abc import ABC, abstractmethod
+from typing import Protocol
 
 
-class TokenGenerator(ABC):
-    """Abstract base class for a token operations."""
+class TokenGenerator(Protocol):
+    """Protocol for a token operations."""
 
-    @abstractmethod
     def generate(self, input: str) -> str: ...
 
-    @abstractmethod
     def validate(self, id: str, token: str) -> bool: ...

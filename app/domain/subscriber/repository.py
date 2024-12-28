@@ -1,13 +1,12 @@
-from abc import ABC, abstractmethod
+from typing import Protocol
 
 from app.domain.subscriber.entity import Subscriber
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
 
 
-class SubscriberRepository(ABC):
+class SubscriberRepository(Protocol):
     """Repository interface for Subscriber entity"""
 
-    @abstractmethod
     async def save(self, subscriber: Subscriber) -> None:
         """
         Save or update a subscriber.
@@ -16,7 +15,6 @@ class SubscriberRepository(ABC):
             subscriber: The subscriber to save
         """
 
-    @abstractmethod
     async def delete(self, subscriber: Subscriber) -> None:
         """
         Delete a subscriber.
@@ -25,7 +23,6 @@ class SubscriberRepository(ABC):
             subscriber: The subscriber to delete
         """
 
-    @abstractmethod
     async def get_by_id(self, subscriber_id: SubscriberId) -> Subscriber | None:
         """
         Retrieve a subscriber by their ID.

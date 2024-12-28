@@ -1,13 +1,12 @@
-from abc import ABC, abstractmethod
+from typing import Protocol
 
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 
 
-class BirthingPersonRepository(ABC):
+class BirthingPersonRepository(Protocol):
     """Repository interface for Birthing Person entity"""
 
-    @abstractmethod
     async def save(self, birthing_person: BirthingPerson) -> None:
         """
         Save or update a birthing_person.
@@ -16,7 +15,6 @@ class BirthingPersonRepository(ABC):
             birthing_person: The birthing_person to save
         """
 
-    @abstractmethod
     async def delete(self, birthing_person: BirthingPerson) -> None:
         """
         Delete a birthing_person.
@@ -25,7 +23,6 @@ class BirthingPersonRepository(ABC):
             birthing_person: The birthing_person to delete
         """
 
-    @abstractmethod
     async def get_by_id(self, birthing_person_id: BirthingPersonId) -> BirthingPerson | None:
         """
         Retrieve a birthing_person by their ID.
