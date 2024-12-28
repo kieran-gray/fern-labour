@@ -1,12 +1,13 @@
 # Makefile variables
 SRC_DIR := app
 TEST_DIR := tests
-PWD = $(shell pwd)
 PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
 
-DEV_IMAGE := $(DOCKER_IMAGE_BACKEND)-dev:latest
-DEV_COMMAND_CONTAINER := docker run --rm $(DEV_IMAGE) sh -c
-
+# Project building
+.PHONY: build-dev \
+		build-prod \
+		build-keycloak \
+		build \
 
 build-dev:
 	docker build --target dev -t $(DOCKER_IMAGE_BACKEND)-dev .
@@ -19,7 +20,12 @@ build-keycloak:
 
 build: build-dev build-prod build-keycloak
 
-run-static:
+# Project running
+.PHONY: run-deps \
+		run-backend \
+		stop
+
+run-deps:
 	docker compose --profile auth --profile events up
 
 run-backend:
@@ -28,41 +34,34 @@ run-backend:
 stop:
 	docker compose down
 
-# Source code formatting, linting and testing
+# Source code formatting and linting
 .PHONY: format \
 		lint \
 		test \
-		coverage \
+		test-debug \
 		check
 
-lint:
-	mypy $(SRC_DIR) & \
-	ruff check $(SRC_DIR) & \
-	ruff format $(SRC_DIR) --check & \
-	bandit -r $(SRC_DIR) -c $(PYPROJECT_TOML)
-
 format:
-	ruff check $(SRC_DIR) $(TEST_DIR) --fix
-	ruff format $(SRC_DIR) $(TEST_DIR)
-	isort $(SRC_DIR) $(TEST_DIR)
+	uv run ruff check $(SRC_DIR) $(TEST_DIR) --fix
+	uv run ruff format $(SRC_DIR) $(TEST_DIR)
+	uv run isort $(SRC_DIR) $(TEST_DIR)
+
+lint:
+	uv run mypy $(SRC_DIR)
+	uv run ruff check $(SRC_DIR)
+	uv run ruff format $(SRC_DIR) --check
+	uv run bandit -r $(SRC_DIR) -c $(PYPROJECT_TOML)
+
+# Testing
+.PHONY: test \
+		test-debug \
+		check
 
 test:
-	$(DEV_COMMAND_CONTAINER) 'pytest tests -v'
+	uv run pytest --cov
 
-test.debug:
-	docker container run -p 5678:5678 --rm $(DEV_IMAGE) sh -c '\
-		debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest tests -v'
-
-coverage:
-	$(DEV_COMMAND_CONTAINER) 'coverage run -m pytest & coverage report'
-
-coverage.html:
-	$(DEV_COMMAND_CONTAINER) 'coverage run -m pytest & coverage html'
+# Use 'Attach Local' VSCode launch profile
+test-debug:
+	uv run debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest tests -v
 
 check: lint test
-
-# Dishka
-.PHONY: plot-data
-
-plot-data:
-	python scripts/dishka/plot_dependencies_data.py

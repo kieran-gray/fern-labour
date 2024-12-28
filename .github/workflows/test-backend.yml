@@ -28,5 +28,5 @@ jobs:
           enable-cache: true
 
       - name: Run tests
-        run: uv run coverage run -m pytest
+        run: uv run pytest --cov --cov-report lcov
         working-directory: .
