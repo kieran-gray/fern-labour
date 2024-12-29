@@ -8,6 +8,7 @@ PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
 		build-prod \
 		build-keycloak \
 		build \
+		clean
 
 build-dev:
 	docker build --target dev -t $(DOCKER_IMAGE_BACKEND)-dev .
@@ -19,6 +20,9 @@ build-keycloak:
 	docker build -t $(DOCKER_IMAGE_BACKEND)-keycloak ./keycloak -f ./keycloak/Dockerfile --no-cache
 
 build: build-dev build-prod build-keycloak
+
+clean: 
+	docker system prune -a && docker volume prune -a
 
 # Project running
 .PHONY: run-deps \

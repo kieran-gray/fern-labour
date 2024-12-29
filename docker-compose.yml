@@ -14,6 +14,7 @@ services:
       timeout: 10s
     volumes:
       - app-db-data:/var/lib/postgresql/data/pgdata
+      - ./keycloak/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     env_file:
       - .env
     ports:
@@ -92,7 +93,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
-      - SENTRY_DSN=${SENTRY_DSN}
     volumes:
       - ./${SRC_DIR}:/app/${SRC_DIR}
       - ./${CONFIG_TOML}:/${CONFIG_TOML}
@@ -124,8 +124,8 @@ services:
     environment:
       KC_HTTP_ENABLED: true
       KC_HEALTH_ENABLED: true
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_DB: postgres
       KC_DB_URL_HOST: db
       KC_DB_URL: jdbc:postgresql://db:${POSTGRES_PORT}/keycloak
@@ -163,6 +163,7 @@ services:
       - traefik.http.services.${STACK_NAME?Variable not set}-keycloak.loadbalancer.server.port=9000
     volumes:
       - ./keycloak/labour_tracker_theme:/opt/keycloak/themes/labour_tracker_theme
+      - ./keycloak/realms:/opt/keycloak/data/import:ro
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -227,7 +228,8 @@ services:
 
   init-kafka:
     image: docker.io/bitnami/kafka:3.9
-    profiles: [events]
+    profiles: 
+      - events
     depends_on:
       kafka:
         condition: service_healthy

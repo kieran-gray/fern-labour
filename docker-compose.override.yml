@@ -57,7 +57,9 @@ services:
     ports:
       - "8080:8080"
       - "9000:9000"
-    command: start-dev
+    command: 
+      - start-dev
+      - --import-realm
 
   backend:
     restart: "no"

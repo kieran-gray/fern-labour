@@ -54,9 +54,60 @@ The application uses Kafka for asynchronous event processing, for two different 
   - isort for import sorting
   - mypy for static type checking
  
-## Installation
+## Setup
 
-TODO
+### Prerequisites
+
+Docker and Docker Compose
+
+### Installation
+
+Installation on mac/linux is as follows:
+
+```bash
+make build
+```
+
+This command builds all of the necessary images.
+
+```bash
+make run-deps
+```
+
+This command runs the longer running docker compose services:
+- db (The postgres database, `app` and `keycloak` databases will be created on startup)
+- keycloak (The `labour_tracker` realm will be imported on startup)
+- kafka
+- zookeeper
+- kafka-ui
+
+It is necessary to reset the `labour_tracker_backend` client secret by:
+- Logging into the [keycloak admin console](http://localhost:8080).
+  - username: admin
+  - password: password
+- Navigating to:
+  - `labour_tracker` realm
+  - `labour_tracker_backend` client
+  - Credentials
+  - Click `Regenerate` for the client secret
+  - Copy into the env var: `KEYCLOAK_CLIENT_SECRET`
+
+In a new terminal
+
+```bash
+make run-backend
+```
+To run the rest of the backend services.
+
+The Swagger UI is avaliable at http://localhost:8000
+
+![preview](./docs/images/swagger-ui.png)
+
+Clicking the `Authorize` button in the top right, then the `Authorize` button in the popup will take
+you to the Keycloak login page where you can login and register.
+
+![preview](./docs/images/login.png)
+
 
 ## Acknowledgements
 

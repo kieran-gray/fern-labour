@@ -104,6 +104,7 @@ div.kc-logo-text span {
     border-radius: 4px;
     font-size: 1rem;
     background-color: white;
+    --pf-v5-c-form-control--Color: #555;
 }
 
 .pf-v5-c-form-control:hover {
