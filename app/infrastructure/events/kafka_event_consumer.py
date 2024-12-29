@@ -15,8 +15,13 @@ log = logging.getLogger(__name__)
 
 
 class KafkaEventConsumer(EventConsumer):
-    def __init__(self, bootstrap_servers: list[str] | str, group_id: str):
-        self._consumer = KafkaConsumer(
+    def __init__(
+        self,
+        bootstrap_servers: list[str] | str,
+        group_id: str,
+        consumer: KafkaConsumer | None = None,
+    ):
+        self._consumer = consumer or KafkaConsumer(
             bootstrap_servers=bootstrap_servers,
             group_id=group_id,
             value_deserializer=lambda v: json.loads(v),
@@ -68,7 +73,7 @@ class KafkaEventConsumer(EventConsumer):
     async def start(self) -> None:
         if not self._handlers:
             log.error("No event handlers registered")
-            await self.stop()
+            return await self.stop()
 
         self._running = True
         while self._running:

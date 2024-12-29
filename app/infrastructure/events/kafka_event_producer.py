@@ -16,8 +16,9 @@ class KafkaEventProducer(EventProducer):
         acks: str,
         retries: int,
         topic_prefix: str,
+        producer: KafkaProducer | None = None,
     ):
-        self._producer = KafkaProducer(
+        self._producer = producer or KafkaProducer(
             bootstrap_servers=bootstrap_servers,
             value_serializer=lambda v: json.dumps(v).encode("utf-8"),
             acks=acks,
@@ -52,5 +53,5 @@ class KafkaEventProducer(EventProducer):
 
     def __del__(self) -> None:
         """Ensure proper cleanup of Kafka producer"""
-        if hasattr(self, "producer"):
+        if hasattr(self, "_producer"):
             self._producer.close()
