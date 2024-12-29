@@ -2,6 +2,9 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
+from app.application.events.event_handlers.contraction_ended_event_handler import (
+    ContractionEndedEventHandler,
+)
 from app.application.events.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.application.events.event_handlers.labour_completed_event_handler import (
     LabourCompletedEventHandler,
@@ -20,6 +23,7 @@ from app.application.notifications.notification_service import NotificationServi
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
 from app.domain.birthing_person.repository import BirthingPersonRepository
+from app.domain.labour.repository import LabourRepository
 from app.infrastructure.notifications.email.logger_email_notification_gateway import (
     LoggerEmailNotificationGateway,
 )
@@ -138,4 +142,21 @@ class EventsApplicationProvider(Provider):
     ) -> SubscriberUnsubscribedFromEventHandler:
         return SubscriberUnsubscribedFromEventHandler(
             birthing_person_repository=birthing_person_repository
+        )
+
+    @provide
+    def get_contraction_ended_event_handler(
+        self,
+        labour_repository: Annotated[LabourRepository, FromComponent(ComponentEnum.LABOUR)],
+        birthing_person_service: Annotated[
+            BirthingPersonService, FromComponent(ComponentEnum.LABOUR)
+        ],
+        subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+        notification_service: NotificationService,
+    ) -> ContractionEndedEventHandler:
+        return ContractionEndedEventHandler(
+            labour_repository=labour_repository,
+            birthing_person_service=birthing_person_service,
+            subscriber_service=subscriber_service,
+            notification_service=notification_service,
         )

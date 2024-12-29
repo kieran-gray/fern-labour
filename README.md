@@ -34,6 +34,11 @@ A simplified domain model is as follows:
 
 The application uses Kafka for asynchronous event processing, for two different reasons:
 - Decoupling notification handling (sending emails and texts) from the triggers of the notifications (endpoints).
+  - The event types used for this purpose are:
+    - `labour.begun`
+    - `labour.completed`
+    - `contraction.ended`
+<br>
 - Triggering side-effects across multiple aggregates.
   - The event types used for this purpose are:
     - `subscriber.subscribed_to`

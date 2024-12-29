@@ -1,4 +1,5 @@
 from typing import Any
+from unittest.mock import AsyncMock
 
 import pytest_asyncio
 
@@ -9,6 +10,7 @@ from app.application.notifications.notfication_gateway import (
 from app.application.notifications.notification_service import NotificationService
 from app.application.security.token_generator import TokenGenerator
 from app.application.services.birthing_person_service import BirthingPersonService
+from app.application.services.labour_service import LabourService
 from app.application.services.subscriber_service import SubscriberService
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.repository import BirthingPersonRepository
@@ -117,6 +119,18 @@ async def subscriber_service(
     return SubscriberService(
         subscriber_repository=subscriber_repo,
         token_generator=MockTokenGenerator(),
+    )
+
+
+@pytest_asyncio.fixture
+async def labour_service(
+    birthing_person_repo: BirthingPersonRepository,
+    labour_repo: LabourRepository,
+) -> LabourService:
+    return LabourService(
+        birthing_person_repository=birthing_person_repo,
+        labour_repository=labour_repo,
+        event_producer=AsyncMock(),
     )
 
 
