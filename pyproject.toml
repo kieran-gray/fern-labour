@@ -91,11 +91,11 @@ ignore = [
 keep-runtime-typing = true
 
 [tool.ruff.lint.per-file-ignores]
-"src/app/infrastructure/persistence/alembic/*.py" = ["F401"] # Unused imports
+"app/infrastructure/persistence/alembic/*.py" = ["F401"] # Unused imports
 
 [tool.pytest.ini_options]
 pythonpath = [
-    "src",
+    "app",
 ]
 testpaths = [
     "tests",
