@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Self
 
 from app.application.dtos.labour_pattern import LabourPatternDTO
@@ -25,7 +25,7 @@ class LabourSummaryDTO:
         hospital_recommended = ShouldGoToHospitalService().should_go_to_hospital(labour)
         return cls(
             id=str(labour.id_.value),
-            duration=(datetime.now() - labour.start_time).total_seconds() / 3600,
+            duration=(datetime.now(UTC) - labour.start_time).total_seconds() / 3600,
             contraction_count=len(labour.contractions),
             current_phase=labour.current_phase.value,
             hospital_recommended=hospital_recommended,

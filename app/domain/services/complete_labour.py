@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
@@ -21,6 +21,6 @@ class CompleteLabourService:
         if active_labour.has_active_contraction:
             raise CannotCompleteLabourWithActiveContraction()
 
-        active_labour.complete_labour(end_time=end_time or datetime.now(), notes=notes)
+        active_labour.complete_labour(end_time=end_time or datetime.now(UTC), notes=notes)
 
         return active_labour

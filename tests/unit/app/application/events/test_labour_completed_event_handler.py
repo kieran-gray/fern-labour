@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 import pytest_asyncio
@@ -53,7 +53,7 @@ async def test_labour_completed_event_no_subscribers(
         id="event_id",
         type="labour.begun",
         data={"birthing_person_id": BIRTHING_PERSON},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
     assert (
@@ -73,7 +73,7 @@ async def test_labour_completed_event_non_existent_birthing_person(
         id="event_id",
         type="labour.begun",
         data={"birthing_person_id": "TEST"},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     with pytest.raises(BirthingPersonNotFoundById):
         await labour_completed_event_handler.handle(event.to_dict())
@@ -92,7 +92,7 @@ async def test_labour_completed_event_non_existent_subscriber(
         id="event_id",
         type="labour.begun",
         data={"birthing_person_id": BIRTHING_PERSON},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     with pytest.raises(SubscriberNotFoundById):
         await labour_completed_event_handler.handle(event.to_dict())
@@ -114,7 +114,7 @@ async def test_labour_completed_event_has_subscriber_no_contact_methods(
         id="event_id",
         type="labour.begun",
         data={"birthing_person_id": BIRTHING_PERSON},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
     assert (
@@ -147,7 +147,7 @@ async def test_labour_completed_event_has_subscriber_email(
         id="event_id",
         type="labour.begun",
         data={"birthing_person_id": BIRTHING_PERSON},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
     assert (
@@ -180,7 +180,7 @@ async def test_labour_completed_event_has_subscriber_sms(
         id="event_id",
         type="labour.begun",
         data={"birthing_person_id": BIRTHING_PERSON},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
     assert (
@@ -214,7 +214,7 @@ async def test_labour_completed_event_has_subscriber_all_contact_methods(
         id="event_id",
         type="labour.begun",
         data={"birthing_person_id": BIRTHING_PERSON},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
     assert (
@@ -246,7 +246,7 @@ async def test_labour_completed_event_has_subscriber_all_contact_methods_no_phon
         id="event_id",
         type="labour.begun",
         data={"birthing_person_id": BIRTHING_PERSON},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
     assert (

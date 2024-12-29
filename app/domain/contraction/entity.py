@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Self
 from uuid import UUID, uuid4
 
@@ -45,11 +45,11 @@ class Contraction(Entity[ContractionId]):
         since it doesn't have an end time yet.
         """
         # Using a temporary end time equal to start time - will be updated when contraction ends
-        start_time = start_time or datetime.now()
+        start_time = start_time or datetime.now(UTC)
         contraction_id = contraction_id or uuid4()
         return cls(
             id_=ContractionId(contraction_id),
-            duration=Duration(start_time=start_time, end_time=start_time),
+            duration=Duration.create(start_time=start_time, end_time=start_time),
             intensity=intensity,
             labour_id=labour_id,
             notes=notes,
@@ -57,7 +57,7 @@ class Contraction(Entity[ContractionId]):
 
     def end(self, end_time: datetime) -> None:
         """End the contraction by setting its final duration"""
-        new_duration = Duration(start_time=self.duration.start_time, end_time=end_time)
+        new_duration = Duration.create(start_time=self.duration.start_time, end_time=end_time)
         self.duration = new_duration
 
     @property

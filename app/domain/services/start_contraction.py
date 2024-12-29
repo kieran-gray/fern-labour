@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
@@ -27,7 +27,7 @@ class StartContractionService:
             raise LabourCompleted()
 
         active_labour.start_contraction(
-            intensity=intensity, start_time=start_time or datetime.now(), notes=notes
+            intensity=intensity, start_time=start_time or datetime.now(UTC), notes=notes
         )
 
         return active_labour

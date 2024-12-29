@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID
 
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
@@ -9,7 +9,7 @@ from app.domain.labour.vo_labour_id import LabourId
 def test_labour_init():
     labour_id = UUID("12345678-1234-5678-1234-567812345678")
     birthing_person_id = BirthingPersonId("87654321-4321-1234-8765-567812345678")
-    start_time: datetime = datetime.now()
+    start_time: datetime = datetime.now(UTC)
 
     vo_labour_id = LabourId(labour_id)
 

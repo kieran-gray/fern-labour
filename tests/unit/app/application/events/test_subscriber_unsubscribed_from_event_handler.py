@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 import pytest_asyncio
@@ -35,7 +35,7 @@ async def test_can_unsubscribe_from_birthing_person(
         id="event_id",
         type="subscriber.unsubscribed_from",
         data={"subscriber_id": "test_subscriber", "birthing_person_id": "test_birthing_person"},
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     await subscriber_unsubscribed_from_event_handler.handle(event.to_dict())
     repo = subscriber_unsubscribed_from_event_handler._birthing_person_repository
@@ -54,7 +54,7 @@ async def test_cannot_unsubscribe_from_non_existent_birthing_person(
             "subscriber_id": "test_subscriber",
             "birthing_person_id": "this_birthing_person_does_not_exist",
         },
-        time=datetime.now(),
+        time=datetime.now(UTC),
     )
     with pytest.raises(BirthingPersonNotFoundById):
         await subscriber_unsubscribed_from_event_handler.handle(event.to_dict())

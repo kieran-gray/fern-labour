@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID
 
 import pytest
@@ -16,14 +16,14 @@ from app.domain.contraction.vo_contraction_id import ContractionId
 def test_contraction_init():
     labour_id: UUID = UUID("12345678-1234-5678-1234-567812345678")
     contraction_id: UUID = UUID("87654321-1234-5678-1234-567812345678")
-    start_time: datetime = datetime.now()
+    start_time: datetime = datetime.now(UTC)
     intensity: int = 1
 
     vo_contraction_id = ContractionId(contraction_id)
 
     direct_contraction = Contraction(
         id_=vo_contraction_id,
-        duration=Duration(start_time=start_time, end_time=start_time),
+        duration=Duration.create(start_time=start_time, end_time=start_time),
         labour_id=labour_id,
         intensity=intensity,
     )
@@ -51,7 +51,7 @@ def test_contraction_init_default_values():
 
 
 def test_can_end_contraction(sample_contraction: Contraction):
-    sample_contraction.end(datetime.now() + CONTRACTION_MIN_TIME)
+    sample_contraction.end(datetime.now(UTC) + CONTRACTION_MIN_TIME)
 
 
 def test_cannot_init_contraction_with_invalid_intensity():

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 
@@ -19,13 +19,13 @@ def test_aggregate_root_has_domain_events(sample_aggregate_root: SampleAggregate
 
 def test_aggregate_root_add_domain_event(sample_aggregate_root: SampleAggregateRoot) -> None:
     assert sample_aggregate_root._domain_events == []
-    domain_event = DomainEvent("test", "test", {}, datetime.now())
+    domain_event = DomainEvent("test", "test", {}, datetime.now(UTC))
     sample_aggregate_root.add_domain_event(domain_event)
     assert sample_aggregate_root.domain_events == [domain_event]
 
 
 def test_aggregate_root_clear_domain_events(sample_aggregate_root: SampleAggregateRoot) -> None:
-    domain_event = DomainEvent("test", "test", {}, datetime.now())
+    domain_event = DomainEvent("test", "test", {}, datetime.now(UTC))
     sample_aggregate_root.add_domain_event(domain_event)
     assert sample_aggregate_root.domain_events == [domain_event]
 

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+from typing import Self
 
 from app.domain.base.value_object import ValueObject
 from app.domain.contraction.exceptions import ContractionStartTimeAfterEndTime
@@ -14,6 +15,19 @@ class Duration(ValueObject):
 
     start_time: datetime
     end_time: datetime
+
+    @classmethod
+    def create(cls, *, start_time: datetime, end_time: datetime) -> Self:
+        def ensure_timezone_aware(dt: datetime) -> datetime:
+            """Ensures a datetime is timezone-aware by adding UTC if necessary."""
+            if dt.tzinfo is None:
+                return dt.replace(tzinfo=UTC)
+            return dt
+
+        return cls(
+            start_time=ensure_timezone_aware(start_time),
+            end_time=ensure_timezone_aware(end_time),
+        )
 
     def __post_init__(self) -> None:
         """Validate the duration upon initialization"""

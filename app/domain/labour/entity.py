@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Self
 from uuid import UUID, uuid4
 
@@ -39,7 +39,7 @@ class Labour(AggregateRoot[LabourId]):
         labour = cls(
             id_=LabourId(labour_id or uuid4()),
             birthing_person_id=birthing_person_id,
-            start_time=start_time or datetime.now(),
+            start_time=start_time or datetime.now(UTC),
             first_labour=first_labour,
             contractions=[],
         )
@@ -102,7 +102,7 @@ class Labour(AggregateRoot[LabourId]):
             active_contraction.intensity = intensity
         if notes:
             active_contraction.notes = notes
-        active_contraction.end(end_time or datetime.now())
+        active_contraction.end(end_time or datetime.now(UTC))
         self._update_labour_phase()
         self.add_domain_event(ContractionEnded.from_contraction(contraction=active_contraction))
 
@@ -128,7 +128,7 @@ class Labour(AggregateRoot[LabourId]):
 
     def complete_labour(self, end_time: datetime | None = None, notes: str | None = None) -> None:
         """Mark the labour as complete"""
-        self.end_time = end_time or datetime.now()
+        self.end_time = end_time or datetime.now(UTC)
         self.current_phase = LabourPhase.COMPLETE
         if notes:
             self.notes = notes

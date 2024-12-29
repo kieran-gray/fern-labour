@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 import pytest_asyncio
@@ -37,7 +37,7 @@ async def birthing_person_repo():
                 Labour(
                     id_=LabourId("test"),
                     birthing_person_id=BirthingPersonId(BIRTHING_PERSON_IN_LABOUR),
-                    start_time=datetime.now(),
+                    start_time=datetime.now(UTC),
                     first_labour=True,
                 )
             ],
