@@ -23,7 +23,6 @@ async def birthing_person_repo():
             id_=BirthingPersonId(BIRTHING_PERSON),
             first_name="Name",
             last_name="User",
-            first_labour=True,
             labours=[],
         )
     }
@@ -49,16 +48,16 @@ async def labour_service(
 
 
 async def test_can_begin_labour(labour_service: LabourService) -> None:
-    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.begin_labour(BIRTHING_PERSON, True)
 
 
 async def test_cannot_begin_labour_for_non_existent_user(labour_service: LabourService) -> None:
     with pytest.raises(BirthingPersonNotFoundById):
-        await labour_service.begin_labour("TEST123456")
+        await labour_service.begin_labour("TEST123456", True)
 
 
 async def test_can_complete_labour(labour_service: LabourService) -> None:
-    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.begin_labour(BIRTHING_PERSON, True)
     await labour_service.complete_labour(BIRTHING_PERSON)
 
 
@@ -68,7 +67,7 @@ async def test_cannot_complete_labour_for_non_existent_user(labour_service: Labo
 
 
 async def test_can_start_contraction(labour_service: LabourService) -> None:
-    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.begin_labour(BIRTHING_PERSON, True)
     await labour_service.start_contraction(BIRTHING_PERSON)
 
 
@@ -80,7 +79,7 @@ async def test_cannot_start_contraction_for_non_existent_user(
 
 
 async def test_can_end_contraction(labour_service: LabourService) -> None:
-    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.begin_labour(BIRTHING_PERSON, True)
     await labour_service.start_contraction(BIRTHING_PERSON)
     await labour_service.end_contraction(BIRTHING_PERSON, intensity=5)
 

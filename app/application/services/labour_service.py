@@ -26,9 +26,7 @@ class LabourService:
         self._labour_repository = labour_repository
         self._event_producer = event_producer
 
-    async def begin_labour(
-        self, birthing_person_id: str, first_labour: bool | None = None
-    ) -> LabourDTO:
+    async def begin_labour(self, birthing_person_id: str, first_labour: bool) -> LabourDTO:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
         if not birthing_person:

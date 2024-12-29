@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import ARRAY, Boolean, Column, DateTime, String, Table, text
+from sqlalchemy import ARRAY, Column, DateTime, String, Table, text
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.types import String as type_String
 from sqlalchemy.types import TypeDecorator
@@ -26,7 +26,6 @@ birthing_persons_table = Table(
     Column("id", String, primary_key=True),
     Column("first_name", String, nullable=False),
     Column("last_name", String, nullable=False),
-    Column("first_labour", Boolean, nullable=True),
     Column("subscribers", MutableList.as_mutable(ARRAY(SubscriberIdType)), default=[]),
     Column("created_at", DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP")),
     Column(

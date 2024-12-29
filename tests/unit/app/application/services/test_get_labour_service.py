@@ -27,14 +27,12 @@ async def birthing_person_repo():
             id_=BirthingPersonId(BIRTHING_PERSON),
             first_name="Name",
             last_name="User",
-            first_labour=True,
             labours=[],
         ),
         BIRTHING_PERSON_IN_LABOUR: BirthingPerson(
             id_=BirthingPersonId(BIRTHING_PERSON_IN_LABOUR),
             first_name="User",
             last_name="Name",
-            first_labour=True,
             labours=[
                 Labour(
                     id_=LabourId("test"),

@@ -54,7 +54,6 @@ async def birthing_person_repo():
             id_=BirthingPersonId(BIRTHING_PERSON),
             first_name="Name",
             last_name="User",
-            first_labour=True,
             labours=[],
         )
     }

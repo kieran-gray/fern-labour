@@ -12,7 +12,6 @@ class BirthingPersonDTO:
     id: str
     first_name: str
     last_name: str
-    first_labour: bool
     labours: list[LabourDTO]
     subscribers: list[str]
 
@@ -23,7 +22,6 @@ class BirthingPersonDTO:
             id=birthing_person.id_.value,
             first_name=birthing_person.first_name,
             last_name=birthing_person.last_name,
-            first_labour=birthing_person.first_labour,
             labours=[LabourDTO.from_domain(labour) for labour in birthing_person.labours],
             subscribers=[subscriber_id.value for subscriber_id in birthing_person.subscribers],
         )
@@ -34,7 +32,6 @@ class BirthingPersonDTO:
             "id": str(self.id),
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "first_labour": self.first_labour,
             "labours": [labour.to_dict() for labour in self.labours],
             "subscribers": self.subscribers,
         }

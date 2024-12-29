@@ -22,7 +22,6 @@ async def subscriber_subscribed_to_event_handler(
         birthing_person_id="test_birthing_person",
         first_name="user",
         last_name="name",
-        first_labour=False,
     )
     await birthing_person_repo.save(test_birthing_person)
     return SubscriberSubscribedToEventHandler(birthing_person_repo)

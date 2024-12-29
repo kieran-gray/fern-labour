@@ -11,19 +11,15 @@ from app.domain.subscriber.vo_subscriber_id import SubscriberId
 class BirthingPerson(AggregateRoot[BirthingPersonId]):
     first_name: str
     last_name: str
-    first_labour: bool
     labours: list[Labour] = field(default_factory=list)
     subscribers: list[SubscriberId] = field(default_factory=list)
 
     @classmethod
-    def create(
-        cls, *, birthing_person_id: str, first_name: str, last_name: str, first_labour: bool
-    ) -> Self:
+    def create(cls, *, birthing_person_id: str, first_name: str, last_name: str) -> Self:
         return cls(
             id_=BirthingPersonId(birthing_person_id),
             first_name=first_name,
             last_name=last_name,
-            first_labour=first_labour,
         )
 
     @property

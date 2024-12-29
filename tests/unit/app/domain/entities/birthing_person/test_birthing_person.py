@@ -13,14 +13,12 @@ def test_birthing_person_init():
         id_=vo_birthing_person_id,
         first_name=first_name,
         last_name=last_name,
-        first_labour=False,
     )
 
     indirect_birthing_person = BirthingPerson.create(
         birthing_person_id=birthing_person_id,
         first_name=first_name,
         last_name=last_name,
-        first_labour=False,
     )
 
     assert isinstance(indirect_birthing_person, BirthingPerson)

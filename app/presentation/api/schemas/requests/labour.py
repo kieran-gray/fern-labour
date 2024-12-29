@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class BeginLabourRequest(BaseModel):
-    first_labour: bool | None = None
+    first_labour: bool
 
 
 class CompleteLabourRequest(BaseModel):

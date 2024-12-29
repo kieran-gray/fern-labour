@@ -22,7 +22,6 @@ async def subscriber_unsubscribed_from_event_handler(
         birthing_person_id="test_birthing_person",
         first_name="user",
         last_name="name",
-        first_labour=False,
     )
     test_birthing_person.subscribers.append(SubscriberId("test_subscriber"))
     await birthing_person_repo.save(test_birthing_person)

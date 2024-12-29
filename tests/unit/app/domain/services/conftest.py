@@ -10,5 +10,4 @@ def sample_birthing_person() -> BirthingPerson:
         birthing_person_id=birthing_person_id,
         first_name="User",
         last_name="Name",
-        first_labour=True,
     )

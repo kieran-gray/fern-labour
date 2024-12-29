@@ -8,7 +8,6 @@ from app.application.security.token_generator import TokenGenerator
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.infrastructure.custom_types import KeycloakUser
 from app.presentation.api.auth import get_user_info
-from app.presentation.api.schemas.requests.birthing_person import RegisterBirthingPersonRequest
 from app.presentation.api.schemas.responses.birthing_person import (
     BirthingPersonResponse,
     BirthingPersonSubscriptionTokenResponse,
@@ -32,7 +31,6 @@ birthing_person_router = APIRouter(prefix="/birthing-person", tags=["Birthing Pe
 )
 @inject
 async def register(
-    request_data: RegisterBirthingPersonRequest,
     service: Annotated[BirthingPersonService, FromComponent(ComponentEnum.LABOUR)],
     user: KeycloakUser = Depends(get_user_info),
 ) -> BirthingPersonResponse:
@@ -40,7 +38,6 @@ async def register(
         birthing_person_id=user.id,
         first_name=user.first_name,
         last_name=user.last_name,
-        first_labour=request_data.first_labor,
     )
     return BirthingPersonResponse(birthing_person=birthing_person)
 

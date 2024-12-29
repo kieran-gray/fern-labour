@@ -12,7 +12,6 @@ def birthing_person() -> BirthingPerson:
         birthing_person_id="test",
         first_name="User",
         last_name="Name",
-        first_labour=True,
     )
 
 

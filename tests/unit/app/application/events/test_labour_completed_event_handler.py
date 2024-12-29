@@ -29,7 +29,6 @@ async def labour_completed_event_handler(
         birthing_person_id=BIRTHING_PERSON,
         first_name="user",
         last_name="name",
-        first_labour=False,
     )
     return LabourCompletedEventHandler(
         birthing_person_service=birthing_person_service,

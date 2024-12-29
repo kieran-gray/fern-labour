@@ -17,7 +17,7 @@ class BirthingPersonService:
         self._birthing_person_repository = birthing_person_repository
 
     async def register(
-        self, birthing_person_id: str, first_name: str, last_name: str, first_labour: bool
+        self, birthing_person_id: str, first_name: str, last_name: str
     ) -> BirthingPersonDTO:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
@@ -28,7 +28,6 @@ class BirthingPersonService:
             birthing_person_id=birthing_person_id,
             first_name=first_name,
             last_name=last_name,
-            first_labour=first_labour,
         )
         await self._birthing_person_repository.save(birthing_person)
         return BirthingPersonDTO.from_domain(birthing_person)

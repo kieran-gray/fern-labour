@@ -10,7 +10,7 @@ from app.domain.services.start_contraction import StartContractionService
 
 
 def test_can_end_contraction(sample_birthing_person: BirthingPerson):
-    BeginLabourService().begin_labour(sample_birthing_person)
+    BeginLabourService().begin_labour(sample_birthing_person, True)
     StartContractionService().start_contraction(sample_birthing_person)
     EndContractionService().end_contraction(
         sample_birthing_person, intensity=CONTRACTION_MAX_INTENSITY
@@ -25,7 +25,7 @@ def test_cannot_end_contraction_without_active_labour(sample_birthing_person: Bi
 
 
 def test_cannot_end_contraction_that_doesnt_exist(sample_birthing_person: BirthingPerson):
-    BeginLabourService().begin_labour(sample_birthing_person)
+    BeginLabourService().begin_labour(sample_birthing_person, True)
     with pytest.raises(LabourHasNoActiveContraction):
         EndContractionService().end_contraction(
             sample_birthing_person, intensity=CONTRACTION_MAX_INTENSITY
