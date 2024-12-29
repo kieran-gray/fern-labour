@@ -39,6 +39,7 @@ The application uses Kafka for asynchronous event processing, for two different 
     - `labour.completed`
     - `contraction.ended`
 <br>
+
 - Triggering side-effects across multiple aggregates.
   - The event types used for this purpose are:
     - `subscriber.subscribed_to`
