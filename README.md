@@ -108,6 +108,31 @@ you to the Keycloak login page where you can login and register.
 
 ![preview](./docs/images/login.png)
 
+## Usage
+
+The flow for a Birthing Person is as follows:
+1. Sign in through Keycloak
+2. Register at: /api/v1/birthing-person/register
+3. Begin Labour at: /api/v1/labour/begin
+4. Start Contractions at: /api/v1/labour/contraction/start
+5. End Contractions at: /api/v1/labour/contraction/end
+6. Complete Labour at: /api/v1/labour/complete
+
+The flow for a subscriber is as follows:
+1. Sign in through Keycloak
+2. Register at: /api/v1/subscriber/register
+3. Have a Birthing Person provide you with their ID and token
+    1. Birthing Person ID can be found here: /api/v1/birthing-person
+    2. Tokens can be generated here: /api/v1/birthing-person/subscription-token
+4. Subscribe to them here: /api/v1/subscriber/subscribe_to/{birthing_person_id}
+    1. Valid contact methods are:
+        1. "sms"
+        2. "email"
+    2. Use email for testing purposes
+5. Now if the Birthing Person Begins or Completes Labour a notification will be sent to that user
+6. You will see the event handled in the consumer logs
+7. The email can be viewed in MailCatcher here: http://localhost:1080/
+
 
 ## Acknowledgements
 
