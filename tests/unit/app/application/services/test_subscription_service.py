@@ -2,7 +2,6 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
-from dishka import AsyncContainer
 
 from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
@@ -20,6 +19,10 @@ from app.domain.subscriber.exceptions import (
 )
 from app.domain.subscriber.repository import SubscriberRepository
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
+from tests.unit.app.application.conftest import (
+    MockBirthingPersonRepository,
+    MockSubscriberRepository,
+)
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"
@@ -44,8 +47,8 @@ def token_generator():
 
 
 @pytest_asyncio.fixture
-async def birthing_person_repo(container: AsyncContainer):
-    repo = await container.get(BirthingPersonRepository)
+async def birthing_person_repo():
+    repo = MockBirthingPersonRepository()
     repo._data = {
         BIRTHING_PERSON: BirthingPerson(
             id_=BirthingPersonId(BIRTHING_PERSON),
@@ -59,8 +62,8 @@ async def birthing_person_repo(container: AsyncContainer):
 
 
 @pytest_asyncio.fixture
-async def subscriber_repo(container: AsyncContainer):
-    repo = await container.get(SubscriberRepository)
+async def subscriber_repo():
+    repo = MockSubscriberRepository()
     repo._data = {
         SUBSCRIBER: Subscriber(
             id_=SubscriberId(SUBSCRIBER),

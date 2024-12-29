@@ -1,6 +1,5 @@
 import pytest
 import pytest_asyncio
-from dishka import AsyncContainer
 
 from app.application.dtos.subscriber import SubscriberDTO
 from app.application.security.token_generator import TokenGenerator
@@ -9,6 +8,7 @@ from app.domain.subscriber.entity import Subscriber
 from app.domain.subscriber.exceptions import SubscriberExistsWithID, SubscriberNotFoundById
 from app.domain.subscriber.repository import SubscriberRepository
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
+from tests.unit.app.application.conftest import MockSubscriberRepository
 
 SUBSCRIBER = "subscriber_id"
 
@@ -27,8 +27,8 @@ def token_generator():
 
 
 @pytest_asyncio.fixture
-async def subscriber_repo(container: AsyncContainer):
-    repo = await container.get(SubscriberRepository)
+async def subscriber_repo():
+    repo = MockSubscriberRepository()
     repo._data = {
         SUBSCRIBER: Subscriber(
             id_=SubscriberId(SUBSCRIBER),

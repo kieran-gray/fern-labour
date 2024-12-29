@@ -2,7 +2,6 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
-from dishka import AsyncContainer
 
 from app.application.events.producer import EventProducer
 from app.application.services.labour_service import LabourService
@@ -11,20 +10,14 @@ from app.domain.birthing_person.exceptions import BirthingPersonNotFoundById
 from app.domain.birthing_person.repository import BirthingPersonRepository
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.repository import LabourRepository
+from tests.unit.app.application.conftest import MockBirthingPersonRepository
 
 BIRTHING_PERSON = "bp_id"
 
 
 @pytest_asyncio.fixture
-async def labour_repo(container: AsyncContainer):
-    repo = await container.get(LabourRepository)
-    repo._data = {}
-    return repo
-
-
-@pytest_asyncio.fixture
-async def birthing_person_repo(container: AsyncContainer):
-    repo = await container.get(BirthingPersonRepository)
+async def birthing_person_repo():
+    repo = MockBirthingPersonRepository()
     repo._data = {
         BIRTHING_PERSON: BirthingPerson(
             id_=BirthingPersonId(BIRTHING_PERSON),

@@ -1,7 +1,6 @@
 from typing import Any
 
 import pytest_asyncio
-from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
 
 from app.application.notifications.notfication_gateway import (
     EmailNotificationGateway,
@@ -61,39 +60,23 @@ class MockSubscriberRepository(SubscriberRepository):
         return self._data.get(birthing_person_id.value, None)
 
 
-class MockRepositoryProvider(Provider):
-    scope = Scope.APP
-
-    @provide
-    def get_birthing_person_repository(self) -> BirthingPersonRepository:
-        return MockBirthingPersonRepository()
-
-    @provide
-    def get_labour_repository(self) -> LabourRepository:
-        return MockLabourRepository()
-
-    @provide
-    def get_subscriber_repository(self) -> SubscriberRepository:
-        return MockSubscriberRepository()
-
-
 @pytest_asyncio.fixture
-async def container():
-    container = make_async_container(MockRepositoryProvider())
-    yield container
-    await container.close()
-
-
-@pytest_asyncio.fixture
-async def birthing_person_repo(container: AsyncContainer):
-    repo = await container.get(BirthingPersonRepository)
+async def birthing_person_repo() -> BirthingPersonRepository:
+    repo = MockBirthingPersonRepository()
     repo._data = {}
     return repo
 
 
 @pytest_asyncio.fixture
-async def subscriber_repo(container: AsyncContainer):
-    repo = await container.get(SubscriberRepository)
+async def subscriber_repo() -> SubscriberRepository:
+    repo = MockSubscriberRepository()
+    repo._data = {}
+    return repo
+
+
+@pytest_asyncio.fixture
+async def labour_repo() -> LabourRepository:
+    repo = MockLabourRepository()
     repo._data = {}
     return repo
 
