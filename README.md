@@ -21,6 +21,15 @@ The application is structured in the following layers:
 - **Infrastructure Layer**: Handles external concerns (database, messaging, etc.)
 - **Presentation Layer**: API endpoints and request/response handling
 
+## Domain Model
+
+A simplified domain model is as follows:
+![preview](./docs/images/domain_model.svg)
+
+- **Generic Domain**: Contains the identity and access bounded context. Interactions with other bounded contexts should go through an Anti-Corruption Layer (ACL) which translates the auth providier specific User implementation into the domain User implementation.
+
+- **Core Domain**: Contains the labour tracking and subscriptions bounded contexts. Interactions between these bounded contexts take place through a messaging mechanism.
+
 ### Event-Driven System
 
 The application uses Kafka for asynchronous event processing, for two different reasons:
