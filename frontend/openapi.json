@@ -1,0 +1,1551 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Labour Tracker",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "tags": [
+                    "General"
+                ],
+                "summary": "Redirect To Docs",
+                "operationId": "redirect_to_docs__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/birthing-person/register": {
+            "post": {
+                "tags": [
+                    "Birthing Person"
+                ],
+                "summary": "Register",
+                "operationId": "register_api_v1_birthing_person_register_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterBirthingPersonRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BirthingPersonResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/birthing-person/": {
+            "get": {
+                "tags": [
+                    "Birthing Person"
+                ],
+                "summary": "Get Birthing Person",
+                "operationId": "get_birthing_person_api_v1_birthing_person__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BirthingPersonResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/birthing-person/subscription-token": {
+            "get": {
+                "tags": [
+                    "Birthing Person"
+                ],
+                "summary": "Get Subscription Token",
+                "operationId": "get_subscription_token_api_v1_birthing_person_subscription_token_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BirthingPersonSubscriptionTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/subscriber/register": {
+            "post": {
+                "tags": [
+                    "Subscriber"
+                ],
+                "summary": "Register",
+                "operationId": "register_api_v1_subscriber_register_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterSubscriberRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriberResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/subscriber/subscribe_to/{birthing_person_id}": {
+            "post": {
+                "tags": [
+                    "Subscriber"
+                ],
+                "summary": "Get Birthing Person",
+                "operationId": "get_birthing_person_api_v1_subscriber_subscribe_to__birthing_person_id__post",
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "birthing_person_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Birthing Person Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SubscribeToRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriberResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/labour/begin": {
+            "post": {
+                "tags": [
+                    "Labour Tracking"
+                ],
+                "summary": "Begin Labour",
+                "description": "Begin labour for the current user",
+                "operationId": "begin_labour_api_v1_labour_begin_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BeginLabourRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/labour/contraction/start": {
+            "post": {
+                "tags": [
+                    "Labour Tracking"
+                ],
+                "summary": "Start Contraction",
+                "description": "Start a new contraction in the given labor session",
+                "operationId": "start_contraction_api_v1_labour_contraction_start_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StartContractionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/labour/contraction/end": {
+            "put": {
+                "tags": [
+                    "Labour Tracking"
+                ],
+                "summary": "End Contraction",
+                "description": "End the currently active contraction in the given session",
+                "operationId": "end_contraction_api_v1_labour_contraction_end_put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndContractionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/labour/complete": {
+            "put": {
+                "tags": [
+                    "Labour Tracking"
+                ],
+                "summary": "Complete Labour",
+                "description": "Mark a labor session as complete",
+                "operationId": "complete_labour_api_v1_labour_complete_put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompleteLabourRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/labour/active": {
+            "get": {
+                "tags": [
+                    "Labour Tracking"
+                ],
+                "summary": "Get Active Labour",
+                "operationId": "get_active_labour_api_v1_labour_active_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/labour/active/summary": {
+            "get": {
+                "tags": [
+                    "Labour Tracking"
+                ],
+                "summary": "Get Active Labour Summary",
+                "operationId": "get_active_labour_summary_api_v1_labour_active_summary_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourSummaryResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2AuthorizationCodeBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/health": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Healthcheck",
+                "operationId": "healthcheck_api_v1_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    },
+                                    "type": "object",
+                                    "title": "Response Healthcheck Api V1 Health Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BeginLabourRequest": {
+                "properties": {
+                    "first_labour": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "First Labour"
+                    }
+                },
+                "type": "object",
+                "title": "BeginLabourRequest"
+            },
+            "BirthingPersonDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "title": "First Name"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Last Name"
+                    },
+                    "first_labour": {
+                        "type": "boolean",
+                        "title": "First Labour"
+                    },
+                    "labours": {
+                        "items": {
+                            "$ref": "#/components/schemas/LabourDTO"
+                        },
+                        "type": "array",
+                        "title": "Labours"
+                    },
+                    "subscribers": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Subscribers"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "first_name",
+                    "last_name",
+                    "first_labour",
+                    "labours",
+                    "subscribers"
+                ],
+                "title": "BirthingPersonDTO"
+            },
+            "BirthingPersonResponse": {
+                "properties": {
+                    "birthing_person": {
+                        "$ref": "#/components/schemas/BirthingPersonDTO"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "birthing_person"
+                ],
+                "title": "BirthingPersonResponse"
+            },
+            "BirthingPersonSubscriptionTokenResponse": {
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "title": "Token"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "token"
+                ],
+                "title": "BirthingPersonSubscriptionTokenResponse"
+            },
+            "CompleteLabourRequest": {
+                "properties": {
+                    "end_time": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "End Time"
+                    },
+                    "notes": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Notes"
+                    }
+                },
+                "type": "object",
+                "title": "CompleteLabourRequest"
+            },
+            "ContractionDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "labour_id": {
+                        "type": "string",
+                        "title": "Labour Id"
+                    },
+                    "start_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Start Time"
+                    },
+                    "end_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "End Time"
+                    },
+                    "duration_minutes": {
+                        "type": "number",
+                        "title": "Duration Minutes"
+                    },
+                    "intensity": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Intensity"
+                    },
+                    "notes": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Notes"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "title": "Is Active"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "labour_id",
+                    "start_time",
+                    "end_time",
+                    "duration_minutes",
+                    "intensity",
+                    "notes",
+                    "is_active"
+                ],
+                "title": "ContractionDTO"
+            },
+            "EndContractionRequest": {
+                "properties": {
+                    "intensity": {
+                        "type": "integer",
+                        "title": "Intensity"
+                    },
+                    "end_time": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "End Time"
+                    },
+                    "notes": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Notes"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "intensity"
+                ],
+                "title": "EndContractionRequest"
+            },
+            "ExceptionSchema": {
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "description"
+                ],
+                "title": "ExceptionSchema"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "LabourDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "birthing_person_id": {
+                        "type": "string",
+                        "title": "Birthing Person Id"
+                    },
+                    "start_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Start Time"
+                    },
+                    "end_time": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "End Time"
+                    },
+                    "current_phase": {
+                        "type": "string",
+                        "title": "Current Phase"
+                    },
+                    "notes": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Notes"
+                    },
+                    "contractions": {
+                        "items": {
+                            "$ref": "#/components/schemas/ContractionDTO"
+                        },
+                        "type": "array",
+                        "title": "Contractions"
+                    },
+                    "pattern": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LabourPatternDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "birthing_person_id",
+                    "start_time",
+                    "end_time",
+                    "current_phase",
+                    "notes",
+                    "contractions",
+                    "pattern"
+                ],
+                "title": "LabourDTO"
+            },
+            "LabourPatternDTO": {
+                "properties": {
+                    "average_duration_minutes": {
+                        "type": "number",
+                        "title": "Average Duration Minutes"
+                    },
+                    "average_intensity": {
+                        "type": "number",
+                        "title": "Average Intensity"
+                    },
+                    "average_interval_minutes": {
+                        "type": "number",
+                        "title": "Average Interval Minutes"
+                    },
+                    "phase": {
+                        "type": "string",
+                        "title": "Phase"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "average_duration_minutes",
+                    "average_intensity",
+                    "average_interval_minutes",
+                    "phase"
+                ],
+                "title": "LabourPatternDTO"
+            },
+            "LabourResponse": {
+                "properties": {
+                    "labour": {
+                        "$ref": "#/components/schemas/LabourDTO"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "labour"
+                ],
+                "title": "LabourResponse"
+            },
+            "LabourSummaryDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "duration": {
+                        "type": "number",
+                        "title": "Duration"
+                    },
+                    "contraction_count": {
+                        "type": "integer",
+                        "title": "Contraction Count"
+                    },
+                    "current_phase": {
+                        "type": "string",
+                        "title": "Current Phase"
+                    },
+                    "hospital_recommended": {
+                        "type": "boolean",
+                        "title": "Hospital Recommended"
+                    },
+                    "pattern": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LabourPatternDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "duration",
+                    "contraction_count",
+                    "current_phase",
+                    "hospital_recommended",
+                    "pattern"
+                ],
+                "title": "LabourSummaryDTO"
+            },
+            "LabourSummaryResponse": {
+                "properties": {
+                    "labour": {
+                        "$ref": "#/components/schemas/LabourSummaryDTO"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "labour"
+                ],
+                "title": "LabourSummaryResponse"
+            },
+            "RegisterBirthingPersonRequest": {
+                "properties": {
+                    "first_labor": {
+                        "type": "boolean",
+                        "title": "First Labor"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "first_labor"
+                ],
+                "title": "RegisterBirthingPersonRequest"
+            },
+            "RegisterSubscriberRequest": {
+                "properties": {
+                    "contact_methods": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Contact Methods"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "contact_methods"
+                ],
+                "title": "RegisterSubscriberRequest"
+            },
+            "StartContractionRequest": {
+                "properties": {
+                    "intensity": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Intensity"
+                    },
+                    "start_time": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Start Time"
+                    },
+                    "notes": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Notes"
+                    }
+                },
+                "type": "object",
+                "title": "StartContractionRequest"
+            },
+            "SubscribeToRequest": {
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "title": "Token"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "token"
+                ],
+                "title": "SubscribeToRequest"
+            },
+            "SubscriberDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "title": "First Name"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Last Name"
+                    },
+                    "phone_number": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Phone Number"
+                    },
+                    "email": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Email"
+                    },
+                    "contact_methods": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Contact Methods"
+                    },
+                    "subscribed_to": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Subscribed To"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "first_name",
+                    "last_name",
+                    "phone_number",
+                    "email",
+                    "contact_methods",
+                    "subscribed_to"
+                ],
+                "title": "SubscriberDTO"
+            },
+            "SubscriberResponse": {
+                "properties": {
+                    "subscriber": {
+                        "$ref": "#/components/schemas/SubscriberDTO"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "subscriber"
+                ],
+                "title": "SubscriberResponse"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        },
+        "securitySchemes": {
+            "OAuth2AuthorizationCodeBearer": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "refreshUrl": "http://localhost:8080/realms/labour_tracker/protocol/openid-connect/token",
+                        "scopes": {},
+                        "authorizationUrl": "http://localhost:8080/realms/labour_tracker/protocol/openid-connect/auth",
+                        "tokenUrl": "http://localhost:8080/realms/labour_tracker/protocol/openid-connect/token"
+                    }
+                }
+            }
+        }
+    }
+}
