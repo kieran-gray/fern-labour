@@ -3,11 +3,12 @@ from typing import Annotated
 from dishka import FromComponent
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
+from fastapi.security import HTTPAuthorizationCredentials
 
 from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_service import LabourService
-from app.infrastructure.custom_types import KeycloakUser
-from app.presentation.api.auth import get_user_info
+from app.infrastructure.auth.interfaces.controller import AuthController
+from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.api.schemas.requests.contraction import (
     EndContractionRequest,
     StartContractionRequest,
@@ -35,9 +36,11 @@ labour_router = APIRouter(prefix="/labour", tags=["Labour Tracking"])
 async def begin_labour(
     request_data: BeginLabourRequest,
     service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     """Begin labour for the current user"""
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.begin_labour(user.id, request_data.first_labour)
     return LabourResponse(labour=labour)
 
@@ -57,9 +60,11 @@ async def begin_labour(
 async def start_contraction(
     request_data: StartContractionRequest,
     service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     """Start a new contraction in the given labor session"""
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.start_contraction(
         birthing_person_id=user.id,
         start_time=request_data.start_time,
@@ -84,9 +89,11 @@ async def start_contraction(
 async def end_contraction(
     request_data: EndContractionRequest,
     service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     """End the currently active contraction in the given session"""
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.end_contraction(
         birthing_person_id=user.id,
         intensity=request_data.intensity,
@@ -111,9 +118,11 @@ async def end_contraction(
 async def complete_labour(
     request_data: CompleteLabourRequest,
     service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     """Mark a labor session as complete"""
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.complete_labour(
         birthing_person_id=user.id, end_time=request_data.end_time, notes=request_data.notes
     )
@@ -134,8 +143,10 @@ async def complete_labour(
 @inject
 async def get_active_labour(
     service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.get_active_labour(birthing_person_id=user.id)
     return LabourResponse(labour=labour)
 
@@ -154,7 +165,9 @@ async def get_active_labour(
 @inject
 async def get_active_labour_summary(
     service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSummaryResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.get_active_labour_summary(birthing_person_id=user.id)
     return LabourSummaryResponse(labour=labour)

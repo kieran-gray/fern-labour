@@ -157,6 +157,7 @@ dependencies = [
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic", extra = ["email"] },
     { name = "python-keycloak" },
+    { name = "python-multipart" },
     { name = "rtoml" },
     { name = "sqlalchemy", extra = ["mypy"] },
     { name = "twilio" },
@@ -192,6 +193,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.3,<4.0.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.9.0,<3.0.0" },
     { name = "python-keycloak", specifier = ">=5.1.1" },
+    { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "rtoml", specifier = ">=0.11.0,<1.0.0" },
     { name = "sqlalchemy", extras = ["mypy"], specifier = "==2.0.36" },
     { name = "twilio", specifier = ">=9.4.1" },
@@ -1052,6 +1054,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/19/02/af847b03964984ce3ea4ad6c80a26cb95cd100804f27f3b06f397357fabc/python_keycloak-5.1.1.tar.gz", hash = "sha256:406c5ad621c0fc911aacb8665b4eec0aebca7e88546ca6d313ebbe966080604b", size = 64559 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4d/cf/0f7a1a5f2a32ea2a98250f7d25930e7b6955b80e344e90b635b5748fd02d/python_keycloak-5.1.1-py3-none-any.whl", hash = "sha256:0df2ae75c80cc0646dc2a57f353f284edcbde3ca77e15526f403e3b38dfcffca", size = 78348 },
+]
+
+[[package]]
+name = "python-multipart"
+version = "0.0.20"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f3/87/f44d7c9f274c7ee665a29b885ec97089ec5dc034c7f3fafa03da9e39a09e/python_multipart-0.0.20.tar.gz", hash = "sha256:8dd0cab45b8e23064ae09147625994d090fa46f5b0d1e13af944c331a7fa9d13", size = 37158 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/45/58/38b5afbc1a800eeea951b9285d3912613f2603bdf897a4ab0f4bd7f405fc/python_multipart-0.0.20-py3-none-any.whl", hash = "sha256:8a62d3a8335e06589fe01f2a3e178cdcc632f3fbe0d492ad9ee0ec35aab1f104", size = 24546 },
 ]
 
 [[package]]

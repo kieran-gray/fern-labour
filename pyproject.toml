@@ -18,6 +18,7 @@ dependencies = [
     "psycopg[binary]<4.0.0,>=3.2.3",
     "pydantic[email]<3.0.0,>=2.9.0",
     "python-keycloak>=5.1.1",
+    "python-multipart>=0.0.20",
     "rtoml<1.0.0,>=0.11.0",
     "sqlalchemy[mypy]==2.0.36",
     "twilio>=9.4.1",
