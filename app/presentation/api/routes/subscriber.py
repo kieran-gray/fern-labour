@@ -92,8 +92,10 @@ async def subscribe_to(
 async def unsubscribe_from(
     request_data: UnsubscribeFromRequest,
     service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriberResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     subscriber = await service.unsubscribe_from(
         subscriber_id=user.id, birthing_person_id=request_data.birthing_person_id
     )
