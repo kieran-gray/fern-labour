@@ -3,11 +3,12 @@ from typing import Annotated
 from dishka import FromComponent
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
+from fastapi.security import HTTPAuthorizationCredentials
 
 from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_service import SubscriptionService
-from app.infrastructure.custom_types import KeycloakUser
-from app.presentation.api.auth import get_user_info
+from app.infrastructure.auth.interfaces.controller import AuthController
+from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.api.schemas.requests.subscriber import (
     RegisterSubscriberRequest,
     SubscribeToRequest,
@@ -34,8 +35,10 @@ subscriber_router = APIRouter(prefix="/subscriber", tags=["Subscriber"])
 async def register(
     request_data: RegisterSubscriberRequest,
     service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriberResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     subscriber = await service.register(
         subscriber_id=user.id,
         first_name=user.first_name,
@@ -63,8 +66,10 @@ async def get_birthing_person(
     birthing_person_id: str,
     request_data: SubscribeToRequest,
     service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
-    user: KeycloakUser = Depends(get_user_info),
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriberResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
     subscriber = await service.subscribe_to(
         subscriber_id=user.id, birthing_person_id=birthing_person_id, token=request_data.token
     )

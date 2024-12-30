@@ -13,6 +13,7 @@ from app.infrastructure.persistence import initialize_mapping
 from app.presentation.api.routes.router_root import root_router
 from app.presentation.exception_handler import (
     ExceptionHandler,
+    ExceptionHeaderMapper,
     ExceptionMapper,
     ExceptionMessageProvider,
 )
@@ -62,9 +63,10 @@ def configure_app(new_app: FastAPI, settings: Settings) -> None:
         allow_headers=["*"],
     )
 
-    exception_message_provider: ExceptionMessageProvider = ExceptionMessageProvider()
-    exception_mapper: ExceptionMapper = ExceptionMapper()
-    exception_handler: ExceptionHandler = ExceptionHandler(
-        new_app, exception_message_provider, exception_mapper
+    exception_message_provider = ExceptionMessageProvider()
+    exception_mapper = ExceptionMapper()
+    exception_header_mapper = ExceptionHeaderMapper()
+    exception_handler = ExceptionHandler(
+        new_app, exception_message_provider, exception_mapper, exception_header_mapper
     )
     exception_handler.setup_handlers()

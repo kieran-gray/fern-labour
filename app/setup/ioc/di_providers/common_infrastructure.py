@@ -9,9 +9,14 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.infrastructure.auth.interfaces.controller import AuthController
+from app.infrastructure.auth.interfaces.service import AuthService
+from app.infrastructure.auth.keycloak.controller import KeycloakAuthController
+from app.infrastructure.auth.keycloak.service import KeycloakAuthService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.ioc.di_providers.common_settings import PostgresDsn
-from app.setup.settings import SqlaEngineSettings
+from app.setup.settings import Settings, SqlaEngineSettings
+from keycloak import KeycloakOpenID  # type: ignore
 
 log = logging.getLogger(__name__)
 
@@ -65,3 +70,21 @@ class CommonInfrastructureProvider(Provider):
             yield session
             log.debug("Closing async session.")
         log.debug("Async session closed for '%s'.", self.component)
+
+    @provide
+    def provide_auth_client(self, settings: Settings) -> KeycloakOpenID:
+        return KeycloakOpenID(
+            server_url=settings.security.keycloak.docker_url,
+            realm_name=settings.security.keycloak.realm,
+            client_id=settings.security.keycloak.client_id,
+            client_secret_key=settings.security.keycloak.client_secret,
+            verify=True,
+        )
+
+    @provide
+    def provide_auth_service(self, keycloak_openid: KeycloakOpenID) -> AuthService:
+        return KeycloakAuthService(keycloak_openid=keycloak_openid)
+
+    @provide
+    def provide_auth_controller(self, auth_service: AuthService) -> AuthController:
+        return KeycloakAuthController(auth_service=auth_service)
