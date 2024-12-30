@@ -48,7 +48,6 @@ stop:
 format:
 	uv run ruff check $(SRC_DIR) $(TEST_DIR) --fix
 	uv run ruff format $(SRC_DIR) $(TEST_DIR)
-	uv run isort $(SRC_DIR) $(TEST_DIR)
 
 lint:
 	uv run mypy $(SRC_DIR)

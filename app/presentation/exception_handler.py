@@ -30,6 +30,7 @@ from app.domain.subscriber.exceptions import (
     SubscriberNotSubscribedToBirthingPerson,
     SubscriptionTokenIncorrect,
 )
+from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
 
 log = logging.getLogger(__name__)
 
@@ -70,10 +71,22 @@ class ExceptionMapper:
             SubscriberNotFoundById: status.HTTP_404_NOT_FOUND,
             SubscriberNotSubscribedToBirthingPerson: status.HTTP_400_BAD_REQUEST,
             SubscriptionTokenIncorrect: status.HTTP_403_FORBIDDEN,
+            AuthorizationError: status.HTTP_401_UNAUTHORIZED,
+            InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
         }
 
     def get_status_code(self, exc: Exception) -> int:
         return self.exceptions_status_code_map.get(type(exc), status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ExceptionHeaderMapper:
+    def __init__(self) -> None:
+        self._exceptions_headers_map: dict[type[Exception], dict[str, Any]] = {
+            InvalidTokenError: {"WWW-Authenticate": "Bearer"}
+        }
+
+    def get_headers(self, exc: Exception) -> dict[str, Any] | None:
+        return self._exceptions_headers_map.get(type(exc))
 
 
 class ExceptionHandler:
@@ -82,9 +95,11 @@ class ExceptionHandler:
         app: FastAPI,
         exception_message_provider: ExceptionMessageProvider,
         exception_mapper: ExceptionMapper,
+        exception_header_mapper: ExceptionHeaderMapper,
     ):
         self._app = app
         self._mapper = exception_mapper
+        self._header_mapper = exception_header_mapper
         self._exception_message_provider = exception_message_provider
 
     def setup_handlers(self) -> None:
@@ -94,6 +109,7 @@ class ExceptionHandler:
 
     async def _handle_exception(self, _: Request, exc: Exception) -> ORJSONResponse:
         status_code = self._mapper.get_status_code(exc)
+        headers = self._header_mapper.get_headers(exc)
 
         if status_code >= 500:
             log.error(f"Exception {type(exc).__name__} occurred: {exc}", exc_info=True)
@@ -103,7 +119,7 @@ class ExceptionHandler:
         exception_message = self._exception_message_provider.get_exception_message(exc, status_code)
 
         details = exc.errors() if isinstance(exc, pydantic.ValidationError) else None
-        return self._create_exception_response(status_code, exception_message, details)
+        return self._create_exception_response(status_code, exception_message, details, headers)
 
     async def _handle_unexpected_exceptions(self, _: Request, exc: Exception) -> ORJSONResponse:
         log.error(f"Unexpected exception {type(exc).__name__} occurred: {exc}", exc_info=True)
@@ -117,6 +133,7 @@ class ExceptionHandler:
         status_code: int,
         exception_message: str,
         details: list[ErrorDetails] | None = None,
+        headers: dict[str, Any] | None = None,
     ) -> ORJSONResponse:
         return ORJSONResponse(
             status_code=status_code,
@@ -125,4 +142,5 @@ class ExceptionHandler:
                 if details
                 else ExceptionSchema(exception_message)
             ),
+            headers=headers,
         )

@@ -1,12 +1,7 @@
-from fastapi import Depends, Form, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-
-from app.infrastructure.auth.interfaces.models import User
+from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
+from app.infrastructure.auth.interfaces.models import AuthorizationCredentials, User
 from app.infrastructure.auth.interfaces.schemas import TokenResponse
 from app.infrastructure.auth.interfaces.service import AuthService
-
-# Initialize HTTPBearer security dependency
-bearer_scheme = HTTPBearer()
 
 
 class KeycloakAuthController:
@@ -17,7 +12,7 @@ class KeycloakAuthController:
     def __init__(self, auth_service: AuthService) -> None:
         self._auth_service = auth_service
 
-    def login(self, username: str = Form(...), password: str = Form(...)) -> TokenResponse:
+    def login(self, username: str, password: str) -> TokenResponse:
         """
         Authenticate user and return access token.
 
@@ -34,22 +29,16 @@ class KeycloakAuthController:
         access_token = self._auth_service.authenticate_user(username, password)
 
         if not access_token:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid username or password",
-            )
+            raise AuthorizationError("Invalid username or password")
 
         return TokenResponse(access_token=access_token)
 
-    def get_authenticated_user(
-        self,
-        credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-    ) -> User:
+    def get_authenticated_user(self, credentials: AuthorizationCredentials) -> User:
         """
         Access a protected resource that requires valid token authentication.
 
         Args:
-            credentials (HTTPAuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+            credentials (AuthorizationCredentials): Bearer token provided via HTTP Authorization header.
 
         Raises:
             HTTPException: If the token is invalid or not provided.
@@ -62,10 +51,6 @@ class KeycloakAuthController:
         user_info = self._auth_service.verify_token(token)
 
         if not user_info:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise InvalidTokenError("Invalid token")
 
         return user_info

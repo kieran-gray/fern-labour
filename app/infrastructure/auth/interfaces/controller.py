@@ -1,8 +1,6 @@
 from typing import Protocol
 
-from fastapi.security import HTTPAuthorizationCredentials
-
-from app.infrastructure.auth.interfaces.models import User
+from app.infrastructure.auth.interfaces.models import AuthorizationCredentials, User
 from app.infrastructure.auth.interfaces.schemas import TokenResponse
 
 
@@ -26,12 +24,12 @@ class AuthController(Protocol):
             TokenResponse: Contains the access token upon successful authentication.
         """
 
-    def get_authenticated_user(self, credentials: HTTPAuthorizationCredentials) -> User:
+    def get_authenticated_user(self, credentials: AuthorizationCredentials) -> User:
         """
         Get currently authenticated user information. Requires valid token.
 
         Args:
-            credentials (HTTPAuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+            credentials (AuthorizationCredentials): Bearer token provided via HTTP Authorization header.
 
         Raises:
             AuthorizationError: If the token is invalid or not provided.

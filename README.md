@@ -8,7 +8,7 @@ A FastAPI-based backend service for tracking labour-related data, built as a fir
 - Event-driven architecture using Apache Kafka
 - Notification system integrated with:
   - Twilio for SMS
-  - SFTP for email delivery
+  - SMTP for email delivery
 - PostgreSQL database for persistent storage
 - Clean/layered architecture with dependency injection using Dishka
 
@@ -54,7 +54,7 @@ The application uses Kafka for asynchronous event processing, for two different 
 - **Dependency Injection**: Dishka
 - **Notifications**:
   - Twilio SDK for SMS
-  - SFTP for email delivery
+  - SMTP for email delivery
 - **Development Tools**:
   - Ruff for linting and formatting
   - isort for import sorting

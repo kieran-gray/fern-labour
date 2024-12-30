@@ -1,10 +1,9 @@
 from typing import Any
 
-from fastapi import HTTPException, status
-from keycloak.exceptions import KeycloakAuthenticationError
-
+from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
 from app.infrastructure.auth.interfaces.models import User
 from keycloak import KeycloakOpenID  # type: ignore
+from keycloak.exceptions import KeycloakAuthenticationError
 
 
 class KeycloakAuthService:
@@ -17,12 +16,9 @@ class KeycloakAuthService:
         """
         try:
             token = self._keycloak_openid.token(username, password)
-            return token["access_token"]
+            return token["access_token"]  # type: ignore
         except KeycloakAuthenticationError:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid username or password",
-            )
+            raise AuthorizationError("Invalid username or password")
 
     def verify_token(self, token: str) -> User:
         """
@@ -31,15 +27,10 @@ class KeycloakAuthService:
         try:
             user_info = self._keycloak_openid.userinfo(token)
             if not user_info:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
-                )
+                raise InvalidTokenError("Invalid token")
             return self._to_user(user_info=user_info)
         except KeycloakAuthenticationError:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-            )
+            raise AuthorizationError("Could not validate credentials")
 
     def _to_user(self, user_info: dict[str, Any]) -> User:
         return User(
