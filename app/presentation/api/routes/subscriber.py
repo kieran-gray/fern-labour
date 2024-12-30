@@ -12,6 +12,7 @@ from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.api.schemas.requests.subscriber import (
     RegisterSubscriberRequest,
     SubscribeToRequest,
+    UnsubscribeFromRequest,
 )
 from app.presentation.api.schemas.responses.subscriber import SubscriberResponse
 from app.presentation.exception_handler import ExceptionSchema
@@ -62,7 +63,7 @@ async def register(
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def get_birthing_person(
+async def subscribe_to(
     birthing_person_id: str,
     request_data: SubscribeToRequest,
     service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
@@ -72,5 +73,30 @@ async def get_birthing_person(
     user = auth_controller.get_authenticated_user(credentials=credentials)
     subscriber = await service.subscribe_to(
         subscriber_id=user.id, birthing_person_id=birthing_person_id, token=request_data.token
+    )
+    return SubscriberResponse(subscriber=subscriber)
+
+
+@subscriber_router.post(
+    "/unsubscribe_from",
+    responses={
+        status.HTTP_200_OK: {"model": SubscriberResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def unsubscribe_from(
+    request_data: UnsubscribeFromRequest,
+    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> SubscriberResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    subscriber = await service.unsubscribe_from(
+        subscriber_id=user.id, birthing_person_id=request_data.birthing_person_id
     )
     return SubscriberResponse(subscriber=subscriber)

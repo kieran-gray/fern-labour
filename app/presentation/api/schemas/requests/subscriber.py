@@ -7,3 +7,7 @@ class RegisterSubscriberRequest(BaseModel):
 
 class SubscribeToRequest(BaseModel):
     token: str
+
+
+class UnsubscribeFromRequest(BaseModel):
+    birthing_person_id: str
