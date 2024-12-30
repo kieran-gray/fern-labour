@@ -109,10 +109,13 @@ The Swagger UI is avaliable at http://localhost:8000
 
 ![preview](./docs/images/swagger-ui.png)
 
-Clicking the `Authorize` button in the top right, then the `Authorize` button in the popup will take
-you to the Keycloak login page where you can login and register.
-
+To login:
+1. Navigate to [Keycloak](localhost:8080/realms/labour_tracker/account) and register
 ![preview](./docs/images/login.png)
+2. With your credentials, login with the swagger endpoint `/api/v1/auth/login`
+3. Click the `Authorize` button in the top right and copy in the token string from the login response
+
+
 
 ## Usage
 
