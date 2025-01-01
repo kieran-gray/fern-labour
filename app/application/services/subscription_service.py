@@ -6,6 +6,7 @@ from app.application.security.token_generator import TokenGenerator
 from app.domain.birthing_person.exceptions import BirthingPersonNotFoundById
 from app.domain.birthing_person.repository import BirthingPersonRepository
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
+from app.domain.subscriber.entity import Subscriber
 from app.domain.subscriber.exceptions import SubscriberNotFoundById, SubscriptionTokenIncorrect
 from app.domain.subscriber.repository import SubscriberRepository
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
@@ -26,14 +27,17 @@ class SubscriptionService:
         self._token_generator = token_generator
         self._event_producer = event_producer
 
-    async def subscribe_to(
-        self, subscriber_id: str, birthing_person_id: str, token: str
-    ) -> SubscriberDTO:
+    async def _get_subscriber(self, subscriber_id: str) -> Subscriber:
         domain_id = SubscriberId(subscriber_id)
         subscriber = await self._subscriber_repository.get_by_id(domain_id)
         if not subscriber:
             raise SubscriberNotFoundById(subscriber_id=subscriber_id)
+        return subscriber
 
+    async def subscribe_to(
+        self, subscriber_id: str, birthing_person_id: str, token: str
+    ) -> SubscriberDTO:
+        subscriber = await self._get_subscriber(subscriber_id=subscriber_id)
         birthing_person_domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(
             birthing_person_domain_id
@@ -52,10 +56,7 @@ class SubscriptionService:
         return SubscriberDTO.from_domain(subscriber)
 
     async def unsubscribe_from(self, subscriber_id: str, birthing_person_id: str) -> SubscriberDTO:
-        domain_id = SubscriberId(subscriber_id)
-        subscriber = await self._subscriber_repository.get_by_id(domain_id)
-        if not subscriber:
-            raise SubscriberNotFoundById(subscriber_id=subscriber_id)
+        subscriber = await self._get_subscriber(subscriber_id=subscriber_id)
 
         subscriber.unsubscribe_from(BirthingPersonId(birthing_person_id))
         await self._subscriber_repository.save(subscriber)
