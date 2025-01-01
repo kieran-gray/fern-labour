@@ -67,7 +67,7 @@ SMS_FROM_NUMBER = ""
 
 
 [events.kafka_producer]
-KAFKA_TOPIC_PREFIX = "labour_tracker"
+KAFKA_TOPIC_PREFIX = "labour-tracker"
 KAFKA_PRODUCER_RETRIES = 3
 KAFKA_PRODUCER_ACKS = "all"
 

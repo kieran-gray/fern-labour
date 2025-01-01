@@ -97,6 +97,9 @@ services:
       context: ./frontend
     volumes:
       - ./frontend:/app
+    networks:
+      - traefik-public
+      - default
 
 networks:
   traefik-public:
