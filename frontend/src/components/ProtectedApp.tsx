@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Alert } from './Alert.tsx';
+import { PageLoading } from './PageLoading/PageLoading.tsx';
 
 interface ProtectedAppProps {
   children: ReactNode;
@@ -33,7 +34,7 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
         </>
       ) : auth.isLoading ? (
         <>
-          <h1>Loading...</h1>
+          <PageLoading></PageLoading>
         </>
       ) : auth.isAuthenticated ? (
         children
