@@ -8,8 +8,8 @@ contractions_table = Table(
     mapper_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
     Column("labour_id", UUID(as_uuid=True), ForeignKey("labours.id"), nullable=False),
-    Column("start_time", DateTime, nullable=False),
-    Column("end_time", DateTime, nullable=False),
+    Column("start_time", DateTime(timezone=True), nullable=False),
+    Column("end_time", DateTime(timezone=True), nullable=False),
     Column("intensity", Integer, nullable=True),
     Column("notes", String, nullable=True),
 )
