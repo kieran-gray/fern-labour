@@ -22,7 +22,7 @@ class EventsInfrastructureProvider(Provider):
             bootstrap_servers=settings.events.kafka.bootstrap_servers,
             acks=settings.events.kafka_producer.acks,
             retries=settings.events.kafka_producer.retries,
-            topic_prefix=settings.events.kafka_producer.topic_prefix,
+            topic_prefix=settings.events.kafka.topic_prefix,
         )
 
     @provide
@@ -33,4 +33,5 @@ class EventsInfrastructureProvider(Provider):
         return KafkaEventConsumer(
             bootstrap_servers=settings.events.kafka.bootstrap_servers,
             group_id=settings.events.kafka_consumer.group_id,
+            topic_prefix=settings.events.kafka.topic_prefix,
         )

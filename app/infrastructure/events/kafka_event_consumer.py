@@ -19,6 +19,7 @@ class KafkaEventConsumer(EventConsumer):
         self,
         bootstrap_servers: list[str] | str,
         group_id: str,
+        topic_prefix: str,
         consumer: KafkaConsumer | None = None,
     ):
         self._consumer = consumer or KafkaConsumer(
@@ -27,7 +28,9 @@ class KafkaEventConsumer(EventConsumer):
             value_deserializer=lambda v: json.loads(v),
             enable_auto_commit=False,
         )
-        self._handlers = EVENT_HANDLER_MAPPING
+        self._handlers = {
+            f"{topic_prefix}.{topic}": handler for topic, handler in EVENT_HANDLER_MAPPING.items()
+        }
         self._running = False
         self._subscribe()
 

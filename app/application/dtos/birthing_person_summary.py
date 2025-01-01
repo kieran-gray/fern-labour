@@ -31,5 +31,5 @@ class BirthingPersonSummaryDTO:
             "id": str(self.id),
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "active_labour": self.active_labour.to_dict(),
+            "active_labour": self.active_labour.to_dict() if self.active_labour else None,
         }
