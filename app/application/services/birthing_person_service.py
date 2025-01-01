@@ -1,6 +1,7 @@
 import logging
 
 from app.application.dtos.birthing_person import BirthingPersonDTO
+from app.application.dtos.birthing_person_summary import BirthingPersonSummaryDTO
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import (
     BirthingPersonExistsWithID,
@@ -39,3 +40,13 @@ class BirthingPersonService:
             raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
 
         return BirthingPersonDTO.from_domain(birthing_person)
+
+    async def get_birthing_person_summary(
+        self, birthing_person_id: str
+    ) -> BirthingPersonSummaryDTO:
+        domain_id = BirthingPersonId(birthing_person_id)
+        birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
+        if not birthing_person:
+            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
+
+        return BirthingPersonSummaryDTO.from_domain(birthing_person)
