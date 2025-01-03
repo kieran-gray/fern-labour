@@ -1,10 +1,21 @@
 .header {
     height: 84px;
     margin-bottom: 120px;
-    background-color: #ffe0d7;
+    background-color: var(--mantine-color-pink-3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
     border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
   }
-  
+
+  .title {
+    flex-shrink: 1;
+    color: var(--mantine-color-white);
+    font-family:
+    Greycliff CF,
+    var(--mantine-font-family);
+    font-weight: 700;
+  }
   .inner {
     height: 84px;
     display: flex;
@@ -40,7 +51,7 @@
     text-transform: uppercase;
     border-radius: 20px;
     font-size: var(--mantine-font-size-sm);
-    color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-1));
+    color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-1));
     padding: 7px var(--mantine-spacing-sm);
     font-weight: 700;
     border: 2px solid transparent;
@@ -50,12 +61,12 @@
   
     @mixin hover {
       color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-      background-color: #fe8c65;
+      background-color: var(--mantine-color-pink-1);
       text-decoration: none;
     }
   
     &[data-active] {
       color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-      border-color: #fe8c65;
+      border-color: var(--mantine-color-pink-4);
     }
   }

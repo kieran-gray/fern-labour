@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '../components/Header/Header';
 import { LabourDTO, LabourResponse } from '../client';
 import LabourContainer from '../components/LabourContainer/LabourContainer';
-import { Container } from '@mantine/core';
+import { Center, Space } from '@mantine/core';
 import { PageLoading } from '../components/PageLoading/PageLoading';
 
 
@@ -64,7 +64,6 @@ export const LabourPage = () => {
             </div>
         );
     }
-
     const bannerProps = {
         labour: activeLabour,
         hasActiveLabour: hasActiveLabour,
@@ -73,9 +72,10 @@ export const LabourPage = () => {
     return (
         <div>
         <Header active={page}/>
-        <Container size={800} p={0}>
+        <Center flex={"shrink"} p={15}>
             <LabourContainer {...bannerProps} />
-        </Container>
+        </Center>
+        <Space h="xl"></Space>
         </div>
     )
 };

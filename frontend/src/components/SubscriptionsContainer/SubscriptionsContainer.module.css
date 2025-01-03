@@ -1,56 +1,66 @@
-.wrapper {
+.statRoot {
   display: flex;
-  align-items: center;
-  padding: calc(var(--mantine-spacing-xl) * 2);
+  background-image: linear-gradient(
+    -60deg,
+    var(--mantine-color-pink-2) 0%,
+    var(--mantine-color-pink-4) 100%
+  );
+  /* background:var(--mantine-color-pink-3); */
+  padding: calc(var(--mantine-spacing-xl) * 1.5);
   border-radius: var(--mantine-radius-md);
-  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));
-  border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-8));
 
-  @media (max-width: var(--mantine-breakpoint-sm)) {
-    flex-direction: column-reverse;
-    padding: var(--mantine-spacing-xl);
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-direction: column;
   }
 }
 
-.image {
-  max-width: 40%;
-
-  @media (max-width: var(--mantine-breakpoint-sm)) {
-    max-width: 100%;
-  }
+.statTitle {
+  color: var(--mantine-color-white);
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: var(--mantine-font-size-md);
 }
 
-.body {
-  padding-right: calc(var(--mantine-spacing-xl) * 4);
-  width: 100%;
-
-  @media (max-width: var(--mantine-breakpoint-sm)) {
-    padding-right: 0;
-    margin-top: var(--mantine-spacing-xl);
-  }
+.statMessage {
+  color: var(--mantine-color-white);
+  font-weight: 700;
 }
 
-.title {
-  color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-  font-family:
-    Greycliff CF,
-    var(--mantine-font-family);
+.statText{
+  color: var(--mantine-color-white);
+  font-weight: 500;
+  font-size: var(--mantine-font-size-md);
+}
+
+.statCount {
+  color: var(--mantine-color-white);
+  font-size: 32px;
   line-height: 1;
+  font-weight: 700;
   margin-bottom: var(--mantine-spacing-md);
 }
 
-.controls {
-  display: flex;
-  margin-top: var(--mantine-spacing-xl);
+.statDescription {
+  color: var(--mantine-color-white);
+  font-size: var(--mantine-font-size-md);
+  margin-top: 5px;
 }
 
-.input {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-right: 0;
-}
+.stat {
+  flex: 1;
 
-.control {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  & + & {
+    padding-left: var(--mantine-spacing-xl);
+    margin-left: var(--mantine-spacing-xl);
+    border-left: 1px solid var(--mantine-color-pink-0);
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding-left: 0;
+      margin-left: 0;
+      border-left: 0;
+      padding-top: var(--mantine-spacing-xl);
+      margin-top: var(--mantine-spacing-xl);
+      border-top: 1px solid var(--mantine-color-pink-0);
+    }
+  }
 }

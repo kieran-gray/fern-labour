@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { BirthingPersonSummaryDTO, SubscriberDTO, BirthingPersonResponse, BirthingPersonDTO, SubscriberResponse, GetSubscriptionsResponse } from "../client";
+import { BirthingPersonSummaryDTO, BirthingPersonResponse, BirthingPersonDTO, GetSubscriptionsResponse } from "../client";
 import { Header } from "../components/Header/Header";
 import { useAuth } from "react-oidc-context";
 import SubscriptionsContainer from "../components/SubscriptionsContainer/SubscriptionsContainer";
 import { PageLoading } from "../components/PageLoading/PageLoading";
 import { Container, Space, Title } from "@mantine/core";
 import BirthingPersonContainer from "../components/BirthingPersonContainer/BirthingPersonContainer";
+import ContactMethodsModal from "../components/ContactMethodsModal/ContactMethodsModal";
 
 export const HomePage: React.FC = () => {
   const [birthingPerson, setBirthingPerson] = useState<BirthingPersonDTO | null>(null);
   const [subscriptions, setSubscriptions] = useState<BirthingPersonSummaryDTO[]>([]);
+  const [promptForSubscriberRegistration, setPromptForSubscriberRegistration] = useState<boolean>(false)
   const [newUser, setNewUser] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -46,23 +48,6 @@ export const HomePage: React.FC = () => {
     }
   }
 
-  const registerSubscriber = async (): Promise<SubscriberDTO | null> => {
-    const headers = {
-      'Authorization': `Bearer ${auth.user?.access_token}`,
-      'Content-Type': 'application/json'
-    }
-    const response = await fetch(
-      'http://localhost:8000/api/v1/subscriber/register',
-      { method: 'POST', headers: headers, body: JSON.stringify({"contact_methods": []})}
-    );
-    if (response.ok) {
-      const data: SubscriberResponse = await response.json()
-      return data.subscriber
-    } else {
-      return null
-    }
-  }
-
   const fetchSubscriptions = async (): Promise<BirthingPersonSummaryDTO[] | null> => {
     const response = await fetch(
       'http://localhost:8000/api/v1/subscriber/subscriptions',
@@ -92,11 +77,7 @@ export const HomePage: React.FC = () => {
 
       let subscriptionsResponse = await fetchSubscriptions()
       if (subscriptionsResponse === null) {
-        const subscriberResponse = await registerSubscriber()
-        if (subscriberResponse === null) {
-          setError("Failed to register subscriber. Please try again later.")
-          setIsLoading(false);
-        }
+        setPromptForSubscriberRegistration(true)
       } else {
         setSubscriptions(subscriptionsResponse)
       }
@@ -125,20 +106,23 @@ export const HomePage: React.FC = () => {
     );
   }
 
+  if (promptForSubscriberRegistration) {
+    return (
+      <ContactMethodsModal name={birthingPerson?.first_name || ""} promptForContactMethods={setPromptForSubscriberRegistration}/>
+    )
+  }
+
   const subscriptionsProps = {
     subscriptions: subscriptions ? subscriptions : []
   }
-  const birthingPersonProps = {
-    birthingPerson: birthingPerson
-  }
-
   return (
     <div>
       <Header active={page} />
-      <Container size={1200} p={0}>
+      <Container size={1200} p={15}>
+        <div></div>
         <Title>Welcome {!newUser && 'back'} {auth.user?.profile.given_name}</Title>
         <Space h="xl" />
-        <BirthingPersonContainer {...birthingPersonProps} />
+        {birthingPerson && <BirthingPersonContainer birthingPerson={birthingPerson} />}
         <Space h="xl" />
         <SubscriptionsContainer {...subscriptionsProps} />
       </Container>

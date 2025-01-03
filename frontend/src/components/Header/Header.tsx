@@ -1,4 +1,4 @@
-import { Anchor, Box, Burger, Container, Group } from '@mantine/core';
+import { Anchor, Box, Burger, Container, Group, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from './Header.module.css';
 import { useNavigate } from "react-router-dom";
@@ -44,6 +44,10 @@ export function Header({active}: {active: string}) {
     return (
         <header className={classes.header} color='peach'>
             <Container className={classes.inner}>
+                <div className={classes.title}>
+                    <div className={classes.icon}></div>
+                    <Text className={classes.title} >Fern Labour</Text>
+                </div>
                 <Box className={classes.links} visibleFrom="sm">
                     <Group gap={30} justify="flex-end" className={classes.mainLinks}>
                         {mainItems}

@@ -26,5 +26,5 @@ export default function BeginLabourButton({setLabour}: {setLabour: Function}) {
             console.error('Error starting labour:', err);
         }
     }
-    return <Button variant="filled" onClick={beginLabour}>Begin Labour</Button>;
+    return <Button size="lg" radius="lg" color='var(--mantine-color-pink-4)' variant="filled" onClick={beginLabour}>Begin Labour</Button>;
 }

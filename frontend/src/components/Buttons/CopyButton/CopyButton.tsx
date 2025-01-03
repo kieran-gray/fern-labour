@@ -14,7 +14,8 @@ export function CopyButton({text}: {text: string}) {
       opened={clipboard.copied}
     >
       <Button
-        variant="light"
+        color='var(--mantine-color-pink-4)'
+        variant="filled"
         rightSection={
           clipboard.copied ? (
             <IconCheck size={20} stroke={1.5} />

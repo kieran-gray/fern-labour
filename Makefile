@@ -32,6 +32,7 @@ clean:
 .PHONY: run-deps \
 		run-backend \
 		run-frontend \
+		run-app \
 		stop
 
 run-deps:
@@ -42,6 +43,9 @@ run-backend:
 
 run-frontend:
 	docker compose --profile frontend up --build
+
+run-app:
+	docker compose --profile backend --profile consumer --profile frontend up
 
 stop:
 	docker compose down

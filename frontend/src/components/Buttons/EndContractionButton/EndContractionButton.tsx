@@ -2,7 +2,7 @@ import { Button } from '@mantine/core';
 import { useAuth } from 'react-oidc-context';
 import { EndContractionRequest, LabourResponse } from '../../../client';
 
-export default function EndContractionButton({setLabour}: {setLabour: Function}) {
+export default function EndContractionButton({intensity, setLabour}: {intensity: number, setLabour: Function}) {
     const auth = useAuth()
     const endContraction = async () => {
         try {
@@ -12,7 +12,7 @@ export default function EndContractionButton({setLabour}: {setLabour: Function})
             }
             const requestBody: EndContractionRequest = {
                 "end_time": new Date().toISOString(),
-                "intensity": 5,
+                "intensity": intensity,
                 "notes": null
             }
             const response = await fetch(
@@ -29,5 +29,5 @@ export default function EndContractionButton({setLabour}: {setLabour: Function})
             console.error('Error starting contraction:', err);
         }
     }
-    return <Button size='xl' variant="light" onClick={endContraction}>End Contraction</Button>;
+    return <Button radius="lg" size='xl' variant="white" onClick={endContraction}>End Contraction</Button>;
 }

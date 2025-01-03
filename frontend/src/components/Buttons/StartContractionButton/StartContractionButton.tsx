@@ -26,5 +26,5 @@ export default function StartContractionButton({setLabour}: {setLabour: Function
             console.error('Error starting contraction:', err);
         }
     }
-    return <Button size='xl' variant="light" onClick={startContraction}>Start Contraction</Button>;
+    return <Button radius="lg" size='xl' variant="outline" onClick={startContraction}>Start Contraction</Button>;
 }

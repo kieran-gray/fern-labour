@@ -2,7 +2,7 @@ import { useAuth } from 'react-oidc-context';
 import { useState, useEffect } from 'react';
 import { Header } from '../components/Header/Header';
 import { ShareBanner } from '../components/ShareBanner/ShareBanner';
-import { Container } from '@mantine/core';
+import { Center } from '@mantine/core';
 import { PageLoading } from '../components/PageLoading/PageLoading';
 
 export const ShareBirthingPersonPage = () => {
@@ -72,9 +72,9 @@ export const ShareBirthingPersonPage = () => {
   return (
     <div>
       <Header active={page}/>
-      <Container size={900} p={0}>
+      <Center flex={"shrink"}  p={15}>
         <ShareBanner {...bannerProps}/>
-      </Container>
+      </Center>
     </div>
   );
 };
