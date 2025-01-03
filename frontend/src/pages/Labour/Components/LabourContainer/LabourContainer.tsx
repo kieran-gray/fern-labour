@@ -7,21 +7,30 @@ import StartContractionButton from '../Buttons/StartContraction';
 import EndContractionButton from '../Buttons/EndContraction';
 import CompleteLabourButton from '../Buttons/CompleteLabour';
 import BeginLabourButton from '../Buttons/BeginLabour';
-import { useState } from 'react';
-import {sortContractions, getTimeSinceLastEnded} from '../../utils.tsx'
+import { useRef, useState } from 'react';
+import {sortContractions, getTimeSinceLastEnded, secondsElapsed} from '../../utils.tsx'
+import Stopwatch, { StopwatchHandle } from '../Stopwatch/Stopwatch.tsx';
+import GoToBottomButton from '../Buttons/GoToBottom.tsx';
+import { useInViewport } from '@mantine/hooks';
 
 
 export default function LabourContainer({ labour, hasActiveLabour, setLabour }: { labour: LabourDTO | null, hasActiveLabour: boolean | null, setLabour: Function }) {
+  const { ref, inViewport } = useInViewport();
   const [intensity, setIntensity] = useState(5);
   const [labourNotes, setLabourNotes] = useState("");
+  const stopwatchRef = useRef<StopwatchHandle>(null);
+  const stopwatch = <Stopwatch ref={stopwatchRef} />
 
-  window.scrollTo(0, document.body.scrollHeight);
   if (hasActiveLabour && labour) {
 
     const sortedContractions = sortContractions(labour?.contractions);
     const timeSinceLastEnded = getTimeSinceLastEnded(sortedContractions);
 
-    const hasActiveContraction = labour.contractions.some(contraction => contraction.is_active)
+    const activeContraction = labour.contractions.find(contraction => contraction.is_active)
+    if (activeContraction) {
+      stopwatchRef.current?.set(secondsElapsed(activeContraction))
+    }
+    
     return (
       <div className={baseClasses.flexColumn}>
       <div className={baseClasses.root}>
@@ -31,6 +40,9 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
         <div className={baseClasses.body}>
           <div>
             <div className={baseClasses.flexColumn}>
+              <div className={baseClasses.flexRowEndNoBP}>
+                {!inViewport && <GoToBottomButton/>}
+              </div>
             <Stack align='flex-start' justify='center' gap='md' miw={200}>
                 <Text className={baseClasses.text}>Start Time: {new Date(labour.start_time).toString().slice(0, 24)}</Text>
                 <Text className={baseClasses.text}>Current Phase: {labour.current_phase.toUpperCase()}</Text>
@@ -44,8 +56,11 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
             <div className={baseClasses.flexColumnEnd}>
               <Space h="xl" />
               <Stack align='stretch' justify='flex-end' h="100%">
-                {hasActiveContraction &&
-                  <>
+                
+                {activeContraction &&
+                  <div className={classes.controlsBackground}>
+                    {stopwatch}
+                    <Space h="lg" />
                     <Text className={baseClasses.minorText}>Set your contraction intensity before completing the contraction</Text>
                     <Slider
                       classNames={{ root: classes.slider, markLabel: classes.markLabel, track: classes.track }}
@@ -63,10 +78,11 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
                         { value: 10, label: 10 }
                       ]}
                     />
-                    <EndContractionButton intensity={intensity} setLabour={setLabour} />
-                  </>
+                    <Space h="xl" />
+                    <EndContractionButton intensity={intensity} setLabour={setLabour} stopwatchRef={stopwatchRef} />
+                  </div>
                 }
-                {!hasActiveContraction && <StartContractionButton setLabour={setLabour} />}
+                {!activeContraction && <StartContractionButton setLabour={setLabour} stopwatchRef={stopwatchRef}/>}
               </Stack>
             </div>
           </div>
@@ -75,12 +91,12 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
       <Space h="xl" />
       <div className={baseClasses.root}>
         <div className={baseClasses.header}>
-          <Title fz="xl" className={baseClasses.title}>Complete Your Labour</Title>
+          <Title ref={ref} fz="xl" className={baseClasses.title}>Complete Your Labour</Title>
         </div>
         <div className={baseClasses.body}>
           <Stack align='stretch' justify='center' gap='md'>
             <Textarea radius="lg" label="Your labour notes" description="These notes will be shared with your subscribers when you complete your labour." classNames={{ label: classes.labourNotesLabel, description: classes.labourNotesDescription}} onChange={(event) => setLabourNotes(event.currentTarget.value)}/>
-            <CompleteLabourButton setLabour={setLabour} disabled={hasActiveContraction} labourNotes={labourNotes}/>
+            <CompleteLabourButton setLabour={setLabour} disabled={!!activeContraction} labourNotes={labourNotes}/>
           </Stack>
         </div>
         </div>

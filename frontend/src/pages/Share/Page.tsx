@@ -4,6 +4,7 @@ import { Header } from '../../shared-components/Header/Header';
 import { ShareContainer } from './Components/Container/Container';
 import { Center } from '@mantine/core';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading';
+import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer';
 
 export const ShareBirthingPersonPage = () => {
   const [token, setToken] = useState('');
@@ -55,9 +56,7 @@ export const ShareBirthingPersonPage = () => {
     return (
       <div>
         <Header active={page}/>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-xl text-red-600">{error}</div>
-        </div>
+        <ErrorContainer message={error} />
       </div>
     );
   }

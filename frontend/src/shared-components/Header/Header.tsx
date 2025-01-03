@@ -45,7 +45,7 @@ export function Header({active}: {active: string}) {
         <header className={classes.header} color='peach'>
             <Container className={classes.inner}>
                 <div className={classes.titleRow}>
-                    <img src="/src/public/logo/logo.svg" className={classes.icon}></img>
+                    <img src="/logo/logo.svg" className={classes.icon}></img>
                     <Text className={classes.title} >Fern Labour</Text>
                 </div>
                 <Box className={classes.links} visibleFrom="sm">

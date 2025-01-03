@@ -33,3 +33,9 @@ export const getTimeSinceLastEnded = (contractions: ContractionDTO[]): Record<st
     });
     return timeSinceLastEnded
 }
+
+export const secondsElapsed = (contraction: ContractionDTO): number => {
+    const timestamp = new Date(contraction.start_time).getTime();
+    const now = Date.now();
+    return Math.floor((now - timestamp) / 1000);
+}

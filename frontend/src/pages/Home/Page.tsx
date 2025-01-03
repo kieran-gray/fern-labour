@@ -7,6 +7,7 @@ import { PageLoading } from "../../shared-components/PageLoading/PageLoading";
 import { Container, Space, Title } from "@mantine/core";
 import Labours from "./Components/Labours";
 import ContactMethodsModal from "../../shared-components/ContactMethodsModal/ContactMethodsModal";
+import { ErrorContainer } from "../../shared-components/ErrorContainer/ErrorContainer";
 
 export const HomePage: React.FC = () => {
   const [birthingPerson, setBirthingPerson] = useState<BirthingPersonDTO | null>(null);
@@ -30,9 +31,8 @@ export const HomePage: React.FC = () => {
     if (response.ok) {
       const data: BirthingPersonResponse = await response.json()
       return data.birthing_person
-    } else {
-      return null
     }
+    return null
   }
 
   const fetchBirthingPerson = async (): Promise<BirthingPersonDTO | null> => {
@@ -43,9 +43,8 @@ export const HomePage: React.FC = () => {
     if (response.ok) {
       const data: BirthingPersonResponse = await response.json()
       return data.birthing_person
-    } else {
-      return null
     }
+    return null
   }
 
   const fetchSubscriptions = async (): Promise<BirthingPersonSummaryDTO[] | null> => {
@@ -56,32 +55,36 @@ export const HomePage: React.FC = () => {
     if (response.ok) {
       const data: GetSubscriptionsResponse = await response.json()
       return data.subscriptions
-    } else {
-      return null
     }
+    return null
   }
 
   useEffect(() => {
     const fetchData = async () => {
-      let birthingPersonResponse = await fetchBirthingPerson()
-      if (birthingPersonResponse === null) {
-        birthingPersonResponse = await registerBirthingPerson()
-        setNewUser(true);
-      }
-      if (birthingPersonResponse === null) {
-        setError("Failed to fetch birthing person data. Please try again later.")
+      try {
+        let birthingPersonResponse = await fetchBirthingPerson()
+        if (birthingPersonResponse === null) {
+          birthingPersonResponse = await registerBirthingPerson()
+          setNewUser(true);
+        }
+        if (birthingPersonResponse === null) {
+          setError("Failed to fetch data. Please try again later.")
+          setIsLoading(false);
+        } else {
+          setBirthingPerson(birthingPersonResponse)
+        }
+  
+        let subscriptionsResponse = await fetchSubscriptions()
+        if (subscriptionsResponse === null) {
+          setPromptForSubscriberRegistration(true)
+        } else {
+          setSubscriptions(subscriptionsResponse)
+        }
         setIsLoading(false);
-      } else {
-        setBirthingPerson(birthingPersonResponse)
+      } catch (err) {
+        setError("Failed to fetch data. Please try again later.")
+        setIsLoading(false);
       }
-
-      let subscriptionsResponse = await fetchSubscriptions()
-      if (subscriptionsResponse === null) {
-        setPromptForSubscriberRegistration(true)
-      } else {
-        setSubscriptions(subscriptionsResponse)
-      }
-      setIsLoading(false);
     }
     fetchData();
   }, []);
@@ -97,12 +100,10 @@ export const HomePage: React.FC = () => {
 
   if (error) {
     return (
-      <div>
+      <>
         <Header active={page} />
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-          <div className="text-xl text-red-600">{error}</div>
-        </div>
-      </div>
+        <ErrorContainer message={error} />
+      </>
     );
   }
 
@@ -112,9 +113,6 @@ export const HomePage: React.FC = () => {
     )
   }
 
-  const subscriptionsProps = {
-    subscriptions: subscriptions ? subscriptions : []
-  }
   return (
     <div>
       <Header active={page} />
@@ -124,7 +122,7 @@ export const HomePage: React.FC = () => {
         <Space h="xl" />
         {birthingPerson && <Labours birthingPerson={birthingPerson} />}
         <Space h="xl" />
-        <Subscriptions {...subscriptionsProps} />
+        <Subscriptions subscriptions={subscriptions} />
       </Container>
     </div>
   );

@@ -100,3 +100,13 @@
 .track {
   background-color: var(--mantine-color-pink-1);
 }
+
+.controlsBackground {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 15px;
+  border-radius: 15px;
+  background-color: var(--mantine-color-pink-1);
+}

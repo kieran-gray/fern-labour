@@ -5,6 +5,7 @@ import { LabourDTO, LabourResponse } from '../../client';
 import LabourContainer from './Components/LabourContainer/LabourContainer';
 import { Center, Space } from '@mantine/core';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading';
+import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer';
 
 
 export const LabourPage = () => {
@@ -25,9 +26,9 @@ export const LabourPage = () => {
                 if (!response.ok) {
                     if (response.status == 404) {
                         setHasActiveLabour(false);
-                        setIsLoading(false);
                     } else {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        console.error(`Error fetching labour data: ${response.status}`);
+                        setError('Failed to load labour. Please try again later.');
                     }
                 }
                 const data: LabourResponse = await response.json();
@@ -35,7 +36,6 @@ export const LabourPage = () => {
                 setActiveLabour(data.labour);
                 setIsLoading(false);
             } catch (err) {
-                console.error('Error fetching labour data:', err);
                 setError('Failed to load labour. Please try again later.');
                 setIsLoading(false);
             }
@@ -56,26 +56,19 @@ export const LabourPage = () => {
 
     if (error) {
         return (
-            <div>
+        <>
             <Header active={page}/>
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-                <div className="text-xl text-red-600">{error}</div>
-            </div>
-            </div>
-        );
+            <ErrorContainer message={error} />
+        </>);
     }
-    const bannerProps = {
-        labour: activeLabour,
-        hasActiveLabour: hasActiveLabour,
-        setLabour: setActiveLabour,
-        }
+
     return (
-        <div>
+        <>
         <Header active={page}/>
         <Center flex={"shrink"} p={15}>
-            <LabourContainer {...bannerProps} />
+            <LabourContainer labour={activeLabour} hasActiveLabour={hasActiveLabour} setLabour={setActiveLabour} />
         </Center>
         <Space h="xl"></Space>
-        </div>
+        </>
     )
 };

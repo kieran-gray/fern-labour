@@ -1,10 +1,15 @@
 import { Button } from '@mantine/core';
 import { useAuth } from 'react-oidc-context';
 import { LabourResponse, StartContractionRequest } from '../../../../client';
+import { StopwatchHandle } from '../Stopwatch/Stopwatch';
+import { RefObject } from 'react';
 
-export default function StartContractionButton({setLabour}: {setLabour: Function}) {
+export default function StartContractionButton(
+    {setLabour, stopwatchRef}: {setLabour: Function, stopwatchRef: RefObject<StopwatchHandle>}
+) {
     const auth = useAuth()
     const startContraction = async () => {
+        stopwatchRef.current?.start()
         try {
             const headers = {
                 'Authorization': `Bearer ${auth.user?.access_token}`,

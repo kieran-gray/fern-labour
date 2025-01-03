@@ -10,7 +10,7 @@ import classes from './ContactMethodsModal.module.css';
 export default function ContactMethodsModal({ name, promptForContactMethods }: { name: string, promptForContactMethods: Function }) {
   const [email, setEmail] = useState(true);
   const [sms, setSMS] = useState(true);
-  const [opened, { open, close }] = useDisclosure(false);
+  const [_, { close }] = useDisclosure(false);
   const auth = useAuth();
 
   const registerSubscriber = async (body: RegisterSubscriberRequest): Promise<SubscriberDTO | null> => {
@@ -18,7 +18,6 @@ export default function ContactMethodsModal({ name, promptForContactMethods }: {
       'Authorization': `Bearer ${auth.user?.access_token}`,
       'Content-Type': 'application/json'
     }
-    console.log(body)
     const response = await fetch(
       'http://localhost:8000/api/v1/subscriber/register',
       { method: 'POST', headers: headers, body: JSON.stringify(body) }
