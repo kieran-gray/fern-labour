@@ -5,6 +5,7 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials
 
+from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_service import SubscriptionService
 from app.infrastructure.auth.interfaces.controller import AuthController
@@ -15,6 +16,7 @@ from app.presentation.api.schemas.requests.subscriber import (
     UnsubscribeFromRequest,
 )
 from app.presentation.api.schemas.responses.subscriber import SubscriberResponse
+from app.presentation.api.schemas.responses.subscription import GetSubscriptionsResponse
 from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
 
@@ -100,3 +102,30 @@ async def unsubscribe_from(
         subscriber_id=user.id, birthing_person_id=request_data.birthing_person_id
     )
     return SubscriberResponse(subscriber=subscriber)
+
+
+@subscriber_router.get(
+    "/subscriptions",
+    responses={
+        status.HTTP_200_OK: {"model": GetSubscriptionsResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_subscriptions(
+    subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    birthing_person_service: Annotated[BirthingPersonService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> GetSubscriptionsResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    subscriber = await subscriber_service.get(subscriber_id=user.id)
+    birthing_person_summaries = [
+        await birthing_person_service.get_birthing_person_summary(birthing_person_id)
+        for birthing_person_id in subscriber.subscribed_to
+    ]
+    return GetSubscriptionsResponse(subscriptions=birthing_person_summaries)

@@ -39,7 +39,6 @@ async def begin_labour(
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
-    """Begin labour for the current user"""
     user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.begin_labour(user.id, request_data.first_labour)
     return LabourResponse(labour=labour)
@@ -63,7 +62,6 @@ async def start_contraction(
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
-    """Start a new contraction in the given labor session"""
     user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.start_contraction(
         birthing_person_id=user.id,
@@ -92,7 +90,6 @@ async def end_contraction(
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
-    """End the currently active contraction in the given session"""
     user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.end_contraction(
         birthing_person_id=user.id,
@@ -121,7 +118,6 @@ async def complete_labour(
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
-    """Mark a labor session as complete"""
     user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.complete_labour(
         birthing_person_id=user.id, end_time=request_data.end_time, notes=request_data.notes

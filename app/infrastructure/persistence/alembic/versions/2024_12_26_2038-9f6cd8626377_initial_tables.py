@@ -44,8 +44,8 @@ def upgrade() -> None:
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("birthing_person_id", sa.String(), nullable=False),
         sa.Column("first_labour", sa.Boolean(), nullable=False),
-        sa.Column("start_time", sa.DateTime(), nullable=False),
-        sa.Column("end_time", sa.DateTime(), nullable=True),
+        sa.Column("start_time", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("end_time", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
             "current_phase",
             postgresql.ENUM(
@@ -86,8 +86,8 @@ def upgrade() -> None:
         "contractions",
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("labour_id", sa.UUID(), nullable=False),
-        sa.Column("start_time", sa.DateTime(), nullable=False),
-        sa.Column("end_time", sa.DateTime(), nullable=False),
+        sa.Column("start_time", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("end_time", sa.DateTime(timezone=True), nullable=False),
         sa.Column("intensity", sa.Integer(), nullable=True),
         sa.Column("notes", sa.String(), nullable=True),
         sa.ForeignKeyConstraint(

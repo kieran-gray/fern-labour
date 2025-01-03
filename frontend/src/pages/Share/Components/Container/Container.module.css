@@ -1,0 +1,11 @@
+
+.share {
+  padding: 15px;
+  border-radius: 15px;
+  background-color: var(--mantine-color-pink-1);
+}
+
+.controls {
+  display: flex;
+  margin-top: var(--mantine-spacing-xl);
+}

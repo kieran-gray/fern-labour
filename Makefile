@@ -7,6 +7,7 @@ PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
 .PHONY: build-dev \
 		build-prod \
 		build-keycloak \
+		build-frontend \
 		build \
 		clean
 
@@ -19,7 +20,10 @@ build-prod:
 build-keycloak:
 	docker build -t $(DOCKER_IMAGE_BACKEND)-keycloak ./keycloak -f ./keycloak/Dockerfile --no-cache
 
-build: build-dev build-prod build-keycloak
+build-frontend:
+	docker build -t $(DOCKER_IMAGE_FRONTEND) ./frontend -f ./frontend/Dockerfile
+
+build: build-dev build-prod build-keycloak build-frontend
 
 clean: 
 	docker system prune -a && docker volume prune -a
@@ -27,6 +31,8 @@ clean:
 # Project running
 .PHONY: run-deps \
 		run-backend \
+		run-frontend \
+		run-app \
 		stop
 
 run-deps:
@@ -34,6 +40,12 @@ run-deps:
 
 run-backend:
 	docker compose --profile backend --profile consumer up
+
+run-frontend:
+	docker compose --profile frontend up --build
+
+run-app:
+	docker compose --profile backend --profile consumer --profile frontend up
 
 stop:
 	docker compose down

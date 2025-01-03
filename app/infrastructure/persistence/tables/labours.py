@@ -10,8 +10,8 @@ labours_table = Table(
     Column("id", UUID(as_uuid=True), primary_key=True),
     Column("birthing_person_id", String, ForeignKey("birthing_persons.id"), nullable=False),
     Column("first_labour", Boolean, nullable=False),
-    Column("start_time", DateTime, nullable=False),
-    Column("end_time", DateTime, nullable=True),
+    Column("start_time", DateTime(timezone=True), nullable=False),
+    Column("end_time", DateTime(timezone=True), nullable=True),
     Column("current_phase", Enum(LabourPhase, name="labour_phase"), nullable=False),
     Column("notes", String, nullable=True),
 )

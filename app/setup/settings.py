@@ -130,6 +130,7 @@ class NotificationSettings(BaseModel):
 
 class KafkaSettings(BaseModel):
     bootstrap_servers: str = Field(alias="KAFKA_BOOTSTRAP_SERVERS")
+    topic_prefix: str = Field(alias="KAFKA_TOPIC_PREFIX", default="labour-tracker")
 
     @property
     def kafka_enabled(self) -> bool:
@@ -137,7 +138,6 @@ class KafkaSettings(BaseModel):
 
 
 class KafkaProducerSettings(BaseModel):
-    topic_prefix: str = Field(alias="KAFKA_TOPIC_PREFIX", default="labour_tracker")
     retries: int = Field(alias="KAFKA_PRODUCER_RETRIES", default=3)
     acks: str = Field(alias="KAFKA_PRODUCER_ACKS", default="all")
 

@@ -1,0 +1,107 @@
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    border: 5px solid var(--mantine-color-pink-3);
+    background-color: var(--mantine-color-pink-3);
+    border-radius: var(--mantine-radius-xl);
+    flex-basis: content;
+    justify-content: center;
+
+    @media (max-width: var(--mantine-breakpoint-sm)) {
+        flex-direction: column;
+    }
+}
+
+.title {
+    color: var(--mantine-color-white);
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: var(--mantine-font-size-xl);
+}
+
+.body {
+    border: 5px solid var(--mantine-color-pink-3);
+    border-radius: var(--mantine-radius-xl);
+    background-color: var(--mantine-color-pink-0);
+    padding: var(--mantine-spacing-md);
+    height: auto;
+    min-width: 220px;
+    flex: 1;
+}
+
+.header {
+    width: 100%;
+    padding: var(--mantine-spacing-md);
+}
+
+.text {
+    color: var(--mantine-color-gray-9);
+    line-height: 1;
+    font-weight: 700;
+    margin-bottom: var(--mantine-spacing-md);
+    font-size: var(--mantine-font-size-lg);
+}
+
+.minorText {
+    color: var(--mantine-color-gray-7);
+    font-weight: 400;
+    margin-bottom: var(--mantine-spacing-md);
+    font-size: var(--mantine-font-size-md);
+}
+
+.flexRowNoBP {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: stretch;
+    width: 100%;
+    flex-basis: stretch;
+    flex-wrap: wrap;
+}
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: stretch;
+    width: 100%;
+    flex-basis: stretch;
+    flex-wrap: wrap;
+
+    @media (max-width: var(--mantine-breakpoint-sm)) {
+        flex-direction: column;
+    }
+}
+
+.flexRowEnd {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-content: stretch;
+    width: 100%;
+
+    @media (max-width: var(--mantine-breakpoint-sm)) {
+        flex-direction: column;
+    }
+}
+
+.flexRowEndNoBP {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-content: stretch;
+    width: 100%;
+
+}
+
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.flexColumnEnd {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
