@@ -3,7 +3,7 @@ import React from 'react';
 import reactDom from 'react-dom/client';
 import { AuthProvider } from 'react-oidc-context';
 import App from './App.tsx';
-import { ProtectedApp } from './components/ProtectedApp.tsx';
+import { ProtectedApp } from './shared-components/ProtectedApp.tsx';
 import { onSigninCallback, queryClient, userManager } from './config.ts';
 
 // biome-ignore lint/style/noNonNullAssertion: We expect this element to always exist
