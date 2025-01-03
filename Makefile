@@ -1,7 +1,8 @@
 # Makefile variables
-SRC_DIR := app
-TEST_DIR := tests
-PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
+DOCKER_IMAGE_BACKEND=labour-tracker-backend
+DOCKER_IMAGE_FRONTEND=labour-tracker-frontend
+DEV_IMAGE := $(DOCKER_IMAGE_BACKEND)-dev:latest
+DEV_COMMAND_CONTAINER := docker run --rm $(DEV_IMAGE) sh -c
 
 # Project building
 .PHONY: build-dev \
@@ -12,10 +13,10 @@ PYPROJECT_TOML := $(shell grep 'PYPROJECT_TOML' config.toml | sed 's/.*= *//')
 		clean
 
 build-dev:
-	docker build --target dev -t $(DOCKER_IMAGE_BACKEND)-dev .
+	docker build --target dev -t $(DOCKER_IMAGE_BACKEND)-dev ./backend
 
 build-prod:
-	docker build --target production -t $(DOCKER_IMAGE_BACKEND) .
+	docker build --target production -t $(DOCKER_IMAGE_BACKEND) ./backend
 
 build-keycloak:
 	docker build -t $(DOCKER_IMAGE_BACKEND)-keycloak ./keycloak -f ./keycloak/Dockerfile --no-cache
@@ -52,20 +53,13 @@ stop:
 
 # Source code formatting and linting
 .PHONY: format \
-		lint \
-		test \
-		test-debug \
-		check
+		lint 
 
 format:
-	uv run ruff check $(SRC_DIR) $(TEST_DIR) --fix
-	uv run ruff format $(SRC_DIR) $(TEST_DIR)
+	$(DEV_COMMAND_CONTAINER) 'ls -l && ./scripts/format.sh'
 
 lint:
-	uv run mypy $(SRC_DIR)
-	uv run ruff check $(SRC_DIR)
-	uv run ruff format $(SRC_DIR) --check
-	uv run bandit -r $(SRC_DIR) -c $(PYPROJECT_TOML)
+	$(DEV_COMMAND_CONTAINER) './scripts/lint.sh'
 
 # Testing
 .PHONY: test \
@@ -77,6 +71,6 @@ test:
 
 # Use 'Attach Local' VSCode launch profile
 test-debug:
-	uv run debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest tests -v
+	uv run debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest $(TEST_DIR) -v
 
 check: lint test
