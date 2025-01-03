@@ -260,8 +260,11 @@ services:
       - default
     build:
       context: ./frontend
+      args:
+        - VITE_API_URL=https://api.${DOMAIN?Variable not set}
+        - NODE_ENV=production
     env_file:
-      - .env
+      - ./frontend/.env
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
