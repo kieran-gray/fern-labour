@@ -39,7 +39,7 @@ export default function CompleteLabourButton({labourNotes, disabled, setLabour}:
     }
     if (completeClicked) {
         if (confirmedCompleteLabour) {
-            return completeLabour()
+            completeLabour()
         } else {
             return <ConfirmCompleteLabourModal setConfirmedComplete={setConfirmedCompleteLabour} />
         }
@@ -54,5 +54,5 @@ export default function CompleteLabourButton({labourNotes, disabled, setLabour}:
             </Tooltip>
         )
     }
-    return <Button size='xl' color='var(--mantine-color-pink-4)' radius="lg" variant="filled" onClick={setCompleteClicked}>Complete Labour</Button>;
+    return <Button size='xl' color='var(--mantine-color-pink-4)' radius="lg" variant="filled" onClick={() => setCompleteClicked(true)}>Complete Labour</Button>;
 }

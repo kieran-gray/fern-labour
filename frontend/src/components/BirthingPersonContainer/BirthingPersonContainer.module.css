@@ -10,7 +10,7 @@
   padding: calc(var(--mantine-spacing-xl) * 1.5);
   border-radius: var(--mantine-radius-md);
 
-  @media (max-width: $mantine-breakpoint-sm) {
+  @media (max-width: var(--mantine-breakpoint-sm)) {
     flex-direction: column;
   }
 }
@@ -50,7 +50,7 @@
     border-left: 1px solid var(--mantine-color-pink-0);
     min-width: 170px;
 
-    @media (max-width: $mantine-breakpoint-sm) {
+    @media (max-width: var(--mantine-breakpoint-sm)) {
       padding-left: 0;
       margin-left: 0;
       border-left: 0;

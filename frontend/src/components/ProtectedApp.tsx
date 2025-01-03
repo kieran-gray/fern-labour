@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { hasAuthParams, useAuth } from 'react-oidc-context';
-import { Alert } from './Alert.tsx';
 import { PageLoading } from './PageLoading/PageLoading.tsx';
+import { ErrorContainer } from './ErrorContainer/ErrorContainer.tsx';
 
 interface ProtectedAppProps {
   children: ReactNode;
@@ -28,10 +28,7 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
   return (
     <>
       {auth.error ? (
-        <>
-          <h1>We've hit a snag</h1>
-          <Alert variant="error">{auth.error?.message}</Alert>
-        </>
+        <ErrorContainer message={auth.error?.message}/>
       ) : auth.isLoading ? (
         <>
           <PageLoading></PageLoading>
@@ -39,10 +36,7 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
       ) : auth.isAuthenticated ? (
         children
       ) : (
-        <>
-          <h1>We've hit a snag</h1>
-          <Alert variant="error">Unable to sign in</Alert>
-        </>
+        <ErrorContainer message="Unable to sign in"/>
       )}
     </>
   );

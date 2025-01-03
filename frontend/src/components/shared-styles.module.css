@@ -7,7 +7,7 @@
     flex-basis: content;
     justify-content: center;
 
-    @media (max-width: $mantine-breakpoint-sm) {
+    @media (max-width: var(--mantine-breakpoint-sm)) {
         flex-direction: column;
     }
 }
@@ -68,7 +68,7 @@
     flex-basis: stretch;
     flex-wrap: wrap;
 
-    @media (max-width: $mantine-breakpoint-sm) {
+    @media (max-width: var(--mantine-breakpoint-sm)) {
         flex-direction: column;
     }
 }
@@ -80,7 +80,7 @@
     align-content: stretch;
     width: 100%;
 
-    @media (max-width: $mantine-breakpoint-sm) {
+    @media (max-width: var(--mantine-breakpoint-sm)) {
         flex-direction: column;
     }
 }
