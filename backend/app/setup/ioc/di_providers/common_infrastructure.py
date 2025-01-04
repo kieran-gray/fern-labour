@@ -2,6 +2,7 @@ import logging
 from collections.abc import AsyncIterable
 
 from dishka import Provider, Scope, provide
+from keycloak import KeycloakOpenID
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -16,7 +17,6 @@ from app.infrastructure.auth.keycloak.service import KeycloakAuthService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.ioc.di_providers.common_settings import PostgresDsn
 from app.setup.settings import Settings, SqlaEngineSettings
-from keycloak import KeycloakOpenID  # type: ignore
 
 log = logging.getLogger(__name__)
 

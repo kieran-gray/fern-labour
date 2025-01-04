@@ -1,9 +1,10 @@
 from typing import Any
 
+from keycloak import KeycloakOpenID
+from keycloak.exceptions import KeycloakAuthenticationError
+
 from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
 from app.infrastructure.auth.interfaces.models import User
-from keycloak import KeycloakOpenID  # type: ignore
-from keycloak.exceptions import KeycloakAuthenticationError
 
 
 class KeycloakAuthService:
