@@ -1,7 +1,7 @@
 import { useAuth } from 'react-oidc-context';
 import { useState, useEffect } from 'react';
 import { Header } from '../../shared-components/Header/Header';
-import { LabourDTO, LabourResponse } from '../../client';
+import { ApiError, LabourDTO, LabourService, OpenAPI } from '../../client';
 import LabourContainer from './Components/LabourContainer/LabourContainer';
 import { Center, Space } from '@mantine/core';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading';
@@ -15,30 +15,34 @@ export const LabourPage = () => {
     const [error, setError] = useState("");
     const auth = useAuth();
     const page = 'Labour';
+    OpenAPI.TOKEN = async () => {
+        return auth.user?.access_token || ""
+    }
 
     useEffect(() => {
         const fetchActiveLabour = async () => {
+            let activeLabour
             try {
-                const headers = {
-                    'Authorization': `Bearer ${auth.user?.access_token}`
-                }
-                const response = await fetch('http://localhost:8000/api/v1/labour/active', { method: 'GET', headers: headers });
-                if (!response.ok) {
-                    if (response.status == 404) {
-                        setHasActiveLabour(false);
-                    } else {
-                        console.error(`Error fetching labour data: ${response.status}`);
-                        setError('Failed to load labour. Please try again later.');
-                    }
-                }
-                const data: LabourResponse = await response.json();
-                setHasActiveLabour(true);
-                setActiveLabour(data.labour);
-                setIsLoading(false);
+                const response = await LabourService.getActiveLabourApiV1LabourActiveGet()
+                activeLabour = response.labour
             } catch (err) {
-                setError('Failed to load labour. Please try again later.');
-                setIsLoading(false);
+                if (err instanceof ApiError) {
+                    if (err.status !== 404) {
+                        console.error(`Error fetching labour data: ${err.message}`);
+                        setError("Failed to load labour. Please try again later.")
+                    }
+                } else {
+                    setError("Failed to load labour. Please try again later.")
+                }
             }
+            if (activeLabour) {
+                setActiveLabour(activeLabour);
+            }
+            // TODO this logic makes no sense BUT if there is an error then that will be displayed
+            //      if there is no error then there should be an active labour. Without this, the 
+            //      labour container doesn't update to show the new labour for some reason.
+            setHasActiveLabour(true);
+            setIsLoading(false);
         }
         if (activeLabour === null) {
             fetchActiveLabour();

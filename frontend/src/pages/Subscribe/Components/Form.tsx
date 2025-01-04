@@ -1,7 +1,7 @@
 import { Button, PinInput, Space, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useAuth } from 'react-oidc-context';
-import { SubscribeToRequest } from '../../../client';
+import { OpenAPI, SubscriberService, SubscribeToRequest } from '../../../client';
 import { useNavigate } from 'react-router-dom';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import ContactMethodsModal from '../../../shared-components/ContactMethodsModal/ContactMethodsModal';
@@ -19,23 +19,19 @@ export default function SubscribeForm({ birthingPersonId, newUser, setNewUser, s
         },
     });
 
+    OpenAPI.TOKEN = async () => {
+        return auth.user?.access_token || ""
+    }
 
     const subscribeTo = async (values: typeof form.values) => {
         try {
-            const headers = {
-                'Authorization': `Bearer ${auth.user?.access_token}`,
-                'Content-Type': 'application/json'
-            }
             const requestBody: SubscribeToRequest = { "token": values.token }
-            const response = await fetch(
-                `http://localhost:8000/api/v1/subscriber/subscribe_to/${birthingPersonId}`,
-                { method: 'POST', headers: headers, body: JSON.stringify(requestBody) }
-            );
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            await SubscriberService.subscribeToApiV1SubscriberSubscribeToBirthingPersonIdPost(
+                {requestBody:requestBody, birthingPersonId:birthingPersonId}
+            )
             navigate("/")
         } catch (err) {
+            // TODO error message depends on http status of response
             setError('Invalid or incorrect token');
         }
     }

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { SubscriberDTO, SubscriberResponse, RegisterSubscriberRequest } from "../../client";
+import { SubscriberDTO, RegisterSubscriberRequest, OpenAPI, SubscriberService } from "../../client";
 import { useAuth } from "react-oidc-context";
 import { Text, Modal, Space, Button, Group, Checkbox } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -12,20 +12,15 @@ export default function ContactMethodsModal({ name, promptForContactMethods }: {
   const [sms, setSMS] = useState(true);
   const [_, { close }] = useDisclosure(false);
   const auth = useAuth();
+  OpenAPI.TOKEN = async () => {
+    return auth.user?.access_token || ""
+  }
 
   const registerSubscriber = async (body: RegisterSubscriberRequest): Promise<SubscriberDTO | null> => {
-    const headers = {
-      'Authorization': `Bearer ${auth.user?.access_token}`,
-      'Content-Type': 'application/json'
-    }
-    const response = await fetch(
-      'http://localhost:8000/api/v1/subscriber/register',
-      { method: 'POST', headers: headers, body: JSON.stringify(body) }
-    );
-    if (response.ok) {
-      const data: SubscriberResponse = await response.json()
-      return data.subscriber
-    } else {
+    try {
+      const response = await SubscriberService.registerApiV1SubscriberRegisterPost({requestBody: body})
+      return response.subscriber 
+    } catch (err) {
       return null
     }
   }

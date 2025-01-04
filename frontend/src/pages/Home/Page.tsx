@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BirthingPersonSummaryDTO, BirthingPersonResponse, BirthingPersonDTO, GetSubscriptionsResponse } from "../../client";
+import { BirthingPersonSummaryDTO, BirthingPersonDTO, OpenAPI, BirthingPersonService, SubscriberService } from "../../client";
 import { Header } from "../../shared-components/Header/Header";
 import { useAuth } from "react-oidc-context";
 import Subscriptions from "./Components/Subscriptions";
@@ -19,44 +19,35 @@ export const HomePage: React.FC = () => {
   const auth = useAuth();
   const page = 'Home';
 
-  const headers = {
-    'Authorization': `Bearer ${auth.user?.access_token}`
+  OpenAPI.TOKEN = async () => {
+    return auth.user?.access_token || ""
   }
 
   const registerBirthingPerson = async (): Promise<BirthingPersonDTO | null> => {
-    const response = await fetch(
-      'http://localhost:8000/api/v1/birthing-person/register',
-      { method: 'POST', headers: headers }
-    );
-    if (response.ok) {
-      const data: BirthingPersonResponse = await response.json()
-      return data.birthing_person
+    try {
+      const response = await BirthingPersonService.registerApiV1BirthingPersonRegisterPost()
+      return response.birthing_person
+    } catch (err) {
+      return null
     }
-    return null
   }
 
   const fetchBirthingPerson = async (): Promise<BirthingPersonDTO | null> => {
-    const response = await fetch(
-      'http://localhost:8000/api/v1/birthing-person/',
-      { method: 'GET', headers: headers }
-    );
-    if (response.ok) {
-      const data: BirthingPersonResponse = await response.json()
-      return data.birthing_person
+    try {
+      const response = await BirthingPersonService.getBirthingPersonApiV1BirthingPersonGet()
+      return response.birthing_person
+    } catch (err) {
+      return null
     }
-    return null
   }
 
   const fetchSubscriptions = async (): Promise<BirthingPersonSummaryDTO[] | null> => {
-    const response = await fetch(
-      'http://localhost:8000/api/v1/subscriber/subscriptions',
-      { method: 'GET', headers: headers }
-    );
-    if (response.ok) {
-      const data: GetSubscriptionsResponse = await response.json()
-      return data.subscriptions
+    try {
+      const response = await SubscriberService.getSubscriptionsApiV1SubscriberSubscriptionsGet()
+      return response.subscriptions
+    } catch (err) {
+      return null
     }
-    return null
   }
 
   useEffect(() => {
@@ -118,7 +109,7 @@ export const HomePage: React.FC = () => {
       <Header active={page} />
       <Container size={1200} p={15}>
         <div></div>
-        <Title>Welcome {!newUser && 'back'} {auth.user?.profile.given_name}</Title>
+        <Title>Welcome{!newUser && ' back'}, {auth.user?.profile.given_name}</Title>
         <Space h="xl" />
         {birthingPerson && <Labours birthingPerson={birthingPerson} />}
         <Space h="xl" />

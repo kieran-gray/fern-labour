@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, GetUserApiV1AuthUserGetResponse, RegisterApiV1BirthingPersonRegisterPostResponse, GetBirthingPersonApiV1BirthingPersonGetResponse, GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse, GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse, RedirectToDocsGetResponse, HealthcheckApiV1HealthGetResponse, BeginLabourApiV1LabourBeginPostData, BeginLabourApiV1LabourBeginPostResponse, StartContractionApiV1LabourContractionStartPostData, StartContractionApiV1LabourContractionStartPostResponse, EndContractionApiV1LabourContractionEndPutData, EndContractionApiV1LabourContractionEndPutResponse, CompleteLabourApiV1LabourCompletePutData, CompleteLabourApiV1LabourCompletePutResponse, GetActiveLabourApiV1LabourActiveGetResponse, GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse, RegisterApiV1SubscriberRegisterPostData, RegisterApiV1SubscriberRegisterPostResponse, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostData, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostResponse, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse, GetSubscriptionsApiV1SubscriberSubcriptionsGetResponse } from './types.gen';
+import type { LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, GetUserApiV1AuthUserGetResponse, RegisterApiV1BirthingPersonRegisterPostResponse, GetBirthingPersonApiV1BirthingPersonGetResponse, GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse, GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse, RedirectToDocsGetResponse, HealthcheckApiV1HealthGetResponse, BeginLabourApiV1LabourBeginPostData, BeginLabourApiV1LabourBeginPostResponse, StartContractionApiV1LabourContractionStartPostData, StartContractionApiV1LabourContractionStartPostResponse, EndContractionApiV1LabourContractionEndPutData, EndContractionApiV1LabourContractionEndPutResponse, CompleteLabourApiV1LabourCompletePutData, CompleteLabourApiV1LabourCompletePutResponse, GetActiveLabourApiV1LabourActiveGetResponse, GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse, RegisterApiV1SubscriberRegisterPostData, RegisterApiV1SubscriberRegisterPostResponse, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostData, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostResponse, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse, GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -159,7 +159,7 @@ export class HealthService {
     
 }
 
-export class LabourTrackingService {
+export class LabourService {
     /**
      * Begin Labour
      * @param data The data for the request.
@@ -369,10 +369,10 @@ export class SubscriberService {
      * @returns GetSubscriptionsResponse Successful Response
      * @throws ApiError
      */
-    public static getSubscriptionsApiV1SubscriberSubcriptionsGet(): CancelablePromise<GetSubscriptionsApiV1SubscriberSubcriptionsGetResponse> {
+    public static getSubscriptionsApiV1SubscriberSubscriptionsGet(): CancelablePromise<GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/subscriber/subcriptions',
+            url: '/api/v1/subscriber/subscriptions',
             errors: {
                 400: 'Bad Request',
                 401: 'Unauthorized',

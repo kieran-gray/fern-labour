@@ -3,7 +3,7 @@ import { Container, Notification, Space } from "@mantine/core";
 import SubscribeForm from "./Components/Form";
 import { useParams } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
-import { BirthingPersonSummaryDTO, GetSubscriptionsResponse } from "../../client";
+import { BirthingPersonSummaryDTO, OpenAPI, SubscriberService } from "../../client";
 import { useEffect, useState } from "react";
 
 export const SubscribePage: React.FC = () => {
@@ -12,20 +12,15 @@ export const SubscribePage: React.FC = () => {
     const auth = useAuth();
     const { id } = useParams<'id'>();
     if (!id) throw new Error('id is required')
-
-    const headers = {
-        'Authorization': `Bearer ${auth.user?.access_token}`
-    }
+    OpenAPI.TOKEN = async () => {
+            return auth.user?.access_token || ""
+        }
 
     const fetchSubscriptions = async (): Promise<BirthingPersonSummaryDTO[] | null> => {
-        const response = await fetch(
-            'http://localhost:8000/api/v1/subscriber/subscriptions',
-            { method: 'GET', headers: headers }
-        );
-        if (response.ok) {
-            const data: GetSubscriptionsResponse = await response.json()
-            return data.subscriptions
-        } else {
+        try {
+            const response = await SubscriberService.getSubscriptionsApiV1SubscriberSubscriptionsGet()
+            return response.subscriptions
+        } catch (err) {
             return null
         }
     }
