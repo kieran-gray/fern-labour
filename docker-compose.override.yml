@@ -1,14 +1,12 @@
 services:
 
   # Local services are available on their ports, but also available on:
-  # http://api.localhost.kg.com: backend
-  # http://dashboard.localhost.kg.com: frontend
+  # http://api.localhost.tiangolo.com: backend
+  # http://localhost.tiangolo.com: frontend
   # etc. To enable it, update .env, set:
-  # DOMAIN=localhost.kg.com
+  # DOMAIN=localhost.tiangolo.com
   proxy:
     image: traefik:3.0
-    profiles:
-      - proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
@@ -97,11 +95,9 @@ services:
       context: ./frontend
       args:
         - VITE_API_URL=http://localhost:8000
+        - NODE_ENV=development
     volumes:
       - ./frontend:/app
-    networks:
-      - traefik-public
-      - default
 
 networks:
   traefik-public:

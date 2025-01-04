@@ -1,8 +1,6 @@
 # Makefile variables
 DOCKER_IMAGE_BACKEND=labour-tracker-backend
 DOCKER_IMAGE_FRONTEND=labour-tracker-frontend
-DEV_IMAGE := $(DOCKER_IMAGE_BACKEND)-dev:latest
-DEV_COMMAND_CONTAINER := docker run --rm $(DEV_IMAGE) sh -c
 
 # Project building
 .PHONY: build-dev \
@@ -30,47 +28,12 @@ clean:
 	docker system prune -a && docker volume prune -a
 
 # Project running
-.PHONY: run-deps \
-		run-backend \
-		run-frontend \
-		run-app \
+.PHONY: run \
 		stop
 
-run-deps:
-	docker compose --profile auth --profile events up
-
-run-backend:
-	docker compose --profile backend --profile consumer up
-
-run-frontend:
-	docker compose --profile frontend up --build
-
-run-app:
-	docker compose --profile backend --profile consumer --profile frontend up
+run:
+	docker compose up
 
 stop:
 	docker compose down
 
-# Source code formatting and linting
-.PHONY: format \
-		lint 
-
-format:
-	$(DEV_COMMAND_CONTAINER) 'ls -l && ./scripts/format.sh'
-
-lint:
-	$(DEV_COMMAND_CONTAINER) './scripts/lint.sh'
-
-# Testing
-.PHONY: test \
-		test-debug \
-		check
-
-test:
-	uv run pytest --cov
-
-# Use 'Attach Local' VSCode launch profile
-test-debug:
-	uv run debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest $(TEST_DIR) -v
-
-check: lint test
