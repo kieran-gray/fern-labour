@@ -29,20 +29,20 @@ jobs:
 
       - name: Check MyPy version
         run: uv run mypy --version
-        working-directory: .
+        working-directory: ./backend
 
       - name: Check Ruff version
         run: uv run ruff --version
-        working-directory: .
+        working-directory: ./backend
 
       - name: Run MyPy
         run: uv run mypy app
-        working-directory: .
+        working-directory: ./backend
 
       - name: Run Ruff Check
         run: uv run ruff check app
-        working-directory: .
+        working-directory: ./backend
 
       - name: Run Ruff Format Check
         run: uv run ruff format app --check
-        working-directory: .
+        working-directory: ./backend

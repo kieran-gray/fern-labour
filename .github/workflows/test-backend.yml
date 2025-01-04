@@ -29,4 +29,4 @@ jobs:
 
       - name: Run tests
         run: uv run pytest --cov
-        working-directory: .
+        working-directory: ./backend
