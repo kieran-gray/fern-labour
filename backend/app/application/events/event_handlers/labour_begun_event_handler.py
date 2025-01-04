@@ -33,7 +33,7 @@ class LabourBegunEventHandler(EventHandler):
         for subscriber_id in birthing_person.subscribers:
             subscriber = await self._subscriber_service.get(subscriber_id)
             message = (
-                f"{subscriber.first_name}, {birthing_person.first_name} "
+                f"Hey {subscriber.first_name}, {birthing_person.first_name} "
                 f"{birthing_person.last_name} is going into labour"
             )
             for method in subscriber.contact_methods:

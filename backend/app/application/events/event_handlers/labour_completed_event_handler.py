@@ -32,7 +32,8 @@ class LabourCompletedEventHandler(EventHandler):
             subscriber = await self._subscriber_service.get(subscriber_id)
             message = (
                 f"Hey {subscriber.first_name}, {birthing_person.first_name} "
-                f"{birthing_person.last_name} has completed labour"
+                f"{birthing_person.last_name} has completed labour.\n\n"
+                f"They added the following note: {event["data"]["notes"]}"
             )
             for method in subscriber.contact_methods:
                 destination = subscriber.destination(method)

@@ -1,6 +1,6 @@
 import { Button, Tooltip } from '@mantine/core';
 import { useAuth } from 'react-oidc-context';
-import { CompleteLabourRequest, LabourResponse } from '../../../../client';
+import { CompleteLabourRequest, LabourService, OpenAPI } from '../../../../client';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import ConfirmCompleteLabourModal from '../Modals/ConfirmCompleteLabour';
@@ -10,31 +10,23 @@ export default function CompleteLabourButton({labourNotes, disabled, setLabour}:
     const navigate = useNavigate();
     const [getConfimation, setGetConfimation] = useState(false);
     const [confirmedCompleteLabour, setConfirmedCompleteLabour] = useState(false);
+    OpenAPI.TOKEN = async () => {
+        return auth.user?.access_token || ""
+    }
 
     const completeLabour = async () => {
         try {
-            const headers = {
-                'Authorization': `Bearer ${auth.user?.access_token}`,
-                'Content-Type': 'application/json'
-            }
             const requestBody: CompleteLabourRequest = {
                 "end_time": new Date().toISOString(),
                 "notes": labourNotes
             }
-            const response = await fetch(
-                'http://localhost:8000/api/v1/labour/complete',
-                { method: 'PUT', headers: headers, body: JSON.stringify(requestBody) }
-            );
-            if (!response.ok) {
-                response.text().then(text => {
-                    throw new Error(JSON.parse(text)["description"])
-                });
-            }
-            const data: LabourResponse = await response.json();
-            setLabour(data.labour);
+            const response = await LabourService.completeLabourApiV1LabourCompletePut(
+                {requestBody:requestBody}
+            )
+            setLabour(response.labour);
             navigate("/");
         } catch (err) {
-            console.error('Error starting contraction:', err);
+            console.error('Error completing labour:', err);
         }
     }
     if (getConfimation) {

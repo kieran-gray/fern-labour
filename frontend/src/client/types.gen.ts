@@ -226,4 +226,4 @@ export type UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData = {
 
 export type UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse = (SubscriberResponse);
 
-export type GetSubscriptionsApiV1SubscriberSubcriptionsGetResponse = (GetSubscriptionsResponse);
+export type GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse = (GetSubscriptionsResponse);

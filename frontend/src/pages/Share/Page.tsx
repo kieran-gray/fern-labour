@@ -5,6 +5,7 @@ import { ShareContainer } from './Components/Container/Container';
 import { Center } from '@mantine/core';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer';
+import { BirthingPersonService, OpenAPI } from '../../client';
 
 export const ShareBirthingPersonPage = () => {
   const [token, setToken] = useState('');
@@ -14,31 +15,22 @@ export const ShareBirthingPersonPage = () => {
 
   const auth = useAuth();
   const page = 'Share';
+  OpenAPI.TOKEN = async () => {
+          return auth.user?.access_token || ""
+  }
 
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const headers = {
-          'Authorization': `Bearer ${auth.user?.access_token}`
-        }
-        const response = await fetch(
-          'http://localhost:8000/api/v1/birthing-person/subscription-token', { method: 'GET', headers: headers }
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch token');
-        }
-        const data = await response.json();
-        setToken(data.token);
+        const response = await BirthingPersonService.getSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGet()
+        setToken(response.token);
         setIsLoading(false);
-        if (auth.user) {
-          setUserId(auth.user.profile.sub);
-        }
+        setUserId(auth.user?.profile.sub || "");
       } catch (err) {
         setError("Failed to load the sharing code. Please try again later.");
         setIsLoading(false);
       }
     };
-
     fetchToken();
   }, []);
 
@@ -63,16 +55,11 @@ export const ShareBirthingPersonPage = () => {
 
   const shareText = `Hey, follow this link and sign up to get notifications about my labour:\n\nhttps://fernlabour.com/subscribe/${userId}\n\nYou'll also need this code: ${token}`;
 
-  const containerProps = {
-    userId: userId,
-    token: token,
-    copyText: shareText
-  }
   return (
     <div>
       <Header active={page}/>
       <Center flex={"shrink"}  p={15}>
-        <ShareContainer {...containerProps}/>
+        <ShareContainer userId={userId} token={token} copyText={shareText}/>
       </Center>
     </div>
   );

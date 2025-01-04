@@ -626,13 +626,13 @@
                 ]
             }
         },
-        "/api/v1/subscriber/subcriptions": {
+        "/api/v1/subscriber/subscriptions": {
             "get": {
                 "tags": [
                     "Subscriber"
                 ],
                 "summary": "Get Subscriptions",
-                "operationId": "get_subscriptions_api_v1_subscriber_subcriptions_get",
+                "operationId": "get_subscriptions_api_v1_subscriber_subscriptions_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -1310,7 +1310,7 @@
             "BirthingPersonSummaryResponse": {
                 "properties": {
                     "birthing_person": {
-                        "$ref": "#/components/schemas/BirthingPersonDTO"
+                        "$ref": "#/components/schemas/BirthingPersonSummaryDTO"
                     }
                 },
                 "type": "object",
@@ -1387,7 +1387,7 @@
                         "title": "End Time"
                     },
                     "duration": {
-                        "type": "number",
+                        "type": "string",
                         "title": "Duration"
                     },
                     "intensity": {

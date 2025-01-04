@@ -1,27 +1,22 @@
 import { Button } from '@mantine/core';
 import { useAuth } from 'react-oidc-context';
-import { BeginLabourRequest, LabourResponse } from '../../../../client';
+import { BeginLabourRequest, LabourService, OpenAPI } from '../../../../client';
 
 export default function BeginLabourButton({setLabour}: {setLabour: Function}) {
     const auth = useAuth()
+    OpenAPI.TOKEN = async () => {
+        return auth.user?.access_token || ""
+    }
+
     const beginLabour = async () => {
         try {
-            const headers = {
-                'Authorization': `Bearer ${auth.user?.access_token}`,
-                'Content-Type': 'application/json'
-            }
             const requestBody: BeginLabourRequest = {
                 "first_labour": true
             }
-            const response = await fetch(
-                'http://localhost:8000/api/v1/labour/begin',
-                { method: 'POST', headers: headers, body: JSON.stringify(requestBody) }
-            );
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data: LabourResponse = await response.json();
-            setLabour(data.labour)
+            const response = await LabourService.beginLabourApiV1LabourBeginPost(
+                {requestBody: requestBody}
+            )
+            setLabour(response.labour)
         } catch (err) {
             console.error('Error starting labour:', err);
         }
