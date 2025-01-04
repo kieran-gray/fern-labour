@@ -52,7 +52,7 @@ async def test_labour_completed_event_no_subscribers(
     event = DomainEvent(
         id="event_id",
         type="labour.begun",
-        data={"birthing_person_id": BIRTHING_PERSON},
+        data={"birthing_person_id": BIRTHING_PERSON, "notes": ""},
         time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
@@ -72,7 +72,7 @@ async def test_labour_completed_event_non_existent_birthing_person(
     event = DomainEvent(
         id="event_id",
         type="labour.begun",
-        data={"birthing_person_id": "TEST"},
+        data={"birthing_person_id": "TEST", "notes": ""},
         time=datetime.now(UTC),
     )
     with pytest.raises(BirthingPersonNotFoundById):
@@ -91,7 +91,7 @@ async def test_labour_completed_event_non_existent_subscriber(
     event = DomainEvent(
         id="event_id",
         type="labour.begun",
-        data={"birthing_person_id": BIRTHING_PERSON},
+        data={"birthing_person_id": BIRTHING_PERSON, "notes": ""},
         time=datetime.now(UTC),
     )
     with pytest.raises(SubscriberNotFoundById):
@@ -113,7 +113,7 @@ async def test_labour_completed_event_has_subscriber_no_contact_methods(
     event = DomainEvent(
         id="event_id",
         type="labour.begun",
-        data={"birthing_person_id": BIRTHING_PERSON},
+        data={"birthing_person_id": BIRTHING_PERSON, "notes": ""},
         time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
@@ -146,7 +146,7 @@ async def test_labour_completed_event_has_subscriber_email(
     event = DomainEvent(
         id="event_id",
         type="labour.begun",
-        data={"birthing_person_id": BIRTHING_PERSON},
+        data={"birthing_person_id": BIRTHING_PERSON, "notes": ""},
         time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
@@ -179,7 +179,7 @@ async def test_labour_completed_event_has_subscriber_sms(
     event = DomainEvent(
         id="event_id",
         type="labour.begun",
-        data={"birthing_person_id": BIRTHING_PERSON},
+        data={"birthing_person_id": BIRTHING_PERSON, "notes": ""},
         time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
@@ -213,7 +213,7 @@ async def test_labour_completed_event_has_subscriber_all_contact_methods(
     event = DomainEvent(
         id="event_id",
         type="labour.begun",
-        data={"birthing_person_id": BIRTHING_PERSON},
+        data={"birthing_person_id": BIRTHING_PERSON, "notes": ""},
         time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
@@ -245,7 +245,7 @@ async def test_labour_completed_event_has_subscriber_all_contact_methods_no_phon
     event = DomainEvent(
         id="event_id",
         type="labour.begun",
-        data={"birthing_person_id": BIRTHING_PERSON},
+        data={"birthing_person_id": BIRTHING_PERSON, "notes": ""},
         time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
