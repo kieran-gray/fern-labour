@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: labour-tracker-frontend
+  IMAGE_NAME: kieran-gray/labour-tracker-frontend
 
 jobs:
   build-and-push-image:
