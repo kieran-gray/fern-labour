@@ -15,7 +15,7 @@ build-prod:
 	docker build --target production -t ${DOCKER_IMAGE_BACKEND} ./backend
 
 build-keycloak:
-	docker build -t ${DOCKER_IMAGE_BACKEND}-keycloak ./keycloak -f ./keycloak/Dockerfile --no-cache
+	docker build -t ${STACK_NAME}-keycloak ./keycloak -f ./keycloak/Dockerfile --no-cache
 
 build-frontend:
 	docker build -t ${DOCKER_IMAGE_FRONTEND} ./frontend -f ./frontend/Dockerfile \
