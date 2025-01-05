@@ -1,7 +1,7 @@
 services:
 
   backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_REPOSITORY}${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: always
     networks:
       - traefik-public
@@ -78,7 +78,7 @@ services:
       - POSTGRES_PORT=${POSTGRES_PORT}
 
   backend-pre-start:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_REPOSITORY}${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: "no"
     depends_on:
       db:
@@ -95,7 +95,7 @@ services:
     command: [ "alembic", "upgrade", "head" ]
 
   consumer:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_REPOSITORY}${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: always
     depends_on:
       init-kafka:
@@ -112,7 +112,7 @@ services:
       - default
 
   keycloak:
-    image: '${STACK_NAME?Variable not set}-keycloak:${TAG-latest}'
+    image: '${DOCKER_IMAGE_REPOSITORY}${STACK_NAME?Variable not set}-keycloak:${TAG-latest}'
     command: start
     environment:
       KC_HTTP_ENABLED: true
@@ -215,7 +215,7 @@ services:
       - default
 
   frontend:
-    image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_REPOSITORY}${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
     restart: always
     networks:
       - traefik-public
