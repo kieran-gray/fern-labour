@@ -4,6 +4,18 @@ import { BirthingPersonSummaryDTO } from '../../../client';
 
 
 export default function Subscriptions({ subscriptions }: { subscriptions: BirthingPersonSummaryDTO[] }) {
+  const formatLabourDurationHours = (hours: number): string => {
+    const wholeHours = Math.round(hours);
+    if (wholeHours < 1) {
+      return "Less than 1 hour"
+    } else if (wholeHours == 1) {
+      return `${wholeHours} hour`
+    } else {
+      return `${wholeHours} hours`
+    }
+  }
+
+
   const subscriptionsElements = subscriptions.map((subscription) => (
     <div key={subscription.id} className={baseClasses.body}>
       <div className={baseClasses.flexRowNoBP}>
@@ -14,7 +26,7 @@ export default function Subscriptions({ subscriptions }: { subscriptions: Birthi
         <>
           <Text className={baseClasses.text}>Number of contractions: {subscription.active_labour.contraction_count}</Text>
           <Text className={baseClasses.text}></Text>
-          <Text className={baseClasses.text}>Labour duration: {subscription.active_labour.duration.toPrecision(2)} hours</Text>
+          <Text className={baseClasses.text}>Labour duration: {formatLabourDurationHours(subscription.active_labour.duration)}</Text>
           <Text className={baseClasses.text}>Current phase: {subscription.active_labour.current_phase}</Text>
           <Text className={baseClasses.text}>Hospital recommended: {String(subscription.active_labour.hospital_recommended)}</Text>
         </>

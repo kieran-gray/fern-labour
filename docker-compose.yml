@@ -37,7 +37,7 @@ services:
     command: [ "python", "-m", "app.run" ]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
-      interval: 10s
+      interval: 30s
       timeout: 5s
       retries: 5
     labels:
@@ -124,6 +124,9 @@ services:
       KC_DB_URL: jdbc:postgresql://db:${POSTGRES_PORT}/keycloak
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_URL: https://${KEYCLOAK_DOMAIN}
     restart: always
     depends_on:
       db:
@@ -148,21 +151,6 @@ services:
     volumes:
       - ./keycloak/labour_tracker_theme:/opt/keycloak/themes/labour_tracker_theme
       - ./keycloak/realms:/opt/keycloak/data/import:ro
-
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
-    ports:
-      - "8081:8080"
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
-    depends_on:
-      - kafka
-      - zookeeper
-    networks:
-      - default
 
   zookeeper:
     image: docker.io/bitnami/zookeeper:3.8
@@ -232,13 +220,6 @@ services:
     networks:
       - traefik-public
       - default
-    build:
-      context: ./frontend
-      args:
-        - VITE_API_URL=https://api.${DOMAIN?Variable not set}
-        - NODE_ENV=production
-    env_file:
-      - ./frontend/.env
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public

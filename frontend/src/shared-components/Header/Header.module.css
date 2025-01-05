@@ -8,6 +8,10 @@
     border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
   }
 
+  .drawer {
+    background-color: var(--mantine-color-pink-3);
+  }
+
   .icon {
     width: 40px;
     height: 40px;
@@ -28,6 +32,7 @@
     align-items: center;
     display: flex;
     flex-direction: row;
+    cursor: pointer;
 }
 
   .inner {
@@ -55,6 +60,19 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+  }
+
+  .linksDrawer {
+    padding-top: var(--mantine-spacing-lg);
+    height: 84px;
+    display: flex;
+    margin-top: 15px;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .linksDrawer > *{
+    margin-top: 15px;
   }
   
   .mainLinks {

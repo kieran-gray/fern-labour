@@ -59,3 +59,45 @@ The application uses Kafka for asynchronous event processing, for two different 
   - Ruff for linting and formatting
   - isort for import sorting
   - mypy for static type checking
+
+## Usage
+
+To login:
+1. Navigate to [Keycloak](localhost:8080/realms/labour_tracker/account) and register
+![preview](./docs/images/login.png)
+2. With your credentials, login with the swagger endpoint `/api/v1/auth/login`
+3. Click the `Authorize` button in the top right and copy in the token string from the login response
+
+The flow for a Birthing Person is as follows:
+1. Sign in through Keycloak
+2. Register at: `/api/v1/birthing-person/register`
+3. Begin Labour at: `/api/v1/labour/begin`
+4. Start Contractions at: `/api/v1/labour/contraction/start`
+5. End Contractions at: `/api/v1/labour/contraction/end`
+6. Complete Labour at: `/api/v1/labour/complete`
+
+The flow for a subscriber is as follows:
+1. Sign in through Keycloak
+2. Register at: `/api/v1/subscriber/register`
+3. Have a Birthing Person provide you with their ID and token
+    1. Birthing Person ID can be found here: `/api/v1/birthing-person`
+    2. Tokens can be generated here: `/api/v1/birthing-person/subscription-token`
+4. Subscribe to them here: `/api/v1/subscriber/subscribe_to/{birthing_person_id}`
+    1. Valid contact methods are:
+        1. "sms"
+        2. "email"
+    2. Use email for testing purposes
+5. Now if the Birthing Person Begins or Completes Labour a notification will be sent to that user
+6. You will see the event handled in the consumer logs
+7. The email can be viewed in MailCatcher here: http://localhost:1080/
+
+
+## Acknowledgements
+
+This project's structure was inspired by and built upon the following template repositories:
+
+[fastapi-clean-example by Ivan Borovets](https://github.com/ivan-borovets/fastapi-clean-example)
+
+[full-stack-fastapi-template by FastAPI](https://github.com/fastapi/full-stack-fastapi-template)
+
+Please checkout the first repo, firstly for the brilliant README, but mainly for a better example of using clean architecture and DDD than this repo.

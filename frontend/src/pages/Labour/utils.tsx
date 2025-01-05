@@ -1,19 +1,23 @@
 import { ContractionDTO } from "../../client";
 
 
-export const formatTimeGap = (milliseconds: number) => {
+export const formatTimeMilliseconds = (milliseconds: number) => {
     if (milliseconds === 0) {
       return null
     }
     const seconds = Math.floor(milliseconds / 1000);
-    if (seconds < 60) {
-      return `${seconds} seconds`
-    }
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60;
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ${remainingSeconds} seconds`;
-  }
+    return formatTimeSeconds(seconds)
+}
 
+export const formatTimeSeconds = (seconds: number): string => {
+    const wholeSeconds = Math.floor(seconds);
+    if (wholeSeconds < 60) {
+      return `${wholeSeconds} seconds`
+    }
+    const minutes = Math.floor(wholeSeconds / 60)
+    const remainingSeconds = wholeSeconds % 60;
+    return `${minutes} minute${minutes > 1 ? 's' : ''} ${remainingSeconds} seconds`;
+}
 
 export const sortContractions = (contractions: ContractionDTO[]): ContractionDTO[] => {
     return contractions.sort(
@@ -28,7 +32,7 @@ export const getTimeSinceLastEnded = (contractions: ContractionDTO[]): Record<st
     contractions.forEach(contraction => {
       const gap = lastEndTime ? 
         new Date(contraction.start_time).getTime() - new Date(lastEndTime).getTime() : 0;
-      timeSinceLastEnded[contraction.id] = formatTimeGap(gap)
+      timeSinceLastEnded[contraction.id] = formatTimeMilliseconds(gap)
       lastEndTime = contraction.end_time;
     });
     return timeSinceLastEnded
@@ -37,5 +41,5 @@ export const getTimeSinceLastEnded = (contractions: ContractionDTO[]): Record<st
 export const secondsElapsed = (contraction: ContractionDTO): number => {
     const timestamp = new Date(contraction.start_time).getTime();
     const now = Date.now();
-    return Math.floor((now - timestamp) / 1000);
+    return Math.round((now - timestamp) / 1000);
 }

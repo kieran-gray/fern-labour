@@ -3,6 +3,7 @@ import { UserManager, WebStorageStateStore } from 'oidc-client-ts';
 
 export const userManager = new UserManager({
   authority: import.meta.env.VITE_KEYCLOAK_AUTHORITY,
+  metadataUrl: import.meta.env.VITE_KEYCLOAK_METADATA_URL,
   // biome-ignore lint/style/useNamingConvention: Expected
   client_id: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
   // biome-ignore lint/style/useNamingConvention: Expected

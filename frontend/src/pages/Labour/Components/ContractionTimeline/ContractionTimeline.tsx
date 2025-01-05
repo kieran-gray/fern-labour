@@ -1,6 +1,7 @@
 import { Timeline, Text, Space } from '@mantine/core';
 import { ContractionDTO } from '../../../../client';
 import classes from './ContractionTimeline.module.css';
+import {formatTimeSeconds} from '../../utils.tsx'
 
 export default function ContractionTimeline({contractions, contractionGaps}: {contractions: ContractionDTO[], contractionGaps: Record<string, string | null>}) {
    const formatIntensity = (intensity: number | null): string => {
@@ -15,7 +16,7 @@ export default function ContractionTimeline({contractions, contractionGaps}: {co
           key={contraction.id} title="">
             <Space h="lg" />
             {contractionGaps[contraction.id] !== null && <Text className={classes.timelineLabel}>Gap: <strong>{contractionGaps[contraction.id]}</strong></Text>}
-            {contraction.start_time !== contraction.end_time && <Text className={classes.timelineLabel}>Duration: <strong>{contraction.duration}</strong></Text>}
+            {contraction.start_time !== contraction.end_time && <Text className={classes.timelineLabel}>Duration: <strong>{formatTimeSeconds(contraction.duration)}</strong></Text>}
             {contraction.notes && (
                 <Text className={classes.timelineLabel}>{contraction.notes}</Text>
             )}

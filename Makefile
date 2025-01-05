@@ -1,3 +1,5 @@
+include .env
+
 # Project building
 .PHONY: build-dev \
 		build-prod \
@@ -16,7 +18,11 @@ build-keycloak:
 	docker build -t ${DOCKER_IMAGE_BACKEND}-keycloak ./keycloak -f ./keycloak/Dockerfile --no-cache
 
 build-frontend:
-	docker build -t ${DOCKER_IMAGE_FRONTEND} ./frontend -f ./frontend/Dockerfile --build-arg VITE_API_URL="http://localhost:8000"
+	docker build -t ${DOCKER_IMAGE_FRONTEND} ./frontend -f ./frontend/Dockerfile \
+		--build-arg VITE_API_URL=${VITE_API_URL} \
+		--build-arg VITE_KEYCLOAK_AUTHORITY=${VITE_KEYCLOAK_AUTHORITY} \
+		--build-arg VITE_KEYCLOAK_METADATA_URL=${VITE_KEYCLOAK_METADATA_URL} \
+		--build-arg VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}
 
 build: build-dev build-prod build-keycloak build-frontend
 
