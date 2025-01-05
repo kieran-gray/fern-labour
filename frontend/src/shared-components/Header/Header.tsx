@@ -1,4 +1,4 @@
-import { Anchor, Box, Burger, Container, Group, Text } from '@mantine/core';
+import { Anchor, Box, Burger, Container, Drawer, Group, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from './Header.module.css';
 import { useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ export function Header({active}: {active: string}) {
     return (
         <header className={classes.header} color='peach'>
             <Container className={classes.inner}>
-                <div className={classes.titleRow}>
+                <div onClick={() => navigate("/")} className={classes.titleRow}>
                     <img src="/logo/logo.svg" className={classes.icon}></img>
                     <Text className={classes.title} >Fern Labour</Text>
                 </div>
@@ -55,7 +55,13 @@ export function Header({active}: {active: string}) {
                 </Box>
                 <Group visibleFrom='sm'>
                         {logout}
-                    </Group>
+                </Group>
+                <Drawer size="xs" classNames={{content: classes.drawer, header: classes.drawer}} overlayProps={{ backgroundOpacity: 0.55, blur: 3 }} position="right" opened={opened} onClose={toggle}>
+                    <div className={classes.linksDrawer}>
+                        {mainItems}
+                        {logout}
+                    </div>  
+                </Drawer>
                 <Burger
                     opened={opened}
                     onClick={toggle}

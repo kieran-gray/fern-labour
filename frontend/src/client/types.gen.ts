@@ -46,7 +46,7 @@ export type ContractionDTO = {
     labour_id: string;
     start_time: string;
     end_time: string;
-    duration: string;
+    duration: number;
     intensity: (number | null);
     notes: (string | null);
     is_active: boolean;

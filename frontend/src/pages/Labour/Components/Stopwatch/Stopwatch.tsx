@@ -6,6 +6,7 @@ export interface StopwatchHandle {
   stop: () => void;
   reset: () => void;
   set: (seconds: number) => void;
+  seconds: number;
   isRunning: boolean;
 }
 
@@ -43,6 +44,7 @@ const Stopwatch = forwardRef<StopwatchHandle>((_, ref) => {
       setSeconds(0);
     },
     set: (seconds) => {setSeconds(seconds)},
+    seconds,
     isRunning
   }));
 

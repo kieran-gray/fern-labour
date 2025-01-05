@@ -13,7 +13,7 @@ class ContractionDTO:
     labour_id: str
     start_time: datetime
     end_time: datetime
-    duration: str
+    duration: float
     intensity: int | None
     notes: str | None
     is_active: bool
@@ -26,7 +26,7 @@ class ContractionDTO:
             labour_id=str(contraction.labour_id.value),
             start_time=contraction.start_time,
             end_time=contraction.end_time,
-            duration=str(contraction.duration),
+            duration=contraction.duration.duration_seconds,
             intensity=contraction.intensity,
             notes=contraction.notes,
             is_active=contraction.is_active,

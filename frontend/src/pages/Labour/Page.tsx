@@ -28,7 +28,6 @@ export const LabourPage = () => {
             } catch (err) {
                 if (err instanceof ApiError) {
                     if (err.status !== 404) {
-                        console.error(`Error fetching labour data: ${err.message}`);
                         setError("Failed to load labour. Please try again later.")
                     }
                 } else {

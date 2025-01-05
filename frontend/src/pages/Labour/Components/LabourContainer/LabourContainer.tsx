@@ -28,7 +28,12 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
 
     const activeContraction = labour.contractions.find(contraction => contraction.is_active)
     if (activeContraction) {
-      stopwatchRef.current?.set(secondsElapsed(activeContraction))
+      const difference = secondsElapsed(activeContraction) - (stopwatchRef.current?.seconds || 0)
+      if (Math.abs(difference) > 1) {
+        // If we are more than 1 second out from the contraction elapsed time, then set the 
+        // stopwatch to the elapsed time. Without this the stopwatch is mad janky.
+        stopwatchRef.current?.set(secondsElapsed(activeContraction))
+      }
     }
     
     return (
@@ -56,12 +61,12 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
             <div className={baseClasses.flexColumnEnd}>
               <Space h="xl" />
               <Stack align='stretch' justify='flex-end' h="100%">
-                
+                <div  ref={ref} />
                 {activeContraction &&
                   <div className={classes.controlsBackground}>
                     {stopwatch}
                     <Space h="lg" />
-                    <Text className={baseClasses.minorText}>Set your contraction intensity before completing the contraction</Text>
+                    <Text className={baseClasses.minorText}>Set your contraction intensity before ending the contraction</Text>
                     <Slider
                       classNames={{ root: classes.slider, markLabel: classes.markLabel, track: classes.track }}
                       color="var(--mantine-color-pink-4)"
@@ -91,7 +96,7 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
       <Space h="xl" />
       <div className={baseClasses.root}>
         <div className={baseClasses.header}>
-          <Title ref={ref} fz="xl" className={baseClasses.title}>Complete Your Labour</Title>
+          <Title fz="xl" className={baseClasses.title}>Complete Your Labour</Title>
         </div>
         <div className={baseClasses.body}>
           <Stack align='stretch' justify='center' gap='md'>

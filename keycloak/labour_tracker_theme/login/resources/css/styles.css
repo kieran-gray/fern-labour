@@ -11,7 +11,7 @@
 
 @keyframes float {
     0% { transform: translateY(0); }
-    50% { transform: translateY(-100px); }
+    50% { transform: translateY(-8vh); }
     100% { transform: translateY(0); }
 }
 
@@ -23,50 +23,51 @@
     height: 100%;
     z-index: -1;
     overflow: hidden;
+    background-color: #fff2eb
 }
 
 .bubble {
     position: absolute;
     border-radius: 50%;
     filter: url(#goo);
-    animation: float 8s infinite ease-in-out;
+    animation: float 16s infinite ease-in-out;
     opacity: 0.6;
 }
 
 .bubble:nth-child(1) {
-    width: 300px;
-    height: 300px;
+    width: 50vw;
+    height: 50vw;
     background: #FFD6CC;
-    left: 20%;
-    top: 20%;
+    left: 2%;
+    top: 15%;
     animation-delay: 0s;
 }
 
 .bubble:nth-child(2) {
-    width: 200px;
-    height: 200px;
+    width: 40vw;
+    height: 40vw;
     background: #FFBCAD;
     left: 60%;
-    top: 40%;
-    animation-delay: -2s;
-}
-
-.bubble:nth-child(3) {
-    width: 250px;
-    height: 250px;
-    background: #FFA292;
-    left: 30%;
-    top: 60%;
+    top: 50%;
     animation-delay: -4s;
 }
 
+.bubble:nth-child(3) {
+    width: 30vw;
+    height: 30vw;
+    background: #FFA292;
+    left: 10%;
+    top: 60%;
+    animation-delay: -8s;
+}
+
 .bubble:nth-child(4) {
-    width: 180px;
-    height: 180px;
+    width: 25vw;
+    height: 25vw;
     background: #FF8C7A;
     left: 70%;
-    top: 70%;
-    animation-delay: -6s;
+    top: 20%;
+    animation-delay: -12s;
 }
 
 .pf-v5-c-login__container {
