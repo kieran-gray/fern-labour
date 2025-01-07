@@ -1,4 +1,4 @@
-import { ContractionDTO } from "../../client";
+import { ContractionDTO } from "../client";
 
 
 export const formatTimeMilliseconds = (milliseconds: number) => {
@@ -10,13 +10,16 @@ export const formatTimeMilliseconds = (milliseconds: number) => {
 }
 
 export const formatTimeSeconds = (seconds: number): string => {
-    const wholeSeconds = Math.floor(seconds);
-    if (wholeSeconds < 60) {
-      return `${wholeSeconds} seconds`
+  const wholeSeconds = Math.floor(seconds);
+  if (wholeSeconds < 60) {
+    if (wholeSeconds == 1) {
+      return `${wholeSeconds} second`
     }
-    const minutes = Math.floor(wholeSeconds / 60)
-    const remainingSeconds = wholeSeconds % 60;
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ${remainingSeconds} seconds`;
+    return `${wholeSeconds} seconds`
+  }
+  const minutes = Math.floor(wholeSeconds / 60)
+  const remainingSeconds = wholeSeconds % 60;
+  return `${minutes} minute${minutes > 1 ? 's' : ''} ${remainingSeconds} seconds`;
 }
 
 export const sortContractions = (contractions: ContractionDTO[]): ContractionDTO[] => {

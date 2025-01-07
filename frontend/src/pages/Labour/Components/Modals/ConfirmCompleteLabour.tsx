@@ -1,7 +1,6 @@
-
 import { Text, Modal, Space, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import classes from './ConfirmCompleteLabour.module.css';
+import classes from './Modal.module.css';
 import baseClasses from '../../../../shared-components/shared-styles.module.css'
 
 
@@ -14,8 +13,8 @@ export default function ConfirmCompleteLabourModal({ setGetConfirmation, setConf
         <Text className={classes.modalText}>Are you sure you want to complete your current labour?</Text>
         <Space h="md"></Space>
         <div className={baseClasses.flexRowNoBP}>
-            <Button style={{flex: 1, "margin-right": 5}} radius="lg" onClick={() => {setGetConfirmation(false); close}}>Cancel</Button>
-            <Button style={{flex: 1, "margin-left": 5}} variant="light" radius="lg" onClick={() => {setConfirmedComplete(true); close}}>Yes</Button>
+            <Button style={{flex: 1, marginRight: 5}} radius="lg" onClick={() => {setGetConfirmation(false); close}}>Cancel</Button>
+            <Button style={{flex: 1, marginLeft: 5}} variant="light" radius="lg" onClick={() => {setConfirmedComplete(true); close}}>Yes</Button>
         </div>
     </Modal>
     )

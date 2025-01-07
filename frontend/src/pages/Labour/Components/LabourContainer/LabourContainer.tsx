@@ -1,4 +1,4 @@
-import { Slider, Space, Stack, Text, Textarea, Title } from '@mantine/core';
+import { Badge, Button, Slider, Space, Stack, Text, Textarea, Title } from '@mantine/core';
 import classes from './LabourContainer.module.css';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import { LabourDTO } from '../../../../client';
@@ -8,15 +8,18 @@ import EndContractionButton from '../Buttons/EndContraction';
 import CompleteLabourButton from '../Buttons/CompleteLabour';
 import BeginLabourButton from '../Buttons/BeginLabour';
 import { useRef, useState } from 'react';
-import {sortContractions, getTimeSinceLastEnded, secondsElapsed} from '../../utils.tsx'
+import {sortContractions, getTimeSinceLastEnded, secondsElapsed} from '../../../../shared-components/utils.tsx'
 import Stopwatch, { StopwatchHandle } from '../Stopwatch/Stopwatch.tsx';
-import GoToBottomButton from '../Buttons/GoToBottom.tsx';
-import { useInViewport } from '@mantine/hooks';
+import { useInViewport, useScrollIntoView } from '@mantine/hooks';
+import MakeAnnouncementButton from '../Buttons/MakeAnnouncement.tsx';
+import { LabourStatistics } from '../../../../shared-components/LabourStatistics/LabourStatistics.tsx';
 
 
 export default function LabourContainer({ labour, hasActiveLabour, setLabour }: { labour: LabourDTO | null, hasActiveLabour: boolean | null, setLabour: Function }) {
   const { ref, inViewport } = useInViewport();
+  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({ offset:60 });
   const [intensity, setIntensity] = useState(5);
+  const [announcement, setAnnouncement] = useState("");
   const [labourNotes, setLabourNotes] = useState("");
   const stopwatchRef = useRef<StopwatchHandle>(null);
   const stopwatch = <Stopwatch ref={stopwatchRef} />
@@ -30,8 +33,9 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
     if (activeContraction) {
       const difference = secondsElapsed(activeContraction) - (stopwatchRef.current?.seconds || 0)
       if (Math.abs(difference) > 1) {
-        // If we are more than 1 second out from the contraction elapsed time, then set the 
-        // stopwatch to the elapsed time. Without this the stopwatch is mad janky.
+        // We need to set the stopwatch to the current time elapsed so that on refresh
+        // the stopwatch shows the correct value.
+        // We should only set it if we are more than 1 second out from the contraction elapsed time.
         stopwatchRef.current?.set(secondsElapsed(activeContraction))
       }
     }
@@ -46,12 +50,19 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
           <div>
             <div className={baseClasses.flexColumn}>
               <div className={baseClasses.flexRowEndNoBP}>
-                {!inViewport && <GoToBottomButton/>}
+                {!inViewport && 
+                <Button 
+                  radius="lg"
+                  size='md'
+                  variant="outline"
+                  style={{position: "absolute"}}
+                  onClick={() => scrollIntoView({alignment: 'center'})}
+                  >
+                  ↓
+                </Button>}
               </div>
             <Stack align='flex-start' justify='center' gap='md' miw={200}>
-                <Text className={baseClasses.text}>Start Time: {new Date(labour.start_time).toString().slice(0, 24)}</Text>
-                <Text className={baseClasses.text}>Current Phase: {labour.current_phase.toUpperCase()}</Text>
-                <Space h="lg" />
+                <Badge size='xl' pl={40} pr={40} mb={20} variant="light">{labour.current_phase}</Badge>
             </Stack>
             <Stack align='stretch' justify='flex-end' h="100%">
                 <Text className={baseClasses.text}>Your contractions{sortedContractions.length > 0 && ":" || " will appear below"}</Text>
@@ -61,7 +72,8 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
             <div className={baseClasses.flexColumnEnd}>
               <Space h="xl" />
               <Stack align='stretch' justify='flex-end' h="100%">
-                <div  ref={ref} />
+                <div ref={ref} />
+                <div ref={targetRef} />
                 {activeContraction &&
                   <div className={classes.controlsBackground}>
                     {stopwatch}
@@ -94,18 +106,32 @@ export default function LabourContainer({ labour, hasActiveLabour, setLabour }: 
         </div>
       </div>
       <Space h="xl" />
+      <LabourStatistics labour={labour} inContainer={true} />
+      <Space h="xl" />
+      <div className={baseClasses.root}>
+        <div className={baseClasses.header}>
+          <Title fz="xl" className={baseClasses.title}>Make an announcement</Title>
+        </div>
+        <div className={baseClasses.body}>
+          <Stack align='stretch' justify='center' gap='md'>
+            <Textarea radius="lg" label="Your announcement" description="Share an update with your subscribers." classNames={{ label: classes.labourNotesLabel, description: classes.labourNotesDescription}} onChange={(event) => setAnnouncement(event.currentTarget.value)}/>
+            <MakeAnnouncementButton message={announcement} setLabour={setLabour} />
+          </Stack>
+        </div>
+      </div>
+      <Space h="xl" />
       <div className={baseClasses.root}>
         <div className={baseClasses.header}>
           <Title fz="xl" className={baseClasses.title}>Complete Your Labour</Title>
         </div>
         <div className={baseClasses.body}>
           <Stack align='stretch' justify='center' gap='md'>
-            <Textarea radius="lg" label="Your labour notes" description="These notes will be shared with your subscribers when you complete your labour." classNames={{ label: classes.labourNotesLabel, description: classes.labourNotesDescription}} onChange={(event) => setLabourNotes(event.currentTarget.value)}/>
+            <Textarea radius="lg" label="Your closing note" description="Share a closing note for your labour with your subscribers." classNames={{ label: classes.labourNotesLabel, description: classes.labourNotesDescription}} onChange={(event) => setLabourNotes(event.currentTarget.value)}/>
             <CompleteLabourButton setLabour={setLabour} disabled={!!activeContraction} labourNotes={labourNotes}/>
           </Stack>
         </div>
-        </div>
       </div>
+    </div>
     )
   } else {
     return (

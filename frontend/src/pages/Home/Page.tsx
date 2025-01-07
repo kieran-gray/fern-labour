@@ -5,9 +5,9 @@ import { useAuth } from "react-oidc-context";
 import Subscriptions from "./Components/Subscriptions";
 import { PageLoading } from "../../shared-components/PageLoading/PageLoading";
 import { Container, Space, Title } from "@mantine/core";
-import Labours from "./Components/Labours";
 import ContactMethodsModal from "../../shared-components/ContactMethodsModal/ContactMethodsModal";
 import { ErrorContainer } from "../../shared-components/ErrorContainer/ErrorContainer";
+import LabourContainer from "./Components/Container";
 
 export const HomePage: React.FC = () => {
   const [birthingPerson, setBirthingPerson] = useState<BirthingPersonDTO | null>(null);
@@ -111,7 +111,7 @@ export const HomePage: React.FC = () => {
         <div></div>
         <Title>Welcome{!newUser && ' back'}, {auth.user?.profile.given_name}</Title>
         <Space h="xl" />
-        {birthingPerson && <Labours birthingPerson={birthingPerson} />}
+        {birthingPerson && <LabourContainer birthingPerson={birthingPerson} />}
         <Space h="xl" />
         <Subscriptions subscriptions={subscriptions} />
       </Container>

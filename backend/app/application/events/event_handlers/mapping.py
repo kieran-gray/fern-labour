@@ -1,6 +1,9 @@
 from app.application.events.event_handlers.contraction_ended_event_handler import (
     ContractionEndedEventHandler,
 )
+from app.application.events.event_handlers.labour_announcement_made_event_handler import (
+    LabourAnnouncementMadeEventHandler,
+)
 from app.application.events.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.application.events.event_handlers.labour_completed_event_handler import (
     LabourCompletedEventHandler,
@@ -13,6 +16,7 @@ from app.application.events.event_handlers.subscriber_unsubscribed_from_event_ha
 )
 
 EVENT_HANDLER_MAPPING = {
+    "labour.announcement-made": LabourAnnouncementMadeEventHandler,
     "labour.begun": LabourBegunEventHandler,
     "labour.completed": LabourCompletedEventHandler,
     "subscriber.subscribed-to": SubscriberSubscribedToEventHandler,

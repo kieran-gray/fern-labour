@@ -9,6 +9,7 @@ from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_service import LabourService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.presentation.api.dependencies import bearer_scheme
+from app.presentation.api.schemas.requests.announcement import MakeAnnouncementRequest
 from app.presentation.api.schemas.requests.contraction import (
     EndContractionRequest,
     StartContractionRequest,
@@ -167,3 +168,30 @@ async def get_active_labour_summary(
     user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.get_active_labour_summary(birthing_person_id=user.id)
     return LabourSummaryResponse(labour=labour)
+
+
+@labour_router.post(
+    "/announcement/make",
+    responses={
+        status.HTTP_200_OK: {"model": LabourResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def make_announcement(
+    request_data: MakeAnnouncementRequest,
+    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    labour = await service.make_announcement(
+        birthing_person_id=user.id,
+        message=request_data.message,
+        sent_time=request_data.sent_time,
+    )
+    return LabourResponse(labour=labour)
