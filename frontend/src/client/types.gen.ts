@@ -226,6 +226,8 @@ export type MakeAnnouncementApiV1LabourAnnouncementMakePostData = {
 
 export type MakeAnnouncementApiV1LabourAnnouncementMakePostResponse = (LabourResponse);
 
+export type GetApiV1SubscriberGetResponse = (SubscriberResponse);
+
 export type RegisterApiV1SubscriberRegisterPostData = {
     requestBody: RegisterSubscriberRequest;
 };

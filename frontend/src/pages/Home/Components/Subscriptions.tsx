@@ -1,22 +1,86 @@
 import { Badge, Text } from '@mantine/core';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
-import { BirthingPersonSummaryDTO } from '../../../client';
+import { ApiError, OpenAPI, SubscriberService } from '../../../client';
+import { useAuth } from 'react-oidc-context';
+import { useQuery } from '@tanstack/react-query';
+import ContactMethodsModal from '../../../shared-components/ContactMethodsModal/ContactMethodsModal';
+import { NotFoundError } from '../../../Errors';
+import { useState } from 'react';
 
 
-export default function Subscriptions({ subscriptions }: { subscriptions: BirthingPersonSummaryDTO[] }) {
-  const formatLabourDurationHours = (hours: number): string => {
-    const wholeHours = Math.round(hours);
-    if (wholeHours < 1) {
-      return "Less than 1 hour"
-    } else if (wholeHours == 1) {
-      return `${wholeHours} hour`
-    } else {
-      return `${wholeHours} hours`
+const formatLabourDurationHours = (hours: number): string => {
+  const wholeHours = Math.round(hours);
+  if (wholeHours < 1) {
+    return "Less than 1 hour"
+  } else if (wholeHours == 1) {
+    return `${wholeHours} hour`
+  } else {
+    return `${wholeHours} hours`
+  }
+}
+
+export default function Subscriptions() {
+  const auth = useAuth();
+  const [askContactMethods, setAskContactMethods] = useState(false)
+
+  OpenAPI.TOKEN = async () => {
+    return auth.user?.access_token || ""
+  }
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['subscriptions', auth.user?.profile.sub],
+    queryFn: async () => {
+        try {
+            const response = await SubscriberService.getSubscriptionsApiV1SubscriberSubscriptionsGet();
+            return response.subscriptions;
+        } catch (err) {
+            if (err instanceof ApiError && err.status === 404) {
+                setAskContactMethods(true);
+                throw new NotFoundError();
+            }
+            throw new Error("Failed to load subscriptions. Please try again later.")
+        }
+    },
+    placeholderData: [],
+    retry: (failureCount, error) => {
+      if (error instanceof NotFoundError) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+
+  if (isPending) {
+    return (
+      <div className={baseClasses.root}>
+      <div className={baseClasses.header}>
+        <div className={baseClasses.title}>Your subscriptions</div>
+      </div>
+      <div className={baseClasses.body}>
+      <Text className={baseClasses.text}>Loading...</Text>
+      </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    if (askContactMethods) {
+      return <ContactMethodsModal promptForContactMethods={setAskContactMethods} />
+    } else if (!data) {
+      return (
+        <div className={baseClasses.root}>
+          <div className={baseClasses.header}>
+            <div className={baseClasses.title}>Your subscriptions</div>
+          </div>
+          <div className={baseClasses.body}>
+            <Text className={baseClasses.text}>Error: {error.message}</Text>
+          </div>
+        </div>
+      )
     }
   }
 
-
-  const subscriptionsElements = subscriptions.map((subscription) => (
+  const subscriptionsElements = data.map((subscription) => (
     <div key={subscription.id} className={baseClasses.body}>
       <div className={baseClasses.flexRowNoBP}>
         <Text className={baseClasses.text}>{subscription.first_name} {subscription.last_name}</Text>
@@ -39,12 +103,11 @@ export default function Subscriptions({ subscriptions }: { subscriptions: Birthi
         <div className={baseClasses.title}>Your subscriptions</div>
       </div>
       {subscriptionsElements}
-      {subscriptions.length == 0 && 
+      {data.length == 0 && 
         <div className={baseClasses.body}>
           <div className={baseClasses.text}>Subscribe to someone to see their labour details here</div>
         </div>
       }
-      
   </div>
   )
 }

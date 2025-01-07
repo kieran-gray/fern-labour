@@ -3,31 +3,39 @@ import { useAuth } from 'react-oidc-context';
 import { EndContractionRequest, LabourService, OpenAPI } from '../../../../client';
 import { StopwatchHandle } from '../Stopwatch/Stopwatch';
 import { RefObject } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function EndContractionButton(
-    {intensity, setLabour, stopwatchRef}: {intensity: number, setLabour: Function, stopwatchRef: RefObject<StopwatchHandle>}
+    {intensity, stopwatchRef}: {intensity: number, stopwatchRef: RefObject<StopwatchHandle>}
 ) {
     const auth = useAuth()
     OpenAPI.TOKEN = async () => {
         return auth.user?.access_token || ""
     }
+    
+    const queryClient = useQueryClient();
 
-    const endContraction = async () => {
-        stopwatchRef.current?.stop()
-        stopwatchRef.current?.reset()
-        try {
+    const mutation = useMutation({
+        mutationFn: async (intensity: number) => {
             const requestBody: EndContractionRequest = {
                 "end_time": new Date().toISOString(),
                 "intensity": intensity,
-                "notes": null
             }
             const response = await LabourService.endContractionApiV1LabourContractionEndPut(
                 {requestBody: requestBody}
             )
-            setLabour(response.labour)
-        } catch (err) {
-            console.error('Error ending contraction:', err);
+            stopwatchRef.current?.stop()
+            stopwatchRef.current?.reset()
+            return response.labour
+        },
+        onSuccess: (labour) => {
+          queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
+        },
+        onError: (error) => {
+          console.error("Error ending contraction", error)
         }
-    }
-    return <Button radius="lg" size='xl' variant="white" onClick={endContraction}>End Contraction</Button>;
+    });
+    return <Button radius="lg" size='xl' variant="white" onClick={() => mutation.mutate(intensity)}>
+        End Contraction
+    </Button>;
 }

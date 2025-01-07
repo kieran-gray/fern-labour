@@ -19,7 +19,7 @@ from app.presentation.api.schemas.responses.labour import LabourResponse, Labour
 from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
 
-labour_router = APIRouter(prefix="/labour", tags=["Labour Tracking"])
+labour_router = APIRouter(prefix="/labour", tags=["Labour"])
 
 
 @labour_router.post(

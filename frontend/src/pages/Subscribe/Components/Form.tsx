@@ -5,6 +5,7 @@ import { OpenAPI, SubscriberService, SubscribeToRequest } from '../../../client'
 import { useNavigate } from 'react-router-dom';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import ContactMethodsModal from '../../../shared-components/ContactMethodsModal/ContactMethodsModal';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function SubscribeForm({ birthingPersonId, newUser, setNewUser, setError }: { birthingPersonId: string, newUser: boolean, setNewUser: Function, setError: Function }) {
     const auth = useAuth()
@@ -22,23 +23,30 @@ export default function SubscribeForm({ birthingPersonId, newUser, setNewUser, s
     OpenAPI.TOKEN = async () => {
         return auth.user?.access_token || ""
     }
+    
+    const queryClient = useQueryClient();
 
-    const subscribeTo = async (values: typeof form.values) => {
-        try {
+    const mutation = useMutation({
+        mutationFn: async (values: typeof form.values) => {
             const requestBody: SubscribeToRequest = { "token": values.token }
-            await SubscriberService.subscribeToApiV1SubscriberSubscribeToBirthingPersonIdPost(
+            const response = await SubscriberService.subscribeToApiV1SubscriberSubscribeToBirthingPersonIdPost(
                 {requestBody:requestBody, birthingPersonId:birthingPersonId}
             )
-            navigate("/")
-        } catch (err) {
+            return response.subscriber
+        },
+        onSuccess: (subscriber) => {
+          queryClient.setQueryData(['subscriber', auth.user?.profile.sub], subscriber);
+          navigate("/");
+        },
+        onError: (_) => {
             // TODO error message depends on http status of response
             setError('Invalid or incorrect token');
         }
-    }
+    });
 
     if (newUser) {
         return (
-            <ContactMethodsModal name="" promptForContactMethods={setNewUser}></ContactMethodsModal>
+            <ContactMethodsModal promptForContactMethods={setNewUser}></ContactMethodsModal>
         )
     } else {
         return (
@@ -49,7 +57,7 @@ export default function SubscribeForm({ birthingPersonId, newUser, setNewUser, s
                 <div className={baseClasses.body}>
                     <Title className={baseClasses.text}>Enter token to subscribe:</Title>
                     <Space h="xl"></Space>
-                    <form onSubmit={form.onSubmit(subscribeTo)}>
+                    <form onSubmit={form.onSubmit(() => mutation.mutate(form.values))}>
                         <PinInput
                             fw={600}
                             size='lg'

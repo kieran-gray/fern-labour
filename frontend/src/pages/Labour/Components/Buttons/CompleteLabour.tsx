@@ -4,8 +4,11 @@ import { CompleteLabourRequest, LabourService, OpenAPI } from '../../../../clien
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import ConfirmCompleteLabourModal from '../Modals/ConfirmCompleteLabour';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function CompleteLabourButton({labourNotes, disabled, setLabour}: {labourNotes: string, disabled: boolean, setLabour: Function}) {
+export default function CompleteLabourButton(
+    {labourNotes, disabled}: {labourNotes: string, disabled: boolean}
+) {
     const auth = useAuth()
     const navigate = useNavigate();
     const [getConfimation, setGetConfimation] = useState(false);
@@ -13,38 +16,64 @@ export default function CompleteLabourButton({labourNotes, disabled, setLabour}:
     OpenAPI.TOKEN = async () => {
         return auth.user?.access_token || ""
     }
+    const queryClient = useQueryClient();
 
-    const completeLabour = async () => {
-        try {
+    const mutation = useMutation({
+        mutationFn: async (labourNotes: string) => {
             const requestBody: CompleteLabourRequest = {
                 "end_time": new Date().toISOString(),
                 "notes": labourNotes
             }
-            const response = await LabourService.completeLabourApiV1LabourCompletePut(
-                {requestBody:requestBody}
+            await LabourService.completeLabourApiV1LabourCompletePut(
+                {requestBody: requestBody}
             )
-            setLabour(response.labour);
-            navigate("/");
-        } catch (err) {
-            console.error('Error completing labour:', err);
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['birthingPerson', auth.user?.profile.sub] })
+          queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] })
+          navigate("/");
+        },
+        onError: (error) => {
+          console.error("Error completing labour", error)
         }
-    }
+    });
+
     if (getConfimation) {
         if (confirmedCompleteLabour) {
-            completeLabour()
+            mutation.mutate(labourNotes)
+            setGetConfimation(false)
+            setConfirmedCompleteLabour(false)
         } else {
-            return <ConfirmCompleteLabourModal setGetConfirmation={setGetConfimation} setConfirmedComplete={setConfirmedCompleteLabour} />
+            return <ConfirmCompleteLabourModal 
+                setGetConfirmation={setGetConfimation}
+                setConfirmedComplete={setConfirmedCompleteLabour} 
+            />
         }
     }
 
     if (disabled) {
         return (
             <Tooltip label="End your current contraction first">
-                <Button data-disabled size='xl' color='var(--mantine-color-pink-4)' radius="lg" variant="filled" onClick={(event) => event.preventDefault()}>
+                <Button 
+                    data-disabled
+                    size='xl'
+                    color='var(--mantine-color-pink-4)'
+                    radius="lg"
+                    variant="filled"
+                    onClick={(event) => event.preventDefault()}
+                >
                     Complete Labour
                 </Button>
             </Tooltip>
         )
     }
-    return <Button size='xl' color='var(--mantine-color-pink-4)' radius="lg" variant="filled" onClick={() => setGetConfimation(true)}>Complete Labour</Button>;
+    return <Button
+        size='xl'
+        color='var(--mantine-color-pink-4)'
+        radius="lg"
+        variant="filled"
+        onClick={() => setGetConfimation(true)}
+    >
+        Complete Labour
+    </Button>;
 }
