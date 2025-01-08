@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core';
+import { Button, Tooltip } from '@mantine/core';
 import { useAuth } from 'react-oidc-context';
 import { LabourService, MakeAnnouncementRequest, OpenAPI } from '../../../../client';
 import { IconSpeakerphone } from '@tabler/icons-react';
@@ -38,9 +38,9 @@ export default function MakeAnnouncementButton({message, setAnnouncement}: {mess
 
     if (getConfimation) {
         if (confirmedMakeAnnouncement) {
-            mutation.mutate(message);
             setGetConfimation(false);
             setConfirmedMakeAnnouncement(false);
+            mutation.mutate(message);
         } else {
             return <ConfirmAnnouncementModal 
                 message={message}
@@ -50,13 +50,20 @@ export default function MakeAnnouncementButton({message, setAnnouncement}: {mess
         }
     }
     const icon = <IconSpeakerphone size={25} />;
-    return <Button
+
+    const button = <Button
         leftSection={icon}
         radius="lg"
         size='xl'
         variant="outline"
+        disabled={!message}
         onClick={() => {if(message !== "") {setGetConfimation(true)}}}
     >
         Announce
     </Button>;
+
+    if (!message) {
+        return <Tooltip label="Enter a message first">{button}</Tooltip>
+    }
+    return button
 }
