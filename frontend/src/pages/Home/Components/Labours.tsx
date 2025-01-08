@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { NotFoundError } from '../../../Errors';
 import { ContainerLoadingIcon } from '../../../shared-components/PageLoading/Loading';
+import { sortLabours } from '../../../shared-components/utils';
 
 
 export default function Labours() {
@@ -37,6 +38,7 @@ export default function Labours() {
     queryFn: async () => {
         try {
             const response = await BirthingPersonService.getBirthingPersonApiV1BirthingPersonGet();
+            response.birthing_person.labours = sortLabours(response.birthing_person.labours)
             return response.birthing_person;
         } catch (err) {
             if (err instanceof ApiError && err.status === 404) {

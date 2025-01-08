@@ -1,4 +1,4 @@
-import { ContractionDTO } from "../client";
+import { ContractionDTO, LabourDTO } from "../client";
 
 
 export const formatTimeMilliseconds = (milliseconds: number) => {
@@ -40,6 +40,12 @@ export const sortContractions = (contractions: ContractionDTO[]): ContractionDTO
     return contractions.sort(
         (a,b) => (a.start_time < b.start_time) ? -1 : ((a.start_time > b.start_time) ? 1 : 0)
       );
+}
+
+export const sortLabours = (labours: LabourDTO[]): LabourDTO[] => {
+  return labours.sort(
+    (a,b) => (a.start_time < b.start_time) ? -1 : ((a.start_time > b.start_time) ? 1 : 0)
+  );
 }
 
 export const getTimeSinceLastStarted = (contractions: ContractionDTO[]): Record<string, string | null> => {
