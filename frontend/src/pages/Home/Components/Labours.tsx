@@ -73,7 +73,7 @@ export default function Labours() {
           <Text className={baseClasses.text}>{new Date(labour.start_time).toDateString()}</Text>
           <Badge size='lg' pl={40} pr={40} mb={20} variant="light">{labour.current_phase}</Badge>
         </div>
-        <LabourStatistics labour={labour} />
+        <LabourStatistics labour={labour} completed={!!labour.end_time} inContainer={false}/>
         <Space h={"sm"} />
         {(labour.end_time && labour.notes ) && <Text className={baseClasses.text}>Closing Note: {labour.notes}</Text>}
         <div className={baseClasses.flexRowEndNoBP}>
