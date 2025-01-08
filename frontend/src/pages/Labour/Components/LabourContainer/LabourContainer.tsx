@@ -8,7 +8,7 @@ import EndContractionButton from '../Buttons/EndContraction';
 import CompleteLabourButton from '../Buttons/CompleteLabour';
 import BeginLabourButton from '../Buttons/BeginLabour';
 import { useRef, useState } from 'react';
-import {sortContractions, getTimeSinceLastEnded, secondsElapsed} from '../../../../shared-components/utils.tsx'
+import {sortContractions, getTimeSinceLastStarted, secondsElapsed} from '../../../../shared-components/utils.tsx'
 import Stopwatch, { StopwatchHandle } from '../Stopwatch/Stopwatch.tsx';
 import { useInViewport, useScrollIntoView } from '@mantine/hooks';
 import MakeAnnouncementButton from '../Buttons/MakeAnnouncement.tsx';
@@ -83,7 +83,7 @@ export default function LabourContainer() {
   const labour = data
 
   const sortedContractions = sortContractions(labour.contractions);
-  const timeSinceLastEnded = getTimeSinceLastEnded(sortedContractions);
+  const timeSinceLastStarted = getTimeSinceLastStarted(sortedContractions);
 
   const activeContraction = labour.contractions.find(contraction => contraction.is_active)
   if (activeContraction) {
@@ -122,7 +122,7 @@ export default function LabourContainer() {
           </Stack>
           <Stack align='stretch' justify='flex-end' h="100%">
               <Text className={baseClasses.text}>Your contractions{sortedContractions.length > 0 && ":" || " will appear below"}</Text>
-              <ContractionTimeline contractions={sortedContractions} contractionGaps={timeSinceLastEnded} />
+              <ContractionTimeline contractions={sortedContractions} contractionGaps={timeSinceLastStarted} />
             </Stack>
           </div>
           <div className={baseClasses.flexColumnEnd}>
@@ -162,7 +162,7 @@ export default function LabourContainer() {
       </div>
     </div>
     <Space h="xl" />
-    <LabourStatistics labour={labour} inContainer={true} />
+    <LabourStatistics labour={labour} completed={false} />
     <Space h="xl" />
     <div className={baseClasses.root}>
       <div className={baseClasses.header}>

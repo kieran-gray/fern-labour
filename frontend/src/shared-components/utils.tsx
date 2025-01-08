@@ -1,4 +1,4 @@
-import { AnnouncementDTO, ContractionDTO } from "../client";
+import { ContractionDTO } from "../client";
 
 
 export const formatTimeMilliseconds = (milliseconds: number) => {
@@ -9,17 +9,31 @@ export const formatTimeMilliseconds = (milliseconds: number) => {
     return formatTimeSeconds(seconds)
 }
 
-export const formatTimeSeconds = (seconds: number): string => {
+export const formatTimeSeconds = (seconds: number, withHours: boolean = false): string => {
+  const secondsString = (seconds: number): string => {
+    return `${seconds} second${seconds == 1 ? '' : 's'}`
+  }
+  const minutesString = (minutes: number): string => {
+    return `${minutes} minute${minutes == 1 ? '' : 's'}`
+  }
+  const hoursString = (hours: number): string => {
+    return `${hours} hour${hours == 1 ? '': 's'}`
+  }
+
   const wholeSeconds = Math.floor(seconds);
   if (wholeSeconds < 60) {
-    if (wholeSeconds == 1) {
-      return `${wholeSeconds} second`
-    }
-    return `${wholeSeconds} seconds`
+    return secondsString(wholeSeconds)
   }
   const minutes = Math.floor(wholeSeconds / 60)
   const remainingSeconds = wholeSeconds % 60;
-  return `${minutes} minute${minutes > 1 ? 's' : ''} ${remainingSeconds} seconds`;
+
+  if (withHours) {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hoursString(hours)} ${minutesString(remainingMinutes)} ${secondsString(remainingSeconds)}`
+  }
+
+  return `${minutesString(minutes)} ${secondsString(remainingSeconds)}`;
 }
 
 export const sortContractions = (contractions: ContractionDTO[]): ContractionDTO[] => {
@@ -28,17 +42,17 @@ export const sortContractions = (contractions: ContractionDTO[]): ContractionDTO
       );
 }
 
-export const getTimeSinceLastEnded = (contractions: ContractionDTO[]): Record<string, string | null> => {
-    const timeSinceLastEnded: Record<string, string | null> = {};
-    let lastEndTime: string = "";
+export const getTimeSinceLastStarted = (contractions: ContractionDTO[]): Record<string, string | null> => {
+    const timeSinceLastStarted: Record<string, string | null> = {};
+    let lastStartTime: string = "";
   
     contractions.forEach(contraction => {
-      const gap = lastEndTime ? 
-        new Date(contraction.start_time).getTime() - new Date(lastEndTime).getTime() : 0;
-      timeSinceLastEnded[contraction.id] = formatTimeMilliseconds(gap)
-      lastEndTime = contraction.end_time;
+      const frequency = lastStartTime ? 
+        new Date(contraction.start_time).getTime() - new Date(lastStartTime).getTime() : 0;
+      timeSinceLastStarted[contraction.id] = formatTimeMilliseconds(frequency)
+      lastStartTime = contraction.end_time;
     });
-    return timeSinceLastEnded
+    return timeSinceLastStarted
 }
 
 export const secondsElapsed = (contraction: ContractionDTO): number => {
