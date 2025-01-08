@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Self
 from uuid import UUID, uuid4
 
@@ -177,9 +177,13 @@ class Labour(AggregateRoot[LabourId]):
             intervals.append(interval)
         avg_interval = sum(intervals) / len(intervals)
 
+        last_hour = datetime.now(UTC) - timedelta(hours=1)
+        contractions_in_last_hour = len([c for c in self.contractions if c.start_time >= last_hour])
+
         return {
             "average_duration": round(avg_duration, 1),
             "average_intensity": round(avg_intensity, 1),
             "average_interval": round(avg_interval, 1),
+            "contractions_in_last_hour": contractions_in_last_hour,
             "phase": self.current_phase.value,
         }

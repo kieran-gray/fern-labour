@@ -9,6 +9,7 @@ class LabourPatternDTO:
     average_duration: float
     average_intensity: float
     average_interval: float
+    contractions_in_last_hour: int
     phase: str
 
     @classmethod
@@ -18,6 +19,7 @@ class LabourPatternDTO:
             average_duration=pattern["average_duration"],
             average_intensity=pattern["average_intensity"],
             average_interval=pattern["average_interval"],
+            contractions_in_last_hour=pattern["contractions_in_last_hour"],
             phase=pattern["phase"],
         )
 
@@ -27,5 +29,6 @@ class LabourPatternDTO:
             "average_duration": self.average_duration,
             "average_intensity": self.average_intensity,
             "average_interval": self.average_interval,
+            "contractions_in_last_hour": self.contractions_in_last_hour,
             "phase": self.phase,
         }

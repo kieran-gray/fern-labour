@@ -93,6 +93,7 @@ export type LabourPatternDTO = {
     average_duration: number;
     average_intensity: number;
     average_interval: number;
+    contractions_in_last_hour: number;
     phase: string;
 };
 

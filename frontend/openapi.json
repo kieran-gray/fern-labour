@@ -761,7 +761,7 @@
         "/api/v1/labour/begin": {
             "post": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Begin Labour",
                 "operationId": "begin_labour_api_v1_labour_begin_post",
@@ -847,7 +847,7 @@
         "/api/v1/labour/contraction/start": {
             "post": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Start Contraction",
                 "operationId": "start_contraction_api_v1_labour_contraction_start_post",
@@ -933,7 +933,7 @@
         "/api/v1/labour/contraction/end": {
             "put": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "End Contraction",
                 "operationId": "end_contraction_api_v1_labour_contraction_end_put",
@@ -1019,7 +1019,7 @@
         "/api/v1/labour/complete": {
             "put": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Complete Labour",
                 "operationId": "complete_labour_api_v1_labour_complete_put",
@@ -1105,7 +1105,7 @@
         "/api/v1/labour/active": {
             "get": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Get Active Labour",
                 "operationId": "get_active_labour_api_v1_labour_active_get",
@@ -1171,7 +1171,7 @@
         "/api/v1/labour/active/summary": {
             "get": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Get Active Labour Summary",
                 "operationId": "get_active_labour_summary_api_v1_labour_active_summary_get",
@@ -1237,7 +1237,7 @@
         "/api/v1/labour/announcement/make": {
             "post": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Make Announcement",
                 "operationId": "make_announcement_api_v1_labour_announcement_make_post",
@@ -1784,6 +1784,10 @@
                         "type": "number",
                         "title": "Average Interval"
                     },
+                    "contractions_in_last_hour": {
+                        "type": "integer",
+                        "title": "Contractions In Last Hour"
+                    },
                     "phase": {
                         "type": "string",
                         "title": "Phase"
@@ -1794,6 +1798,7 @@
                     "average_duration",
                     "average_intensity",
                     "average_interval",
+                    "contractions_in_last_hour",
                     "phase"
                 ],
                 "title": "LabourPatternDTO"
