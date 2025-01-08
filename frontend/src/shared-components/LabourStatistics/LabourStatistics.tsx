@@ -44,7 +44,7 @@ export const LabourStatistics = ({labour, completed, inContainer = true}: {labou
                 Average contraction intensity: <strong>{labour.pattern.average_intensity} out of 10</strong>
                 </Text>
                 <Space h="sm" />
-                <Text className={classes.labourStatsText}>(Averaged over your last {labour.contractions.length < 10 ? labour.contractions.length : 10} contractions)</Text>
+                <Text className={classes.labourStatsText}>(Averaged over the last {labour.contractions.length < 10 ? labour.contractions.length : 10} contractions)</Text>
             </> || !completed && 
             <Text className={classes.labourStatsText}>Not enough data yet, keep tracking.</Text>
             }

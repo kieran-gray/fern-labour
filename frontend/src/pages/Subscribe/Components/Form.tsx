@@ -70,7 +70,7 @@ export default function SubscribeForm({ birthingPersonId, newUser, setNewUser }:
                 <div className={baseClasses.body}>
                     <Title className={baseClasses.text}>Enter token to subscribe:</Title>
                     <Space h="xl"></Space>
-                    <form onSubmit={form.onSubmit(() => mutation.mutate(form.values))}>
+                    <form onSubmit={form.onSubmit(((values) => mutation.mutate(values)))}>
                         <PinInput
                             fw={600}
                             size='lg'

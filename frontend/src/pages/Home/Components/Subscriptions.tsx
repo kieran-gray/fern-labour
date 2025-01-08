@@ -7,18 +7,7 @@ import ContactMethodsModal from '../../../shared-components/ContactMethodsModal/
 import { NotFoundError } from '../../../Errors';
 import { useState } from 'react';
 import { ContainerLoadingIcon } from '../../../shared-components/PageLoading/Loading';
-
-
-const formatLabourDurationHours = (hours: number): string => {
-  const wholeHours = Math.round(hours);
-  if (wholeHours < 1) {
-    return "Less than 1 hour"
-  } else if (wholeHours == 1) {
-    return `${wholeHours} hour`
-  } else {
-    return `${wholeHours} hours`
-  }
-}
+import { LabourSummaryStatistics } from '../../../shared-components/LabourStatistics/LabourSummaryStatistics';
 
 export default function Subscriptions() {
   const auth = useAuth();
@@ -77,14 +66,7 @@ export default function Subscriptions() {
         <Text className={baseClasses.text}>{subscription.first_name} {subscription.last_name}</Text>
         <Badge size='lg' mb={20} pl={40} pr={40} variant="light">{subscription.active_labour ? 'In Labour' : 'Not In Labour'}</Badge>
       </div>
-      {subscription.active_labour && 
-        <>
-          <Text className={baseClasses.text}>Number of contractions: {subscription.active_labour.contraction_count}</Text>
-          <Text className={baseClasses.text}></Text>
-          <Text className={baseClasses.text}>Labour duration: {formatLabourDurationHours(subscription.active_labour.duration)}</Text>
-          <Text className={baseClasses.text}>Current phase: {subscription.active_labour.current_phase}</Text>
-          <Text className={baseClasses.text}>Hospital recommended: {String(subscription.active_labour.hospital_recommended)}</Text>
-        </>
+      {subscription.active_labour && <LabourSummaryStatistics labour={subscription.active_labour} inContainer={false} />
       }
     </div>
   ));
