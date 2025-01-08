@@ -108,7 +108,7 @@ class LabourService:
     async def make_announcement(
         self,
         birthing_person_id: str,
-        message: int,
+        message: str,
         sent_time: datetime | None = None,
     ) -> LabourDTO:
         domain_id = BirthingPersonId(birthing_person_id)

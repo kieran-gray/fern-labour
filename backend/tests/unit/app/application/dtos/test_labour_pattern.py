@@ -12,6 +12,7 @@ def labour_pattern() -> dict[str, Any]:
         "average_duration": 1.123,
         "average_intensity": 6,
         "average_interval": 2.41,
+        "contractions_in_last_hour": 1,
         "phase": "active",
     }
 
@@ -21,6 +22,7 @@ def test_can_convert_to_labour_pattern_dto(labour_pattern) -> None:
     assert dto.average_duration == labour_pattern["average_duration"]
     assert dto.average_intensity == labour_pattern["average_intensity"]
     assert dto.average_interval == labour_pattern["average_interval"]
+    assert dto.contractions_in_last_hour == labour_pattern["contractions_in_last_hour"]
     assert dto.phase == labour_pattern["phase"]
 
 
