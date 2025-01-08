@@ -31,6 +31,7 @@ export default function BeginLabourButton() {
         color='var(--mantine-color-pink-4)'
         variant="filled"
         onClick={() => mutation.mutate()}
+        style={{flex:1}}
     >
         Begin Labour
     </Button>;

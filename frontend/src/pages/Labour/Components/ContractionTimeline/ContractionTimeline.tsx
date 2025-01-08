@@ -20,7 +20,8 @@ export default function ContractionTimeline({contractions, contractionGaps: cont
             {contractionFrequency[contraction.id] !== null &&
               <Text className={classes.timelineLabel}>
                 Frequency: <strong>{contractionFrequency[contraction.id]}</strong>
-              </Text>}
+              </Text>
+            }
             {contraction.start_time !== contraction.end_time &&
               <Text className={classes.timelineLabel}>Duration: <strong>{formatTimeSeconds(contraction.duration)}</strong></Text>}
             {contraction.notes && (

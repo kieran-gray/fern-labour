@@ -1,5 +1,5 @@
 import { Header } from "../../shared-components/Header/Header";
-import { Container, Notification, Space } from "@mantine/core";
+import { Container } from "@mantine/core";
 import SubscribeForm from "./Components/Form";
 import { useParams } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
@@ -10,7 +10,6 @@ import { NotFoundError } from "../../Errors";
 
 export const SubscribePage: React.FC = () => {
     const [newUser, setNewUser] = useState<boolean>(false);
-    const [err, setErr] = useState<string>("")
     const auth = useAuth();
     const { id } = useParams<'id'>();
     if (!id) throw new Error('id is required')
@@ -45,15 +44,7 @@ export const SubscribePage: React.FC = () => {
         <div>
             <Header active="" />
             <Container size={800} p={15}>
-                {err &&
-                <>
-                    <Notification color="red" radius="md" title="Error" onClose={() => setErr("")}>
-                        Invalid or incorrect token
-                    </Notification>
-                    <Space h="xl"></Space>
-                </>
-                }
-                <SubscribeForm birthingPersonId={id} newUser={newUser} setNewUser={setNewUser} setError={setErr} />
+                <SubscribeForm birthingPersonId={id} newUser={newUser} setNewUser={setNewUser} />
             </Container>
         </div>
     );

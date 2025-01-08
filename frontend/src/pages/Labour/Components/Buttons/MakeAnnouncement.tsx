@@ -1,10 +1,12 @@
 import { Button, Tooltip } from '@mantine/core';
 import { useAuth } from 'react-oidc-context';
-import { LabourService, MakeAnnouncementRequest, OpenAPI } from '../../../../client';
+import { ApiError, LabourService, MakeAnnouncementRequest, OpenAPI } from '../../../../client';
 import { IconSpeakerphone } from '@tabler/icons-react';
 import { useState } from 'react';
 import ConfirmAnnouncementModal from '../Modals/ConfirmAnnouncement';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { notifications } from '@mantine/notifications';
+import baseClasses from '../../../../shared-components/shared-styles.module.css'
 
 export default function MakeAnnouncementButton({message, setAnnouncement}: {message: string, setAnnouncement: Function}) {
     const [getConfimation, setGetConfimation] = useState(false);
@@ -32,7 +34,22 @@ export default function MakeAnnouncementButton({message, setAnnouncement}: {mess
           setAnnouncement("")
         },
         onError: (error) => {
-          console.error("Error making announcement", error)
+            if (error instanceof ApiError) {
+                notifications.show(
+                    {
+                        title: 'Error',
+                        message: "Wait at least 10 seconds between announcements",
+                        radius: "lg",
+                        color: "var(--mantine-color-pink-9)",
+                        classNames: {
+                            title: baseClasses.notificationTitle,
+                            description: baseClasses.notificationDescription
+                        },
+                        style:{ backgroundColor: "var(--mantine-color-pink-4)", color: "var(--mantine-color-white)" }
+                    }
+                );
+            }
+
         }
     });
 

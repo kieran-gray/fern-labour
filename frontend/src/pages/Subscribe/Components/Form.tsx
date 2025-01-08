@@ -6,8 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import ContactMethodsModal from '../../../shared-components/ContactMethodsModal/ContactMethodsModal';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { notifications } from '@mantine/notifications';
 
-export default function SubscribeForm({ birthingPersonId, newUser, setNewUser, setError }: { birthingPersonId: string, newUser: boolean, setNewUser: Function, setError: Function }) {
+export default function SubscribeForm({ birthingPersonId, newUser, setNewUser }: { birthingPersonId: string, newUser: boolean, setNewUser: Function }) {
     const auth = useAuth()
     const navigate = useNavigate();
     const form = useForm({
@@ -16,7 +17,7 @@ export default function SubscribeForm({ birthingPersonId, newUser, setNewUser, s
             token: '',
         },
         validate: {
-            token: (value) => (/.{8}/.test(value) ? null : 'Invalid token'),
+            token: (value) => (value.length !== 8 ? 'Invalid token': null),
         },
     });
 
@@ -40,7 +41,19 @@ export default function SubscribeForm({ birthingPersonId, newUser, setNewUser, s
         },
         onError: (_) => {
             // TODO error message depends on http status of response
-            setError('Invalid or incorrect token');
+            notifications.show(
+                {
+                    title: 'Error',
+                    message: 'Invalid or incorrect token',
+                    radius: "lg",
+                    color: "var(--mantine-color-pink-9)",
+                    classNames: {
+                        title: baseClasses.notificationTitle,
+                        description: baseClasses.notificationDescription,
+                    },
+                    style:{ backgroundColor: "var(--mantine-color-pink-4)", color: "var(--mantine-color-white)" }
+                }
+            );
         }
     });
 

@@ -30,6 +30,7 @@ from app.domain.subscriber.exceptions import (
     SubscriberNotSubscribedToBirthingPerson,
     SubscriptionTokenIncorrect,
 )
+from app.domain.announcement.exceptions import TooSoonSinceLastAnnouncement
 from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
 
 log = logging.getLogger(__name__)
@@ -73,6 +74,7 @@ class ExceptionMapper:
             SubscriptionTokenIncorrect: status.HTTP_403_FORBIDDEN,
             AuthorizationError: status.HTTP_401_UNAUTHORIZED,
             InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
+            TooSoonSinceLastAnnouncement: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

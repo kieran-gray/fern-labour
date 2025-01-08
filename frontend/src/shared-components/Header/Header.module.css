@@ -1,6 +1,6 @@
 .header {
     height: 84px;
-    margin-bottom: 120px;
+    margin-bottom: 4vh;
     background-color: var(--mantine-color-pink-3);
     position: sticky;
     top: 0;

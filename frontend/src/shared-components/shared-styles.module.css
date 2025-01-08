@@ -106,3 +106,16 @@
     flex-direction: column;
     justify-content: end;
 }
+
+.notificationTitle {
+    color: var(--mantine-color-white);
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: var(--mantine-font-size-md);
+}
+
+.notificationDescription {
+    color: var(--mantine-color-white);
+    font-weight: 600;
+    font-size: var(--mantine-font-size-md);
+}
