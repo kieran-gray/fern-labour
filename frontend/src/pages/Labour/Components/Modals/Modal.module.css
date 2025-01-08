@@ -51,3 +51,15 @@
   .closeButton {
     display: none;
   }
+
+  .modalInnerText {
+    color: var(--mantine-color-gray-8);
+    font-weight: 700;
+    font-size: var(--mantine-font-size-lg);
+  }
+
+  .modalInnerTextContainer {
+    border-radius: var(--mantine-radius-xl);
+    background-color: var(--mantine-color-pink-1);
+    padding: 10px 15px;
+  }

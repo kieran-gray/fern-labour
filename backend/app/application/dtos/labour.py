@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Self
 
+from app.application.dtos.announcement import AnnouncementDTO
 from app.application.dtos.contraction import ContractionDTO
 from app.application.dtos.labour_pattern import LabourPatternDTO
 from app.domain.labour.entity import Labour
@@ -18,6 +19,7 @@ class LabourDTO:
     current_phase: str
     notes: str | None
     contractions: list[ContractionDTO]
+    announcements: list[AnnouncementDTO]
     pattern: LabourPatternDTO | None
 
     @classmethod
@@ -32,6 +34,7 @@ class LabourDTO:
             current_phase=labour.current_phase.value,
             notes=labour.notes,
             contractions=[ContractionDTO.from_domain(c) for c in labour.contractions],
+            announcements=[AnnouncementDTO.from_domain(a) for a in labour.announcements],
             pattern=LabourPatternDTO.from_domain(contraction_pattern)
             if contraction_pattern
             else None,
@@ -47,5 +50,6 @@ class LabourDTO:
             "current_phase": self.current_phase,
             "notes": self.notes,
             "contractions": [c.to_dict() for c in self.contractions],
+            "announcements": [a.to_dict() for a in self.announcements],
             "pattern": self.pattern.to_dict() if self.pattern else None,
         }

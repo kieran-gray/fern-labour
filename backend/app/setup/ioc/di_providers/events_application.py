@@ -5,6 +5,9 @@ from dishka import FromComponent, Provider, Scope, provide
 from app.application.events.event_handlers.contraction_ended_event_handler import (
     ContractionEndedEventHandler,
 )
+from app.application.events.event_handlers.labour_announcement_made_event_handler import (
+    LabourAnnouncementMadeEventHandler,
+)
 from app.application.events.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.application.events.event_handlers.labour_completed_event_handler import (
     LabourCompletedEventHandler,
@@ -90,6 +93,21 @@ class EventsApplicationProvider(Provider):
         return NotificationService(
             email_notification_gateway=email_notification_gateway,
             sms_notification_gateway=sms_notification_gateway,
+        )
+
+    @provide
+    def get_labour_announcement_made_event_handler(
+        self,
+        birthing_person_service: Annotated[
+            BirthingPersonService, FromComponent(ComponentEnum.LABOUR)
+        ],
+        subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+        notification_service: NotificationService,
+    ) -> LabourAnnouncementMadeEventHandler:
+        return LabourAnnouncementMadeEventHandler(
+            birthing_person_service=birthing_person_service,
+            subscriber_service=subscriber_service,
+            notification_service=notification_service,
         )
 
     @provide

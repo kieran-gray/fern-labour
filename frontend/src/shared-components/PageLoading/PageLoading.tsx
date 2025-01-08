@@ -1,18 +1,9 @@
-import { MutatingDots } from "react-loader-spinner"
+
+import { PageLoadingIcon } from './Loading'
 import classes from './PageLoading.module.css'
 
 export const PageLoading = () => {
-    return <div className={classes.loaderContainer}>
-        <MutatingDots
-            visible={true}
-            height="100"
-            width="100"
-            color="#FF8C7A"
-            secondaryColor="#FF8C7A"
-            radius="12.5"
-            ariaLabel="mutating-dots-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
-            />
+    return <div className={classes.pageLoaderContainer}>
+        <PageLoadingIcon />
     </div>
 }

@@ -10,6 +10,7 @@ from fastapi.responses import ORJSONResponse
 from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
+from app.domain.announcement.exceptions import TooSoonSinceLastAnnouncement
 from app.domain.base.exceptions import DomainError
 from app.domain.birthing_person.exceptions import (
     BirthingPersonDoesNotHaveActiveLabour,
@@ -73,6 +74,7 @@ class ExceptionMapper:
             SubscriptionTokenIncorrect: status.HTTP_403_FORBIDDEN,
             AuthorizationError: status.HTTP_401_UNAUTHORIZED,
             InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
+            TooSoonSinceLastAnnouncement: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

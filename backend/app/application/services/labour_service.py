@@ -10,6 +10,7 @@ from app.domain.labour.repository import LabourRepository
 from app.domain.services.begin_labour import BeginLabourService
 from app.domain.services.complete_labour import CompleteLabourService
 from app.domain.services.end_contraction import EndContractionService
+from app.domain.services.make_announcement import MakeAnnouncementService
 from app.domain.services.start_contraction import StartContractionService
 
 log = logging.getLogger(__name__)
@@ -97,6 +98,26 @@ class LabourService:
 
         labour = EndContractionService().end_contraction(
             birthing_person=birthing_person, intensity=intensity, end_time=end_time, notes=notes
+        )
+        await self._labour_repository.save(labour)
+
+        await self._event_producer.publish_batch(labour.clear_domain_events())
+
+        return LabourDTO.from_domain(labour)
+
+    async def make_announcement(
+        self,
+        birthing_person_id: str,
+        message: str,
+        sent_time: datetime | None = None,
+    ) -> LabourDTO:
+        domain_id = BirthingPersonId(birthing_person_id)
+        birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
+        if not birthing_person:
+            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
+
+        labour = MakeAnnouncementService().make_announcement(
+            birthing_person=birthing_person, message=message, sent_time=sent_time
         )
         await self._labour_repository.save(labour)
 

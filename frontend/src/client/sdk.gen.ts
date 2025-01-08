@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, GetUserApiV1AuthUserGetResponse, RegisterApiV1BirthingPersonRegisterPostResponse, GetBirthingPersonApiV1BirthingPersonGetResponse, GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse, GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse, RedirectToDocsGetResponse, HealthcheckApiV1HealthGetResponse, BeginLabourApiV1LabourBeginPostData, BeginLabourApiV1LabourBeginPostResponse, StartContractionApiV1LabourContractionStartPostData, StartContractionApiV1LabourContractionStartPostResponse, EndContractionApiV1LabourContractionEndPutData, EndContractionApiV1LabourContractionEndPutResponse, CompleteLabourApiV1LabourCompletePutData, CompleteLabourApiV1LabourCompletePutResponse, GetActiveLabourApiV1LabourActiveGetResponse, GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse, RegisterApiV1SubscriberRegisterPostData, RegisterApiV1SubscriberRegisterPostResponse, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostData, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostResponse, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse, GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse } from './types.gen';
+import type { LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, GetUserApiV1AuthUserGetResponse, RegisterApiV1BirthingPersonRegisterPostResponse, GetBirthingPersonApiV1BirthingPersonGetResponse, GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse, GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse, RedirectToDocsGetResponse, HealthcheckApiV1HealthGetResponse, BeginLabourApiV1LabourBeginPostData, BeginLabourApiV1LabourBeginPostResponse, StartContractionApiV1LabourContractionStartPostData, StartContractionApiV1LabourContractionStartPostResponse, EndContractionApiV1LabourContractionEndPutData, EndContractionApiV1LabourContractionEndPutResponse, CompleteLabourApiV1LabourCompletePutData, CompleteLabourApiV1LabourCompletePutResponse, GetActiveLabourApiV1LabourActiveGetResponse, GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse, MakeAnnouncementApiV1LabourAnnouncementMakePostData, MakeAnnouncementApiV1LabourAnnouncementMakePostResponse, GetApiV1SubscriberGetResponse, RegisterApiV1SubscriberRegisterPostData, RegisterApiV1SubscriberRegisterPostResponse, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostData, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostResponse, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse, GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -288,9 +288,50 @@ export class LabourService {
         });
     }
     
+    /**
+     * Make Announcement
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns LabourResponse Successful Response
+     * @throws ApiError
+     */
+    public static makeAnnouncementApiV1LabourAnnouncementMakePost(data: MakeAnnouncementApiV1LabourAnnouncementMakePostData): CancelablePromise<MakeAnnouncementApiV1LabourAnnouncementMakePostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/labour/announcement/make',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Bad Request',
+                401: 'Unauthorized',
+                404: 'Not Found',
+                422: 'Validation Error',
+                500: 'Internal Server Error'
+            }
+        });
+    }
+    
 }
 
 export class SubscriberService {
+    /**
+     * Get
+     * @returns SubscriberResponse Successful Response
+     * @throws ApiError
+     */
+    public static getApiV1SubscriberGet(): CancelablePromise<GetApiV1SubscriberGetResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/subscriber/',
+            errors: {
+                400: 'Bad Request',
+                401: 'Unauthorized',
+                404: 'Not Found',
+                500: 'Internal Server Error'
+            }
+        });
+    }
+    
     /**
      * Register
      * @param data The data for the request.

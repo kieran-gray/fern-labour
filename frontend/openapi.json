@@ -357,6 +357,72 @@
                 ]
             }
         },
+        "/api/v1/subscriber/": {
+            "get": {
+                "tags": [
+                    "Subscriber"
+                ],
+                "summary": "Get",
+                "operationId": "get_api_v1_subscriber__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriberResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/v1/subscriber/register": {
             "post": {
                 "tags": [
@@ -695,7 +761,7 @@
         "/api/v1/labour/begin": {
             "post": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Begin Labour",
                 "operationId": "begin_labour_api_v1_labour_begin_post",
@@ -781,7 +847,7 @@
         "/api/v1/labour/contraction/start": {
             "post": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Start Contraction",
                 "operationId": "start_contraction_api_v1_labour_contraction_start_post",
@@ -867,7 +933,7 @@
         "/api/v1/labour/contraction/end": {
             "put": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "End Contraction",
                 "operationId": "end_contraction_api_v1_labour_contraction_end_put",
@@ -953,7 +1019,7 @@
         "/api/v1/labour/complete": {
             "put": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Complete Labour",
                 "operationId": "complete_labour_api_v1_labour_complete_put",
@@ -1039,7 +1105,7 @@
         "/api/v1/labour/active": {
             "get": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Get Active Labour",
                 "operationId": "get_active_labour_api_v1_labour_active_get",
@@ -1105,7 +1171,7 @@
         "/api/v1/labour/active/summary": {
             "get": {
                 "tags": [
-                    "Labour Tracking"
+                    "Labour"
                 ],
                 "summary": "Get Active Labour Summary",
                 "operationId": "get_active_labour_summary_api_v1_labour_active_summary_get",
@@ -1168,6 +1234,92 @@
                 ]
             }
         },
+        "/api/v1/labour/announcement/make": {
+            "post": {
+                "tags": [
+                    "Labour"
+                ],
+                "summary": "Make Announcement",
+                "operationId": "make_announcement_api_v1_labour_announcement_make_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MakeAnnouncementRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/v1/health": {
             "get": {
                 "tags": [
@@ -1196,6 +1348,35 @@
     },
     "components": {
         "schemas": {
+            "AnnouncementDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "labour_id": {
+                        "type": "string",
+                        "title": "Labour Id"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "sent_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Sent Time"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "labour_id",
+                    "message",
+                    "sent_time"
+                ],
+                "title": "AnnouncementDTO"
+            },
             "BeginLabourRequest": {
                 "properties": {
                     "first_labour": {
@@ -1387,7 +1568,7 @@
                         "title": "End Time"
                     },
                     "duration": {
-                        "type": "string",
+                        "type": "number",
                         "title": "Duration"
                     },
                     "intensity": {
@@ -1557,6 +1738,13 @@
                         "type": "array",
                         "title": "Contractions"
                     },
+                    "announcements": {
+                        "items": {
+                            "$ref": "#/components/schemas/AnnouncementDTO"
+                        },
+                        "type": "array",
+                        "title": "Announcements"
+                    },
                     "pattern": {
                         "anyOf": [
                             {
@@ -1577,23 +1765,28 @@
                     "current_phase",
                     "notes",
                     "contractions",
+                    "announcements",
                     "pattern"
                 ],
                 "title": "LabourDTO"
             },
             "LabourPatternDTO": {
                 "properties": {
-                    "average_duration_minutes": {
+                    "average_duration": {
                         "type": "number",
-                        "title": "Average Duration Minutes"
+                        "title": "Average Duration"
                     },
                     "average_intensity": {
                         "type": "number",
                         "title": "Average Intensity"
                     },
-                    "average_interval_minutes": {
+                    "average_interval": {
                         "type": "number",
-                        "title": "Average Interval Minutes"
+                        "title": "Average Interval"
+                    },
+                    "contractions_in_last_hour": {
+                        "type": "integer",
+                        "title": "Contractions In Last Hour"
                     },
                     "phase": {
                         "type": "string",
@@ -1602,9 +1795,10 @@
                 },
                 "type": "object",
                 "required": [
-                    "average_duration_minutes",
+                    "average_duration",
                     "average_intensity",
-                    "average_interval_minutes",
+                    "average_interval",
+                    "contractions_in_last_hour",
                     "phase"
                 ],
                 "title": "LabourPatternDTO"
@@ -1676,6 +1870,31 @@
                     "labour"
                 ],
                 "title": "LabourSummaryResponse"
+            },
+            "MakeAnnouncementRequest": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "sent_time": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Sent Time"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "MakeAnnouncementRequest"
             },
             "RegisterSubscriberRequest": {
                 "properties": {

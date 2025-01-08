@@ -1,14 +1,15 @@
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Self
 from uuid import UUID, uuid4
 
+from app.domain.announcement.entity import Announcement
 from app.domain.base.aggregate_root import AggregateRoot
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.entity import Contraction
 from app.domain.contraction.events import ContractionEnded, ContractionStarted
 from app.domain.labour.enums import LabourPhase
-from app.domain.labour.events import LabourBegun, LabourCompleted
+from app.domain.labour.events import AnnouncementMade, LabourBegun, LabourCompleted
 from app.domain.labour.vo_labour_id import LabourId
 
 
@@ -23,6 +24,7 @@ class Labour(AggregateRoot[LabourId]):
     start_time: datetime
     first_labour: bool
     contractions: list[Contraction] = field(default_factory=list)
+    announcements: list[Announcement] = field(default_factory=list)
     current_phase: LabourPhase = LabourPhase.EARLY
     end_time: datetime | None = None
     notes: str | None = None
@@ -143,26 +145,45 @@ class Labour(AggregateRoot[LabourId]):
             )
         )
 
+    def add_announcement(self, message: str, sent_time: datetime | None = None) -> None:
+        announcement = Announcement.create(labour_id=self.id_, message=message, sent_time=sent_time)
+        self.announcements.append(announcement)
+        self.add_domain_event(
+            AnnouncementMade.create(
+                {
+                    "birthing_person_id": self.birthing_person_id.value,
+                    "labour_id": str(self.id_.value),
+                    "announcement_id": str(announcement.id_.value),
+                    "message": announcement.message,
+                    "sent_time": announcement.sent_time.isoformat(),
+                }
+            )
+        )
+
     def get_contraction_pattern(self) -> dict[str, Any] | None:
         """Analyze the current contraction pattern"""
         if len(self.contractions) < 3:
             return None
 
-        recent = self.contractions[-3:]
+        recent = self.contractions[-10:]
 
-        avg_duration = sum(c.duration.duration_minutes for c in recent) / len(recent)
+        avg_duration = sum(c.duration.duration_seconds for c in recent) / len(recent)
         avg_intensity = sum(c.intensity for c in recent if c.intensity) / len(recent)
 
         # Calculate average time between contractions
         intervals = []
         for prev, curr in zip(recent, recent[1:], strict=False):
-            interval = (curr.start_time - prev.end_time).total_seconds() / 60
+            interval = (curr.start_time - prev.end_time).total_seconds()
             intervals.append(interval)
         avg_interval = sum(intervals) / len(intervals)
 
+        last_hour = datetime.now(UTC) - timedelta(hours=1)
+        contractions_in_last_hour = len([c for c in self.contractions if c.start_time >= last_hour])
+
         return {
-            "average_duration_minutes": round(avg_duration, 1),
+            "average_duration": round(avg_duration, 1),
             "average_intensity": round(avg_intensity, 1),
-            "average_interval_minutes": round(avg_interval, 1),
+            "average_interval": round(avg_interval, 1),
+            "contractions_in_last_hour": contractions_in_last_hour,
             "phase": self.current_phase.value,
         }

@@ -44,7 +44,6 @@ class Contraction(Entity[ContractionId]):
         Start a new contraction. Note this is a partially initialized contraction
         since it doesn't have an end time yet.
         """
-        # Using a temporary end time equal to start time - will be updated when contraction ends
         start_time = start_time or datetime.now(UTC)
         contraction_id = contraction_id or uuid4()
         return cls(
