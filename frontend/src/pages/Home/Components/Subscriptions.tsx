@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import ContactMethodsModal from '../../../shared-components/ContactMethodsModal/ContactMethodsModal';
 import { NotFoundError } from '../../../Errors';
 import { useState } from 'react';
+import { ContainerLoadingIcon } from '../../../shared-components/PageLoading/Loading';
 
 
 const formatLabourDurationHours = (hours: number): string => {
@@ -52,13 +53,8 @@ export default function Subscriptions() {
 
   if (isPending) {
     return (
-      <div className={baseClasses.root}>
-      <div className={baseClasses.header}>
-        <div className={baseClasses.title}>Your subscriptions</div>
-      </div>
       <div className={baseClasses.body}>
-      <Text className={baseClasses.text}>Loading...</Text>
-      </div>
+        <Text className={baseClasses.text}><ContainerLoadingIcon /></Text>
       </div>
     )
   }
@@ -68,13 +64,8 @@ export default function Subscriptions() {
       return <ContactMethodsModal promptForContactMethods={setAskContactMethods} />
     } else if (!data) {
       return (
-        <div className={baseClasses.root}>
-          <div className={baseClasses.header}>
-            <div className={baseClasses.title}>Your subscriptions</div>
-          </div>
-          <div className={baseClasses.body}>
-            <Text className={baseClasses.text}>Error: {error.message}</Text>
-          </div>
+        <div className={baseClasses.body}>
+          <Text className={baseClasses.text}>Error: {error.message}</Text>
         </div>
       )
     }
@@ -98,16 +89,13 @@ export default function Subscriptions() {
     </div>
   ));
   return (
-    <div className={baseClasses.root}>
-      <div className={baseClasses.header}>
-        <div className={baseClasses.title}>Your subscriptions</div>
-      </div>
+    <>
       {subscriptionsElements}
       {data.length == 0 && 
         <div className={baseClasses.body}>
           <div className={baseClasses.text}>Subscribe to someone to see their labour details here</div>
         </div>
       }
-  </div>
+    </>
   )
 }

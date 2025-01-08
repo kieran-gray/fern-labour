@@ -1,4 +1,4 @@
-import { ContractionDTO } from "../client";
+import { AnnouncementDTO, ContractionDTO } from "../client";
 
 
 export const formatTimeMilliseconds = (milliseconds: number) => {

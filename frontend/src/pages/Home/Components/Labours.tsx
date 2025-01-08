@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { LabourStatistics } from '../../../shared-components/LabourStatistics/LabourStatistics';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { PageLoading } from '../../../shared-components/PageLoading/PageLoading';
 import { NotFoundError } from '../../../Errors';
+import { ContainerLoadingIcon } from '../../../shared-components/PageLoading/Loading';
 
 
 export default function Labours() {
@@ -55,7 +55,11 @@ export default function Labours() {
   });
 
   if (isPending) {
-    return <Text className={baseClasses.text}>Loading...</Text>
+    return (
+      <div className={baseClasses.body}>
+        <Text className={baseClasses.text}><ContainerLoadingIcon /></Text>
+      </div>
+    )
   }
 
   if (isError) {
@@ -71,7 +75,7 @@ export default function Labours() {
         </div>
         <LabourStatistics labour={labour} />
         <Space h={"sm"} />
-        {labour.end_time && <Text className={baseClasses.text}>Closing Note: {labour.notes}</Text>}
+        {(labour.end_time && labour.notes ) && <Text className={baseClasses.text}>Closing Note: {labour.notes}</Text>}
         <div className={baseClasses.flexRowEndNoBP}>
           {!labour.end_time && <Button color="var(--mantine-color-pink-4)" pl={35} pr={35} radius="lg" variant="filled" onClick={() => navigate("/labour")}>Resume</Button>}
         </div>

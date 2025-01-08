@@ -49,8 +49,6 @@ export default function MakeAnnouncementButton({message, setAnnouncement}: {mess
             />
         }
     }
-
-    
     const icon = <IconSpeakerphone size={25} />;
     return <Button
         leftSection={icon}

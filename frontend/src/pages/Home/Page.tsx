@@ -1,8 +1,8 @@
 import { Header } from "../../shared-components/Header/Header";
 import { useAuth } from "react-oidc-context";
-import Subscriptions from "./Components/Subscriptions";
 import { Container, Space, Title } from "@mantine/core";
-import LabourContainer from "./Components/Container";
+import LabourContainer from "./Components/LabourContainer";
+import SubscriptionsContainer from "./Components/SubscriptionsContainer";
 
 export const HomePage: React.FC = () => {
   const auth = useAuth();
@@ -17,7 +17,7 @@ export const HomePage: React.FC = () => {
         <Space h="xl" />
         <LabourContainer />
         <Space h="xl" />
-        <Subscriptions />
+        <SubscriptionsContainer />
       </Container>
     </div>
   );
