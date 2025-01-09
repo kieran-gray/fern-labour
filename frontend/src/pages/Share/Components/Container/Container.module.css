@@ -7,5 +7,4 @@
 
 .controls {
   display: flex;
-  margin-top: var(--mantine-spacing-xl);
 }
