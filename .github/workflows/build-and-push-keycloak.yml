@@ -5,8 +5,12 @@ on:
     branches: ['main']
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: kieran-gray/labour-tracker-keycloak
+  IMAGE_NAME: "labour-tracker-keycloak"
+  PROJECT_ID: "valued-vault-446719-t7"
+  AR_REPO_LOCATION: "europe-west2"
+  AR_URL: "europe-west2-docker.pkg.dev/valued-vault-446719-t7/fern-labour"
+  SERVICE_ACCOUNT: "github-actions-service-account@valued-vault-446719-t7.iam.gserviceaccount.com"
+  WORKLOAD_IDENTITY_PROVIDER: "projects/549377932260/locations/global/workloadIdentityPools/fern-labour-dev-pool/providers/github-actions-provider"
 
 jobs:
   build-and-push-image:
@@ -14,26 +18,34 @@ jobs:
 
     permissions:
       contents: read
-      packages: write
-      attestations: write
       id-token: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
   
-      - name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2'
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          token_format: 'access_token'
+          project_id: ${{ env.PROJECT_ID }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Docker Auth
+        id: docker-auth
+        uses: 'docker/login-action@v1'
+        with:
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+          registry: '${{ env.AR_REPO_LOCATION }}-docker.pkg.dev'
      
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
         id: push
@@ -43,11 +55,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-       
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
-      
