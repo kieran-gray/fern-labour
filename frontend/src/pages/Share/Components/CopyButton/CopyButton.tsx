@@ -27,6 +27,7 @@ export function CopyButton({text}: {text: string}) {
         size="md"
         pr={14}
         h={48}
+        mt={'var(--mantine-spacing-lg)'}
         styles={{ section: { marginLeft: 22 } }}
         onClick={() => clipboard.copy(text)}
       >

@@ -41,13 +41,15 @@ export const ShareBirthingPersonPage = () => {
     );
   }
 
-  const shareText = `Hey, follow this link and sign up to get notifications about my labour:\n\nhttps://fernlabour.com/subscribe/${userId}\n\nYou'll also need this code: ${data}`;
+  // TODO environment variable for frontend host
+  const shareUrl = `https://fernlabour.com/subscribe/${userId}`
+  const shareText = `Hey, follow this link and sign up to get notifications about my labour:\n\n${shareUrl}\n\nYou'll also need this code: ${data}`;
 
   return (
     <div>
       <Header active={page}/>
       <Center flex={"shrink"}  p={15}>
-        <ShareContainer userId={userId} token={data} copyText={shareText}/>
+        <ShareContainer shareUrl={shareUrl} token={data} copyText={shareText}/>
       </Center>
     </div>
   );

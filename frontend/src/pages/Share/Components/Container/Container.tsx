@@ -2,9 +2,9 @@ import { Text, Title } from '@mantine/core';
 import classes from './Container.module.css';
 import baseClasses from '../../../../shared-components/shared-styles.module.css'
 import { CopyButton } from '../CopyButton/CopyButton';
+import QRButton from '../QRButton/QRButton';
 
-
-export const ShareContainer = ({ userId, token, copyText }: { userId: string, token: string, copyText: string }) => (
+export const ShareContainer = ({ shareUrl, token, copyText }: { shareUrl: string, token: string, copyText: string }) => (
   <div className={baseClasses.root}>
     <div className={baseClasses.header}>
       <Title fz="xl" className={baseClasses.title}>Share</Title>
@@ -16,7 +16,7 @@ export const ShareContainer = ({ userId, token, copyText }: { userId: string, to
           Hey, follow this link and sign up to get notifications about my labour:
           <br></br>
           <br></br>
-          https://fernlabour.com/subscribe/{userId}
+          {shareUrl}
         </Text>
         <Text fz="sm">
           <br></br>
@@ -24,7 +24,10 @@ export const ShareContainer = ({ userId, token, copyText }: { userId: string, to
         </Text>
       </div>
       <div className={classes.controls}>
-        <CopyButton text={copyText} />
+        <div className={baseClasses.flexRow}>
+          <CopyButton text={copyText} />
+          <QRButton url={`${shareUrl}?token=${token}`} />
+        </div>
       </div>
     </div>
   </div>
