@@ -1,20 +1,19 @@
 import { Button, PinInput, Space, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useAuth } from 'react-oidc-context';
-import { OpenAPI, SubscriberService, SubscribeToRequest } from '../../../client';
+import { ApiError, OpenAPI, SubscriberService, SubscribeToRequest } from '../../../client';
 import { useNavigate } from 'react-router-dom';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
-import ContactMethodsModal from '../../../shared-components/ContactMethodsModal/ContactMethodsModal';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 
-export default function SubscribeForm({ birthingPersonId, newUser, setNewUser }: { birthingPersonId: string, newUser: boolean, setNewUser: Function }) {
+export default function SubscribeForm({ birthingPersonId, token }: { birthingPersonId: string, token: string | null }) {
     const auth = useAuth()
     const navigate = useNavigate();
     const form = useForm({
         mode: 'uncontrolled',
         initialValues: {
-            token: '',
+            token: token || '',
         },
         validate: {
             token: (value) => (value.length !== 8 ? 'Invalid token': null),
@@ -39,12 +38,21 @@ export default function SubscribeForm({ birthingPersonId, newUser, setNewUser }:
           queryClient.setQueryData(['subscriber', auth.user?.profile.sub], subscriber);
           navigate("/");
         },
-        onError: (_) => {
+        onError: (error) => {
+            let message = 'Unknown error occurred'
+            if (error instanceof ApiError) {
+                try {
+                    const body = error.body as {description: string}
+                    message = body.description
+                } catch {
+                    // Do nothing
+                }
+            }
             // TODO error message depends on http status of response
             notifications.show(
                 {
                     title: 'Error',
-                    message: 'Invalid or incorrect token',
+                    message: message,
                     radius: "lg",
                     color: "var(--mantine-color-pink-9)",
                     classNames: {
@@ -56,36 +64,29 @@ export default function SubscribeForm({ birthingPersonId, newUser, setNewUser }:
             );
         }
     });
-
-    if (newUser) {
-        return (
-            <ContactMethodsModal promptForContactMethods={setNewUser}></ContactMethodsModal>
-        )
-    } else {
-        return (
-            <div className={baseClasses.root}>
-                <div className={baseClasses.header}>
-                    <div className={baseClasses.title}>Subscribe</div>
-                </div>
-                <div className={baseClasses.body}>
-                    <Title className={baseClasses.text}>Enter token to subscribe:</Title>
-                    <Space h="xl"></Space>
-                    <form onSubmit={form.onSubmit(((values) => mutation.mutate(values)))}>
-                        <PinInput
-                            fw={600}
-                            size='lg'
-                            length={8}
-                            radius="md"
-                            key={form.key('token')}
-                            {...form.getInputProps('token')}
-                        />
-                    <Space h="xl"></Space>
-                    <div className={baseClasses.flexRowEnd}>
-                        <Button color='var(--mantine-color-pink-4)' size='lg' radius='lg' variant='filled' type="submit">Submit</Button>
-                    </div>
-                    </form>
-                </div>
+    return (
+        <div className={baseClasses.root}>
+            <div className={baseClasses.header}>
+                <div className={baseClasses.title}>Subscribe</div>
             </div>
-        );
-    }
+            <div className={baseClasses.body}>
+                <Title className={baseClasses.text}>Enter token to subscribe:</Title>
+                <Space h="xl"></Space>
+                <form onSubmit={form.onSubmit(((values) => mutation.mutate(values)))}>
+                    <PinInput
+                        fw={600}
+                        size='lg'
+                        length={8}
+                        radius="md"
+                        key={form.key('token')}
+                        {...form.getInputProps('token')}
+                    />
+                <Space h="xl"></Space>
+                <div className={baseClasses.flexRowEnd}>
+                    <Button color='var(--mantine-color-pink-4)' size='lg' radius='lg' variant='filled' type="submit">Submit</Button>
+                </div>
+                </form>
+            </div>
+        </div>
+    );
 }

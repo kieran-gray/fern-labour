@@ -26,7 +26,7 @@ export const ShareContainer = ({ shareUrl, token, copyText }: { shareUrl: string
       <div className={classes.controls}>
         <div className={baseClasses.flexRow}>
           <CopyButton text={copyText} />
-          <QRButton url={shareUrl} />
+          <QRButton url={`${shareUrl}?token=${token}`} />
         </div>
       </div>
     </div>

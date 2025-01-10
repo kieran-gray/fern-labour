@@ -1,17 +1,20 @@
 import { Header } from "../../shared-components/Header/Header";
 import { Container } from "@mantine/core";
 import SubscribeForm from "./Components/Form";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import { ApiError, OpenAPI, SubscriberService } from "../../client";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { NotFoundError } from "../../Errors";
+import ContactMethodsModal from "../../shared-components/ContactMethodsModal/ContactMethodsModal";
 
 export const SubscribePage: React.FC = () => {
     const [newUser, setNewUser] = useState<boolean>(false);
     const auth = useAuth();
     const { id } = useParams<'id'>();
+    const [ searchParams ] = useSearchParams();
+    const token = searchParams.get("token");
     if (!id) throw new Error('id is required')
     OpenAPI.TOKEN = async () => {
             return auth.user?.access_token || ""
@@ -40,11 +43,14 @@ export const SubscribePage: React.FC = () => {
         },
     });
 
+    if (newUser) {
+        return <ContactMethodsModal promptForContactMethods={setNewUser}></ContactMethodsModal>
+    }
     return (
         <div>
             <Header active="" />
             <Container size={800} p={15}>
-                <SubscribeForm birthingPersonId={id} newUser={newUser} setNewUser={setNewUser} />
+                <SubscribeForm birthingPersonId={id} token={token} />
             </Container>
         </div>
     );
