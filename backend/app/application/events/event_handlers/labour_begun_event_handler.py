@@ -1,14 +1,27 @@
 import logging
-from typing import Any
+from typing import Any, Protocol
 
+from app.application.dtos.birthing_person import BirthingPersonDTO
+from app.application.dtos.subscriber import SubscriberDTO
 from app.application.events.event_handler import EventHandler
+from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.entity import Notification
 from app.application.notifications.notification_service import NotificationService
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
 from app.domain.subscriber.enums import ContactMethod
+from app.domain.subscriber.exceptions import SubscriberNotFoundById
 
 log = logging.getLogger(__name__)
+
+
+class LabourBegunNotificationGenerator(Protocol):
+    def __call__(
+        self,
+        birthing_person: BirthingPersonDTO,
+        subscriber: SubscriberDTO,
+        destination: str,
+    ) -> Notification: ...
 
 
 class LabourBegunEventHandler(EventHandler):
@@ -17,10 +30,57 @@ class LabourBegunEventHandler(EventHandler):
         birthing_person_service: BirthingPersonService,
         subscriber_service: SubscriberService,
         notification_service: NotificationService,
+        email_generation_service: EmailGenerationService,
     ):
         self._birthing_person_service = birthing_person_service
         self._subscriber_service = subscriber_service
         self._notification_service = notification_service
+        self._email_generation_service = email_generation_service
+
+    def _generate_email(
+        self,
+        birthing_person: BirthingPersonDTO,
+        subscriber: SubscriberDTO,
+        destination: str,
+    ) -> Notification:
+        subject = f"Labour update from {birthing_person.first_name} {birthing_person.last_name}"
+        update = f"{birthing_person.first_name} is going into labour!"
+
+        email_data = {
+            "birthing_person_name": f"{birthing_person.first_name} {birthing_person.last_name}",
+            "subscriber_first_name": subscriber.first_name,
+            "update": update,
+            "link": "https://fernlabour.com",  # TODO not hardcoded
+        }
+        message = self._email_generation_service.generate("labour_update.html", email_data)
+        return Notification(
+            type=ContactMethod.EMAIL, destination=destination, message=message, subject=subject
+        )
+
+    def _generate_sms(
+        self,
+        birthing_person: BirthingPersonDTO,
+        subscriber: SubscriberDTO,
+        destination: str,
+    ) -> Notification:
+        message = (
+            f"Hey{subscriber.first_name}, {birthing_person.first_name}"
+            f"{birthing_person.last_name} is going into labour!"
+        )
+
+        return Notification(
+            type=ContactMethod.SMS,
+            destination=destination,
+            message=message,
+        )
+
+    def _get_notification_generator(self, contact_method: str) -> LabourBegunNotificationGenerator:
+        contact_method = ContactMethod(contact_method)
+        if contact_method is ContactMethod.EMAIL:
+            return self._generate_email
+        elif contact_method is ContactMethod.SMS:
+            return self._generate_sms
+        raise NotImplementedError(f"Notification generator for {contact_method} not implemented")
 
     async def handle(self, event: dict[str, Any]) -> None:
         birthing_person_id = event["data"]["birthing_person_id"]
@@ -28,19 +88,18 @@ class LabourBegunEventHandler(EventHandler):
             birthing_person_id
         )
 
-        # TODO refactor this event handler to trigger a notification event for each subscriber to
-        # prevent failure when one subscriber in list is missing etc
         for subscriber_id in birthing_person.subscribers:
-            subscriber = await self._subscriber_service.get(subscriber_id)
-            message = (
-                f"Hey {subscriber.first_name}, {birthing_person.first_name} "
-                f"{birthing_person.last_name} is going into labour"
-            )
+            try:
+                subscriber = await self._subscriber_service.get(subscriber_id)
+            except SubscriberNotFoundById as err:
+                log.error(err)
+                continue
+
             for method in subscriber.contact_methods:
-                destination = subscriber.destination(method)
-                if not destination:
-                    continue
-                notification = Notification(
-                    type=ContactMethod(method), destination=destination, message=message
-                )
-                await self._notification_service.send(notification)
+                if destination := subscriber.destination(method):
+                    notification = self._get_notification_generator(method)(
+                        birthing_person=birthing_person,
+                        subscriber=subscriber,
+                        destination=destination,
+                    )
+                    await self._notification_service.send(notification)

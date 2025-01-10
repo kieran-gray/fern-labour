@@ -2,9 +2,6 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from app.application.events.event_handlers.contraction_ended_event_handler import (
-    ContractionEndedEventHandler,
-)
 from app.application.events.event_handlers.labour_announcement_made_event_handler import (
     LabourAnnouncementMadeEventHandler,
 )
@@ -18,6 +15,7 @@ from app.application.events.event_handlers.subscriber_subscribed_to_event_handle
 from app.application.events.event_handlers.subscriber_unsubscribed_from_event_handler import (
     SubscriberUnsubscribedFromEventHandler,
 )
+from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notfication_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,
@@ -26,7 +24,9 @@ from app.application.notifications.notification_service import NotificationServi
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
 from app.domain.birthing_person.repository import BirthingPersonRepository
-from app.domain.labour.repository import LabourRepository
+from app.infrastructure.notifications.email.jinja2_email_generation_service import (
+    Jinja2EmailGenerationService,
+)
 from app.infrastructure.notifications.email.logger_email_notification_gateway import (
     LoggerEmailNotificationGateway,
 )
@@ -96,6 +96,10 @@ class EventsApplicationProvider(Provider):
         )
 
     @provide
+    def get_email_generation_service(self) -> EmailGenerationService:
+        return Jinja2EmailGenerationService()
+
+    @provide
     def get_labour_announcement_made_event_handler(
         self,
         birthing_person_service: Annotated[
@@ -103,11 +107,13 @@ class EventsApplicationProvider(Provider):
         ],
         subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
         notification_service: NotificationService,
+        email_generation_service: EmailGenerationService,
     ) -> LabourAnnouncementMadeEventHandler:
         return LabourAnnouncementMadeEventHandler(
             birthing_person_service=birthing_person_service,
             subscriber_service=subscriber_service,
             notification_service=notification_service,
+            email_generation_service=email_generation_service,
         )
 
     @provide
@@ -118,11 +124,13 @@ class EventsApplicationProvider(Provider):
         ],
         subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
         notification_service: NotificationService,
+        email_generation_service: EmailGenerationService,
     ) -> LabourBegunEventHandler:
         return LabourBegunEventHandler(
             birthing_person_service=birthing_person_service,
             subscriber_service=subscriber_service,
             notification_service=notification_service,
+            email_generation_service=email_generation_service,
         )
 
     @provide
@@ -133,11 +141,13 @@ class EventsApplicationProvider(Provider):
         ],
         subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
         notification_service: NotificationService,
+        email_generation_service: EmailGenerationService,
     ) -> LabourCompletedEventHandler:
         return LabourCompletedEventHandler(
             birthing_person_service=birthing_person_service,
             subscriber_service=subscriber_service,
             notification_service=notification_service,
+            email_generation_service=email_generation_service,
         )
 
     @provide
@@ -160,21 +170,4 @@ class EventsApplicationProvider(Provider):
     ) -> SubscriberUnsubscribedFromEventHandler:
         return SubscriberUnsubscribedFromEventHandler(
             birthing_person_repository=birthing_person_repository
-        )
-
-    @provide
-    def get_contraction_ended_event_handler(
-        self,
-        labour_repository: Annotated[LabourRepository, FromComponent(ComponentEnum.LABOUR)],
-        birthing_person_service: Annotated[
-            BirthingPersonService, FromComponent(ComponentEnum.LABOUR)
-        ],
-        subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
-        notification_service: NotificationService,
-    ) -> ContractionEndedEventHandler:
-        return ContractionEndedEventHandler(
-            labour_repository=labour_repository,
-            birthing_person_service=birthing_person_service,
-            subscriber_service=subscriber_service,
-            notification_service=notification_service,
         )

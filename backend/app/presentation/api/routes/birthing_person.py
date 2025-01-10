@@ -107,7 +107,6 @@ async def get_subscription_token(
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> BirthingPersonSubscriptionTokenResponse:
-    # TODO can generate tokens for subscribers
     user = auth_controller.get_authenticated_user(credentials=credentials)
     token = token_generator.generate(input=user.id)
     return BirthingPersonSubscriptionTokenResponse(token=token)

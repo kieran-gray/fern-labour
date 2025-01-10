@@ -1,8 +1,8 @@
 import logging
-from typing import Any
 
 from twilio.rest import Client
 
+from app.application.notifications.entity import Notification
 from app.application.notifications.notfication_gateway import SMSNotificationGateway
 
 log = logging.getLogger(__name__)
@@ -15,11 +15,12 @@ class TwilioSMSNotificationGateway(SMSNotificationGateway):
         self._client = Client(username=account_sid, password=auth_token)
         self._sms_from_number = sms_from_number
 
-    async def send(self, data: dict[str, Any]) -> None:
+    async def send(self, notification: Notification) -> None:
+        # TODO I could update message delivery status
         message = self._client.messages.create(
-            body=data["message"],
+            body=notification.message,
             from_=self._sms_from_number,
-            to=data["destination"],
+            to=notification.destination,
         )
         log.info("Sent email notification")
         log.debug(message.body)

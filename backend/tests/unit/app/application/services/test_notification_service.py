@@ -1,5 +1,4 @@
 from enum import StrEnum
-from typing import Any
 
 import pytest
 import pytest_asyncio
@@ -16,14 +15,14 @@ from app.domain.subscriber.enums import ContactMethod
 class MockEmailNotificationGateway(EmailNotificationGateway):
     sent_notifications = []
 
-    async def send(self, data: dict[str, Any]) -> None:
+    async def send(self, data: Notification) -> None:
         self.sent_notifications.append(data)
 
 
 class MockSMSNotificationGateway(SMSNotificationGateway):
     sent_notifications = []
 
-    async def send(self, data: dict[str, Any]) -> None:
+    async def send(self, data: Notification) -> None:
         self.sent_notifications.append(data)
 
 
@@ -56,9 +55,7 @@ async def test_can_send_email(notification_service: NotificationService) -> None
     )
     await notification_service.send(notification)
     assert notification_service._sms_notification_gateway.sent_notifications == []
-    assert notification_service._email_notification_gateway.sent_notifications == [
-        notification.to_dict()
-    ]
+    assert notification_service._email_notification_gateway.sent_notifications == [notification]
 
 
 async def test_can_send_sms(notification_service: NotificationService) -> None:
@@ -68,9 +65,7 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
         destination="dest",
     )
     await notification_service.send(notification)
-    assert notification_service._sms_notification_gateway.sent_notifications == [
-        notification.to_dict()
-    ]
+    assert notification_service._sms_notification_gateway.sent_notifications == [notification]
     assert notification_service._email_notification_gateway.sent_notifications == []
 
 
