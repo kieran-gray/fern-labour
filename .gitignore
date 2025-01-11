@@ -174,3 +174,4 @@ cython_debug/
 todo/
 
 node_modules/
+key.json
