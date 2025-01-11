@@ -64,8 +64,8 @@ class LabourBegunEventHandler(EventHandler):
         destination: str,
     ) -> Notification:
         message = (
-            f"Hey{subscriber.first_name}, {birthing_person.first_name}"
-            f"{birthing_person.last_name} is going into labour!"
+            f"Hey {subscriber.first_name}, {birthing_person.first_name} {birthing_person.last_name}"
+            " is going into labour!"
         )
 
         return Notification(

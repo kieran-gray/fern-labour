@@ -22,5 +22,5 @@ class TwilioSMSNotificationGateway(SMSNotificationGateway):
             from_=self._sms_from_number,
             to=notification.destination,
         )
-        log.info("Sent email notification")
+        log.info("Sent sms notification")
         log.debug(message.body)

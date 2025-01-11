@@ -69,8 +69,8 @@ class LabourCompletedEventHandler(EventHandler):
         destination: str,
     ) -> Notification:
         message = (
-            f"Hey{subscriber.first_name}, {birthing_person.first_name}"
-            f"{birthing_person.last_name} has completed labour!"
+            f"Hey {subscriber.first_name}, {birthing_person.first_name} {birthing_person.last_name}"
+            " has completed labour!"
         )
         if notes:
             message += f"\nThey added the following note:\n{notes}"
