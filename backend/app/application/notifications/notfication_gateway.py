@@ -1,15 +1,17 @@
-from typing import Any, Protocol
+from typing import Protocol
+
+from app.application.notifications.entity import Notification
 
 
 class NotificationGateway(Protocol):
     """Abstract Base Class for notification gateways."""
 
-    async def send(self, data: dict[str, Any]) -> None:
+    async def send(self, notification: Notification) -> None:
         """
         Send a notification.
 
         Args:
-            data: The data to send
+            notification: The notification to send
         """
 
 

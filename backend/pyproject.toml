@@ -13,6 +13,7 @@ dependencies = [
     "dishka<2.0.0,>=1.4.0",
     "emails>=0.6",
     "fastapi<1.0.0,>=0.115.0",
+    "jinja2>=3.1.5",
     "kafka-python-ng>=2.2.3",
     "orjson<4.0.0,>=3.10.7",
     "psycopg[binary]<4.0.0,>=3.2.3",

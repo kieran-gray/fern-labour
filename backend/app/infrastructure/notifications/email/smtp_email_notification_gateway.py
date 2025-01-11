@@ -1,23 +1,12 @@
-import json
 import logging
-from dataclasses import dataclass
 from typing import Any
 
 import emails
 
+from app.application.notifications.entity import Notification
 from app.application.notifications.notfication_gateway import EmailNotificationGateway
 
 log = logging.getLogger(__name__)
-
-
-@dataclass
-class EmailData:
-    html_content: str
-    subject: str
-
-
-def generate_email(data: dict[str, Any]) -> EmailData:
-    return EmailData(html_content=json.dumps(data), subject="TEST 123456")  # TODO finish email
 
 
 class SMTPEmailNotificationGateway(EmailNotificationGateway):
@@ -43,12 +32,10 @@ class SMTPEmailNotificationGateway(EmailNotificationGateway):
         self._smtp_ssl = smtp_ssl
         self._smtp_port = smtp_port
 
-    async def send(self, data: dict[str, Any]) -> None:
-        email_data = generate_email(data)
-
+    async def send(self, notification: Notification) -> None:
         message = emails.Message(
-            subject=email_data.subject,
-            html=email_data.html_content,
+            subject=notification.subject,
+            html=notification.message,
             mail_from=(self._emails_from_name, self._emails_from_email),
         )
         smtp_options: dict[str, Any] = {"host": self._smtp_host, "port": self._smtp_port}
@@ -60,6 +47,6 @@ class SMTPEmailNotificationGateway(EmailNotificationGateway):
             smtp_options["user"] = self._smtp_user
         if self._smtp_password:
             smtp_options["password"] = self._smtp_password
-        message.send(to="test123@example.com", smtp=smtp_options)
+        message.send(to=notification.destination, smtp=smtp_options)
 
         log.info("Sent email notification")

@@ -1,8 +1,11 @@
+import json
+from pathlib import Path
 from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest_asyncio
 
+from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notfication_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,
@@ -105,6 +108,13 @@ class MockSMSNotificationGateway(SMSNotificationGateway):
         self.sent_notifications.append(data)
 
 
+class MockEmailGenerationService(EmailGenerationService):
+    directory = Path()
+
+    def generate(self, template_name: str, data: dict[str, Any]) -> str:
+        return f"Mock HTML email: {template_name} {json.dumps(data)}"
+
+
 @pytest_asyncio.fixture
 async def birthing_person_service(
     birthing_person_repo: BirthingPersonRepository,
@@ -144,3 +154,8 @@ async def notification_service() -> NotificationService:
         email_notification_gateway=email_notification_gateway,
         sms_notification_gateway=sms_notification_gateway,
     )
+
+
+@pytest_asyncio.fixture
+async def email_generation_service() -> EmailGenerationService:
+    return MockEmailGenerationService()

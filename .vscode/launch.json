@@ -37,13 +37,11 @@
             "justMyCode": false,
         },
         {
-            "name": "Attach Local",
+            "name": "Debug Tests",
             "type": "debugpy",
-            "request": "attach",
-            "connect": {
-                "host": "0.0.0.0",
-                "port": 5678,
-            },
+            "request": "launch",
+            "module": "pytest",
+            "args": ["backend/"],
             "justMyCode": false,
         }
     ]

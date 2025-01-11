@@ -31,4 +31,4 @@ class NotificationService:
             )
 
     async def send(self, notification: Notification) -> None:
-        await self._get_notification_gateway(notification.type).send(notification.to_dict())
+        await self._get_notification_gateway(notification.type).send(notification)

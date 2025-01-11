@@ -26,6 +26,7 @@ from app.domain.labour.exceptions import (
 )
 from app.domain.subscriber.exceptions import (
     SubscriberAlreadySubscribedToBirthingPerson,
+    SubscriberCannotSubscribeToSelf,
     SubscriberExistsWithID,
     SubscriberNotFoundById,
     SubscriberNotSubscribedToBirthingPerson,
@@ -72,6 +73,7 @@ class ExceptionMapper:
             SubscriberNotFoundById: status.HTTP_404_NOT_FOUND,
             SubscriberNotSubscribedToBirthingPerson: status.HTTP_400_BAD_REQUEST,
             SubscriptionTokenIncorrect: status.HTTP_403_FORBIDDEN,
+            SubscriberCannotSubscribeToSelf: status.HTTP_400_BAD_REQUEST,
             AuthorizationError: status.HTTP_401_UNAUTHORIZED,
             InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
             TooSoonSinceLastAnnouncement: status.HTTP_400_BAD_REQUEST,

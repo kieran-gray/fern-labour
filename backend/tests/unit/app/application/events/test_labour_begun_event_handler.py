@@ -1,16 +1,17 @@
+import logging
 from datetime import UTC, datetime
 
 import pytest
 import pytest_asyncio
 
 from app.application.events.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
+from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notification_service import NotificationService
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
 from app.domain.base.event import DomainEvent
 from app.domain.birthing_person.exceptions import BirthingPersonNotFoundById
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
-from app.domain.subscriber.exceptions import SubscriberNotFoundById
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
 
 BIRTHING_PERSON = "test_birthing_person_id"
@@ -22,6 +23,7 @@ async def labour_begun_event_handler(
     birthing_person_service: BirthingPersonService,
     subscriber_service: SubscriberService,
     notification_service: NotificationService,
+    email_generation_service: EmailGenerationService,
 ) -> LabourBegunEventHandler:
     await birthing_person_service.register(
         birthing_person_id=BIRTHING_PERSON,
@@ -32,6 +34,7 @@ async def labour_begun_event_handler(
         birthing_person_service=birthing_person_service,
         subscriber_service=subscriber_service,
         notification_service=notification_service,
+        email_generation_service=email_generation_service,
     )
 
 
@@ -78,6 +81,7 @@ async def test_labour_begun_event_non_existent_birthing_person(
 
 
 async def test_labour_begun_event_non_existent_subscriber(
+    caplog: pytest.LogCaptureFixture,
     labour_begun_event_handler: LabourBegunEventHandler,
 ) -> None:
     await add_subscriber_to_birthing_person(
@@ -92,8 +96,11 @@ async def test_labour_begun_event_non_existent_subscriber(
         data={"birthing_person_id": BIRTHING_PERSON},
         time=datetime.now(UTC),
     )
-    with pytest.raises(SubscriberNotFoundById):
+    module = "app.application.events.event_handlers.labour_begun_event_handler"
+    with caplog.at_level(logging.ERROR, logger=module):
         await labour_begun_event_handler.handle(event.to_dict())
+        assert len(caplog.records) == 1
+        assert caplog.messages[0] == "Subscriber with id 'TEST' is not found."
 
 
 async def test_labour_begun_event_has_subscriber_no_contact_methods(
