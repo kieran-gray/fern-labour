@@ -18,6 +18,8 @@ import { PageLoading } from '../../../../shared-components/PageLoading/PageLoadi
 import { ErrorContainer } from '../../../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { Announcements } from './Announcements.tsx';
 import { CompleteLabour } from './CompleteLabour.tsx';
+import { CallMidwifeAlert } from '../Alerts/CallMidwifeAlert.tsx';
+import { GoToHospitalAlert } from '../Alerts/GoToHospitalAlert.tsx';
 
 
 export default function LabourContainer() {
@@ -97,7 +99,7 @@ export default function LabourContainer() {
   }
   
   return (
-    <div className={baseClasses.flexColumn}>
+    <div className={baseClasses.flexColumn} style={{maxWidth:"900px"}}>
     <div className={baseClasses.root}>
       <div className={baseClasses.header}>
         <Title fz="xl" className={baseClasses.title}>Your Labour</Title>
@@ -128,6 +130,12 @@ export default function LabourContainer() {
           <div className={baseClasses.flexColumnEnd}>
             <Space h="xl" />
             <Stack align='stretch' justify='flex-end' h="100%">
+              {labour.should_call_midwife_urgently && 
+                <CallMidwifeAlert />
+              }
+              {labour.should_go_to_hospital && 
+                <GoToHospitalAlert />
+              }
               <div ref={ref} />
               <div ref={targetRef} />
               {activeContraction &&

@@ -84,21 +84,28 @@ export type LabourDTO = {
     end_time: (string | null);
     current_phase: string;
     notes: (string | null);
+    should_go_to_hospital: boolean;
+    should_call_midwife_urgently: boolean;
     contractions: Array<ContractionDTO>;
     announcements: Array<AnnouncementDTO>;
-    pattern: (LabourPatternDTO | null);
-};
-
-export type LabourPatternDTO = {
-    average_duration: number;
-    average_intensity: number;
-    average_interval: number;
-    contractions_in_last_hour: number;
-    phase: string;
+    statistics: LabourStatisticsDTO;
 };
 
 export type LabourResponse = {
     labour: LabourDTO;
+};
+
+export type LabourStatisticsDataDTO = {
+    contraction_count: number;
+    average_duration: number;
+    average_intensity: number;
+    average_frequency: number;
+};
+
+export type LabourStatisticsDTO = {
+    last_30_mins?: (LabourStatisticsDataDTO | null);
+    last_60_mins?: (LabourStatisticsDataDTO | null);
+    total?: (LabourStatisticsDataDTO | null);
 };
 
 export type LabourSummaryDTO = {
@@ -107,7 +114,7 @@ export type LabourSummaryDTO = {
     contraction_count: number;
     current_phase: string;
     hospital_recommended: boolean;
-    pattern: (LabourPatternDTO | null);
+    statistics: LabourStatisticsDTO;
 };
 
 export type LabourSummaryResponse = {

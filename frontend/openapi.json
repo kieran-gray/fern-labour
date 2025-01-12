@@ -1731,6 +1731,14 @@
                         ],
                         "title": "Notes"
                     },
+                    "should_go_to_hospital": {
+                        "type": "boolean",
+                        "title": "Should Go To Hospital"
+                    },
+                    "should_call_midwife_urgently": {
+                        "type": "boolean",
+                        "title": "Should Call Midwife Urgently"
+                    },
                     "contractions": {
                         "items": {
                             "$ref": "#/components/schemas/ContractionDTO"
@@ -1745,15 +1753,8 @@
                         "type": "array",
                         "title": "Announcements"
                     },
-                    "pattern": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/LabourPatternDTO"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
+                    "statistics": {
+                        "$ref": "#/components/schemas/LabourStatisticsDTO"
                     }
                 },
                 "type": "object",
@@ -1764,44 +1765,13 @@
                     "end_time",
                     "current_phase",
                     "notes",
+                    "should_go_to_hospital",
+                    "should_call_midwife_urgently",
                     "contractions",
                     "announcements",
-                    "pattern"
+                    "statistics"
                 ],
                 "title": "LabourDTO"
-            },
-            "LabourPatternDTO": {
-                "properties": {
-                    "average_duration": {
-                        "type": "number",
-                        "title": "Average Duration"
-                    },
-                    "average_intensity": {
-                        "type": "number",
-                        "title": "Average Intensity"
-                    },
-                    "average_interval": {
-                        "type": "number",
-                        "title": "Average Interval"
-                    },
-                    "contractions_in_last_hour": {
-                        "type": "integer",
-                        "title": "Contractions In Last Hour"
-                    },
-                    "phase": {
-                        "type": "string",
-                        "title": "Phase"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "average_duration",
-                    "average_intensity",
-                    "average_interval",
-                    "contractions_in_last_hour",
-                    "phase"
-                ],
-                "title": "LabourPatternDTO"
             },
             "LabourResponse": {
                 "properties": {
@@ -1814,6 +1784,70 @@
                     "labour"
                 ],
                 "title": "LabourResponse"
+            },
+            "LabourStatisticsDTO": {
+                "properties": {
+                    "last_30_mins": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LabourStatisticsDataDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "last_60_mins": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LabourStatisticsDataDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "total": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LabourStatisticsDataDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "title": "LabourStatisticsDTO"
+            },
+            "LabourStatisticsDataDTO": {
+                "properties": {
+                    "contraction_count": {
+                        "type": "integer",
+                        "title": "Contraction Count"
+                    },
+                    "average_duration": {
+                        "type": "number",
+                        "title": "Average Duration"
+                    },
+                    "average_intensity": {
+                        "type": "number",
+                        "title": "Average Intensity"
+                    },
+                    "average_frequency": {
+                        "type": "number",
+                        "title": "Average Frequency"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "contraction_count",
+                    "average_duration",
+                    "average_intensity",
+                    "average_frequency"
+                ],
+                "title": "LabourStatisticsDataDTO"
             },
             "LabourSummaryDTO": {
                 "properties": {
@@ -1837,15 +1871,8 @@
                         "type": "boolean",
                         "title": "Hospital Recommended"
                     },
-                    "pattern": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/LabourPatternDTO"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
+                    "statistics": {
+                        "$ref": "#/components/schemas/LabourStatisticsDTO"
                     }
                 },
                 "type": "object",
@@ -1855,7 +1882,7 @@
                     "contraction_count",
                     "current_phase",
                     "hospital_recommended",
-                    "pattern"
+                    "statistics"
                 ],
                 "title": "LabourSummaryDTO"
             },

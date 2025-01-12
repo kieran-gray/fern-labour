@@ -54,10 +54,11 @@ class Contraction(Entity[ContractionId]):
             notes=notes,
         )
 
-    def end(self, end_time: datetime) -> None:
-        """End the contraction by setting its final duration"""
+    def end(self, end_time: datetime, intensity: int) -> None:
+        """End the contraction by setting its final duration and intensity"""
         new_duration = Duration.create(start_time=self.duration.start_time, end_time=end_time)
         self.duration = new_duration
+        self.update_intensity(intensity)
 
     @property
     def is_active(self) -> bool:

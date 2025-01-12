@@ -1,9 +1,9 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import pytest
 
-from app.domain.contraction.constants import CONTRACTION_MAX_INTENSITY, CONTRACTION_MIN_TIME
+from app.domain.contraction.constants import CONTRACTION_MAX_INTENSITY, CONTRACTION_MIN_TIME_SECONDS
 from app.domain.contraction.entity import Contraction
 from app.domain.contraction.exceptions import (
     ContractionIntensityInvalid,
@@ -51,7 +51,9 @@ def test_contraction_init_default_values():
 
 
 def test_can_end_contraction(sample_contraction: Contraction):
-    sample_contraction.end(datetime.now(UTC) + CONTRACTION_MIN_TIME)
+    sample_contraction.end(
+        datetime.now(UTC) + timedelta(seconds=CONTRACTION_MIN_TIME_SECONDS), intensity=5
+    )
 
 
 def test_cannot_init_contraction_with_invalid_intensity():
@@ -77,7 +79,10 @@ def test_cannot_update_contraction_to_invalid_intensity(sample_contraction: Cont
 
 def test_cannot_end_contraction_before_start_time(sample_contraction: Contraction):
     with pytest.raises(ContractionStartTimeAfterEndTime):
-        sample_contraction.end(sample_contraction.start_time - CONTRACTION_MIN_TIME)
+        sample_contraction.end(
+            sample_contraction.start_time - timedelta(seconds=CONTRACTION_MIN_TIME_SECONDS),
+            intensity=5,
+        )
 
 
 def test_contraction_duration_str(sample_contraction: Contraction):

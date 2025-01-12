@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any, Self
 
-from app.application.dtos.labour_pattern import LabourPatternDTO
+from app.application.dtos.labour_statistics import LabourStatisticsDTO
 from app.domain.labour.entity import Labour
 from app.domain.services.should_go_to_hospital import ShouldGoToHospitalService
 
@@ -16,12 +16,11 @@ class LabourSummaryDTO:
     contraction_count: int
     current_phase: str
     hospital_recommended: bool
-    pattern: LabourPatternDTO | None
+    statistics: LabourStatisticsDTO
 
     @classmethod
     def from_domain(cls, labour: Labour) -> Self:
         """Create DTO from domain aggregate"""
-        contraction_pattern = labour.get_contraction_pattern()
         hospital_recommended = ShouldGoToHospitalService().should_go_to_hospital(labour)
         return cls(
             id=str(labour.id_.value),
@@ -29,9 +28,7 @@ class LabourSummaryDTO:
             contraction_count=len(labour.contractions),
             current_phase=labour.current_phase.value,
             hospital_recommended=hospital_recommended,
-            pattern=LabourPatternDTO.from_domain(contraction_pattern)
-            if contraction_pattern
-            else None,
+            statistics=LabourStatisticsDTO.from_contractions(labour.contractions),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -42,5 +39,5 @@ class LabourSummaryDTO:
             "contraction_count": self.contraction_count,
             "current_phase": self.current_phase,
             "hospital_recommended": self.hospital_recommended,
-            "pattern": self.pattern.to_dict() if self.pattern else None,
+            "statistics": self.statistics.to_dict(),
         }

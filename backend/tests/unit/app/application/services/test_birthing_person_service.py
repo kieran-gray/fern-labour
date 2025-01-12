@@ -1,6 +1,7 @@
 import pytest
 
 from app.application.dtos.birthing_person import BirthingPersonDTO
+from app.application.dtos.birthing_person_summary import BirthingPersonSummaryDTO
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.domain.birthing_person.exceptions import (
     BirthingPersonExistsWithID,
@@ -31,6 +32,8 @@ async def test_get_birthing_person(birthing_person_service: BirthingPersonServic
     birthing_person = await birthing_person_service.get_birthing_person(birthing_person_id)
 
     assert isinstance(birthing_person, BirthingPersonDTO)
+    assert birthing_person.first_name == "User"
+    assert birthing_person.last_name == "Name"
 
 
 async def test_cannot_get_non_existent_birthing_person(
@@ -38,3 +41,20 @@ async def test_cannot_get_non_existent_birthing_person(
 ):
     with pytest.raises(BirthingPersonNotFoundById):
         await birthing_person_service.get_birthing_person("test")
+
+
+async def test_get_birthing_person_summary(birthing_person_service: BirthingPersonService):
+    birthing_person_id = "test"
+    await birthing_person_service.register(birthing_person_id, "User", "Name")
+    birthing_person = await birthing_person_service.get_birthing_person_summary(birthing_person_id)
+
+    assert isinstance(birthing_person, BirthingPersonSummaryDTO)
+    assert birthing_person.first_name == "User"
+    assert birthing_person.last_name == "Name"
+
+
+async def test_cannot_get_summary_for_non_existent_birthing_person(
+    birthing_person_service: BirthingPersonService,
+):
+    with pytest.raises(BirthingPersonNotFoundById):
+        await birthing_person_service.get_birthing_person_summary("test")

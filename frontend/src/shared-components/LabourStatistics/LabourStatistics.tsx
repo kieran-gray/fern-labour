@@ -3,6 +3,7 @@ import { formatTimeSeconds } from '../utils'
 import { LabourDTO } from '../../client'
 import baseClasses from '../shared-styles.module.css'
 import classes from './LabourStatistics.module.css'
+import { LabourStatisticsTabs } from './LabourStatisticsTabs'
 
 export const LabourStatistics = ({labour, completed, inContainer = true}: {labour: LabourDTO, completed: boolean, inContainer?: boolean}) => {
     const statistics = (
@@ -22,31 +23,11 @@ export const LabourStatistics = ({labour, completed, inContainer = true}: {labou
                 </Text>
             }
             <Space h="sm" />
-
-            <Text className={classes.labourStatsText}>Number of contractions: <strong>{labour.contractions.length}</strong></Text>
-            { (labour.pattern && !labour.end_time)&& 
-            <>
-                <Space h="sm" />
-                {!completed &&
-                    <Text className={classes.labourStatsText}>
-                        Contractions in last hour: <strong>{labour.pattern.contractions_in_last_hour}</strong>
-                    </Text>
-                }
-
-                <Space h="sm" />
-                <Text className={classes.labourStatsText}>
-                Average contraction duration: <strong>{formatTimeSeconds(labour.pattern.average_duration)}</strong>
-                </Text>
-                <Text className={classes.labourStatsText}>
-                Average contraction interval: <strong>{formatTimeSeconds(labour.pattern.average_interval)}</strong>
-                </Text>
-                <Text className={classes.labourStatsText}>
-                Average contraction intensity: <strong>{labour.pattern.average_intensity} out of 10</strong>
-                </Text>
-                <Space h="sm" />
-                <Text className={classes.labourStatsText}>(Averaged over the last {labour.contractions.length < 10 ? labour.contractions.length : 10} contractions)</Text>
-            </> || !completed && 
-            <Text className={classes.labourStatsText}>Not enough data yet, keep tracking.</Text>
+            {!completed && !labour.statistics.total && 
+                <Text className={classes.labourStatsText}>Not enough data yet, keep tracking.</Text>
+            }
+            {labour.statistics.total &&
+                <LabourStatisticsTabs statistics={labour.statistics} />
             }
         </>
     )

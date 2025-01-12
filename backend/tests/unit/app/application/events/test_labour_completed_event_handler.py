@@ -220,18 +220,16 @@ async def test_labour_completed_event_has_subscriber_all_contact_methods(
     event = DomainEvent(
         id="event_id",
         type="labour.completed",
-        data={"birthing_person_id": BIRTHING_PERSON, "notes": ""},
+        data={"birthing_person_id": BIRTHING_PERSON, "notes": "FINDME"},
         time=datetime.now(UTC),
     )
     await labour_completed_event_handler.handle(event.to_dict())
-    assert (
-        labour_completed_event_handler._notification_service._email_notification_gateway.sent_notifications
-        != []
-    )
-    assert (
-        labour_completed_event_handler._notification_service._sms_notification_gateway.sent_notifications
-        != []
-    )
+    sent_emails = labour_completed_event_handler._notification_service._email_notification_gateway.sent_notifications
+    sent_sms = labour_completed_event_handler._notification_service._sms_notification_gateway.sent_notifications
+    assert sent_emails != []
+    assert sent_sms != []
+    assert "FINDME" in sent_emails[0].message
+    assert "FINDME" in sent_sms[0].message
 
 
 async def test_labour_completed_event_has_subscriber_all_contact_methods_no_phone_number_or_email(
