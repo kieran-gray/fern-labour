@@ -7,7 +7,7 @@ export const userManager = new UserManager({
   // biome-ignore lint/style/useNamingConvention: Expected
   client_id: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
   // biome-ignore lint/style/useNamingConvention: Expected
-  redirect_uri: `${window.location.origin}${window.location.pathname}`,
+  redirect_uri: `${window.location.origin}${window.location.pathname}${window.location.search}`,
   // biome-ignore lint/style/useNamingConvention: Expected
   post_logout_redirect_uri: window.location.origin,
   userStore: new WebStorageStateStore({ store: window.sessionStorage }),
