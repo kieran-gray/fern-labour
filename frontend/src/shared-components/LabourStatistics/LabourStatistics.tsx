@@ -4,6 +4,7 @@ import { LabourDTO } from '../../client'
 import baseClasses from '../shared-styles.module.css'
 import classes from './LabourStatistics.module.css'
 import { LabourStatisticsTabs } from './LabourStatisticsTabs'
+import { LabourStatisticsTabPanel } from './LabourStatsticsTabPanel'
 
 export const LabourStatistics = ({labour, completed, inContainer = true}: {labour: LabourDTO, completed: boolean, inContainer?: boolean}) => {
     const statistics = (
@@ -26,8 +27,11 @@ export const LabourStatistics = ({labour, completed, inContainer = true}: {labou
             {!completed && !labour.statistics.total && 
                 <Text className={classes.labourStatsText}>Not enough data yet, keep tracking.</Text>
             }
-            {labour.statistics.total &&
+            {!completed && labour.statistics.total &&
                 <LabourStatisticsTabs statistics={labour.statistics} />
+            }
+            {completed && labour.statistics.total && 
+                <LabourStatisticsTabPanel data={labour.statistics.total} />
             }
         </>
     )

@@ -99,7 +99,7 @@ export default function LabourContainer() {
   }
   
   return (
-    <div className={baseClasses.flexColumn} style={{maxWidth:"900px"}}>
+    <div className={baseClasses.flexColumn} style={{maxWidth:"800px", flexGrow:1}}>
     <div className={baseClasses.root}>
       <div className={baseClasses.header}>
         <Title fz="xl" className={baseClasses.title}>Your Labour</Title>
