@@ -40,3 +40,25 @@
     font-weight: 500;
     font-size: var(--mantine-font-size-md);
   }
+
+  .labourStatsTabsRoot {
+    background-color: var(--mantine-color-pink-1);
+    border-radius: var(--mantine-radius-lg);
+    padding: 10px;
+    flex-direction: column;
+  }
+
+  .labourStatsTabsPanel {
+    padding: 15px;
+    width: 100%;
+  }
+
+  .labourStatsTabsTab {
+    border-radius: var(--mantine-radius-md);
+    font-weight: 600;
+    flex-grow: 1;
+      
+    &[data-active] {
+      background-color: var(--mantine-color-pink-4);
+    }
+  }

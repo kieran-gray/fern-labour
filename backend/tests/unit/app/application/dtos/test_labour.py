@@ -21,7 +21,6 @@ def test_can_convert_to_labour_dto(labour: Labour) -> None:
     assert dto.current_phase == labour.current_phase.value
     assert dto.notes == labour.notes
     assert dto.contractions == labour.contractions
-    assert dto.pattern is None
 
 
 def test_can_convert_labour_dto_to_dict(labour: Labour) -> None:

@@ -56,7 +56,7 @@ export const getTimeSinceLastStarted = (contractions: ContractionDTO[]): Record<
       const frequency = lastStartTime ? 
         new Date(contraction.start_time).getTime() - new Date(lastStartTime).getTime() : 0;
       timeSinceLastStarted[contraction.id] = formatTimeMilliseconds(frequency)
-      lastStartTime = contraction.end_time;
+      lastStartTime = contraction.start_time;
     });
     return timeSinceLastStarted
 }

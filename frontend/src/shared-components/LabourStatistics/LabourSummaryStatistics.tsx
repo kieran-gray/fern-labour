@@ -1,8 +1,8 @@
-import { Title, Space, Text } from '@mantine/core'
-import { formatTimeSeconds } from '../utils'
+import { Title, Text } from '@mantine/core'
 import { LabourSummaryDTO } from '../../client'
 import baseClasses from '../shared-styles.module.css'
 import classes from './LabourStatistics.module.css'
+import { LabourStatisticsTabPanel } from './LabourStatsticsTabPanel'
 
 const formatLabourDurationHours = (hours: number): string => {
     const wholeHours = Math.round(hours);
@@ -25,31 +25,10 @@ export const LabourSummaryStatistics = ({labour, inContainer = true}: {labour: L
             Current phase: <strong>{labour.current_phase}</strong>
             </Text>
           <Text className={classes.labourStatsText}>
-            Hospital recommended: <strong>{String(labour.hospital_recommended)}</strong>
+            Hospital recommended: <strong>{labour.hospital_recommended ? 'Yes' : 'Not yet'}</strong>
             </Text>
-
-
-            <Text className={classes.labourStatsText}>Total number of contractions: <strong>{labour.contraction_count}</strong></Text>
-            { labour.pattern && 
-            <>
-                <Space h="sm" />
-                <Text className={classes.labourStatsText}>
-                    Contractions in last hour: <strong>{labour.pattern.contractions_in_last_hour}</strong>
-                </Text>
-                <Text className={classes.labourStatsText}>
-                Average contraction duration: <strong>{formatTimeSeconds(labour.pattern.average_duration)}</strong>
-                </Text>
-                <Text className={classes.labourStatsText}>
-                Average contraction interval: <strong>{formatTimeSeconds(labour.pattern.average_interval)}</strong>
-                </Text>
-                <Text className={classes.labourStatsText}>
-                Average contraction intensity: <strong>{labour.pattern.average_intensity} out of 10</strong>
-                </Text>
-                <Space h="sm" />
-                <Text className={classes.labourStatsText}>
-                    (Averaged over the last {labour.contraction_count < 10 ? labour.contraction_count : 10} contractions)
-                </Text>
-            </>
+            {labour.statistics.total &&
+                <LabourStatisticsTabPanel data={labour.statistics.total} />
             }
         </>
     )

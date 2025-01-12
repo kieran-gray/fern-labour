@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
-from typing import Any, Self
+from datetime import UTC, datetime
+from typing import Self
 from uuid import UUID, uuid4
 
 from app.domain.announcement.entity import Announcement
@@ -93,18 +93,16 @@ class Labour(AggregateRoot[LabourId]):
 
     def end_contraction(
         self,
-        intensity: int | None = None,
+        intensity: int,
         end_time: datetime | None = None,
         notes: str | None = None,
     ) -> None:
         """End the currently active contraction"""
         assert self.active_contraction
         active_contraction = self.active_contraction
-        if intensity:
-            active_contraction.intensity = intensity
         if notes:
             active_contraction.notes = notes
-        active_contraction.end(end_time or datetime.now(UTC))
+        active_contraction.end(end_time=end_time or datetime.now(UTC), intensity=intensity)
         self._update_labour_phase()
         self.add_domain_event(ContractionEnded.from_contraction(contraction=active_contraction))
 
@@ -114,7 +112,7 @@ class Labour(AggregateRoot[LabourId]):
         This is a simplified version - in reality, this would likely involve
         additional medical data like dilation measurements.
         """
-        recent_contractions = self.contractions[-5:]  # Look at last 5 contractions
+        recent_contractions = self.contractions[-5:]
         avg_intensity = sum(c.intensity for c in recent_contractions if c.intensity) / len(
             recent_contractions
         )
@@ -159,31 +157,3 @@ class Labour(AggregateRoot[LabourId]):
                 }
             )
         )
-
-    def get_contraction_pattern(self) -> dict[str, Any] | None:
-        """Analyze the current contraction pattern"""
-        if len(self.contractions) < 3:
-            return None
-
-        recent = self.contractions[-10:]
-
-        avg_duration = sum(c.duration.duration_seconds for c in recent) / len(recent)
-        avg_intensity = sum(c.intensity for c in recent if c.intensity) / len(recent)
-
-        # Calculate average time between contractions
-        intervals = []
-        for prev, curr in zip(recent, recent[1:], strict=False):
-            interval = (curr.start_time - prev.end_time).total_seconds()
-            intervals.append(interval)
-        avg_interval = sum(intervals) / len(intervals)
-
-        last_hour = datetime.now(UTC) - timedelta(hours=1)
-        contractions_in_last_hour = len([c for c in self.contractions if c.start_time >= last_hour])
-
-        return {
-            "average_duration": round(avg_duration, 1),
-            "average_intensity": round(avg_intensity, 1),
-            "average_interval": round(avg_interval, 1),
-            "contractions_in_last_hour": contractions_in_last_hour,
-            "phase": self.current_phase.value,
-        }
