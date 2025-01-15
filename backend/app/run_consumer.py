@@ -2,13 +2,13 @@ import asyncio
 import logging
 import signal
 import sys
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Coroutine
 from contextlib import asynccontextmanager
+from typing import Any
 
 from dishka import AsyncContainer, make_async_container
 
 from app.application.events.consumer import EventConsumer
-from app.infrastructure.persistence import initialize_mapping  # noqa
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.ioc.ioc_registry import get_providers
 from app.setup.settings import Settings
@@ -19,74 +19,77 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class ConsumerRunner:
-    def __init__(self, consumer: EventConsumer, container: AsyncContainer) -> None:
-        self._consumer = consumer
-        if hasattr(self._consumer, "set_container"):
-            self._consumer.set_container(container)
-        self._should_exit = False
-        self._tasks: set[asyncio.Task] = set()  # type: ignore
+class TaskManager:
+    """Manages the lifecycle of asyncio tasks."""
 
-    async def start(self) -> None:
-        """Start the consumer and initialize signal handlers"""
-        logger.info("Starting consumer...")
+    def __init__(self) -> None:
+        self._tasks: set[asyncio.Task[Coroutine[Any, Any, Any]]] = set()
 
-        try:
-            consumer_task = asyncio.create_task(self._consumer.start())
-            self._tasks.add(consumer_task)
-            consumer_task.add_done_callback(self._tasks.discard)
+    def create_task(self, coro: Coroutine[Any, Any, Any], name: str = "Task") -> None:
+        """Create and manage a task."""
+        task = asyncio.create_task(coro, name=name)
+        task.add_done_callback(self._tasks.discard)
+        self._tasks.add(task)
 
-            health_task = asyncio.create_task(self._health_check())
-            self._tasks.add(health_task)
-            health_task.add_done_callback(self._tasks.discard)
-
-            while not self._should_exit:
-                await asyncio.sleep(1)
-
-        except Exception as e:
-            logger.error(f"Error in consumer: {e}")
-            raise
-        finally:
-            await self._shutdown()
-
-    async def _health_check(self) -> None:
-        """Periodic health check of the consumer"""
-        while not self._should_exit:
-            try:
-                is_healthy = await self._consumer.is_healthy()
-                if not is_healthy:
-                    logger.warning("Consumer health check failed!")
-                await asyncio.sleep(30)
-            except Exception as e:
-                logger.error(f"Error in health check: {e}")
-                await asyncio.sleep(5)
-
-    async def _shutdown(self) -> None:
-        """Graceful shutdown of the consumer"""
-        logger.info("Shutting down consumer...")
-
-        await self._consumer.stop()
-
+    async def cancel_all(self) -> None:
+        """Cancel all running tasks."""
         for task in self._tasks:
             task.cancel()
 
         if self._tasks:
             await asyncio.gather(*self._tasks, return_exceptions=True)
 
+    async def wait(self) -> None:
+        """Wait for all tasks to complete."""
+        await asyncio.gather(*self._tasks, return_exceptions=True)
+
+
+class ConsumerRunner:
+    def __init__(self, consumer: EventConsumer, container: AsyncContainer) -> None:
+        self._consumer = consumer
+        if hasattr(self._consumer, "set_container"):
+            self._consumer.set_container(container)
+        self._should_exit = asyncio.Event()
+        self._task_manager: TaskManager = TaskManager()
+
+    async def start(self) -> None:
+        """Start the consumer and initialize signal handlers"""
+        logger.info("Starting consumer...")
+        self._task_manager.create_task(self._consumer.start(), "EventConsumer")
+        self._task_manager.create_task(self._health_check(), "HealthCheck")
+
+        await self._should_exit.wait()
+        await self._shutdown()
+
+    async def _health_check(self) -> None:
+        """Periodic health check of the consumer"""
+        while not self._should_exit.is_set():
+            try:
+                is_healthy = await self._consumer.is_healthy()
+                if not is_healthy:
+                    logger.warning("Consumer health check failed!")
+                await asyncio.sleep(30)
+            except Exception as e:
+                logger.error("Error in health check.", exc_info=e)
+                await asyncio.sleep(5)
+
+    async def _shutdown(self) -> None:
+        """Graceful shutdown of the consumer"""
+        logger.info("Shutting down consumer...")
+        await self._consumer.stop()
+        await self._task_manager.cancel_all()
         logger.info("Consumer shutdown complete")
 
-    def handle_signals(self) -> None:
+    def setup_signal_handlers(self) -> None:
         """Setup signal handlers for graceful shutdown"""
+        loop = asyncio.get_event_loop()
         for sig in (signal.SIGTERM, signal.SIGINT):
-            asyncio.get_event_loop().add_signal_handler(
-                sig,
-                lambda s=sig: asyncio.create_task(self._handle_signal(s)),  # type: ignore
-            )
+            loop.add_signal_handler(sig, self.stop)
 
-    async def _handle_signal(self, sig: signal.Signals) -> None:
-        """Handle shutdown signals"""
-        logger.info(f"Received exit signal {sig.name}...")
-        self._should_exit = True
+    def stop(self) -> None:
+        """Stop the runner."""
+        logger.info("ConsumerRunner stopping...")
+        self._should_exit.set()
 
 
 @asynccontextmanager
@@ -94,8 +97,8 @@ async def setup_container() -> AsyncIterator[AsyncContainer]:
     """Context manager for setting up and tearing down the dishka container"""
 
     settings: Settings = Settings.from_file()
+    container = make_async_container(*get_providers(), context={Settings: settings})
     try:
-        container = make_async_container(*get_providers(), context={Settings: settings})
         yield container
     finally:
         await container.close()
@@ -105,16 +108,17 @@ async def main(container: AsyncContainer) -> None:
     """Main entry point for the consumer script"""
     consumer = await container.get(EventConsumer, component=ComponentEnum.EVENTS)
     runner = ConsumerRunner(consumer=consumer, container=container)
-    runner.handle_signals()
+    runner.setup_signal_handlers()
 
     try:
         await runner.start()
     except Exception as e:
-        logger.error(f"Fatal error in consumer: {e}")
+        logger.error("Fatal error in consumer.", exc_info=e)
         sys.exit(1)
 
 
 if __name__ == "__main__":
+    from app.infrastructure.persistence import initialize_mapping  # noqa
 
     async def run() -> None:
         async with setup_container() as container:
@@ -125,5 +129,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt, shutting down...")
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.error("Unexpected error.", exc_info=e)
         sys.exit(1)

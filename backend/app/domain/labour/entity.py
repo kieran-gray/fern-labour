@@ -103,28 +103,10 @@ class Labour(AggregateRoot[LabourId]):
         if notes:
             active_contraction.notes = notes
         active_contraction.end(end_time=end_time or datetime.now(UTC), intensity=intensity)
-        self._update_labour_phase()
         self.add_domain_event(ContractionEnded.from_contraction(contraction=active_contraction))
 
-    def _update_labour_phase(self) -> None:
-        """
-        Update the labour phase based on contraction patterns.
-        This is a simplified version - in reality, this would likely involve
-        additional medical data like dilation measurements.
-        """
-        recent_contractions = self.contractions[-5:]
-        avg_intensity = sum(c.intensity for c in recent_contractions if c.intensity) / len(
-            recent_contractions
-        )
-        avg_duration = sum(c.duration.duration_minutes for c in recent_contractions) / len(
-            recent_contractions
-        )
-
-        # Simplified phase determination logic
-        if avg_intensity >= 8 and avg_duration >= 1.5:
-            self.current_phase = LabourPhase.TRANSITION
-        elif avg_intensity >= 6 and avg_duration >= 1:
-            self.current_phase = LabourPhase.ACTIVE
+    def set_labour_phase(self, labour_phase: LabourPhase) -> None:
+        self.current_phase = labour_phase
 
     def complete_labour(self, end_time: datetime | None = None, notes: str | None = None) -> None:
         """Mark the labour as complete"""

@@ -11,10 +11,11 @@ from app.domain.contraction.exceptions import (
 )
 from app.domain.contraction.vo_contraction_duration import Duration
 from app.domain.contraction.vo_contraction_id import ContractionId
+from app.domain.labour.vo_labour_id import LabourId
 
 
 def test_contraction_init():
-    labour_id: UUID = UUID("12345678-1234-5678-1234-567812345678")
+    labour_id = LabourId(UUID("12345678-1234-5678-1234-567812345678"))
     contraction_id: UUID = UUID("87654321-1234-5678-1234-567812345678")
     start_time: datetime = datetime.now(UTC)
     intensity: int = 1
@@ -41,7 +42,7 @@ def test_contraction_init():
 
 
 def test_contraction_init_default_values():
-    labour_id: UUID = UUID("12345678-1234-5678-1234-567812345678")
+    labour_id = LabourId(UUID("12345678-1234-5678-1234-567812345678"))
     intensity: int = 1
 
     contraction = Contraction.start(labour_id=labour_id, intensity=intensity)
@@ -57,7 +58,7 @@ def test_can_end_contraction(sample_contraction: Contraction):
 
 
 def test_cannot_init_contraction_with_invalid_intensity():
-    labour_id: UUID = UUID("12345678-1234-5678-1234-567812345678")
+    labour_id = LabourId(UUID("12345678-1234-5678-1234-567812345678"))
 
     with pytest.raises(ContractionIntensityInvalid):
         Contraction.start(labour_id=labour_id, intensity=CONTRACTION_MAX_INTENSITY + 1)
