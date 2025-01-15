@@ -1,3 +1,4 @@
+from app.application.events.event_handler import EventHandler
 from app.application.events.event_handlers.labour_announcement_made_event_handler import (
     LabourAnnouncementMadeEventHandler,
 )
@@ -12,7 +13,7 @@ from app.application.events.event_handlers.subscriber_unsubscribed_from_event_ha
     SubscriberUnsubscribedFromEventHandler,
 )
 
-EVENT_HANDLER_MAPPING = {
+EVENT_HANDLER_MAPPING: dict[str, type[EventHandler]] = {
     "labour.announcement-made": LabourAnnouncementMadeEventHandler,
     "labour.begun": LabourBegunEventHandler,
     "labour.completed": LabourCompletedEventHandler,

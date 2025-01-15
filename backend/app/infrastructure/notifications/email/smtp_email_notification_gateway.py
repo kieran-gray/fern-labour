@@ -47,6 +47,10 @@ class SMTPEmailNotificationGateway(EmailNotificationGateway):
             smtp_options["user"] = self._smtp_user
         if self._smtp_password:
             smtp_options["password"] = self._smtp_password
-        message.send(to=notification.destination, smtp=smtp_options)
+
+        try:
+            message.send(to=notification.destination, smtp=smtp_options)
+        except Exception as e:
+            log.critical("Failed to send email notification", exc_info=e)
 
         log.info("Sent email notification")

@@ -48,7 +48,6 @@ export default function SubscribeForm({ birthingPersonId, token }: { birthingPer
                     // Do nothing
                 }
             }
-            // TODO error message depends on http status of response
             notifications.show(
                 {
                     title: 'Error',

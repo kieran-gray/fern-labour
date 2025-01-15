@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
@@ -19,10 +19,11 @@ def get_contractions(
     labour_id: str,
     number_of_contractions: int,
     length_of_contractions: int,
-    time_between_contractions: int,
+    time_between_contractions: int | float,
+    start_time: datetime = datetime(2020, 1, 1, 1, 0, tzinfo=UTC),
 ) -> list[Contraction]:
     contractions = []
-    next_contraction_start = datetime(2020, 1, 1, 1, 0)
+    next_contraction_start = start_time
     for _ in range(number_of_contractions):
         start_time = next_contraction_start
         end_time = start_time + timedelta(minutes=length_of_contractions)

@@ -2,4 +2,7 @@ from typing import Any, Protocol
 
 
 class EventHandler(Protocol):
-    async def handle(self, event: dict[str, Any]) -> None: ...
+    """Protocol for event handlers"""
+
+    async def handle(self, event: dict[str, Any]) -> None:
+        """Handle the event."""

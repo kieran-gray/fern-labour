@@ -3,10 +3,11 @@ from uuid import UUID
 
 from app.domain.announcement.entity import Announcement
 from app.domain.announcement.vo_announcement_id import AnnouncementId
+from app.domain.labour.vo_labour_id import LabourId
 
 
 def test_announcement_init():
-    labour_id: UUID = UUID("12345678-1234-5678-1234-567812345678")
+    labour_id = LabourId(UUID("12345678-1234-5678-1234-567812345678"))
     announcement_id: UUID = UUID("87654321-1234-5678-1234-567812345678")
     sent_time: datetime = datetime.now(UTC)
     message: str = "Test Message"
@@ -27,7 +28,7 @@ def test_announcement_init():
 
 
 def test_announcement_init_default_values():
-    labour_id: UUID = UUID("12345678-1234-5678-1234-567812345678")
+    labour_id = LabourId(UUID("12345678-1234-5678-1234-567812345678"))
     message: str = "Test user"
 
     announcement = Announcement.create(labour_id=labour_id, message=message)

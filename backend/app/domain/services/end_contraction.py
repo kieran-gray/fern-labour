@@ -4,6 +4,7 @@ from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
 from app.domain.labour.entity import Labour
 from app.domain.labour.exceptions import LabourHasNoActiveContraction
+from app.domain.services.update_labour_phase import UpdateLabourPhaseService
 
 
 class EndContractionService:
@@ -25,5 +26,7 @@ class EndContractionService:
         active_labour.end_contraction(
             intensity=intensity, end_time=end_time or datetime.now(UTC), notes=notes
         )
+
+        active_labour = UpdateLabourPhaseService().update_labour_phase(birthing_person)
 
         return active_labour
