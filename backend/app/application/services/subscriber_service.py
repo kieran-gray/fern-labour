@@ -50,3 +50,8 @@ class SubscriberService:
         if not subscriber:
             raise SubscriberNotFoundById(subscriber_id=subscriber_id)
         return SubscriberDTO.from_domain(subscriber)
+
+    async def get_many(self, subscriber_ids: list[str]) -> list[SubscriberDTO]:
+        domain_ids = [SubscriberId(subscriber_id) for subscriber_id in subscriber_ids]
+        subscribers = await self._subscriber_repository.get_by_ids(domain_ids)
+        return [SubscriberDTO.from_domain(subscriber) for subscriber in subscribers]

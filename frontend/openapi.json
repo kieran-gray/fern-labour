@@ -758,6 +758,72 @@
                 ]
             }
         },
+        "/api/v1/subscriber/subscribers": {
+            "get": {
+                "tags": [
+                    "Subscriber"
+                ],
+                "summary": "Get Subscribers",
+                "operationId": "get_subscribers_api_v1_subscriber_subscribers_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriberListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/v1/labour/begin": {
             "post": {
                 "tags": [
@@ -2054,6 +2120,22 @@
                     "subscribed_to"
                 ],
                 "title": "SubscriberDTO"
+            },
+            "SubscriberListResponse": {
+                "properties": {
+                    "subscribers": {
+                        "items": {
+                            "$ref": "#/components/schemas/SubscriberDTO"
+                        },
+                        "type": "array",
+                        "title": "Subscribers"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "subscribers"
+                ],
+                "title": "SubscriberListResponse"
             },
             "SubscriberResponse": {
                 "properties": {

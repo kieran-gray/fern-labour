@@ -33,3 +33,14 @@ class SubscriberRepository(Protocol):
         Returns:
             The subscriber if found, else returns None
         """
+
+    async def get_by_ids(self, subscriber_ids: list[SubscriberId]) -> list[Subscriber]:
+        """
+        Retrieve a list of subscribers by their IDs.
+
+        Args:
+            subscriber_ids: The IDs of the subscribers to retrieve
+
+        Returns:
+            A list of subscribers
+        """

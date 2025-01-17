@@ -146,6 +146,10 @@ export type SubscriberDTO = {
     subscribed_to: Array<(string)>;
 };
 
+export type SubscriberListResponse = {
+    subscribers: Array<SubscriberDTO>;
+};
+
 export type SubscriberResponse = {
     subscriber: SubscriberDTO;
 };
@@ -256,3 +260,5 @@ export type UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData = {
 export type UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse = (SubscriberResponse);
 
 export type GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse = (GetSubscriptionsResponse);
+
+export type GetSubscribersApiV1SubscriberSubscribersGetResponse = (SubscriberListResponse);
