@@ -15,7 +15,10 @@ from app.presentation.api.schemas.requests.subscriber import (
     SubscribeToRequest,
     UnsubscribeFromRequest,
 )
-from app.presentation.api.schemas.responses.subscriber import SubscriberResponse
+from app.presentation.api.schemas.responses.subscriber import (
+    SubscriberListResponse,
+    SubscriberResponse,
+)
 from app.presentation.api.schemas.responses.subscription import GetSubscriptionsResponse
 from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
@@ -151,3 +154,27 @@ async def get_subscriptions(
         for birthing_person_id in subscriber.subscribed_to
     ]
     return GetSubscriptionsResponse(subscriptions=birthing_person_summaries)
+
+
+@subscriber_router.get(
+    "/subscribers",
+    responses={
+        status.HTTP_200_OK: {"model": SubscriberListResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_subscribers(
+    birthing_person_service: Annotated[BirthingPersonService, FromComponent(ComponentEnum.LABOUR)],
+    subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> SubscriberListResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    birthing_person = await birthing_person_service.get_birthing_person(birthing_person_id=user.id)
+    subscribers = await subscriber_service.get_many(birthing_person.subscribers)
+    return SubscriberListResponse(subscribers=subscribers)

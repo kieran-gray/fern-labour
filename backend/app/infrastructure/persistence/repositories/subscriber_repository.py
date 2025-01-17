@@ -46,3 +46,20 @@ class SQLAlchemySubscriberRepository(SubscriberRepository):
 
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_by_ids(self, subscriber_ids: list[SubscriberId]) -> list[Subscriber]:
+        """
+        Retrieve a list of subscribers by their IDs.
+
+        Args:
+            subscriber_ids: The IDs of the subscribers to retrieve
+
+        Returns:
+            A list of subscribers
+        """
+        stmt = select(Subscriber).where(
+            subscribers_table.c.id.in_([s.value for s in subscriber_ids])
+        )
+
+        result = await self._session.execute(stmt)
+        return list(result.scalars())
