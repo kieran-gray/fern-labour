@@ -128,7 +128,7 @@ export default function LabourContainer() {
             </Stack>
           </div>
           <div className={baseClasses.flexColumnEnd}>
-            <Space h="xl" />
+          {sortedContractions.length > 0 && <Space h="xl" />}
             <Stack align='stretch' justify='flex-end' h="100%">
               {labour.should_call_midwife_urgently && 
                 <CallMidwifeAlert />
