@@ -172,7 +172,7 @@ export default function LabourContainer() {
     <Space h="xl" />
     <LabourStatistics labour={labour} completed={false} />
     <Space h="xl" />
-    <Announcements />
+    <Announcements announcementHistory={labour.announcements}/>
     <Space h="xl" />
     <CompleteLabour activeContraction={!!activeContraction} />
   </div>
