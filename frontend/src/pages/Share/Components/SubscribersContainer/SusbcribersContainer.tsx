@@ -51,7 +51,7 @@ export function SubscribersContainer() {
 }
 
   const rows = data.map((item) => (
-    <Table.Tr key={item.id}>
+    <Table.Tr key={item.id} bd={'none'}>
       <Table.Td>
         <Group gap="sm">
           <div>
@@ -64,7 +64,7 @@ export function SubscribersContainer() {
           </div>
         </Group>
       </Table.Td>
-      <Table.Td>
+      <Table.Td style={{ textAlign: 'right' }}>
         <Button
             color='var(--mantine-color-pink-4)'
             variant="filled"
@@ -92,13 +92,7 @@ export function SubscribersContainer() {
     </div>
     <div className={baseClasses.body}>
     <Table.ScrollContainer minWidth={200}>
-        <Table verticalSpacing="sm">
-        <Table.Thead>
-            <Table.Tr>
-            <Table.Th>Subscriber</Table.Th>
-            <Table.Th>Remove</Table.Th>
-            </Table.Tr>
-        </Table.Thead>
+        <Table verticalSpacing="sm" >
         <Table.Tbody>{rows}</Table.Tbody>
         </Table>
     </Table.ScrollContainer>
