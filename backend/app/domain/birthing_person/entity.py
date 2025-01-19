@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Self
 
 from app.domain.base.aggregate_root import AggregateRoot
+from app.domain.birthing_person.events import RemovedSubscriber
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.entity import Labour
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
@@ -37,6 +38,14 @@ class BirthingPerson(AggregateRoot[BirthingPersonId]):
     def remove_subscriber(self, subscriber: SubscriberId) -> None:
         if subscriber in self.subscribers:
             self.subscribers.remove(subscriber)
+            self.add_domain_event(
+                RemovedSubscriber.create(
+                    data={
+                        "birthing_person_id": self.id_.value,
+                        "subscriber_id": subscriber.value,
+                    }
+                )
+            )
 
     def add_labour(self, labour: Labour) -> None:
         if labour not in self.labours:

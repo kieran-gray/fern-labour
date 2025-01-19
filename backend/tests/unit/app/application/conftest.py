@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import AsyncMock
 
+import pytest
 import pytest_asyncio
 
 from app.application.notifications.email_generation_service import EmailGenerationService
@@ -55,14 +56,21 @@ class MockLabourRepository(LabourRepository):
 class MockSubscriberRepository(SubscriberRepository):
     _data = {}
 
-    async def save(self, birthing_person: Subscriber) -> None:
-        self._data[birthing_person.id_.value] = birthing_person
+    async def save(self, subscriber: Subscriber) -> None:
+        self._data[subscriber.id_.value] = subscriber
 
-    async def delete(self, birthing_person: Subscriber) -> None:
-        self._data.pop(birthing_person.id_.value)
+    async def delete(self, subscriber: Subscriber) -> None:
+        self._data.pop(subscriber.id_.value)
 
-    async def get_by_id(self, birthing_person_id: SubscriberId) -> Subscriber | None:
-        return self._data.get(birthing_person_id.value, None)
+    async def get_by_id(self, subscriber_id: SubscriberId) -> Subscriber | None:
+        return self._data.get(subscriber_id.value, None)
+
+    async def get_by_ids(self, subscriber_ids: list[SubscriberId]) -> list[Subscriber]:
+        subscribers = []
+        for subscriber_id in subscriber_ids:
+            if subscriber := self._data.get(subscriber_id.value, None):
+                subscribers.append(subscriber)
+        return subscribers
 
 
 @pytest_asyncio.fixture
@@ -115,20 +123,27 @@ class MockEmailGenerationService(EmailGenerationService):
         return f"Mock HTML email: {template_name} {json.dumps(data)}"
 
 
+@pytest.fixture
+def token_generator() -> TokenGenerator:
+    return MockTokenGenerator()
+
+
 @pytest_asyncio.fixture
 async def birthing_person_service(
     birthing_person_repo: BirthingPersonRepository,
 ) -> BirthingPersonService:
-    return BirthingPersonService(birthing_person_repo)
+    return BirthingPersonService(
+        birthing_person_repository=birthing_person_repo, event_producer=AsyncMock()
+    )
 
 
 @pytest_asyncio.fixture
 async def subscriber_service(
-    subscriber_repo: SubscriberRepository,
+    subscriber_repo: SubscriberRepository, token_generator: TokenGenerator
 ) -> SubscriberService:
     return SubscriberService(
         subscriber_repository=subscriber_repo,
-        token_generator=MockTokenGenerator(),
+        token_generator=token_generator,
     )
 
 

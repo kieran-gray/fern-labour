@@ -2,6 +2,12 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
+from app.application.events.event_handlers.birthing_person_removed_subscriber_event_handler import (
+    BirthingPersonRemovedSubscriberEventHandler,
+)
+from app.application.events.event_handlers.birthing_person_send_invite_event_handler import (
+    BirthingPersonSendInviteEventHandler,
+)
 from app.application.events.event_handlers.labour_announcement_made_event_handler import (
     LabourAnnouncementMadeEventHandler,
 )
@@ -21,9 +27,11 @@ from app.application.notifications.notfication_gateway import (
     SMSNotificationGateway,
 )
 from app.application.notifications.notification_service import NotificationService
+from app.application.security.token_generator import TokenGenerator
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
 from app.domain.birthing_person.repository import BirthingPersonRepository
+from app.domain.subscriber.repository import SubscriberRepository
 from app.infrastructure.notifications.email.jinja2_email_generation_service import (
     Jinja2EmailGenerationService,
 )
@@ -170,4 +178,34 @@ class EventsApplicationProvider(Provider):
     ) -> SubscriberUnsubscribedFromEventHandler:
         return SubscriberUnsubscribedFromEventHandler(
             birthing_person_repository=birthing_person_repository
+        )
+
+    @provide
+    def get_birthing_person_removed_subscriber_event_handler(
+        self,
+        subscriber_repository: Annotated[
+            SubscriberRepository, FromComponent(ComponentEnum.SUBSCRIBER)
+        ],
+    ) -> BirthingPersonRemovedSubscriberEventHandler:
+        return BirthingPersonRemovedSubscriberEventHandler(
+            subscriber_repository=subscriber_repository
+        )
+
+    @provide
+    def get_birthing_person_send_invite_event_handler(
+        self,
+        birthing_person_service: Annotated[
+            BirthingPersonService, FromComponent(ComponentEnum.LABOUR)
+        ],
+        notification_service: NotificationService,
+        subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+        email_generation_service: EmailGenerationService,
+        token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.SUBSCRIBER)],
+    ) -> BirthingPersonSendInviteEventHandler:
+        return BirthingPersonSendInviteEventHandler(
+            birthing_person_service=birthing_person_service,
+            notification_service=notification_service,
+            subscriber_service=subscriber_service,
+            email_generation_service=email_generation_service,
+            token_generator=token_generator,
         )

@@ -13,7 +13,6 @@ export const ShareBirthingPersonPage = () => {
       <Center flex={"shrink"}  p={15}>
         <div className={classes.flexColumn}>
           <SubscribersContainer />
-          <Space h={"xl"} />
           <InviteContainer />
           <Space h={"xl"} />
           <ShareContainer />

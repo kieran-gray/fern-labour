@@ -32,8 +32,11 @@ class LabourApplicationProvider(Provider):
     def provide_birthing_person_service(
         self,
         birthing_person_repository: BirthingPersonRepository,
+        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
     ) -> BirthingPersonService:
-        return BirthingPersonService(birthing_person_repository=birthing_person_repository)
+        return BirthingPersonService(
+            birthing_person_repository=birthing_person_repository, event_producer=event_producer
+        )
 
     @provide
     def provide_get_labour_service(

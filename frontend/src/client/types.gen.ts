@@ -130,6 +130,14 @@ export type RegisterSubscriberRequest = {
     contact_methods: Array<(string)>;
 };
 
+export type RemoveSubscriberRequest = {
+    subscriber_id: string;
+};
+
+export type SendInviteRequest = {
+    invite_email: string;
+};
+
 export type StartContractionRequest = {
     intensity?: (number | null);
     start_time?: (string | null);
@@ -197,6 +205,18 @@ export type GetBirthingPersonApiV1BirthingPersonGetResponse = (BirthingPersonRes
 export type GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse = (BirthingPersonSummaryResponse);
 
 export type GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse = (BirthingPersonSubscriptionTokenResponse);
+
+export type RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostData = {
+    requestBody: RemoveSubscriberRequest;
+};
+
+export type RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostResponse = (void);
+
+export type SendInviteApiV1BirthingPersonSendInvitePostData = {
+    requestBody: SendInviteRequest;
+};
+
+export type SendInviteApiV1BirthingPersonSendInvitePostResponse = (void);
 
 export type RedirectToDocsGetResponse = (unknown);
 
