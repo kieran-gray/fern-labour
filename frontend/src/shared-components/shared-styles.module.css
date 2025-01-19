@@ -114,8 +114,21 @@
     font-size: var(--mantine-font-size-md);
 }
 
+.notificationSuccessTitle {
+    color: var(--mantine-color-gray-9);
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: var(--mantine-font-size-md);
+}
+
 .notificationDescription {
     color: var(--mantine-color-white);
+    font-weight: 600;
+    font-size: var(--mantine-font-size-md);
+}
+
+.notificationSuccessDescription {
+    color: var(--mantine-color-gray-8);
     font-weight: 600;
     font-size: var(--mantine-font-size-md);
 }

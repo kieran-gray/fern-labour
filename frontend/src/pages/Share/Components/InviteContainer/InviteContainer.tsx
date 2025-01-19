@@ -3,9 +3,13 @@ import baseClasses from '../../../../shared-components/shared-styles.module.css'
 import { IconAt } from '@tabler/icons-react';
 import { SendInviteButton } from '../SendInviteButton/SendInviteButton';
 import { useForm } from '@mantine/form';
+import { useAuth } from 'react-oidc-context';
+import { BirthingPersonService, OpenAPI, SendInviteRequest } from '../../../../client';
+import { useMutation } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 
 export function InviteContainer() {
+    const auth = useAuth()
     const form = useForm({
         mode: 'uncontrolled',
         initialValues: {
@@ -17,31 +21,47 @@ export function InviteContainer() {
         },
     });
 
-    const submitInvite = () => {
-        notifications.show(
-            {
-                title: 'Error',
-                message: "Not implemented",
-                radius: "lg",
-                color: "var(--mantine-color-pink-9)",
-                classNames: {
-                    title: baseClasses.notificationTitle,
-                    description: baseClasses.notificationDescription
-                },
-                style:{ backgroundColor: "var(--mantine-color-pink-4)", color: "var(--mantine-color-white)" }
-            }
-        );
+    OpenAPI.TOKEN = async () => {
+        return auth.user?.access_token || ""
     }
+
+    const mutation = useMutation({
+        mutationFn: async (values: typeof form.values) => {
+            const requestBody: SendInviteRequest = { "invite_email": values.email }
+            await BirthingPersonService.sendInviteApiV1BirthingPersonSendInvitePost(
+                {requestBody: requestBody}
+            )
+        },
+        onSuccess: () => {
+            notifications.show(
+                {
+                    title: 'Success',
+                    message: `Invite email sent`,
+                    radius: "lg",
+                    color: "var(--mantine-color-green-3)",
+                    classNames: {
+                        title: baseClasses.notificationSuccessTitle,
+                        description: baseClasses.notificationSuccessDescription
+                    },
+                    style:{ backgroundColor: "var(--mantine-color-pink-1)" }
+                }
+            )
+            form.reset()
+        },
+        onError: (error) => {
+          console.error("Error sending invite", error)
+        }
+    });
       
 
     return (
-        <form onSubmit={form.onSubmit(submitInvite)}>
-            <div className={baseClasses.root}>
-                <div className={baseClasses.header}>
-                    <Title fz="xl" className={baseClasses.title}>Invite</Title>
-                </div>
-                <div className={baseClasses.body}>
-                    <Text className={baseClasses.text}>Invite friends and family to allow them to track your labour:</Text>
+        <div className={baseClasses.root}>
+            <div className={baseClasses.header}>
+                <Title fz="xl" className={baseClasses.title}>Invite</Title>
+            </div>
+            <div className={baseClasses.body}>
+                <Text className={baseClasses.text}>Invite friends and family to allow them to track your labour:</Text>
+                <form onSubmit={form.onSubmit(((values) => mutation.mutate(values)))}>
                     <TextInput
                         withAsterisk
                         radius={"lg"}
@@ -57,8 +77,8 @@ export function InviteContainer() {
                     <div className={baseClasses.flexRowEnd}>
                         <SendInviteButton />
                     </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
     )
 }

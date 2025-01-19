@@ -200,6 +200,8 @@ services:
       kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic ${KAFKA_TOPIC_PREFIX}.subscriber.subscribed-to --replication-factor 1 --partitions 1
       kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic ${KAFKA_TOPIC_PREFIX}.subscriber.unsubscribed-from --replication-factor 1 --partitions 1
       kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic ${KAFKA_TOPIC_PREFIX}.labour.announcement-made --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic ${KAFKA_TOPIC_PREFIX}.birthing-person.removed-subscriber --replication-factor 1 --partitions 1
+      kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic ${KAFKA_TOPIC_PREFIX}.birthing-person.send-invite --replication-factor 1 --partitions 1
 
       echo -e 'Successfully created the following topics:'
       kafka-topics.sh --bootstrap-server kafka:9092 --list

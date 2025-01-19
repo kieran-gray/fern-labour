@@ -11,6 +11,7 @@ from app.domain.subscriber.vo_subscriber_id import SubscriberId
 from tests.unit.app.application.conftest import MockSubscriberRepository
 
 SUBSCRIBER = "subscriber_id"
+SUBSCRIBER_2 = "subscriber_2_id"
 
 
 class MockTokenGenerator(TokenGenerator):
@@ -37,7 +38,15 @@ async def subscriber_repo():
             phone_number="07123123123",
             email="test@email.com",
             contact_methods=[],
-        )
+        ),
+        SUBSCRIBER_2: Subscriber(
+            id_=SubscriberId(SUBSCRIBER_2),
+            first_name="John",
+            last_name="Iron",
+            phone_number="07999999999",
+            email="test@john.com",
+            contact_methods=[],
+        ),
     }
     return repo
 
@@ -88,3 +97,18 @@ async def test_can_get_subscriber(subscriber_service: SubscriberService) -> None
 async def test_cannot_get_non_existent_subscriber(subscriber_service: SubscriberService) -> None:
     with pytest.raises(SubscriberNotFoundById):
         await subscriber_service.get(subscriber_id="test123")
+
+
+async def test_can_get_many_subscribers(subscriber_service: SubscriberService) -> None:
+    subscribers = await subscriber_service.get_many([SUBSCRIBER, SUBSCRIBER_2])
+    assert len(subscribers) == 2
+    assert isinstance(subscribers, list)
+    assert isinstance(subscribers[0], SubscriberDTO)
+
+
+async def test_get_many_subscribers_returns_empty_list_for_non_existent_ids(
+    subscriber_service: SubscriberService,
+) -> None:
+    subscribers = await subscriber_service.get_many(["Test", "ABC"])
+    assert len(subscribers) == 0
+    assert isinstance(subscribers, list)

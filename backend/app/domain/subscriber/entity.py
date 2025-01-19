@@ -57,15 +57,16 @@ class Subscriber(AggregateRoot[SubscriberId]):
             )
         )
 
-    def unsubscribe_from(self, birthing_person_id: BirthingPersonId) -> None:
+    def unsubscribe_from(self, birthing_person_id: BirthingPersonId, removed: bool = False) -> None:
         if birthing_person_id not in self.subscribed_to:
             raise SubscriberNotSubscribedToBirthingPerson()
         self.subscribed_to.remove(birthing_person_id)
-        self.add_domain_event(
-            SubscriberUnsubscribedFrom.create(
-                data={
-                    "subscriber_id": self.id_.value,
-                    "birthing_person_id": birthing_person_id.value,
-                }
+        if not removed:
+            self.add_domain_event(
+                SubscriberUnsubscribedFrom.create(
+                    data={
+                        "subscriber_id": self.id_.value,
+                        "birthing_person_id": birthing_person_id.value,
+                    }
+                )
             )
-        )
