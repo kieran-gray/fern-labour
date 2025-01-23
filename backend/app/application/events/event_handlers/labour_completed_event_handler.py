@@ -54,7 +54,7 @@ class LabourCompletedEventHandler(EventHandler):
             "birthing_person_name": f"{birthing_person.first_name} {birthing_person.last_name}",
             "subscriber_first_name": subscriber.first_name,
             "update": update,
-            "link": "https://fernlabour.com",  # TODO not hardcoded
+            "link": "https://track.fernlabour.com",  # TODO not hardcoded
         }
         message = self._email_generation_service.generate("labour_update.html", email_data)
         return Notification(

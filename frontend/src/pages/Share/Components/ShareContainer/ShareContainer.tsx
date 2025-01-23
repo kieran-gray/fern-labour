@@ -37,7 +37,7 @@ export function ShareContainer() {
   }
 
   // TODO environment variable for frontend host
-  const shareUrl = `https://fernlabour.com/subscribe/${userId}`
+  const shareUrl = `https://track.fernlabour.com/subscribe/${userId}`
   const shareText = `Hey, follow this link and sign up to get notifications about my labour:\n\n${shareUrl}\n\nYou'll also need this code: ${data}`;
   
   return (

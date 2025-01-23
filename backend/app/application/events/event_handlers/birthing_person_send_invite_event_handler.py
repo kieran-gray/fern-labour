@@ -41,7 +41,7 @@ class BirthingPersonSendInviteEventHandler(EventHandler):
         email_data = {
             "birthing_person_name": f"{birthing_person.first_name} {birthing_person.last_name}",
             "birthing_person_first_name": birthing_person.first_name,
-            "link": f"https://fernlabour.com/subscribe/{birthing_person.id}?token={token}",
+            "link": f"https://track.fernlabour.com/subscribe/{birthing_person.id}?token={token}",
         }
         message = self._email_generation_service.generate("labour_invite.html", email_data)
         return Notification(
