@@ -10,7 +10,7 @@ export const TrackPage: React.FC = () => {
   const page = 'Home';
 
   return (
-    <>
+    <div style={{height: '100svh', display: 'flex', flexDirection: 'column'}}>
       <Header active={page} />
       <Container size={1200} p={15}>
         <div></div>
@@ -20,7 +20,8 @@ export const TrackPage: React.FC = () => {
         <Space h="xl" />
         <SubscriptionsContainer />
       </Container>
+      <div style={{flexGrow: 1}}></div>
       <FooterSimple />
-    </>
+    </div>
   );
 };
