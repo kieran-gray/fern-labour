@@ -1,35 +1,23 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomePage } from './pages/Home/Page.tsx';
+import { Routes, Route } from 'react-router-dom';
+import { TrackPage } from './pages/Track/Page.tsx';
 import { ShareBirthingPersonPage } from './pages/Share/Page.tsx';
 import { LabourPage } from './pages/Labour/Page.tsx'
 import { NotFoundPage } from './pages/NotFound/Page.tsx';
 import { SubscribePage } from './pages/Subscribe/Page.tsx';
-
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomePage />,
-  },
-  {
-    path: '/*',
-    element: <NotFoundPage />
-  },
-  {
-    path: '/share',
-    element: <ShareBirthingPersonPage />
-  },
-  {
-    path: '/labour',
-    element: <LabourPage />
-  },
-  {
-    path: '/subscribe/:id',
-    element: <SubscribePage />
-  }
-])
-
+import { appRoutes } from './constants.ts';
+import { ContactPage } from './pages/Contact/Page.tsx';
 
 export function Router() {
-  return <RouterProvider router={router} />;
+  return (
+    <Routes>
+      <Route path={appRoutes.track}>
+        <Route index={true} path={appRoutes.track} element={<TrackPage />} />
+        <Route path={appRoutes.notFound} element={<NotFoundPage />} />
+        <Route path={appRoutes.share} element={<ShareBirthingPersonPage />} />
+        <Route path={appRoutes.labour} element={<LabourPage />} />
+        <Route path={appRoutes.contact} element={<ContactPage />} />
+        <Route path={appRoutes.subscribe} element={<SubscribePage />} />
+      </Route>
+    </Routes>
+  )
 }

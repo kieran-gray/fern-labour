@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export function NotFoundImage() {
     const navigate = useNavigate();
     return (
-        <Container className={classes.root}>
+        <Container className={classes.root} mt={20}>
             <SimpleGrid spacing={{ base: 40, sm: 80 }} cols={{ base: 1, sm: 2 }}>
                 <Image src={image} className={classes.mobileImage} />
                 <div>

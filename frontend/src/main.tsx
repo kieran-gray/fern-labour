@@ -7,12 +7,14 @@ import { ProtectedApp } from './shared-components/ProtectedApp.tsx';
 import { onSigninCallback, queryClient, userManager } from './config.ts';
 
 import { OpenAPI } from "./client"
+import { BrowserRouter } from 'react-router-dom';
 
 OpenAPI.BASE = import.meta.env.VITE_API_URL
 
 // biome-ignore lint/style/noNonNullAssertion: We expect this element to always exist
 reactDom.createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <BrowserRouter basename='/'>
       <AuthProvider userManager={userManager} onSigninCallback={onSigninCallback}>
         <QueryClientProvider client={queryClient}>
           <ProtectedApp>
@@ -20,5 +22,6 @@ reactDom.createRoot(document.getElementById('root')!).render(
           </ProtectedApp>
         </QueryClientProvider>
       </AuthProvider>
+    </BrowserRouter>
   </StrictMode>
 );

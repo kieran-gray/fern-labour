@@ -3,13 +3,14 @@ import { useAuth } from "react-oidc-context";
 import { Container, Space, Title } from "@mantine/core";
 import LabourContainer from "./Components/LabourContainer";
 import SubscriptionsContainer from "./Components/SubscriptionsContainer";
+import { FooterSimple } from "../../shared-components/Footer/Footer";
 
-export const HomePage: React.FC = () => {
+export const TrackPage: React.FC = () => {
   const auth = useAuth();
   const page = 'Home';
 
   return (
-    <div>
+    <>
       <Header active={page} />
       <Container size={1200} p={15}>
         <div></div>
@@ -19,6 +20,7 @@ export const HomePage: React.FC = () => {
         <Space h="xl" />
         <SubscriptionsContainer />
       </Container>
-    </div>
+      <FooterSimple />
+    </>
   );
 };

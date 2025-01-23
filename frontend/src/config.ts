@@ -9,7 +9,7 @@ export const userManager = new UserManager({
   // biome-ignore lint/style/useNamingConvention: Expected
   redirect_uri: `${window.location.origin}${window.location.pathname}${window.location.search}`,
   // biome-ignore lint/style/useNamingConvention: Expected
-  post_logout_redirect_uri: window.location.origin,
+  post_logout_redirect_uri: import.meta.env.VITE_POST_LOGOUT_REDIRECT,
   userStore: new WebStorageStateStore({ store: window.sessionStorage }),
   monitorSession: true // this allows cross tab login/logout detection
 });
