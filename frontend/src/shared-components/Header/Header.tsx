@@ -8,7 +8,6 @@ const mainLinks = [
     { link: '/', label: 'Home' },
     { link: '/labour', label: 'Labour' },
     { link: '/share', label: 'Share' },
-
 ];
 
 export function Header({active}: {active: string}) {
@@ -42,7 +41,7 @@ export function Header({active}: {active: string}) {
         </Anchor>
     )
     return (
-        <header className={classes.header} color='peach'>
+        <header className={classes.header}>
             <Container className={classes.inner}>
                 <div onClick={() => navigate("/")} className={classes.titleRow}>
                     <img src="/logo/logo.svg" className={classes.icon}></img>

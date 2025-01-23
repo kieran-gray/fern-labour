@@ -1,0 +1,106 @@
+.header {
+    height: 84px;
+    margin-bottom: 4vh;
+    background-color: var(--mantine-color-pink-3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  }
+
+  .drawer {
+    background-color: var(--mantine-color-pink-3);
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+
+  .title {
+    flex-shrink: 1;
+    color: var(--mantine-color-white);
+    font-family:
+    Greycliff CF,
+    var(--mantine-font-family);
+    font-weight: 700;
+  }
+
+  .titleRow {
+    height: 84px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+  .inner {
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mobileImage {
+    @media (min-width: 48em) {
+      display: none;
+    }
+  }
+  
+  .desktopImage {
+    @media (max-width: 47.99em) {
+      display: none;
+    }
+  }
+  
+  .links {
+    padding-top: var(--mantine-spacing-lg);
+    height: 84px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .linksDrawer {
+    padding-top: var(--mantine-spacing-lg);
+    height: 84px;
+    display: flex;
+    margin-top: 15px;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .linksDrawer > *{
+    margin-top: 15px;
+  }
+  
+  .mainLinks {
+    margin-right: calc(var(--mantie-spacing-sm) * -1);
+  }
+  
+  .mainLink {
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: var(--mantine-font-size-sm);
+    color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-1));
+    padding: 7px var(--mantine-spacing-sm);
+    font-weight: 700;
+    border: 2px solid transparent;
+    transition:
+      border-color 100ms ease,
+      color 100ms ease;
+  
+    @mixin hover {
+      color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+      background-color: var(--mantine-color-pink-1);
+      text-decoration: none;
+    }
+  
+    &[data-active] {
+      color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+      border-color: var(--mantine-color-pink-4);
+    }
+  }

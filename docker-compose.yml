@@ -210,6 +210,7 @@ services:
         - VITE_KEYCLOAK_AUTHORITY=${VITE_KEYCLOAK_AUTHORITY}
         - VITE_KEYCLOAK_METADATA_URL=${VITE_KEYCLOAK_METADATA_URL}
         - VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}
+        - VITE_POST_LOGOUT_REDIRECT=${VITE_POST_LOGOUT_REDIRECT}
     restart: "no"
     networks:
       - traefik-public
@@ -219,6 +220,21 @@ services:
     volumes:
       - ./frontend:/app
       - ./.env:/app/.env
+    command: ["npm", "run", "dev"]
+
+  marketing:
+    image: '${DOCKER_IMAGE_MARKETING?Variable not set}:latest'
+    build:
+      context: ./marketing
+      target: build-stage
+      args:
+        - NODE_ENV=development
+    restart: "no"
+    networks:
+      - traefik-public
+      - default
+    ports:
+      - "3000:3000"
     command: ["npm", "run", "dev"]
 
   kafka-ui:
