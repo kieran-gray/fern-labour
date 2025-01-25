@@ -9,23 +9,25 @@ on:
       - opened
       - synchronize
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
-  cancel-in-progress: true
-
 jobs:
   test_pull_request:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: './marketing/.nvmrc'
           cache: 'yarn'
           cache-dependency-path: '**/yarn.lock'
+
       - name: Install dependencies
         run: yarn
+
       - name: Run build
         run: npm run build
+
       - name: Run tests
         run: npm test
