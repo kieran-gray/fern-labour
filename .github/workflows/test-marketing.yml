@@ -10,7 +10,7 @@ on:
       - synchronize
 
 jobs:
-  test_pull_request:
+  test-marketing-site:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,11 +20,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: './marketing/.nvmrc'
-          cache: 'yarn'
-          cache-dependency-path: '**/yarn.lock'
 
       - name: Install dependencies
-        run: yarn
+        run: npm ci
 
       - name: Run build
         run: npm run build
