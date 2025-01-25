@@ -23,7 +23,7 @@ export function ContactUs() {
   ));
 
   return (
-    <Container mt={20} className={classes.wrapper} size={"lg"}>
+    <Container mt={20} className={classes.wrapper} size="lg">
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={50}>
         <div>
           <Title className={classes.title}>Contact us</Title>
@@ -58,7 +58,9 @@ export function ContactUs() {
           />
 
           <Group justify="flex-end" mt="md">
-            <Button className={classes.control} radius={"lg"}>Send message</Button>
+            <Button className={classes.control} radius="lg">
+              Send message
+            </Button>
           </Group>
         </div>
       </SimpleGrid>

@@ -4,7 +4,7 @@ import { mantineHtmlProps } from '@mantine/core';
 export default function Document() {
   return (
     <Html lang="en" {...mantineHtmlProps}>
-      <Head></Head>
+      <Head />
       <body>
         <Main />
         <NextScript />

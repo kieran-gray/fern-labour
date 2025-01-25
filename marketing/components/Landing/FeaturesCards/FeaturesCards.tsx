@@ -1,11 +1,4 @@
-import {
-  Card,
-  Container,
-  SimpleGrid,
-  Text,
-  Title,
-  Image
-} from '@mantine/core';
+import { Card, Container, Image, SimpleGrid, Text, Title } from '@mantine/core';
 import classes from './FeaturesCards.module.css';
 
 const data = [
@@ -32,14 +25,14 @@ const data = [
 export function FeaturesCards() {
   const features = data.map((feature) => (
     <Card key={feature.title} shadow="md" radius="md" className={classes.card} padding="xl">
-      <Image src={feature.image} className={classes.image} alt={feature.title}/>
+      <Image src={feature.image} className={classes.image} alt={feature.title} />
       <div>
-      <Text fz="lg" fw={500} className={classes.cardTitle} mt="md">
-        {feature.title}
-      </Text>
-      <Text fz="sm" mt="sm">
-        {feature.description}
-      </Text>
+        <Text fz="lg" fw={500} className={classes.cardTitle} mt="md">
+          {feature.title}
+        </Text>
+        <Text fz="sm" mt="sm">
+          {feature.description}
+        </Text>
       </div>
     </Card>
   ));
@@ -51,8 +44,8 @@ export function FeaturesCards() {
       </Title>
 
       <Text className={classes.description} ta="center" mt="md">
-        <strong>Only 4% of women give birth on their due date.</strong> Skip the constant updates, and skip the group chats.
-        Loved ones will be notified automatically when your labour begins.
+        <strong>Only 4% of women give birth on their due date.</strong> Skip the constant updates,
+        and skip the group chats. Loved ones will be notified automatically when your labour begins.
       </Text>
 
       <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl" mt={50}>
