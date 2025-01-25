@@ -18,7 +18,7 @@
 .bubble {
     position: absolute;
     border-radius: 50%;
-    filter: url(#goo);
+    filter: url("#goo");
     animation: float 16s infinite ease-in-out;
     opacity: 0.6;
 }
