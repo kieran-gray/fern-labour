@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
         />
-        <meta 
+        <meta
           name="description"
           content="Fern Labour: Plan your labour, Track your Contractions, and keep friends and family up-to-date in one app"
         />
