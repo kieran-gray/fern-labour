@@ -23,9 +23,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: ./marketing
 
       - name: Run build
         run: npm run build
+        working-directory: ./marketing
 
       - name: Run tests
         run: npm test
+        working-directory: ./marketing
