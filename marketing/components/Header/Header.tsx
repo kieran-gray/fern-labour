@@ -83,7 +83,7 @@ export function Header({ page }: { page: string }) {
           size="sm"
           hiddenFrom="sm"
           color="white"
-          name="navigationMenu"
+          title="Navigation Menu"
         />
       </Container>
     </header>
