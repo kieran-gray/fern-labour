@@ -1,0 +1,34 @@
+name: Test Marketing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test-marketing-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: './marketing/.nvmrc'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./marketing
+
+      - name: Run build
+        run: npm run build
+        working-directory: ./marketing
+
+      - name: Run tests
+        run: npm test
+        working-directory: ./marketing

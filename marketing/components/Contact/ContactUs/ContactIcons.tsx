@@ -25,9 +25,7 @@ function ContactIcon({ icon: Icon, title, description, ...others }: ContactIconP
   );
 }
 
-const data = [
-  { title: 'Email', description: 'support@fernlabour.com', icon: IconAt },
-];
+const data = [{ title: 'Email', description: 'support@fernlabour.com', icon: IconAt }];
 
 export function ContactIconsList() {
   const items = data.map((item, index) => <ContactIcon key={index} {...item} />);

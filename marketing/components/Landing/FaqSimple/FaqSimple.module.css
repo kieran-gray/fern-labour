@@ -23,7 +23,6 @@
     &[data-active] {
       background-color: var(--mantine-color-pink-2);
     }
-    
   }
 
   .panel {

@@ -234,7 +234,7 @@ services:
       - traefik-public
       - default
     ports:
-      - "3000:3000"
+      - "3000:81"
     command: ["npm", "run", "dev"]
 
   kafka-ui:
