@@ -10,4 +10,8 @@ export default withBundleAnalyzer({
   eslint: {
     ignoreDuringBuilds: true,
   },
+  compress: false,
+  experimental: {
+    optimizePackageImports: ['@mantine/core', '@mantine/hooks']
+  }
 });

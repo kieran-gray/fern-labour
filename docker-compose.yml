@@ -226,7 +226,7 @@ services:
     image: '${DOCKER_IMAGE_MARKETING?Variable not set}:latest'
     build:
       context: ./marketing
-      target: build-stage
+      # target: build-stage
       args:
         - NODE_ENV=development
     restart: "no"
@@ -234,8 +234,8 @@ services:
       - traefik-public
       - default
     ports:
-      - "3000:3000"
-    command: ["npm", "run", "dev"]
+      - "3000:81"
+    # command: ["npm", "run", "dev"]
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest

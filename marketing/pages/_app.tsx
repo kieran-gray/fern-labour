@@ -5,6 +5,9 @@ import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
 import { theme } from '../theme';
 import { Bubbles } from '@/components/Bubbles/Bubbles';
+import { Quicksand } from 'next/font/google'
+
+const quicksand = Quicksand({subsets: ["latin"]})
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -16,10 +19,11 @@ export default function App({ Component, pageProps }: AppProps) {
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
         />
         <link rel="shortcut icon" href="/logo/logo.svg" />
-        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;1000" rel="stylesheet" />
       </Head>
       <Bubbles />
-      <Component {...pageProps} />
+      <main className={quicksand.className}>
+        <Component {...pageProps} />
+      </main>
     </MantineProvider>
   );
 }

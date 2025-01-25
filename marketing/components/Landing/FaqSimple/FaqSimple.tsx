@@ -21,8 +21,8 @@ export function FaqSimple() {
             </ThemeIcon>
           }
         >
-          <Accordion.Item className={classes.item} value="reset-password">
-            <Accordion.Control className={classes.itemTitle}>How will I know when to go to hospital?</Accordion.Control>
+          <Accordion.Item className={classes.item} value="hospital">
+            <Accordion.Control>How will I know when to go to hospital?</Accordion.Control>
             <Accordion.Panel className={classes.panel}>
               The app will monitor your contraction patterns and send you a recommendation based 
               on your labour history.<br></br>For first-time mothers, you'll receive a notification when 
@@ -34,8 +34,8 @@ export function FaqSimple() {
             </Accordion.Panel>
           </Accordion.Item>
 
-          <Accordion.Item className={classes.item} value="another-account">
-            <Accordion.Control className={classes.itemTitle}>Can I remove subscribers from my labour if I don't want them to follow?</Accordion.Control>
+          <Accordion.Item className={classes.item} value="remove-subs">
+            <Accordion.Control>Can I remove subscribers from my labour if I don't want them to follow?</Accordion.Control>
             <Accordion.Panel className={classes.panel}>
               Yes, absolutely. You have complete control over who receives updates. 
               You can remove any subscriber at any time through the app's settings, and they'll 
@@ -43,8 +43,8 @@ export function FaqSimple() {
             </Accordion.Panel>
           </Accordion.Item>
 
-          <Accordion.Item className={classes.item} value="newsletter">
-            <Accordion.Control className={classes.itemTitle}>How will my data be stored?</Accordion.Control>
+          <Accordion.Item className={classes.item} value="data-storage">
+            <Accordion.Control>How will my data be stored?</Accordion.Control>
             <Accordion.Panel className={classes.panel}>
             Your privacy and data security are our top priority. All your personal information is 
             encrypted and stored on secure servers located in Europe.<br></br>We use industry-standard SSL 
@@ -53,8 +53,8 @@ export function FaqSimple() {
             </Accordion.Panel>
           </Accordion.Item>
 
-          <Accordion.Item className={classes.item} value="credit-card">
-            <Accordion.Control className={classes.itemTitle}>Can my partner/support person help manage updates during labor?</Accordion.Control>
+          <Accordion.Item className={classes.item} value="partner-updates">
+            <Accordion.Control>Can my partner/support person help manage updates during labor?</Accordion.Control>
             <Accordion.Panel className={classes.panel}>
             Yes! You can designate a trusted support person to manage updates through the app while 
             you focus on your labor.<br></br>They can track contractions and send updates to your subscribers 
@@ -63,8 +63,8 @@ export function FaqSimple() {
             </Accordion.Panel>
           </Accordion.Item>
 
-          <Accordion.Item className={classes.item} value="payment">
-            <Accordion.Control className={classes.itemTitle}>Is there a limit to how many people can subscribe to my updates?</Accordion.Control>
+          <Accordion.Item className={classes.item} value="sub-limits">
+            <Accordion.Control>Is there a limit to how many people can subscribe to my updates?</Accordion.Control>
             <Accordion.Panel className={classes.panel}>
               No, there's no limit to the number of subscribers you can add. Whether you want to
                keep just immediate family updated or include your extended support network, the 

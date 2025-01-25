@@ -29,7 +29,7 @@ export function Header({page}: {page: string}) {
         >
             {item.label}
         </Link>
-    )): [];
+    )): [<Link href="/" key="home" className={classes.mainLink}>Home</Link>];
 
     const goToApp = (
         <Link
@@ -45,7 +45,7 @@ export function Header({page}: {page: string}) {
         <header className={classes.header}>
             <Container className={classes.inner}>
                 <Link href="/" className={classes.titleRow}>
-                    <img src="/logo/logo.svg" className={classes.icon}></img>
+                    <img src="/logo/logo.svg" className={classes.icon} alt='FernLogo'></img>
                     <Text className={classes.title} >Fern Labour</Text>
                 </Link>
                 <Box className={classes.links} visibleFrom="sm">
@@ -56,7 +56,14 @@ export function Header({page}: {page: string}) {
                 <Group visibleFrom='sm'>
                         {goToApp}
                 </Group>
-                <Drawer size="xs" classNames={{content: classes.drawer, header: classes.drawer}} overlayProps={{ backgroundOpacity: 0.55, blur: 3 }} position="right" opened={opened} onClose={toggle}>
+                <Drawer
+                    size="xs"
+                    classNames={{content: classes.drawer, header: classes.drawer}}
+                    overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+                    position="right"
+                    opened={opened}
+                    onClose={toggle}
+                >
                     <div className={classes.linksDrawer}>
                         {mainItems}
                         {goToApp}
@@ -68,6 +75,8 @@ export function Header({page}: {page: string}) {
                     className={classes.burger}
                     size="sm"
                     hiddenFrom="sm"
+                    color='white'
+                    name='navigationMenu'
                 />
             </Container>
         </header>

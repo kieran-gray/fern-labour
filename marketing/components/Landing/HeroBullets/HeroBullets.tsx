@@ -75,7 +75,7 @@ export function HeroBullets () {
             </Button>
           </Group>
         </div>
-        <Image src='images/Hero.png' className={classes.image} />
+        <Image src='images/Hero.webp' className={classes.image} />
       </div>
     </Container>
     )
