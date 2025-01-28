@@ -33,13 +33,14 @@ class SubscriberTokenSettings(BaseModel):
 
 
 class CORSSettings(BaseModel):
-    BACKEND_CORS_ORIGINS: str = Field(alias="BACKEND_CORS_ORIGINS")
-    FRONTEND_HOST: str = Field(alias="FRONTEND_HOST")
+    backend_cors_origins: str = Field(alias="BACKEND_CORS_ORIGINS")
+    frontend_host: str = Field(alias="FRONTEND_HOST")
+    marketing_host: str = Field(alias="MARKETING_HOST")
 
     @computed_field  # type: ignore[prop-decorator]
     @property
     def all_cors_origins(self) -> list[str]:
-        all_origins = self.BACKEND_CORS_ORIGINS.split(",") + [self.FRONTEND_HOST]
+        all_origins = self.backend_cors_origins.split(",") + [self.frontend_host] + [self.marketing_host]
         return [str(origin).rstrip("/") for origin in all_origins]
 
 
@@ -107,6 +108,7 @@ class EmailSettings(BaseModel):
     smtp_tls: bool = Field(alias="SMTP_TLS", default=True)
     smtp_ssl: bool = Field(alias="SMTP_SSL", default=False)
     smtp_port: int = Field(alias="SMTP_PORT", default=587)
+    support_email: str | None = Field(alias="SUPPORT_EMAIL", default=None)
 
     @property
     def emails_enabled(self) -> bool:

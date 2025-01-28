@@ -229,12 +229,17 @@ services:
       target: build-stage
       args:
         - NODE_ENV=development
+        - BACKEND_API_URL=${BACKEND_API_URL?variable not set}
+        - INSTAGRAM_URL=${INSTAGRAM_URL?variable not set}
     restart: "no"
     networks:
       - traefik-public
       - default
     ports:
-      - "3000:81"
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL?variable not set}
+      - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?variable not set}
     command: ["npm", "run", "dev"]
 
   kafka-ui:

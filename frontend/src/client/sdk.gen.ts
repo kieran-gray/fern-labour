@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, GetUserApiV1AuthUserGetResponse, RegisterApiV1BirthingPersonRegisterPostResponse, GetBirthingPersonApiV1BirthingPersonGetResponse, GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse, GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse, RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostData, RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostResponse, SendInviteApiV1BirthingPersonSendInvitePostData, SendInviteApiV1BirthingPersonSendInvitePostResponse, RedirectToDocsGetResponse, HealthcheckApiV1HealthGetResponse, BeginLabourApiV1LabourBeginPostData, BeginLabourApiV1LabourBeginPostResponse, StartContractionApiV1LabourContractionStartPostData, StartContractionApiV1LabourContractionStartPostResponse, EndContractionApiV1LabourContractionEndPutData, EndContractionApiV1LabourContractionEndPutResponse, CompleteLabourApiV1LabourCompletePutData, CompleteLabourApiV1LabourCompletePutResponse, GetActiveLabourApiV1LabourActiveGetResponse, GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse, MakeAnnouncementApiV1LabourAnnouncementMakePostData, MakeAnnouncementApiV1LabourAnnouncementMakePostResponse, GetApiV1SubscriberGetResponse, RegisterApiV1SubscriberRegisterPostData, RegisterApiV1SubscriberRegisterPostResponse, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostData, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostResponse, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse, GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse, GetSubscribersApiV1SubscriberSubscribersGetResponse } from './types.gen';
+import type { LoginApiV1AuthLoginPostData, LoginApiV1AuthLoginPostResponse, GetUserApiV1AuthUserGetResponse, RegisterApiV1BirthingPersonRegisterPostResponse, GetBirthingPersonApiV1BirthingPersonGetResponse, GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse, GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse, RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostData, RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostResponse, SendInviteApiV1BirthingPersonSendInvitePostData, SendInviteApiV1BirthingPersonSendInvitePostResponse, ContactUsSendMessageApiV1ContactUsPostData, ContactUsSendMessageApiV1ContactUsPostResponse, RedirectToDocsGetResponse, HealthcheckApiV1HealthGetResponse, BeginLabourApiV1LabourBeginPostData, BeginLabourApiV1LabourBeginPostResponse, StartContractionApiV1LabourContractionStartPostData, StartContractionApiV1LabourContractionStartPostResponse, EndContractionApiV1LabourContractionEndPutData, EndContractionApiV1LabourContractionEndPutResponse, CompleteLabourApiV1LabourCompletePutData, CompleteLabourApiV1LabourCompletePutResponse, GetActiveLabourApiV1LabourActiveGetResponse, GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse, MakeAnnouncementApiV1LabourAnnouncementMakePostData, MakeAnnouncementApiV1LabourAnnouncementMakePostResponse, GetApiV1SubscriberGetResponse, RegisterApiV1SubscriberRegisterPostData, RegisterApiV1SubscriberRegisterPostResponse, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostData, SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostResponse, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData, UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse, GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse, GetSubscribersApiV1SubscriberSubscribersGetResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -168,6 +168,31 @@ export class BirthingPersonService {
                 401: 'Unauthorized',
                 404: 'Not Found',
                 422: 'Validation Error',
+                500: 'Internal Server Error'
+            }
+        });
+    }
+    
+}
+
+export class ContactUsService {
+    /**
+     * Contact Us Send Message
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns void Successful Response
+     * @throws ApiError
+     */
+    public static sendMessageApiV1ContactUsPost(data: ContactUsSendMessageApiV1ContactUsPostData): CancelablePromise<ContactUsSendMessageApiV1ContactUsPostResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/contact-us/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: 'Bad Request',
+                422: 'Validation Error',
+                429: 'Too Many Requests',
                 500: 'Internal Server Error'
             }
         });

@@ -45,8 +45,9 @@ PYPROJECT_TOML = "pyproject.toml"
 
 
 [security.cors]
-BACKEND_CORS_ORIGINS = "http://localhost,https://localhost,http://localhost.kg.com"
+BACKEND_CORS_ORIGINS = "http://localhost,https://localhost"
 FRONTEND_HOST = "http://localhost:5173"
+MARKETING_HOST = "http://localhost:3000"
 
 
 [notifications.email]
@@ -58,6 +59,7 @@ EMAILS_FROM_NAME = "kieran"
 SMTP_SSL = false
 SMTP_TLS = false
 SMTP_PORT = 1025
+SUPPORT_EMAIL = "support@fernlabour.com"
 
 
 [notifications.twilio]

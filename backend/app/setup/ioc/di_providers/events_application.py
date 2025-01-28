@@ -49,6 +49,7 @@ from app.infrastructure.notifications.sms.twilio_sms_notification_gateway import
 )
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
+from app.application.events.event_handlers.contact_us_message_sent_event_handler import ContactUsMessageSentEventHandler
 
 
 class EventsApplicationProvider(Provider):
@@ -208,4 +209,18 @@ class EventsApplicationProvider(Provider):
             subscriber_service=subscriber_service,
             email_generation_service=email_generation_service,
             token_generator=token_generator,
+        )
+    
+
+    @provide
+    def get_contact_us_message_sent_event_handler(
+        self,
+        notification_service: NotificationService,
+        email_generation_service: EmailGenerationService,
+        settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)]
+    ) -> ContactUsMessageSentEventHandler:
+        return ContactUsMessageSentEventHandler(
+            notification_service=notification_service,
+            email_generation_service=email_generation_service,
+            contact_email=settings.notifications.email.support_email,
         )

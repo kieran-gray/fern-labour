@@ -18,6 +18,9 @@ from app.application.events.event_handlers.subscriber_subscribed_to_event_handle
 from app.application.events.event_handlers.subscriber_unsubscribed_from_event_handler import (
     SubscriberUnsubscribedFromEventHandler,
 )
+from app.application.events.event_handlers.contact_us_message_sent_event_handler import (
+    ContactUsMessageSentEventHandler
+)
 
 EVENT_HANDLER_MAPPING: dict[str, type[EventHandler]] = {
     "labour.announcement-made": LabourAnnouncementMadeEventHandler,
@@ -27,4 +30,5 @@ EVENT_HANDLER_MAPPING: dict[str, type[EventHandler]] = {
     "subscriber.unsubscribed-from": SubscriberUnsubscribedFromEventHandler,
     "birthing-person.removed-subscriber": BirthingPersonRemovedSubscriberEventHandler,
     "birthing-person.send-invite": BirthingPersonSendInviteEventHandler,
+    "contact-us.message-sent": ContactUsMessageSentEventHandler,
 }

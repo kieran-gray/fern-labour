@@ -9,6 +9,12 @@ RUN npm install
 
 COPY ./ /app/
 
+ARG BACKEND_API_URL
+ARG INSTAGRAM_URL
+
+ENV NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL}
+ENV NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL}
+
 RUN npm run build
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
