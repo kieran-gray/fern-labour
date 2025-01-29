@@ -16,7 +16,9 @@ import { useForm } from '@mantine/form';
 import { ContactIconsList } from './ContactIcons.tsx';
 import classes from './ContactUs.module.css';
 
-const social = [{ icon: IconBrandInstagram, link: process.env.NEXT_PUBLIC_INSTAGRAM_URL, title: 'Instagram' }];
+const social = [
+  { icon: IconBrandInstagram, link: process.env.NEXT_PUBLIC_INSTAGRAM_URL, title: 'Instagram' },
+];
 
 export function ContactUs() {
   const [status, setStatus] = useState({ type: '', message: '' });
@@ -79,7 +81,6 @@ export function ContactUs() {
       className={classes.social}
       variant="transparent"
       title={data.title}
-
     >
       <data.icon size={22} stroke={1.5} />
     </ActionIcon>
