@@ -5,10 +5,10 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, status
 
 from app.application.events.producer import EventProducer
+from app.domain.base.event import DomainEvent
 from app.presentation.api.schemas.requests.contact import ContactUsRequest
 from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
-from app.domain.base.event import DomainEvent
 
 contact_us_router = APIRouter(prefix="/contact-us", tags=["Contact Us"])
 

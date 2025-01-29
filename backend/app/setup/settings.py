@@ -40,7 +40,9 @@ class CORSSettings(BaseModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def all_cors_origins(self) -> list[str]:
-        all_origins = self.backend_cors_origins.split(",") + [self.frontend_host] + [self.marketing_host]
+        all_origins = (
+            self.backend_cors_origins.split(",") + [self.frontend_host] + [self.marketing_host]
+        )
         return [str(origin).rstrip("/") for origin in all_origins]
 
 
@@ -108,7 +110,7 @@ class EmailSettings(BaseModel):
     smtp_tls: bool = Field(alias="SMTP_TLS", default=True)
     smtp_ssl: bool = Field(alias="SMTP_SSL", default=False)
     smtp_port: int = Field(alias="SMTP_PORT", default=587)
-    support_email: str | None = Field(alias="SUPPORT_EMAIL", default=None)
+    support_email: str = Field(alias="SUPPORT_EMAIL")
 
     @property
     def emails_enabled(self) -> bool:

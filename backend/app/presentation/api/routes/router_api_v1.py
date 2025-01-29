@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
 from app.presentation.api.routes.auth import auth_router
-from app.presentation.api.routes.contact import contact_us_router
 from app.presentation.api.routes.birthing_person import birthing_person_router
+from app.presentation.api.routes.contact import contact_us_router
 from app.presentation.api.routes.healthcheck import healthcheck_router
 from app.presentation.api.routes.labour import labour_router
 from app.presentation.api.routes.subscriber import subscriber_router

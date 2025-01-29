@@ -15,7 +15,7 @@ class ContactUsMessageSentEventHandler(EventHandler):
         self,
         notification_service: NotificationService,
         email_generation_service: EmailGenerationService,
-        contact_email: str
+        contact_email: str,
     ):
         self._notification_service = notification_service
         self._email_generation_service = email_generation_service
@@ -35,7 +35,7 @@ class ContactUsMessageSentEventHandler(EventHandler):
         log.info(
             "Contact us submission for email = %s Userid = %s",
             event["data"]["email"],
-            event["data"]["user_id"]
+            event["data"]["user_id"],
         )
         notification = self._generate_email(event["data"])
         await self._notification_service.send(notification)
