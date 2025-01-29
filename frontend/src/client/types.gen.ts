@@ -48,6 +48,13 @@ export type CompleteLabourRequest = {
     notes?: (string | null);
 };
 
+export type ContactUsRequest = {
+    email: string;
+    name: string;
+    message: string;
+    user_id?: (string | null);
+};
+
 export type ContractionDTO = {
     id: string;
     labour_id: string;
@@ -217,6 +224,12 @@ export type SendInviteApiV1BirthingPersonSendInvitePostData = {
 };
 
 export type SendInviteApiV1BirthingPersonSendInvitePostResponse = (void);
+
+export type ContactUsSendMessageApiV1ContactUsPostData = {
+    requestBody: ContactUsRequest;
+};
+
+export type ContactUsSendMessageApiV1ContactUsPostResponse = (void);
 
 export type RedirectToDocsGetResponse = (unknown);
 

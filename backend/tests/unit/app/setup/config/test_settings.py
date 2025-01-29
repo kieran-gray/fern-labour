@@ -24,6 +24,7 @@ def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):
         "http://localhost",
         "https://localhost",
         "http://localhost:1234",
+        "http://localhost:3000",
     ]
 
     assert settings.db.postgres.username == "test_user"

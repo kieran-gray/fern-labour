@@ -8,6 +8,9 @@ from app.application.events.event_handlers.birthing_person_removed_subscriber_ev
 from app.application.events.event_handlers.birthing_person_send_invite_event_handler import (
     BirthingPersonSendInviteEventHandler,
 )
+from app.application.events.event_handlers.contact_us_message_sent_event_handler import (
+    ContactUsMessageSentEventHandler,
+)
 from app.application.events.event_handlers.labour_announcement_made_event_handler import (
     LabourAnnouncementMadeEventHandler,
 )
@@ -208,4 +211,17 @@ class EventsApplicationProvider(Provider):
             subscriber_service=subscriber_service,
             email_generation_service=email_generation_service,
             token_generator=token_generator,
+        )
+
+    @provide
+    def get_contact_us_message_sent_event_handler(
+        self,
+        notification_service: NotificationService,
+        email_generation_service: EmailGenerationService,
+        settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
+    ) -> ContactUsMessageSentEventHandler:
+        return ContactUsMessageSentEventHandler(
+            notification_service=notification_service,
+            email_generation_service=email_generation_service,
+            contact_email=settings.notifications.email.support_email,
         )

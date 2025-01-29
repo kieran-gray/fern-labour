@@ -13,6 +13,7 @@ class MockConfigReader(ConfigReader):
                 "cors": {
                     "BACKEND_CORS_ORIGINS": "http://localhost,https://localhost",
                     "FRONTEND_HOST": "http://localhost:1234",
+                    "MARKETING_HOST": "http://localhost:3000",
                 },
                 "keycloak": {
                     "KEYCLOAK_SERVER_URL": "http://localhost",
@@ -48,7 +49,7 @@ class MockConfigReader(ConfigReader):
                     "SQLA_MAX_OVERFLOW": 0,
                 },
             },
-            "notifications": {"email": {}, "twilio": {}},
+            "notifications": {"email": {"SUPPORT_EMAIL": "support@example.com"}, "twilio": {}},
             "events": {
                 "kafka_producer": {},
                 "kafka_consumer": {},
