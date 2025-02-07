@@ -1,11 +1,20 @@
-name: Create and publish the keycloak docker image
+name: Build and Push Docker Image
 
 on:
-  push:
-    branches: ['main']
+  workflow_call:
+    inputs:
+      directory:
+        required: true
+        type: string
+      image-name:
+        required: true
+        type: string
+      build-args:
+        required: false
+        type: string
+        default: ""
 
 env:
-  IMAGE_NAME: "labour-tracker-keycloak"
   PROJECT_ID: "valued-vault-446719-t7"
   AR_REPO_LOCATION: "europe-west2"
   AR_URL: "europe-west2-docker.pkg.dev/valued-vault-446719-t7/fern-labour"
@@ -13,9 +22,8 @@ env:
   WORKLOAD_IDENTITY_PROVIDER: "projects/549377932260/locations/global/workloadIdentityPools/fern-labour-dev-pool/providers/github-actions-provider"
 
 jobs:
-  build-and-push-image:
+  build-and-push:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       id-token: write
@@ -23,7 +31,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-  
+
       - name: Google Auth
         id: auth
         uses: 'google-github-actions/auth@v2'
@@ -34,24 +42,23 @@ jobs:
           workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: Docker Auth
-        id: docker-auth
-        uses: 'docker/login-action@v3'
+        uses: 'docker/login-action@v1'
         with:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
           registry: '${{ env.AR_REPO_LOCATION }}-docker.pkg.dev'
-     
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@8e1d5461f02b7886d3c1a774bfbd873650445aa2
-        with:
-          images: ${{ env.AR_URL }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          context: ./keycloak
+          images: ${{ env.AR_URL }}/${{ inputs.image-name }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ inputs.directory }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ inputs.build-args }}

@@ -1,16 +1,9 @@
-name: Test Backend
-
+name: Python Setup
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types:
-      - opened
-      - synchronize
+  workflow_call:
 
 jobs:
-  test-backend:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,7 +19,3 @@ jobs:
         with:
           version: "0.5.5"
           enable-cache: true
-
-      - name: Run tests
-        run: uv run pytest --cov
-        working-directory: ./backend

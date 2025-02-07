@@ -1,0 +1,41 @@
+name: Backend Checks
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/**'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - 'backend/**'
+      - '.github/workflows/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/python-setup.yml
+      - name: Run tests
+        run: uv run pytest --cov
+        working-directory: ./backend
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/python-setup.yml
+      - name: Run MyPy
+        run: uv run mypy app
+        working-directory: ./backend
+      - name: Run Ruff Check
+        run: uv run ruff check app
+        working-directory: ./backend
+      - name: Run Ruff Format Check
+        run: uv run ruff format app --check
+        working-directory: ./backend
