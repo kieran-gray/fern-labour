@@ -1,6 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import { Anchor, Container, Group } from '@mantine/core';
 import classes from './Footer.module.css';
-import { useNavigate } from "react-router-dom";
 
 const links = [
   { link: '/contact', label: 'Contact' },
@@ -13,7 +13,10 @@ export function FooterSimple() {
     <Anchor<'a'>
       key={link.label}
       href={link.link}
-      onClick={(event) => {event.preventDefault(); navigate(link.link)}}
+      onClick={(event) => {
+        event.preventDefault();
+        navigate(link.link);
+      }}
       size="sm"
     >
       {link.label}
@@ -23,8 +26,8 @@ export function FooterSimple() {
   return (
     <div className={classes.footer}>
       <Container className={classes.inner}>
-        <div onClick={() => navigate("/")}>
-          <img src="/logo/logo.svg" className={classes.icon}></img>
+        <div onClick={() => navigate('/')}>
+          <img src="/logo/logo.svg" className={classes.icon} alt="Fern Logo" />
         </div>
         <Group className={classes.links}>{items}</Group>
       </Container>

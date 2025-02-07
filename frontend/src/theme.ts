@@ -11,29 +11,29 @@ const peachTheme: MantineColorsTuple = [
   '#fe480b',
   '#e33900',
   '#cb3000',
-  '#b12500'
+  '#b12500',
 ];
 
 // https://mantine.dev/colors-generator/?color=FF8C7A
 const pinkTheme: MantineColorsTuple = [
-    "#ffeae6",
-    "#ffd5cd",
-    "#ffa99b",
-    "#ff7964",
-    "#fe5236",
-    "#fe3919",
-    "#ff2a09",
-    "#e41d00",
-    "#cb1500",
-    "#b20600"
-]
+  '#ffeae6',
+  '#ffd5cd',
+  '#ffa99b',
+  '#ff7964',
+  '#fe5236',
+  '#fe3919',
+  '#ff2a09',
+  '#e41d00',
+  '#cb1500',
+  '#b20600',
+];
 
 export const theme = createTheme({
   fontFamily: 'Quicksand, sans-serif',
-  headings: {fontFamily: 'Quicksand'},
-  primaryColor: "pink",
+  headings: { fontFamily: 'Quicksand' },
+  primaryColor: 'pink',
   colors: {
-    "peach": peachTheme,
-    "pink": pinkTheme
-  }
+    peach: peachTheme,
+    pink: pinkTheme,
+  },
 });

@@ -1,5 +1,5 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import classes from './Stopwatch.module.css'
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import classes from './Stopwatch.module.css';
 
 export interface StopwatchHandle {
   start: () => void;
@@ -16,10 +16,10 @@ const Stopwatch = forwardRef<StopwatchHandle>((_, ref) => {
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-    
+
     if (isRunning) {
       intervalId = setInterval(() => {
-        setSeconds(prev => prev + 1);
+        setSeconds((prev) => prev + 1);
       }, 1000);
     }
 
@@ -43,9 +43,11 @@ const Stopwatch = forwardRef<StopwatchHandle>((_, ref) => {
       setIsRunning(false);
       setSeconds(0);
     },
-    set: (seconds) => {setSeconds(seconds)},
+    set: (seconds) => {
+      setSeconds(seconds);
+    },
     seconds,
-    isRunning
+    isRunning,
   }));
 
   return (

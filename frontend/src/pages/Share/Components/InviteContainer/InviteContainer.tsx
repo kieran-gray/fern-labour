@@ -1,84 +1,85 @@
-import { Text, TextInput, Title } from '@mantine/core';
-import baseClasses from '../../../../shared-components/shared-styles.module.css'
 import { IconAt } from '@tabler/icons-react';
-import { SendInviteButton } from '../SendInviteButton/SendInviteButton';
-import { useForm } from '@mantine/form';
-import { useAuth } from 'react-oidc-context';
-import { BirthingPersonService, OpenAPI, SendInviteRequest } from '../../../../client';
 import { useMutation } from '@tanstack/react-query';
+import { useAuth } from 'react-oidc-context';
+import { Text, TextInput, Title } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { BirthingPersonService, OpenAPI, SendInviteRequest } from '../../../../client';
+import { SendInviteButton } from '../SendInviteButton/SendInviteButton';
+import baseClasses from '../../../../shared-components/shared-styles.module.css';
 
 export function InviteContainer() {
-    const auth = useAuth()
-    const form = useForm({
-        mode: 'uncontrolled',
-        initialValues: {
-          email: '',
-        },
-    
-        validate: {
-          email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-        },
-    });
+  const auth = useAuth();
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      email: '',
+    },
 
-    OpenAPI.TOKEN = async () => {
-        return auth.user?.access_token || ""
-    }
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+    },
+  });
 
-    const mutation = useMutation({
-        mutationFn: async (values: typeof form.values) => {
-            const requestBody: SendInviteRequest = { "invite_email": values.email }
-            await BirthingPersonService.sendInviteApiV1BirthingPersonSendInvitePost(
-                {requestBody: requestBody}
-            )
-        },
-        onSuccess: () => {
-            notifications.show(
-                {
-                    title: 'Success',
-                    message: `Invite email sent`,
-                    radius: "lg",
-                    color: "var(--mantine-color-green-3)",
-                    classNames: {
-                        title: baseClasses.notificationSuccessTitle,
-                        description: baseClasses.notificationSuccessDescription
-                    },
-                    style:{ backgroundColor: "var(--mantine-color-pink-1)" }
-                }
-            )
-            form.reset()
-        },
-        onError: (error) => {
-          console.error("Error sending invite", error)
-        }
-    });
-      
+  OpenAPI.TOKEN = async () => {
+    return auth.user?.access_token || '';
+  };
 
-    return (
-        <div className={baseClasses.root}>
-            <div className={baseClasses.header}>
-                <Title fz="xl" className={baseClasses.title}>Invite</Title>
-            </div>
-            <div className={baseClasses.body}>
-                <Text className={baseClasses.text}>Invite friends and family to allow them to track your labour:</Text>
-                <form onSubmit={form.onSubmit(((values) => mutation.mutate(values)))}>
-                    <TextInput
-                        withAsterisk
-                        radius={"lg"}
-                        mt="md"
-                        rightSectionPointerEvents="none"
-                        rightSection={<IconAt size={16} />}
-                        label="Email"
-                        placeholder="friend@email.com"
-                        key={form.key('email')}
-                        size={"md"}
-                        {...form.getInputProps('email')}
-                    />
-                    <div className={baseClasses.flexRowEnd}>
-                        <SendInviteButton />
-                    </div>
-                </form>
-            </div>
-        </div>
-    )
+  const mutation = useMutation({
+    mutationFn: async (values: typeof form.values) => {
+      const requestBody: SendInviteRequest = { invite_email: values.email };
+      await BirthingPersonService.sendInviteApiV1BirthingPersonSendInvitePost({
+        requestBody,
+      });
+    },
+    onSuccess: () => {
+      notifications.show({
+        title: 'Success',
+        message: `Invite email sent`,
+        radius: 'lg',
+        color: 'var(--mantine-color-green-3)',
+        classNames: {
+          title: baseClasses.notificationSuccessTitle,
+          description: baseClasses.notificationSuccessDescription,
+        },
+        style: { backgroundColor: 'var(--mantine-color-pink-1)' },
+      });
+      form.reset();
+    },
+    onError: (error) => {
+      console.error('Error sending invite', error);
+    },
+  });
+
+  return (
+    <div className={baseClasses.root}>
+      <div className={baseClasses.header}>
+        <Title fz="xl" className={baseClasses.title}>
+          Invite
+        </Title>
+      </div>
+      <div className={baseClasses.body}>
+        <Text className={baseClasses.text}>
+          Invite friends and family to allow them to track your labour:
+        </Text>
+        <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
+          <TextInput
+            withAsterisk
+            radius="lg"
+            mt="md"
+            rightSectionPointerEvents="none"
+            rightSection={<IconAt size={16} />}
+            label="Email"
+            placeholder="friend@email.com"
+            key={form.key('email')}
+            size="md"
+            {...form.getInputProps('email')}
+          />
+          <div className={baseClasses.flexRowEnd}>
+            <SendInviteButton />
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
