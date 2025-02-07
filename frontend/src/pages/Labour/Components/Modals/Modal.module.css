@@ -4,6 +4,7 @@
     border: 5px solid var(--mantine-color-pink-3);
     background-color: var(--mantine-color-pink-3);
     border-radius: var(--mantine-radius-xl);
+
     @media (max-width: $mantine-breakpoint-sm) {
       flex-direction: column;
     }

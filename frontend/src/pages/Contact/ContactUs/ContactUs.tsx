@@ -1,4 +1,7 @@
-import { IconBrandInstagram } from '@tabler/icons-react';
+import { useState } from 'react';
+import { IconBrandInstagram, IconInfoCircle } from '@tabler/icons-react';
+import { useMutation } from '@tanstack/react-query';
+import { useAuth } from 'react-oidc-context';
 import {
   ActionIcon,
   Alert,
@@ -11,27 +14,23 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { ContactUsService } from '../../../client/sdk.gen.ts';
+import { ContactUsRequest } from '../../../client/types.gen.ts';
 import { ContactIconsList } from './ContactIcons.tsx';
 import classes from './ContactUs.module.css';
-import { IconInfoCircle } from '@tabler/icons-react';
-import { useState } from 'react';
-import { useForm } from '@mantine/form';
-import { useMutation } from '@tanstack/react-query';
-import { ContactUsRequest } from '../../../client/types.gen.ts';
-import { ContactUsService } from '../../../client/sdk.gen.ts';
-import { useAuth } from 'react-oidc-context';
 
 const social = [{ icon: IconBrandInstagram, link: 'https://www.instagram.com/fernlabour/' }];
 
 export function ContactUs() {
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const auth = useAuth()
+  const auth = useAuth();
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
       email: auth.user?.profile.email || '',
-      name: `${auth.user?.profile.given_name} ${auth.user?.profile.family_name}`|| '',
+      name: `${auth.user?.profile.given_name} ${auth.user?.profile.family_name}`,
       message: '',
     },
     validate: {
@@ -44,22 +43,20 @@ export function ContactUs() {
       setIsLoading(true);
       setStatus({ type: '', message: '' });
       const requestBody: ContactUsRequest = {
-        "email": values.email,
-        "name": values.name,
-        "message": values.message,
-        "user_id": auth.user?.profile.sub,
-      }
-      await ContactUsService.sendMessageApiV1ContactUsPost(
-        { requestBody: requestBody }
-      )
+        email: values.email,
+        name: values.name,
+        message: values.message,
+        user_id: auth.user?.profile.sub,
+      };
+      await ContactUsService.sendMessageApiV1ContactUsPost({ requestBody });
       setIsLoading(false);
     },
     onSuccess: () => {
-      form.setInitialValues({email: '', name: '', message: ''})
+      form.setInitialValues({ email: '', name: '', message: '' });
       form.reset();
       setStatus({
         type: 'success',
-        message: 'Message sent successfully! We\'ll get back to you soon.',
+        message: "Message sent successfully! We'll get back to you soon.",
       });
     },
     onError: (_) => {
@@ -71,7 +68,15 @@ export function ContactUs() {
   });
 
   const icons = social.map((data, index) => (
-    <ActionIcon target='_blank' key={index} component='a' href={data.link} size={28} className={classes.social} variant="transparent">
+    <ActionIcon
+      target="_blank"
+      key={index}
+      component="a"
+      href={data.link}
+      size={28}
+      className={classes.social}
+      variant="transparent"
+    >
       <data.icon size={22} stroke={1.5} />
     </ActionIcon>
   ));
@@ -88,11 +93,14 @@ export function ContactUs() {
           <ContactIconsList />
           <Group mt="xl">{icons}</Group>
         </div>
-        <form className={classes.form} onSubmit={form.onSubmit(((values) => mutation.mutate(values)))}>
-          {status.type &&
+        <form
+          className={classes.form}
+          onSubmit={form.onSubmit((values) => mutation.mutate(values))}
+        >
+          {status.type && (
             <Alert
-              variant='light'
-              color={status.type === "success" ? "green" : "red"}
+              variant="light"
+              color={status.type === 'success' ? 'green' : 'red'}
               radius="md"
               title={status.type}
               icon={alertIcon}
@@ -102,7 +110,7 @@ export function ContactUs() {
             >
               {status.message}
             </Alert>
-          }
+          )}
           <TextInput
             required
             label="Email"
@@ -131,7 +139,12 @@ export function ContactUs() {
             {...form.getInputProps('message')}
           />
           <Group justify="flex-end" mt="md">
-            <Button type='submit' className={classes.control} radius="lg" disabled={isLoading || status.type === "success"}>
+            <Button
+              type="submit"
+              className={classes.control}
+              radius="lg"
+              disabled={isLoading || status.type === 'success'}
+            >
               {isLoading ? 'Sending...' : 'Send Message'}
             </Button>
           </Group>

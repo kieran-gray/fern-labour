@@ -2,7 +2,7 @@ import { IconCheck, IconCopy } from '@tabler/icons-react';
 import { Button, Tooltip } from '@mantine/core';
 import { useClipboard } from '@mantine/hooks';
 
-export function CopyButton({text}: {text: string}) {
+export function CopyButton({ text }: { text: string }) {
   const clipboard = useClipboard();
   return (
     <Tooltip
@@ -14,7 +14,7 @@ export function CopyButton({text}: {text: string}) {
       opened={clipboard.copied}
     >
       <Button
-        color='var(--mantine-color-pink-4)'
+        color="var(--mantine-color-pink-4)"
         variant="filled"
         rightSection={
           clipboard.copied ? (
@@ -27,7 +27,7 @@ export function CopyButton({text}: {text: string}) {
         size="md"
         pr={14}
         h={48}
-        mt={'var(--mantine-spacing-lg)'}
+        mt="var(--mantine-spacing-lg)"
         styles={{ section: { marginLeft: 22 } }}
         onClick={() => clipboard.copy(text)}
       >

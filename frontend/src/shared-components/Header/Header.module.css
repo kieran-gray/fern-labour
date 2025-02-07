@@ -21,9 +21,7 @@
   .title {
     flex-shrink: 1;
     color: var(--mantine-color-white);
-    font-family:
-    Greycliff CF,
-    var(--mantine-font-family);
+    font-family: 'Greycliff CF', var(--mantine-font-family);
     font-weight: 700;
   }
 

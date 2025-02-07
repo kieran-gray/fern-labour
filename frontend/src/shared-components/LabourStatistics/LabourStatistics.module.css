@@ -29,7 +29,6 @@
     border-bottom-left-radius: var(--mantine-radius-xl);
     border-bottom-right-radius: var(--mantine-radius-xl);
     background-color: var(--mantine-color-pink-1);
-    padding: var(--mantine-spacing-md);
     height: auto;
     min-width: 220px;
     flex: 1;

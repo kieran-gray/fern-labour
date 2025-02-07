@@ -17,22 +17,22 @@
     background: var(--mantine-color-pink-5);
     align-self: end;
 
-    &:before,
-    &:after {
+    &::before,
+    &::after {
         content: "";
         position: absolute;
         bottom: 0;
         height: 25px;
     }
 
-    &:before {
+    &::before {
         right: -7px;
         width: 20px;
         background-color: var(--mantine-color-pink-5);
         border-bottom-left-radius: 16px 14px;
     }
 
-    &:after {
+    &::after {
         right: -26px;
         width: 26px;
         background-color: var(--mantine-color-pink-0);
