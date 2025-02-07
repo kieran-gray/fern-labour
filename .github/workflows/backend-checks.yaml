@@ -4,35 +4,49 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'backend/**'
-      - '.github/workflows/**'
   pull_request:
-    types:
-      - opened
-      - synchronize
+    types: [opened, synchronize]
     paths:
       - 'backend/**'
       - '.github/workflows/**'
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      python-path: ${{ steps.python-setup.outputs.python-path }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: python-setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "0.5.5"
+          enable-cache: true
+
   test:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/workflows/python-setup.yml
       - name: Run tests
         run: uv run pytest --cov
         working-directory: ./backend
+        env:
+          PYTHONPATH: ${{ needs.setup.outputs.python-path }}
 
   lint:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/workflows/python-setup.yml
       - name: Run MyPy
         run: uv run mypy app
         working-directory: ./backend
+        env:
+          PYTHONPATH: ${{ needs.setup.outputs.python-path }}
       - name: Run Ruff Check
         run: uv run ruff check app
         working-directory: ./backend
