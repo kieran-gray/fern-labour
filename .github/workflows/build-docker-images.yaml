@@ -13,27 +13,27 @@ on:
 jobs:
   backend:
     if: github.event_name == 'push' && contains(github.event.changes, 'backend/')
-    uses: ./.github/workflows/build-and-push.yml
+    uses: ./.github/workflows/build-and-push.yaml
     with:
       directory: backend
       image-name: labour-tracker-backend
 
   frontend:
     if: github.event_name == 'push' && contains(github.event.changes, 'frontend/')
-    uses: ./.github/workflows/build-and-push.yml
+    uses: ./.github/workflows/build-and-push.yaml
     with:
       directory: frontend
       image-name: labour-tracker-frontend
       build-args: |
-        VITE_API_URL=${{ secrets.VITE_API_URL }}
-        VITE_KEYCLOAK_AUTHORITY=${{ secrets.VITE_KEYCLOAK_AUTHORITY }}
-        VITE_KEYCLOAK_CLIENT_ID=${{ secrets.VITE_KEYCLOAK_CLIENT_ID }}
-        VITE_KEYCLOAK_METADATA_URL=${{ secrets.VITE_KEYCLOAK_METADATA_URL }}
-        VITE_POST_LOGOUT_REDIRECT=${{ secrets.VITE_POST_LOGOUT_REDIRECT }}
+        VITE_API_URL=${{ vars.VITE_API_URL }}
+        VITE_KEYCLOAK_AUTHORITY=${{ vars.VITE_KEYCLOAK_AUTHORITY }}
+        VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
+        VITE_KEYCLOAK_METADATA_URL=${{ vars.VITE_KEYCLOAK_METADATA_URL }}
+        VITE_POST_LOGOUT_REDIRECT=${{ vars.VITE_POST_LOGOUT_REDIRECT }}
 
   marketing:
     if: github.event_name == 'push' && contains(github.event.changes, 'marketing/')
-    uses: ./.github/workflows/build-and-push.yml
+    uses: ./.github/workflows/build-and-push.yaml
     with:
       directory: marketing
       image-name: labour-tracker-marketing
@@ -43,7 +43,7 @@ jobs:
 
   keycloak:
     if: github.event_name == 'push' && contains(github.event.changes, 'keycloak/')
-    uses: ./.github/workflows/build-and-push.yml
+    uses: ./.github/workflows/build-and-push.yaml
     with:
       directory: keycloak
       image-name: labour-tracker-keycloak
