@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';
 import { CompleteLabourRequest, LabourService, OpenAPI } from '../../../../client';
 import ConfirmCompleteLabourModal from '../Modals/ConfirmCompleteLabour';
+import { IconConfetti } from '@tabler/icons-react';
 
 export default function CompleteLabourButton({
   labourNotes,
@@ -55,11 +56,14 @@ export default function CompleteLabourButton({
     }
   }
 
+  const icon = <IconConfetti size={25} />;
+
   if (disabled) {
     return (
       <Tooltip label="End your current contraction first">
         <Button
           data-disabled
+          leftSection={icon}
           size="xl"
           color="var(--mantine-color-pink-4)"
           radius="lg"
@@ -73,6 +77,7 @@ export default function CompleteLabourButton({
   }
   return (
     <Button
+      leftSection={icon}
       size="xl"
       color="var(--mantine-color-pink-4)"
       radius="lg"

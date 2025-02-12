@@ -75,7 +75,7 @@ export default function MakeAnnouncementButton({
     }
   }
   const icon = <IconSpeakerphone size={25} />;
-
+  
   const button = (
     <Button
       leftSection={icon}

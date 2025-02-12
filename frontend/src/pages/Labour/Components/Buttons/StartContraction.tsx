@@ -4,6 +4,7 @@ import { useAuth } from 'react-oidc-context';
 import { Button } from '@mantine/core';
 import { LabourService, OpenAPI, StartContractionRequest } from '../../../../client';
 import { StopwatchHandle } from '../Stopwatch/Stopwatch';
+import {IconHourglassLow} from "@tabler/icons-react";
 
 export default function StartContractionButton({
   stopwatchRef,
@@ -35,8 +36,10 @@ export default function StartContractionButton({
     },
   });
 
+  const icon = <IconHourglassLow size={25} />;
+
   return (
-    <Button radius="lg" size="xl" variant="outline" onClick={() => mutation.mutate()}>
+    <Button leftSection={icon} radius="lg" size="xl" variant="outline" onClick={() => mutation.mutate()}>
       Start Contraction
     </Button>
   );
