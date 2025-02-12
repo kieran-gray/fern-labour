@@ -1,5 +1,6 @@
 * {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+    font-family: Quicksand, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+    --pf-v5-global--FontFamily--heading: Quicksand, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
     --pf-v5-c-form-control--Color: #333;
 }
 
@@ -94,9 +95,48 @@ div.kc-logo-text span {
 }
 
 .pf-v5-c-login__main {
-    background-color: white;
+    background-color: #FF8C7A;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     color: #555;
+    border-radius: 20px;
+    border: 5px solid #FF8C7A;
+}
+
+.pf-v5-c-login__main-header {
+    padding: 10px;
+    text-transform: uppercase;
+    background-color: #FF8C7A;
+    color: white;
+    font-weight: 700;
+}
+
+.pf-v5-c-title {
+    --pf-v5-c-title--m-4xl--FontWeight: 700;
+    --pf-v5-c-title--m-3xl--FontWeight: 700;
+    --pf-v5-c-title--m-2xl--FontWeight: 700;
+    --pf-v5-c-title--m-xl--FontWeight: 700;
+    --pf-v5-c-title--m-lg--FontWeight: 700;
+    --pf-v5-c-title--m-md--FontWeight: 700;
+    --pf-v5-c-title--m-4xl--FontSize: 1.5rem;
+    --pf-v5-c-title--m-3xl--FontSize: 1.4rem;
+    --pf-v5-c-title--m-2xl--FontSize: 1.3rem;
+    --pf-v5-c-title--m-xl--FontSize: 1.2rem;
+    --pf-v5-c-title--m-lg--FontSize: 1.1rem;
+    --pf-v5-c-title--m-md--FontSize: 1.1rem;
+}
+
+.pf-v5-c-login__main-body {
+    padding-block-end: var(--pf-v5-c-login__main-body--PaddingBottom);
+    padding-inline-end: var(--pf-v5-c-login__main-body--PaddingRight);
+    padding-inline-start: var(--pf-v5-c-login__main-body--PaddingLeft);
+    padding-top: 40px;
+    border: 5px solid #FF8C7A;
+    border-radius: 15px;
+    background-color: white;
+}
+
+.pf-v5-c-login__main-footer-band {
+    border-block-start: none;
 }
 
 .pf-v5-c-form-control {
@@ -112,19 +152,34 @@ div.kc-logo-text span {
     --pf-v5-c-form-control--after--BorderBottomColor: #FFB5A8;
 }
 
-.pf-v5-c-button.pf-m-primary {
+.pf-v5-c-button {
+    background: white;
+    color: #FF8C7A;
+    padding: 0.75rem;
+    border: 1px solid #FF8C7A;
+    border-radius: 15px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.pf-v5-c-button:hover {
     background: #FF8C7A;
+    color: white;
+}
+
+.pf-v5-c-button.pf-m-primary {
+    background: #fe5236;
     color: white;
     padding: 0.75rem;
     border: none;
-    border-radius: 4px;
+    border-radius: 15px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s;
+    font-weight: 600;
 }
 
 .pf-v5-c-button.pf-m-primary:hover {
-    background: #E57A6B;
+    background: color-mix(in srgb, #fe5236, black 10%);;
 }
 
 .pf-v5-c-button.pf-m-secondary {
@@ -132,14 +187,14 @@ div.kc-logo-text span {
     color: #FF8C7A;
     padding: 0.75rem;
     border: none;
-    border-radius: 4px;
+    border-radius: 15px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s;
 }
 
 .pf-v5-c-button.pf-m-secondary::after {
     border-color: #FF8C7A;
+    border-radius: 15px;
 }
 
 .pf-v5-c-button.pf-m-secondary:hover {
@@ -160,6 +215,7 @@ div.kc-logo-text span {
 
 .pf-v5-c-button.pf-m-control {
     background: #FF8C7A;
+    border-radius: 4px;
     color: white;
     border: none;
 }
@@ -168,6 +224,16 @@ div.kc-logo-text span {
     background: #E57A6B;
     color: white;
     border: none;
+}
+
+.pf-v5-c-alert {
+    background-color: #ffd5cd;
+    border-top-color: #fe5236;
+    margin-block-end: 0px !important;
+}
+
+.pf-v5-c-alert__title {
+    color: #333
 }
 
 .pf-v5-c-input-group__item {
@@ -205,6 +271,23 @@ div.kc-logo-text span {
 
 .pf-v5-c-check__label {
     color: #555
+}
+
+.pf-v5-c-login__main-header-utilities {
+    margin-right: 5px
+}
+
+.pf-v5-c-login__main-header-utilities > .pf-v5-c-form-control {
+    background-color: #FF8C7A;
+    border: none;
+    border-bottom-color: transparent;
+}
+
+#login-select-toggle {
+    border-radius: 5px;
+    background-color: #FF8C7A;
+    color: white;
+    border-bottom-color: transparent;
 }
 
 input:focus {
@@ -262,7 +345,7 @@ input:focus {
 
 #kc-header-wrapper {
     font-size: 29px;
-    text-transform: uppercase;
+    font-weight: 500;
     letter-spacing: 3px;
     line-height: 1.2em;
     white-space: normal;
