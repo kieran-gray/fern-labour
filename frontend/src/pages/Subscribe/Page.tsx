@@ -51,7 +51,7 @@ export const SubscribePage: React.FC = () => {
   return (
     <div>
       <Header active="" />
-      <Center flex="shrink"  p={15}>
+      <Center flex="shrink" p={15}>
         <SubscribeForm birthingPersonId={id} token={token} />
       </Center>
     </div>

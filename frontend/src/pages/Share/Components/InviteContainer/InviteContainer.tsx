@@ -1,14 +1,14 @@
 import { IconAt } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { Text, TextInput, Title, Image, Group, Space } from '@mantine/core';
+import { Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { BirthingPersonService, OpenAPI, SendInviteRequest } from '../../../../client';
 import { SendInviteButton } from '../SendInviteButton/SendInviteButton';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import image from './invite.svg';
-import classes from './InviteContainer.module.css'
+import baseClasses from '../../../../shared-components/shared-styles.module.css';
+import classes from './InviteContainer.module.css';
 
 export function InviteContainer() {
   const auth = useAuth();
@@ -54,7 +54,7 @@ export function InviteContainer() {
   });
 
   return (
-    <div className={baseClasses.root} style={{maxWidth: '1100px'}}>
+    <div className={baseClasses.root} style={{ maxWidth: '1100px' }}>
       <div className={baseClasses.header}>
         <Title fz="xl" className={baseClasses.title}>
           Invite
@@ -63,12 +63,10 @@ export function InviteContainer() {
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title className={classes.title}>
-              Invite friends and family by email
-            </Title>
+            <Title className={classes.title}>Invite friends and family by email</Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              Invite your friends and family to keep them in the loop and let them track your labour in real time.
-              They’ll be able to support you every step of the way!
+              Invite your friends and family to keep them in the loop and let them track your labour
+              in real time. They’ll be able to support you every step of the way!
             </Text>
             <Group mt={30}>
               <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
@@ -95,5 +93,5 @@ export function InviteContainer() {
         </div>
       </div>
     </div>
-  )
+  );
 }

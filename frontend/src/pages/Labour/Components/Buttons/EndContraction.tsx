@@ -1,10 +1,10 @@
 import { RefObject } from 'react';
+import { IconHourglassHigh } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button } from '@mantine/core';
 import { EndContractionRequest, LabourService, OpenAPI } from '../../../../client';
 import { StopwatchHandle } from '../Stopwatch/Stopwatch';
-import { IconHourglassHigh } from '@tabler/icons-react';
 
 export default function EndContractionButton({
   intensity,
@@ -44,7 +44,13 @@ export default function EndContractionButton({
   const icon = <IconHourglassHigh size={25} />;
 
   return (
-    <Button leftSection={icon} radius="lg" size="xl" variant="white" onClick={() => mutation.mutate(intensity)}>
+    <Button
+      leftSection={icon}
+      radius="lg"
+      size="xl"
+      variant="white"
+      onClick={() => mutation.mutate(intensity)}
+    >
       End Contraction
     </Button>
   );

@@ -1,17 +1,20 @@
 import { Button, Modal, Space, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from './Modal.module.css';
+import classes from './ConfirmActionModal.module.css';
 
-export default function ConfirmRemoveSubscriberModal({
+export default function ConfirmActionModal({
   setGetConfirmation,
   setConfirmed,
+  action,
 }: {
   setGetConfirmation: Function;
   setConfirmed: Function;
+  action: string;
 }) {
   const [_, { close }] = useDisclosure(false);
-
+  const displayAction = action === 'block' ? 'Block' : 'Remove';
+  const title = `${displayAction} Subscriber?`;
   return (
     <Modal
       overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
@@ -24,7 +27,7 @@ export default function ConfirmRemoveSubscriberModal({
       }}
       opened
       onClose={close}
-      title="Remove Subscriber?"
+      title={title}
     >
       <Space h="lg" />
       <Text className={classes.modalText}>This can't be undone.</Text>
@@ -49,7 +52,7 @@ export default function ConfirmRemoveSubscriberModal({
             close;
           }}
         >
-          Remove
+          {displayAction}
         </Button>
       </div>
     </Modal>

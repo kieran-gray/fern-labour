@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { IconConfetti } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';
 import { CompleteLabourRequest, LabourService, OpenAPI } from '../../../../client';
 import ConfirmCompleteLabourModal from '../Modals/ConfirmCompleteLabour';
-import { IconConfetti } from '@tabler/icons-react';
 
 export default function CompleteLabourButton({
   labourNotes,

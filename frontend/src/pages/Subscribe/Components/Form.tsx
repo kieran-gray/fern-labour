@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
-import { Button, PinInput, Space, Title, Text, Image, Group } from '@mantine/core';
+import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { ApiError, OpenAPI, SubscriberService, SubscribeToRequest } from '../../../client';
+import image from './image.svg';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './Form.module.css';
-import image from './image.svg';
 
 const SUBSCRIBER_TOKEN_LENGTH = 5;
 
@@ -77,7 +77,7 @@ export default function SubscribeForm({
     },
   });
   return (
-    <div className={baseClasses.root} style={{maxWidth: '1100px'}}>
+    <div className={baseClasses.root} style={{ maxWidth: '1100px' }}>
       <div className={baseClasses.header}>
         <div className={baseClasses.title}>Subscribe</div>
       </div>
@@ -85,10 +85,11 @@ export default function SubscribeForm({
         <div className={classes.inner}>
           <div className={classes.content}>
             <Title className={classes.title}>
-              Congratulations! <br/> Someone wants to share their labour journey with you!
+              Congratulations! <br /> Someone wants to share their labour journey with you!
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              If the code isn't already filled in, check the share message that was sent to you, or ask the person who shared the link with you for the code.
+              If the code isn't already filled in, check the share message that was sent to you, or
+              ask the person who shared the link with you for the code.
             </Text>
             <Group mt={30}>
               <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>

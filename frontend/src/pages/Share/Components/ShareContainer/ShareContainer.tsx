@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { Group, Text, Title, Image, Space } from '@mantine/core';
+import { Group, Image, Space, Text, Title } from '@mantine/core';
 import { BirthingPersonService, OpenAPI } from '../../../../client';
 import { ErrorContainer } from '../../../../shared-components/ErrorContainer/ErrorContainer';
 import { PageLoading } from '../../../../shared-components/PageLoading/PageLoading';
 import { CopyButton } from '../CopyButton/CopyButton';
 import QRButton from '../QRButton/QRButton';
+import image from './share.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './ShareContainer.module.css';
-import image from './share.svg';
 
 export function ShareContainer() {
   const auth = useAuth();
@@ -39,7 +39,7 @@ export function ShareContainer() {
   const shareText = `Hey, follow this link and sign up to get notifications about my labour:\n\n${shareUrl}\n\nYou'll also need this code: ${data}`;
 
   return (
-    <div className={baseClasses.root} style={{maxWidth: '1100px'}}>
+    <div className={baseClasses.root} style={{ maxWidth: '1100px' }}>
       <div className={baseClasses.header}>
         <Title fz="xl" className={baseClasses.title}>
           Share
@@ -48,11 +48,10 @@ export function ShareContainer() {
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title className={classes.title}>
-              Share link with friends and family
-            </Title>
-            <Text c="var(--mantine-color-gray-7)"  mt="md">
-              Share this link with your friends and family so they can follow your labour journey and support you along the way!
+            <Title className={classes.title}>Share link with friends and family</Title>
+            <Text c="var(--mantine-color-gray-7)" mt="md">
+              Share this link with your friends and family so they can follow your labour journey
+              and support you along the way!
             </Text>
             <Group mt={30}>
               <div className={classes.share}>

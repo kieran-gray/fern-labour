@@ -35,37 +35,3 @@
       font-size: 28px;
     }
   }
-  
-  .control {
-    @media (max-width: $mantine-breakpoint-xs) {
-      flex: 1;
-    }
-  }
-  
-  .image {
-    width: 376px;
-    height: 356px;
-  
-    @media (max-width: $mantine-breakpoint-md) {
-      display: none;
-    }
-  }
-  
-  .highlight {
-    position: relative;
-    background-color: var(--mantine-color-blue-light);
-    border-radius: var(--mantine-radius-sm);
-    padding: 4px 12px;
-  }
-
-  .flexRowEnd {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-content: stretch;
-    width: 100%;
-
-    @media (max-width: $mantine-breakpoint-xs) {
-        flex-direction: column;
-    }
-}

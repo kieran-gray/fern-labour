@@ -1,7 +1,8 @@
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
-import { Anchor, Box, Burger, Container, Drawer, Group, Text } from '@mantine/core';
+import { Anchor, Box, Burger, Container, Drawer, Group, Space, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { MobileUserMenu, UserButton, UserMenu } from './UserMenu';
 import classes from './Header.module.css';
 
 const mainLinks = [
@@ -29,17 +30,6 @@ export function Header({ active }: { active: string }) {
       {item.label}
     </Anchor>
   ));
-  const logout = (
-    <Anchor<'a'>
-      key="Logout"
-      className={classes.mainLink}
-      onClick={() => {
-        void auth.signoutRedirect();
-      }}
-    >
-      Logout
-    </Anchor>
-  );
 
   return (
     <header className={classes.header}>
@@ -53,7 +43,9 @@ export function Header({ active }: { active: string }) {
             {mainItems}
           </Group>
         </Box>
-        <Group visibleFrom="sm">{logout}</Group>
+        <Group visibleFrom="sm">
+          <UserMenu />
+        </Group>
         <Drawer
           size="xs"
           classNames={{ content: classes.drawer, header: classes.drawer }}
@@ -62,9 +54,12 @@ export function Header({ active }: { active: string }) {
           opened={opened}
           onClose={toggle}
         >
+          <UserButton name={auth.user?.profile.name ?? ''} />
           <div className={classes.linksDrawer}>
+            <Text className={classes.drawerLabel}>Navigation</Text>
             {mainItems}
-            {logout}
+            <Space h="xl" />
+            <MobileUserMenu />
           </div>
         </Drawer>
         <Burger
@@ -73,6 +68,7 @@ export function Header({ active }: { active: string }) {
           className={classes.burger}
           size="sm"
           hiddenFrom="sm"
+          color="white"
         />
       </Container>
     </header>
