@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { IconConfetti } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
@@ -55,11 +56,14 @@ export default function CompleteLabourButton({
     }
   }
 
+  const icon = <IconConfetti size={25} />;
+
   if (disabled) {
     return (
       <Tooltip label="End your current contraction first">
         <Button
           data-disabled
+          leftSection={icon}
           size="xl"
           color="var(--mantine-color-pink-4)"
           radius="lg"
@@ -73,6 +77,7 @@ export default function CompleteLabourButton({
   }
   return (
     <Button
+      leftSection={icon}
       size="xl"
       color="var(--mantine-color-pink-4)"
       radius="lg"

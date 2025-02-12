@@ -33,19 +33,17 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
     }
   }, [auth, hasTriedSignin]);
 
-  return (
-    <>
-      {auth.error ? (
-        <ErrorContainer message={auth.error?.message} />
-      ) : auth.isLoading ? (
-        <>
-          <PageLoading />
-        </>
-      ) : auth.isAuthenticated ? (
-        children
-      ) : (
-        <ErrorContainer message="Unable to sign in" />
-      )}
-    </>
-  );
+  if (auth.error) {
+    return <ErrorContainer message={auth.error?.message} />;
+  }
+
+  if (auth.isLoading) {
+    return <PageLoading />;
+  }
+
+  if (auth.isAuthenticated) {
+    return children;
+  }
+
+  return <ErrorContainer message="Unable to sign in" />;
 };
