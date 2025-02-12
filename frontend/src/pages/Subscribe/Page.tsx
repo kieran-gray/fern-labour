@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Container } from '@mantine/core';
+import { Center } from '@mantine/core';
 import { ApiError, OpenAPI, SubscriberService } from '../../client';
 import { NotFoundError } from '../../Errors';
 import ContactMethodsModal from '../../shared-components/ContactMethodsModal/ContactMethodsModal';
@@ -51,9 +51,9 @@ export const SubscribePage: React.FC = () => {
   return (
     <div>
       <Header active="" />
-      <Container size={800} p={15}>
+      <Center flex="shrink"  p={15}>
         <SubscribeForm birthingPersonId={id} token={token} />
-      </Container>
+      </Center>
     </div>
   );
 };

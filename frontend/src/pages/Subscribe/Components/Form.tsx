@@ -1,11 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
-import { Button, PinInput, Space, Title } from '@mantine/core';
+import { Button, PinInput, Space, Title, Text, Image, Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { ApiError, OpenAPI, SubscriberService, SubscribeToRequest } from '../../../client';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
+import classes from './Form.module.css';
+import image from './image.svg';
+
+const SUBSCRIBER_TOKEN_LENGTH = 5;
 
 export default function SubscribeForm({
   birthingPersonId,
@@ -22,7 +26,7 @@ export default function SubscribeForm({
       token: token || '',
     },
     validate: {
-      token: (value) => (value.length !== 8 ? 'Invalid token' : null),
+      token: (value) => (value.length !== SUBSCRIBER_TOKEN_LENGTH ? 'Invalid token' : null),
     },
   });
 
@@ -73,35 +77,48 @@ export default function SubscribeForm({
     },
   });
   return (
-    <div className={baseClasses.root}>
+    <div className={baseClasses.root} style={{maxWidth: '1100px'}}>
       <div className={baseClasses.header}>
         <div className={baseClasses.title}>Subscribe</div>
       </div>
       <div className={baseClasses.body}>
-        <Title className={baseClasses.text}>Enter token to subscribe:</Title>
-        <Space h="xl" />
-        <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
-          <PinInput
-            fw={600}
-            size="lg"
-            length={8}
-            radius="md"
-            key={form.key('token')}
-            {...form.getInputProps('token')}
-          />
-          <Space h="xl" />
-          <div className={baseClasses.flexRowEnd}>
-            <Button
-              color="var(--mantine-color-pink-4)"
-              size="lg"
-              radius="lg"
-              variant="filled"
-              type="submit"
-            >
-              Submit
-            </Button>
+        <div className={classes.inner}>
+          <div className={classes.content}>
+            <Title className={classes.title}>
+              Congratulations! <br/> Someone wants to share their labour journey with you!
+            </Title>
+            <Text c="var(--mantine-color-gray-7)" mt="md">
+              If the code isn't already filled in, check the share message that was sent to you, or ask the person who shared the link with you for the code.
+            </Text>
+            <Group mt={30}>
+              <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
+                <div className={classes.flexRowEnd} style={{ alignItems: 'end' }}>
+                  <PinInput
+                    fw={600}
+                    size="lg"
+                    length={SUBSCRIBER_TOKEN_LENGTH}
+                    radius="md"
+                    key={form.key('token')}
+                    {...form.getInputProps('token')}
+                  />
+                  <Space w="xl" h="xl" />
+                  <div className={baseClasses.flexRowEnd}>
+                    <Button
+                      color="var(--mantine-color-pink-4)"
+                      size="lg"
+                      radius="lg"
+                      variant="filled"
+                      type="submit"
+                    >
+                      Submit
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            </Group>
           </div>
-        </form>
+          <Image src={image} className={classes.image} />
+        </div>
       </div>
     </div>
   );
