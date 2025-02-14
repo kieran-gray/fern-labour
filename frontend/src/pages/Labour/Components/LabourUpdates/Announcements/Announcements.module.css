@@ -44,3 +44,42 @@
     color: var(--mantine-color-gray-7);
     align-self: flex-end;
 }
+
+.inner {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding: calc(var(--mantine-spacing-xl));
+  
+    @media (max-width: $mantine-breakpoint-md) {
+      padding: calc(var(--mantine-spacing-md));
+    }
+  
+    @media (max-width: $mantine-breakpoint-xs) {
+        padding: 0;
+    }
+  }
+  
+  .content {
+    width: 100%;
+  }
+
+
+.backButton {
+    @media (max-width: $mantine-breakpoint-sm) {
+      margin-top: 10px
+    }
+  }
+
+.flexRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: stretch;
+  width: 100%;
+  flex-wrap: wrap;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+      flex-direction: column-reverse;
+  }
+}

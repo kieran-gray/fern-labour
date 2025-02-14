@@ -64,7 +64,7 @@ export const LabourStatistics = ({
       <div className={baseClasses.root}>
         <div className={baseClasses.header}>
           <Title fz="xl" className={baseClasses.title}>
-            Your Labour Statistics
+            Statistics
           </Title>
         </div>
         <div className={baseClasses.body}>{statistics}</div>

@@ -66,7 +66,7 @@ export default function CompleteLabourButton({
           leftSection={icon}
           size="xl"
           color="var(--mantine-color-pink-4)"
-          radius="lg"
+          radius="xl"
           variant="filled"
           onClick={(event) => event.preventDefault()}
         >
@@ -80,7 +80,7 @@ export default function CompleteLabourButton({
       leftSection={icon}
       size="xl"
       color="var(--mantine-color-pink-4)"
-      radius="lg"
+      radius="xl"
       variant="filled"
       onClick={() => setGetConfimation(true)}
     >

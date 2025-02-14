@@ -13,13 +13,24 @@ export interface StopwatchHandle {
 const Stopwatch = forwardRef<StopwatchHandle>((_, ref) => {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
+  const [startTime, setStartTime] = useState<number | null>(null);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
     if (isRunning) {
+      if (!startTime) {
+        setStartTime(Date.now() - seconds * 1000)
+      }
+
       intervalId = setInterval(() => {
-        setSeconds((prev) => prev + 1);
+        const now = Date.now();
+        const expectedSeconds = Math.floor((now - (startTime || now)) / 1000);
+        if (Math.abs(expectedSeconds - seconds) >= 1) {
+          setSeconds(expectedSeconds);
+        } else {
+          setSeconds(prev => prev + 1);
+        }
       }, 1000);
     }
 
@@ -28,7 +39,7 @@ const Stopwatch = forwardRef<StopwatchHandle>((_, ref) => {
         clearInterval(intervalId);
       }
     };
-  }, [isRunning]);
+  }, [isRunning, startTime, seconds]);
 
   const formatTime = (totalSeconds: number): string => {
     const minutes = Math.floor(totalSeconds / 60);
@@ -37,14 +48,24 @@ const Stopwatch = forwardRef<StopwatchHandle>((_, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-    start: () => setIsRunning(true),
-    stop: () => setIsRunning(false),
+    start: () => {
+      setStartTime(Date.now() - seconds * 1000);
+      setIsRunning(true);
+    },
+    stop: () => {
+      setIsRunning(false);
+      setStartTime(null);
+    },
     reset: () => {
       setIsRunning(false);
       setSeconds(0);
+      setStartTime(null);
     },
-    set: (seconds) => {
-      setSeconds(seconds);
+    set: (newSeconds) => {
+      setSeconds(newSeconds);
+      if (isRunning) {
+        setStartTime(Date.now() - newSeconds * 1000);
+      }
     },
     seconds,
     isRunning,

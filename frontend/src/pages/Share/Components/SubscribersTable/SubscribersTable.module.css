@@ -1,0 +1,9 @@
+.cropText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
+    @media (max-width: $mantine-breakpoint-sm) {
+        width: 30vw;
+      }
+  }

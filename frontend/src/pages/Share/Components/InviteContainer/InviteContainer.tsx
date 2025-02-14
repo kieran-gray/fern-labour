@@ -70,7 +70,7 @@ export function InviteContainer() {
             </Text>
             <Group mt={30}>
               <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
-                <div className={classes.flexRowEnd} style={{ alignItems: 'end' }}>
+                <div className={classes.flexRowEnd}>
                   <TextInput
                     withAsterisk
                     radius="lg"

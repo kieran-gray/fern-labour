@@ -1,7 +1,8 @@
-import { Space, Text, Timeline } from '@mantine/core';
+import { ScrollArea, Space, Text, Timeline } from '@mantine/core';
 import { ContractionDTO } from '../../../../client';
 import { formatTimeSeconds } from '../../../../shared-components/utils';
 import classes from './ContractionTimeline.module.css';
+import { useEffect, useRef } from 'react';
 
 export default function ContractionTimeline({
   contractions,
@@ -10,6 +11,7 @@ export default function ContractionTimeline({
   contractions: ContractionDTO[];
   contractionGaps: Record<string, string | null>;
 }) {
+  const viewport = useRef<HTMLDivElement>(null);
   const formatIntensity = (intensity: number | null): string => {
     return intensity ? intensity.toString() : '0';
   };
@@ -46,19 +48,33 @@ export default function ContractionTimeline({
           Duration: <strong>{formatTimeSeconds(contraction.duration)}</strong>
         </Text>
       )}
+      {contractionFrequency[contraction.id] === null && (
+        <br />
+      )}
       {contraction.notes && <Text className={classes.timelineLabel}>{contraction.notes}</Text>}
       <Space h="md" />
     </Timeline.Item>
   ));
+
+
+  useEffect(() => {
+      if (viewport.current) {
+          viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'auto' });
+      }
+  }, [timelineContractions]);
+
   return (
-    <Timeline
-      ml={30}
-      active={timelineContractions.length}
-      lineWidth={6}
-      bulletSize={60}
-      color="var(--mantine-color-pink-4)"
-    >
-      {timelineContractions}
-    </Timeline>
+    <ScrollArea.Autosize mah={500} viewportRef={viewport} >
+      <Timeline
+        ml={30}
+        active={timelineContractions.length}
+        lineWidth={6}
+        bulletSize={60}
+        color="var(--mantine-color-pink-4)"
+      >
+        {timelineContractions}
+      </Timeline>
+    </ScrollArea.Autosize>
+
   );
 }

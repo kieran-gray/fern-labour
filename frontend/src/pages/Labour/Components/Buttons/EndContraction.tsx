@@ -1,18 +1,10 @@
-import { RefObject } from 'react';
 import { IconHourglassHigh } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button } from '@mantine/core';
 import { EndContractionRequest, LabourService, OpenAPI } from '../../../../client';
-import { StopwatchHandle } from '../Stopwatch/Stopwatch';
 
-export default function EndContractionButton({
-  intensity,
-  stopwatchRef,
-}: {
-  intensity: number;
-  stopwatchRef: RefObject<StopwatchHandle>;
-}) {
+export default function EndContractionButton({intensity}: {intensity: number;}) {
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -29,8 +21,6 @@ export default function EndContractionButton({
       const response = await LabourService.endContractionApiV1LabourContractionEndPut({
         requestBody,
       });
-      stopwatchRef.current?.stop();
-      stopwatchRef.current?.reset();
       return response.labour;
     },
     onSuccess: (labour) => {
@@ -46,7 +36,7 @@ export default function EndContractionButton({
   return (
     <Button
       leftSection={icon}
-      radius="lg"
+      radius="xl"
       size="xl"
       variant="white"
       onClick={() => mutation.mutate(intensity)}

@@ -66,7 +66,7 @@ export function ManageSubscriberMenu({ subscriber_id }: { subscriber_id: string 
   return (
     <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
       <Menu.Target>
-        <ActionIcon variant="subtle" color="gray">
+        <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
           <IconDots size={16} stroke={1.5} />
         </ActionIcon>
       </Menu.Target>

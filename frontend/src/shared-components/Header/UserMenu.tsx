@@ -4,6 +4,7 @@ import {
   IconLogout,
   IconPassword,
   IconSettings,
+  IconSwitchHorizontal,
   IconTrash,
 } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
@@ -44,6 +45,13 @@ export function UserMenu() {
           />
         </Menu.Target>
         <Menu.Dropdown>
+          <Menu.Label>Current Mode: Birth</Menu.Label>
+          <Menu.Item
+            leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}
+            onClick={() => {}}
+          >
+            Switch to Subscriber Mode
+          </Menu.Item>
           <Menu.Label>Settings</Menu.Label>
           <Menu.Item
             leftSection={<IconSettings size={16} stroke={1.5} />}

@@ -4,9 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ApiError, LabourService, MakeAnnouncementRequest, OpenAPI } from '../../../../client';
-import ConfirmAnnouncementModal from '../Modals/ConfirmAnnouncement';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
+import { ApiError, LabourService, MakeAnnouncementRequest, OpenAPI } from '../../../../../client';
+import ConfirmAnnouncementModal from '../../Modals/ConfirmAnnouncement';
+import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 
 export default function MakeAnnouncementButton({
   message,
@@ -74,14 +74,15 @@ export default function MakeAnnouncementButton({
       );
     }
   }
-  const icon = <IconSpeakerphone size={25} />;
 
   const button = (
     <Button
-      leftSection={icon}
-      radius="lg"
-      size="xl"
-      variant="outline"
+      rightSection={<IconSpeakerphone size={22} stroke={1.5}  />}
+      radius="xl"
+      size="lg"
+      color='var(--mantine-color-pink-4)'
+      variant="filled"
+      style={{ minWidth: '200px' }}
       disabled={!message}
       onClick={() => {
         if (message !== '') {

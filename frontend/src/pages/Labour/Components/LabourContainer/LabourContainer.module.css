@@ -16,18 +16,6 @@
   }
 }
 
-.labourNotesLabel{
-  color: var(--mantine-color-gray-8);
-  font-weight: 700;
-  font-size: var(--mantine-font-size-sm);
-}
-
-.labourNotesDescription{
-  color: var(--mantine-color-gray-7);
-  font-weight: 400;
-  font-size: var(--mantine-font-size-sm);
-}
-
 .image {
   max-width: 40%;
 

@@ -41,7 +41,7 @@ export default function StartContractionButton({
   return (
     <Button
       leftSection={icon}
-      radius="lg"
+      radius="xl"
       size="xl"
       variant="outline"
       onClick={() => mutation.mutate()}

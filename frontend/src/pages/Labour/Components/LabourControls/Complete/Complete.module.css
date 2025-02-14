@@ -1,0 +1,59 @@
+.labourNotesLabel{
+    color: var(--mantine-color-gray-8);
+    font-weight: 700;
+    font-size: var(--mantine-font-size-sm);
+  }
+  
+  .labourNotesDescription{
+    color: var(--mantine-color-gray-7);
+    font-weight: 400;
+    font-size: var(--mantine-font-size-sm);
+  }
+
+  .backButton {
+    @media (max-width: $mantine-breakpoint-sm) {
+      margin-bottom: 10px
+    }
+  }
+
+  .inner {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding: calc(var(--mantine-spacing-xl));
+  
+    @media (max-width: $mantine-breakpoint-md) {
+      padding: calc(var(--mantine-spacing-md));
+    }
+  
+    @media (max-width: $mantine-breakpoint-xs) {
+        padding: 0;
+    }
+  }
+  
+  .content {
+    width: 100%;
+  }
+  
+  .title {
+    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+    font-family:
+      "Greycliff CF",
+      var(--mantine-font-family);
+    font-size: 34px;
+    line-height: 1.2;
+    font-weight: 900;
+  
+    @media (max-width: $mantine-breakpoint-xs) {
+      font-size: 24px;
+    }
+  }
+
+  .image {
+    width: 376px;
+    height: 356px;
+  
+    @media (max-width: $mantine-breakpoint-md) {
+      display: none;
+    }
+  }
