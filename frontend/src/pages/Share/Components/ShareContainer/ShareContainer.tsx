@@ -39,7 +39,7 @@ export function ShareContainer() {
   const shareText = `Hey, follow this link and sign up to get notifications about my labour:\n\n${shareUrl}\n\nYou'll also need this code: ${data}`;
 
   return (
-    <div className={baseClasses.root} style={{ maxWidth: '1100px' }}>
+    <div className={baseClasses.root}>
       <div className={baseClasses.header}>
         <Title fz="xl" className={baseClasses.title}>
           Share

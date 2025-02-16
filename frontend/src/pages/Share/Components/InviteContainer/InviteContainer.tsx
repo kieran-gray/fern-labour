@@ -5,6 +5,7 @@ import { Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { BirthingPersonService, OpenAPI, SendInviteRequest } from '../../../../client';
+import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
 import { SendInviteButton } from '../SendInviteButton/SendInviteButton';
 import image from './invite.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
@@ -54,12 +55,8 @@ export function InviteContainer() {
   });
 
   return (
-    <div className={baseClasses.root} style={{ maxWidth: '1100px' }}>
-      <div className={baseClasses.header}>
-        <Title fz="xl" className={baseClasses.title}>
-          Invite
-        </Title>
-      </div>
+    <div className={baseClasses.root}>
+      <ContainerHeader title="Invite" />
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
@@ -69,7 +66,10 @@ export function InviteContainer() {
               in real time. They’ll be able to support you every step of the way!
             </Text>
             <Group mt={30}>
-              <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
+              <form
+                onSubmit={form.onSubmit((values) => mutation.mutate(values))}
+                style={{ width: '100%' }}
+              >
                 <div className={classes.flexRowEnd}>
                   <TextInput
                     withAsterisk
@@ -80,7 +80,7 @@ export function InviteContainer() {
                     label="Email"
                     placeholder="friend@email.com"
                     key={form.key('email')}
-                    size="md"
+                    size="lg"
                     {...form.getInputProps('email')}
                   />
                   <Space w="md" />

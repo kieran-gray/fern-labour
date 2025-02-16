@@ -14,6 +14,7 @@ export function ManageSubscriberMenu({ subscriber_id }: { subscriber_id: string 
     return auth.user?.access_token || '';
   };
   const queryClient = useQueryClient();
+  const banEnabled = false;
 
   const removeSubscriberMutation = useMutation({
     mutationFn: async () => {
@@ -79,13 +80,15 @@ export function ManageSubscriberMenu({ subscriber_id }: { subscriber_id: string 
         >
           Remove
         </Menu.Item>
-        <Menu.Item
-          color="red"
-          leftSection={<IconBan size={20} stroke={1.5} />}
-          onClick={() => setGetConfimation('block')}
-        >
-          Block
-        </Menu.Item>
+        {banEnabled && (
+          <Menu.Item
+            color="red"
+            leftSection={<IconBan size={20} stroke={1.5} />}
+            onClick={() => setGetConfimation('block')}
+          >
+            Block
+          </Menu.Item>
+        )}
       </Menu.Dropdown>
     </Menu>
   );

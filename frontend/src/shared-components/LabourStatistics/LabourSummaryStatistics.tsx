@@ -1,6 +1,6 @@
 import { Text, Title } from '@mantine/core';
 import { LabourSummaryDTO } from '../../client';
-import { LabourStatisticsTabPanel } from './LabourStatsticsTabPanel';
+import { LabourStatisticsTable } from './LabourStatsticsTable';
 import baseClasses from '../shared-styles.module.css';
 import classes from './LabourStatistics.module.css';
 
@@ -33,7 +33,7 @@ export const LabourSummaryStatistics = ({
       <Text className={classes.labourStatsText}>
         Hospital recommended: <strong>{labour.hospital_recommended ? 'Yes' : 'Not yet'}</strong>
       </Text>
-      {labour.statistics.total && <LabourStatisticsTabPanel data={labour.statistics.total} />}
+      {labour.statistics.total && <LabourStatisticsTable data={labour.statistics.total} />}
     </>
   );
   if (inContainer) {

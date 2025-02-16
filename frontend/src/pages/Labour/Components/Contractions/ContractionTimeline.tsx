@@ -1,20 +1,21 @@
+import { useEffect, useRef } from 'react';
 import { ScrollArea, Space, Text, Timeline } from '@mantine/core';
 import { ContractionDTO } from '../../../../client';
-import { formatTimeSeconds } from '../../../../shared-components/utils';
-import classes from './ContractionTimeline.module.css';
-import { useEffect, useRef } from 'react';
+import {
+  formatTimeMilliseconds,
+  formatTimeSeconds,
+  getTimeSinceLastStarted,
+} from '../../../../shared-components/utils';
+import classes from './Contractions.module.css';
 
-export default function ContractionTimeline({
-  contractions,
-  contractionGaps: contractionFrequency,
-}: {
-  contractions: ContractionDTO[];
-  contractionGaps: Record<string, string | null>;
-}) {
+const DOTTED_LINE_FREQUENCY_GAP = 1800000;
+
+export default function ContractionTimeline({ contractions }: { contractions: ContractionDTO[] }) {
   const viewport = useRef<HTMLDivElement>(null);
   const formatIntensity = (intensity: number | null): string => {
     return intensity ? intensity.toString() : '0';
   };
+  const contractionFrequencyGaps = getTimeSinceLastStarted(contractions);
 
   const timelineContractions = contractions.map((contraction) => (
     <Timeline.Item
@@ -26,8 +27,16 @@ export default function ContractionTimeline({
             formatIntensity(contraction.intensity)}
         </Text>
       }
+      onClick={() => {
+        console.log(contraction.id);
+      }}
       key={contraction.id}
       title=""
+      lineVariant={
+        contractionFrequencyGaps[contraction.id].next > DOTTED_LINE_FREQUENCY_GAP
+          ? 'dotted'
+          : 'solid'
+      }
     >
       <Text className={classes.timelineLabel}>
         Start Time:{' '}
@@ -38,9 +47,12 @@ export default function ContractionTimeline({
           })}
         </strong>
       </Text>
-      {contractionFrequency[contraction.id] !== null && (
+      {contractionFrequencyGaps[contraction.id].previous !== 0 && (
         <Text className={classes.timelineLabel}>
-          Frequency: <strong>{contractionFrequency[contraction.id]}</strong>
+          Frequency:{' '}
+          <strong>
+            {formatTimeMilliseconds(contractionFrequencyGaps[contraction.id].previous)}
+          </strong>
         </Text>
       )}
       {contraction.start_time !== contraction.end_time && (
@@ -48,23 +60,20 @@ export default function ContractionTimeline({
           Duration: <strong>{formatTimeSeconds(contraction.duration)}</strong>
         </Text>
       )}
-      {contractionFrequency[contraction.id] === null && (
-        <br />
-      )}
+      {contractionFrequencyGaps[contraction.id].previous === 0 && <br />}
       {contraction.notes && <Text className={classes.timelineLabel}>{contraction.notes}</Text>}
       <Space h="md" />
     </Timeline.Item>
   ));
 
-
   useEffect(() => {
-      if (viewport.current) {
-          viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'auto' });
-      }
+    if (viewport.current) {
+      viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'auto' });
+    }
   }, [timelineContractions]);
 
   return (
-    <ScrollArea.Autosize mah={500} viewportRef={viewport} >
+    <ScrollArea.Autosize mah={500} viewportRef={viewport}>
       <Timeline
         ml={30}
         active={timelineContractions.length}
@@ -75,6 +84,5 @@ export default function ContractionTimeline({
         {timelineContractions}
       </Timeline>
     </ScrollArea.Autosize>
-
   );
 }

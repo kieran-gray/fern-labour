@@ -7,10 +7,10 @@ import { ErrorContainer } from '../../../../shared-components/ErrorContainer/Err
 import { LabourStatistics } from '../../../../shared-components/LabourStatistics/LabourStatistics.tsx';
 import { PageLoading } from '../../../../shared-components/PageLoading/PageLoading.tsx';
 import BeginLabourButton from '../Buttons/BeginLabour';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
+import { Contractions } from '../Contractions/Contractions.tsx';
 import { LabourControls } from '../LabourControls/LabourControls.tsx';
 import { LabourUpdates } from '../LabourUpdates/LabourUpdates.tsx';
-import { Contractions } from './Contractions.tsx';
+import baseClasses from '../../../../shared-components/shared-styles.module.css';
 
 export default function LabourContainer() {
   const auth = useAuth();
@@ -73,14 +73,14 @@ export default function LabourContainer() {
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
 
   return (
-    <div className={baseClasses.flexColumn} style={{ maxWidth: '1100px', flexGrow: 1 }}>
+    <div className={baseClasses.flexColumn}>
       <LabourControls activeContraction={!!activeContraction} />
       <Space h="xl" />
       <Contractions labour={labour} />
       <Space h="xl" />
       <LabourStatistics labour={labour} completed={false} />
       <Space h="xl" />
-      <LabourUpdates announcementHistory={labour.announcements} />
+      <LabourUpdates labour={labour} />
     </div>
   );
 }

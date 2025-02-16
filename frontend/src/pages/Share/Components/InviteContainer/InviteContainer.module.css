@@ -61,7 +61,6 @@
   .flexRowEnd {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
     align-content: stretch;
     width: 100%;
     align-items: end;

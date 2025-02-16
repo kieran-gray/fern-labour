@@ -4,7 +4,7 @@ import { useAuth } from 'react-oidc-context';
 import { Button } from '@mantine/core';
 import { EndContractionRequest, LabourService, OpenAPI } from '../../../../client';
 
-export default function EndContractionButton({intensity}: {intensity: number;}) {
+export default function EndContractionButton({ intensity }: { intensity: number }) {
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';

@@ -1,21 +1,3 @@
-.wrapper {
-  display: flex;
-  align-items: center;
-  padding: calc(var(--mantine-spacing-xl) * 2);
-  border-radius: var(--mantine-radius-xl);
-  background-image: linear-gradient(
-    -120deg,
-    var(--mantine-color-pink-2) 0%,
-    var(--mantine-color-pink-4) 100%
-  );
-  border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-8));
-
-  @media (max-width: $mantine-breakpoint-sm) {
-    flex-direction: column-reverse;
-    padding: var(--mantine-spacing-xl);
-  }
-}
-
 .image {
   max-width: 40%;
 
@@ -73,28 +55,4 @@
   color: var(--mantine-color-gray-1);
   font-weight: 600;
   font-size: var(--mantine-font-size-sm);
-}
-
-.slider {
-  margin-bottom: 10px;
-}
-
-.markLabel {
-  color: var(--mantine-color-gray-7);
-  font-weight: 600;
-  font-size: var(--mantine-font-size-sm);
-}
-
-.track {
-  background-color: var(--mantine-color-pink-1);
-}
-
-.controlsBackground {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-end;
-  padding: 15px;
-  border-radius: 15px;
-  background-color: var(--mantine-color-pink-1);
 }

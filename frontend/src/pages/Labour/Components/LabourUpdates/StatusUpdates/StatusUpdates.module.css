@@ -17,12 +17,6 @@
   width: 100%;
 }
 
-.backButton {
-  @media (max-width: $mantine-breakpoint-sm) {
-    margin-bottom: 10px
-  }
-}
-
 .statusUpdateContainer {
   display: flex;
   flex-direction: column;

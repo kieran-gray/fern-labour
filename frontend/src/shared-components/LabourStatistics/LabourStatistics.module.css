@@ -35,7 +35,7 @@
   }
   
   .labourStatsText {
-    color: var(--mantine-color-gray-8);
+    color: var(--mantine-color-gray-9);
     font-weight: 500;
     font-size: var(--mantine-font-size-md);
   }
@@ -48,8 +48,16 @@
   }
 
   .labourStatsTabsPanel {
-    padding: 15px;
     width: 100%;
+    padding: calc(var(--mantine-spacing-md));
+
+    @media (max-width: $mantine-breakpoint-md) {
+      padding: calc(var(--mantine-spacing-md));
+    }
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        padding: calc(var(--mantine-spacing-xs) / 3);
+    }
   }
 
   .labourStatsTabsTab {
@@ -60,4 +68,28 @@
     &[data-active] {
       background-color: var(--mantine-color-pink-4);
     }
+  }
+
+  .inner {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: calc(var(--mantine-spacing-xl));
+
+    @media (max-width: $mantine-breakpoint-md) {
+        padding: calc(var(--mantine-spacing-md));
+    }
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        padding: calc(var(--mantine-spacing-xs));
+    }
+}
+  
+  .content {
+    width: 100%;
+  }
+
+  .tableHeader {
+    background-color: var(--mantine-color-pink-1);
+    font-weight: 600;
   }

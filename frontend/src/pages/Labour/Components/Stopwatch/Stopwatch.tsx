@@ -20,7 +20,7 @@ const Stopwatch = forwardRef<StopwatchHandle>((_, ref) => {
 
     if (isRunning) {
       if (!startTime) {
-        setStartTime(Date.now() - seconds * 1000)
+        setStartTime(Date.now() - seconds * 1000);
       }
 
       intervalId = setInterval(() => {
@@ -29,7 +29,7 @@ const Stopwatch = forwardRef<StopwatchHandle>((_, ref) => {
         if (Math.abs(expectedSeconds - seconds) >= 1) {
           setSeconds(expectedSeconds);
         } else {
-          setSeconds(prev => prev + 1);
+          setSeconds((prev) => prev + 1);
         }
       }, 1000);
     }

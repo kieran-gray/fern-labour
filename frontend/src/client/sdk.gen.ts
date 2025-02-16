@@ -24,8 +24,8 @@ import type {
   HealthcheckApiV1HealthGetResponse,
   LoginApiV1AuthLoginPostData,
   LoginApiV1AuthLoginPostResponse,
-  MakeAnnouncementApiV1LabourAnnouncementMakePostData,
-  MakeAnnouncementApiV1LabourAnnouncementMakePostResponse,
+  PostLabourUpdateApiV1LabourLabourUpdatePostData,
+  PostLabourUpdateApiV1LabourLabourUpdatePostResponse,
   RedirectToDocsGetResponse,
   RegisterApiV1BirthingPersonRegisterPostResponse,
   RegisterApiV1SubscriberRegisterPostData,
@@ -408,18 +408,18 @@ export class LabourService {
   }
 
   /**
-   * Make Announcement
+   * Post Labour Update
    * @param data The data for the request.
    * @param data.requestBody
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static makeAnnouncementApiV1LabourAnnouncementMakePost(
-    data: MakeAnnouncementApiV1LabourAnnouncementMakePostData
-  ): CancelablePromise<MakeAnnouncementApiV1LabourAnnouncementMakePostResponse> {
+  public static postLabourUpdateApiV1LabourLabourUpdatePost(
+    data: PostLabourUpdateApiV1LabourLabourUpdatePostData
+  ): CancelablePromise<PostLabourUpdateApiV1LabourLabourUpdatePostResponse> {
     return __request(OpenAPI, {
       method: 'POST',
-      url: '/api/v1/labour/announcement/make',
+      url: '/api/v1/labour/labour-update',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {

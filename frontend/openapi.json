@@ -1522,18 +1522,18 @@
                 ]
             }
         },
-        "/api/v1/labour/announcement/make": {
+        "/api/v1/labour/labour-update": {
             "post": {
                 "tags": [
                     "Labour"
                 ],
-                "summary": "Make Announcement",
-                "operationId": "make_announcement_api_v1_labour_announcement_make_post",
+                "summary": "Post Labour Update",
+                "operationId": "post_labour_update_api_v1_labour_labour_update_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/MakeAnnouncementRequest"
+                                "$ref": "#/components/schemas/LabourUpdateRequest"
                             }
                         }
                     },
@@ -1636,35 +1636,6 @@
     },
     "components": {
         "schemas": {
-            "AnnouncementDTO": {
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "title": "Id"
-                    },
-                    "labour_id": {
-                        "type": "string",
-                        "title": "Labour Id"
-                    },
-                    "message": {
-                        "type": "string",
-                        "title": "Message"
-                    },
-                    "sent_time": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Sent Time"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "labour_id",
-                    "message",
-                    "sent_time"
-                ],
-                "title": "AnnouncementDTO"
-            },
             "BeginLabourRequest": {
                 "properties": {
                     "first_labour": {
@@ -2070,10 +2041,17 @@
                     },
                     "announcements": {
                         "items": {
-                            "$ref": "#/components/schemas/AnnouncementDTO"
+                            "$ref": "#/components/schemas/LabourUpdateDTO"
                         },
                         "type": "array",
                         "title": "Announcements"
+                    },
+                    "status_updates": {
+                        "items": {
+                            "$ref": "#/components/schemas/LabourUpdateDTO"
+                        },
+                        "type": "array",
+                        "title": "Status Updates"
                     },
                     "statistics": {
                         "$ref": "#/components/schemas/LabourStatisticsDTO"
@@ -2091,6 +2069,7 @@
                     "should_call_midwife_urgently",
                     "contractions",
                     "announcements",
+                    "status_updates",
                     "statistics"
                 ],
                 "title": "LabourDTO"
@@ -2220,8 +2199,45 @@
                 ],
                 "title": "LabourSummaryResponse"
             },
-            "MakeAnnouncementRequest": {
+            "LabourUpdateDTO": {
                 "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "labour_update_type": {
+                        "type": "string",
+                        "title": "Labour Update Type"
+                    },
+                    "labour_id": {
+                        "type": "string",
+                        "title": "Labour Id"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "sent_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Sent Time"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "labour_update_type",
+                    "labour_id",
+                    "message",
+                    "sent_time"
+                ],
+                "title": "LabourUpdateDTO"
+            },
+            "LabourUpdateRequest": {
+                "properties": {
+                    "labour_update_type": {
+                        "$ref": "#/components/schemas/LabourUpdateType"
+                    },
                     "message": {
                         "type": "string",
                         "title": "Message"
@@ -2241,9 +2257,19 @@
                 },
                 "type": "object",
                 "required": [
+                    "labour_update_type",
                     "message"
                 ],
-                "title": "MakeAnnouncementRequest"
+                "title": "LabourUpdateRequest"
+            },
+            "LabourUpdateType": {
+                "type": "string",
+                "enum": [
+                    "announcement",
+                    "status_update"
+                ],
+                "title": "LabourUpdateType",
+                "description": "Represents the different types of labour update"
             },
             "RegisterSubscriberRequest": {
                 "properties": {
