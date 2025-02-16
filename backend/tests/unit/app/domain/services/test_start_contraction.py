@@ -3,7 +3,7 @@ import pytest
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
 from app.domain.labour.enums import LabourPhase
-from app.domain.labour.exceptions import LabourCompleted, LabourHasActiveContraction
+from app.domain.labour.exceptions import LabourAlreadyCompleted, LabourHasActiveContraction
 from app.domain.services.begin_labour import BeginLabourService
 from app.domain.services.start_contraction import StartContractionService
 
@@ -28,5 +28,5 @@ def test_cannot_start_contraction_without_active_labour(sample_birthing_person: 
 def test_cannot_start_contraction_for_completed_labour(sample_birthing_person: BirthingPerson):
     BeginLabourService().begin_labour(sample_birthing_person, True)
     sample_birthing_person.active_labour.current_phase = LabourPhase.COMPLETE
-    with pytest.raises(LabourCompleted):
+    with pytest.raises(LabourAlreadyCompleted):
         StartContractionService().start_contraction(sample_birthing_person)

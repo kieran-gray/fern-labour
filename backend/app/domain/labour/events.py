@@ -19,7 +19,7 @@ class LabourCompleted(DomainEvent):
 
 
 @dataclass
-class AnnouncementMade(DomainEvent):
+class LabourUpdatePosted(DomainEvent):
     @classmethod
-    def create(cls, data: dict[str, Any], event_type: str = "labour.announcement-made") -> Self:
+    def create(cls, data: dict[str, Any], event_type: str = "labour.update-posted") -> Self:
         return super().create(event_type=event_type, data=data)

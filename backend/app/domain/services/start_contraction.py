@@ -4,7 +4,7 @@ from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
 from app.domain.labour.entity import Labour
 from app.domain.labour.enums import LabourPhase
-from app.domain.labour.exceptions import LabourCompleted, LabourHasActiveContraction
+from app.domain.labour.exceptions import LabourAlreadyCompleted, LabourHasActiveContraction
 
 
 class StartContractionService:
@@ -24,7 +24,7 @@ class StartContractionService:
             raise LabourHasActiveContraction()
 
         if active_labour.current_phase == LabourPhase.COMPLETE:
-            raise LabourCompleted()
+            raise LabourAlreadyCompleted()
 
         active_labour.start_contraction(
             intensity=intensity, start_time=start_time or datetime.now(UTC), notes=notes

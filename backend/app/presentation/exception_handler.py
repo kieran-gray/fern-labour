@@ -10,7 +10,7 @@ from fastapi.responses import ORJSONResponse
 from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
-from app.domain.announcement.exceptions import TooSoonSinceLastAnnouncement
+from app.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
 from app.domain.base.exceptions import DomainError
 from app.domain.birthing_person.exceptions import (
     BirthingPersonDoesNotHaveActiveLabour,
@@ -20,7 +20,7 @@ from app.domain.birthing_person.exceptions import (
 )
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
-    LabourCompleted,
+    LabourAlreadyCompleted,
     LabourHasActiveContraction,
     LabourHasNoActiveContraction,
 )
@@ -66,7 +66,7 @@ class ExceptionMapper:
             BirthingPersonDoesNotHaveActiveLabour: status.HTTP_404_NOT_FOUND,
             LabourHasActiveContraction: status.HTTP_400_BAD_REQUEST,
             LabourHasNoActiveContraction: status.HTTP_400_BAD_REQUEST,
-            LabourCompleted: status.HTTP_400_BAD_REQUEST,
+            LabourAlreadyCompleted: status.HTTP_400_BAD_REQUEST,
             CannotCompleteLabourWithActiveContraction: status.HTTP_400_BAD_REQUEST,
             SubscriberAlreadySubscribedToBirthingPerson: status.HTTP_400_BAD_REQUEST,
             SubscriberExistsWithID: status.HTTP_409_CONFLICT,

@@ -5,5 +5,5 @@ from app.domain.base.value_object import ValueObject
 
 
 @dataclass(frozen=True, repr=False)
-class AnnouncementId(ValueObject):
+class LabourUpdateId(ValueObject):
     value: UUID

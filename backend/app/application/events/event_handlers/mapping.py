@@ -8,8 +8,8 @@ from app.application.events.event_handlers.birthing_person_send_invite_event_han
 from app.application.events.event_handlers.contact_us_message_sent_event_handler import (
     ContactUsMessageSentEventHandler,
 )
-from app.application.events.event_handlers.labour_announcement_made_event_handler import (
-    LabourAnnouncementMadeEventHandler,
+from app.application.events.event_handlers.labour_update_posted_event_handler import (
+    LabourUpdatePostedEventHandler,
 )
 from app.application.events.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.application.events.event_handlers.labour_completed_event_handler import (
@@ -23,7 +23,7 @@ from app.application.events.event_handlers.subscriber_unsubscribed_from_event_ha
 )
 
 EVENT_HANDLER_MAPPING: dict[str, type[EventHandler]] = {
-    "labour.announcement-made": LabourAnnouncementMadeEventHandler,
+    "labour.update-posted": LabourUpdatePostedEventHandler,
     "labour.begun": LabourBegunEventHandler,
     "labour.completed": LabourCompletedEventHandler,
     "subscriber.subscribed-to": SubscriberSubscribedToEventHandler,

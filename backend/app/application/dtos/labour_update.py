@@ -2,26 +2,28 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Self
 
-from app.domain.announcement.entity import Announcement
+from app.domain.labour_update.entity import LabourUpdate
 
 
 @dataclass
-class AnnouncementDTO:
-    """Data Transfer Object for Announcement entity"""
+class LabourUpdateDTO:
+    """Data Transfer Object for Labour Update entity"""
 
     id: str
+    labour_update_type: str
     labour_id: str
     message: str
     sent_time: datetime
 
     @classmethod
-    def from_domain(cls, announcement: Announcement) -> Self:
+    def from_domain(cls, labour_update: LabourUpdate) -> Self:
         """Create DTO from domain entity"""
         return cls(
-            id=str(announcement.id_.value),
-            labour_id=str(announcement.labour_id.value),
-            message=announcement.message,
-            sent_time=announcement.sent_time,
+            id=str(labour_update.id_.value),
+            labour_update_type=labour_update.labour_update_type.value,
+            labour_id=str(labour_update.labour_id.value),
+            message=labour_update.message,
+            sent_time=labour_update.sent_time,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -29,6 +31,7 @@ class AnnouncementDTO:
         return {
             "id": self.id,
             "labour_id": self.labour_id,
+            "labour_update_type": self.labour_update_type,
             "message": self.message,
             "sent_time": self.sent_time.isoformat(),
         }

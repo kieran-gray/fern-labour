@@ -9,7 +9,7 @@ from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_service import LabourService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.presentation.api.dependencies import bearer_scheme
-from app.presentation.api.schemas.requests.announcement import MakeAnnouncementRequest
+from app.presentation.api.schemas.requests.labour_update import LabourUpdateRequest
 from app.presentation.api.schemas.requests.contraction import (
     EndContractionRequest,
     StartContractionRequest,
@@ -171,7 +171,7 @@ async def get_active_labour_summary(
 
 
 @labour_router.post(
-    "/announcement/make",
+    "/labour-update",
     responses={
         status.HTTP_200_OK: {"model": LabourResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
@@ -182,15 +182,16 @@ async def get_active_labour_summary(
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def make_announcement(
-    request_data: MakeAnnouncementRequest,
+async def post_labour_update(
+    request_data: LabourUpdateRequest,
     service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await service.make_announcement(
+    labour = await service.post_labour_update(
         birthing_person_id=user.id,
+        labour_update_type=request_data.labour_update_type,
         message=request_data.message,
         sent_time=request_data.sent_time,
     )

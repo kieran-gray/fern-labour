@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Self
 
-from app.application.dtos.announcement import AnnouncementDTO
+from app.application.dtos.labour_update import LabourUpdateDTO
 from app.application.dtos.contraction import ContractionDTO
 from app.application.dtos.labour_statistics import LabourStatisticsDTO
 from app.domain.labour.entity import Labour
@@ -23,7 +23,8 @@ class LabourDTO:
     should_go_to_hospital: bool
     should_call_midwife_urgently: bool
     contractions: list[ContractionDTO]
-    announcements: list[AnnouncementDTO]
+    announcements: list[LabourUpdateDTO]
+    status_updates: list[LabourUpdateDTO]
     statistics: LabourStatisticsDTO
 
     @classmethod
@@ -43,7 +44,8 @@ class LabourDTO:
             should_go_to_hospital=should_go_to_hospital,
             should_call_midwife_urgently=should_call_midwife_urgently,
             contractions=[ContractionDTO.from_domain(c) for c in labour.contractions],
-            announcements=[AnnouncementDTO.from_domain(a) for a in labour.announcements],
+            announcements=[LabourUpdateDTO.from_domain(a) for a in labour.announcements],
+            status_updates=[LabourUpdateDTO.from_domain(s) for s in labour.status_updates],
             statistics=LabourStatisticsDTO.from_contractions(labour.contractions),
         )
 
@@ -60,5 +62,6 @@ class LabourDTO:
             "should_call_midwife_urgently": self.should_call_midwife_urgently,
             "contractions": [c.to_dict() for c in self.contractions],
             "announcements": [a.to_dict() for a in self.announcements],
+            "status_updates": [s.to_dict() for s in self.status_updates],
             "statistics": self.statistics.to_dict(),
         }

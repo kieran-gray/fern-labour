@@ -89,14 +89,18 @@ async def test_cannot_end_contraction_for_non_existent_user(labour_service: Labo
         await labour_service.end_contraction("TEST123456", intensity=5)
 
 
-async def test_can_make_announcement(labour_service: LabourService) -> None:
+async def test_can_post_labour_update(labour_service: LabourService) -> None:
     await labour_service.begin_labour(BIRTHING_PERSON, True)
     await labour_service.start_contraction(BIRTHING_PERSON)
-    await labour_service.make_announcement(BIRTHING_PERSON, message="Test message")
+    await labour_service.post_labour_update(
+        BIRTHING_PERSON, labour_update_type="announcement", message="Test message"
+    )
 
 
-async def test_cannot_make_announcement_for_non_existent_user(
+async def test_cannot_post_labour_update_for_non_existent_user(
     labour_service: LabourService,
 ) -> None:
     with pytest.raises(BirthingPersonNotFoundById):
-        await labour_service.make_announcement("TEST123456", message="Test message")
+        await labour_service.post_labour_update(
+            "TEST123456", labour_update_type="announcement", message="Test message"
+        )

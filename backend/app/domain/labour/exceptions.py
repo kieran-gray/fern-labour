@@ -18,9 +18,9 @@ class LabourHasNoActiveContraction(DomainError):
         super().__init__("No active contraction to end")
 
 
-class LabourCompleted(DomainError):
+class LabourAlreadyCompleted(DomainError):
     def __init__(self) -> None:
-        super().__init__("Cannot start contraction for completed labour")
+        super().__init__("Labour is already completed")
 
 
 class LabourNotFoundById(DomainError):

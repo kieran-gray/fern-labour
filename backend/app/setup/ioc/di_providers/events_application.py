@@ -11,8 +11,8 @@ from app.application.events.event_handlers.birthing_person_send_invite_event_han
 from app.application.events.event_handlers.contact_us_message_sent_event_handler import (
     ContactUsMessageSentEventHandler,
 )
-from app.application.events.event_handlers.labour_announcement_made_event_handler import (
-    LabourAnnouncementMadeEventHandler,
+from app.application.events.event_handlers.labour_update_posted_event_handler import (
+    LabourUpdatePostedEventHandler,
 )
 from app.application.events.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.application.events.event_handlers.labour_completed_event_handler import (
@@ -111,7 +111,7 @@ class EventsApplicationProvider(Provider):
         return Jinja2EmailGenerationService()
 
     @provide
-    def get_labour_announcement_made_event_handler(
+    def get_labour_update_posted_event_handler(
         self,
         birthing_person_service: Annotated[
             BirthingPersonService, FromComponent(ComponentEnum.LABOUR)
@@ -119,8 +119,8 @@ class EventsApplicationProvider(Provider):
         subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
         notification_service: NotificationService,
         email_generation_service: EmailGenerationService,
-    ) -> LabourAnnouncementMadeEventHandler:
-        return LabourAnnouncementMadeEventHandler(
+    ) -> LabourUpdatePostedEventHandler:
+        return LabourUpdatePostedEventHandler(
             birthing_person_service=birthing_person_service,
             subscriber_service=subscriber_service,
             notification_service=notification_service,

@@ -10,8 +10,9 @@ from app.domain.labour.repository import LabourRepository
 from app.domain.services.begin_labour import BeginLabourService
 from app.domain.services.complete_labour import CompleteLabourService
 from app.domain.services.end_contraction import EndContractionService
-from app.domain.services.make_announcement import MakeAnnouncementService
+from app.domain.services.post_labour_update import PostLabourUpdateService
 from app.domain.services.start_contraction import StartContractionService
+from app.domain.labour_update.enums import LabourUpdateType
 
 log = logging.getLogger(__name__)
 
@@ -105,9 +106,10 @@ class LabourService:
 
         return LabourDTO.from_domain(labour)
 
-    async def make_announcement(
+    async def post_labour_update(
         self,
         birthing_person_id: str,
+        labour_update_type: str,
         message: str,
         sent_time: datetime | None = None,
     ) -> LabourDTO:
@@ -116,8 +118,12 @@ class LabourService:
         if not birthing_person:
             raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
 
-        labour = MakeAnnouncementService().make_announcement(
-            birthing_person=birthing_person, message=message, sent_time=sent_time
+        labour_update_type_enum = LabourUpdateType(labour_update_type)
+        labour = PostLabourUpdateService().post_labour_update(
+            birthing_person=birthing_person,
+            labour_update_type=labour_update_type_enum,
+            message=message,
+            sent_time=sent_time
         )
         await self._labour_repository.save(labour)
 

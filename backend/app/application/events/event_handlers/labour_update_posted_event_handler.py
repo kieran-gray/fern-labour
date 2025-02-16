@@ -2,6 +2,7 @@ import logging
 from typing import Any, Protocol
 
 from app.application.dtos.birthing_person import BirthingPersonDTO
+from app.domain.labour_update.enums import LabourUpdateType
 from app.application.dtos.subscriber import SubscriberDTO
 from app.application.events.event_handler import EventHandler
 from app.application.notifications.email_generation_service import EmailGenerationService
@@ -25,7 +26,7 @@ class AnnouncementMadeNotificationGenerator(Protocol):
     ) -> Notification: ...
 
 
-class LabourAnnouncementMadeEventHandler(EventHandler):
+class LabourUpdatePostedEventHandler(EventHandler):
     def __init__(
         self,
         birthing_person_service: BirthingPersonService,
@@ -87,6 +88,9 @@ class LabourAnnouncementMadeEventHandler(EventHandler):
         raise NotImplementedError(f"Notification generator for {contact_method} not implemented")
 
     async def handle(self, event: dict[str, Any]) -> None:
+        if event["data"]["labour_update_type"] == LabourUpdateType.STATUS_UPDATE.value:
+            return
+
         birthing_person_id = event["data"]["birthing_person_id"]
         birthing_person = await self._birthing_person_service.get_birthing_person(
             birthing_person_id
