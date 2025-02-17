@@ -1,5 +1,5 @@
-from app.domain.labour_update.constants import ANNOUNCEMENT_COOLDOWN_SECONDS
 from app.domain.base.exceptions import DomainError
+from app.domain.labour_update.constants import ANNOUNCEMENT_COOLDOWN_SECONDS
 
 
 class TooSoonSinceLastAnnouncement(DomainError):

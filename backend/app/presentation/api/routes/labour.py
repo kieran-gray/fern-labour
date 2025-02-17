@@ -9,17 +9,45 @@ from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_service import LabourService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.presentation.api.dependencies import bearer_scheme
-from app.presentation.api.schemas.requests.labour_update import LabourUpdateRequest
 from app.presentation.api.schemas.requests.contraction import (
     EndContractionRequest,
     StartContractionRequest,
 )
-from app.presentation.api.schemas.requests.labour import BeginLabourRequest, CompleteLabourRequest
+from app.presentation.api.schemas.requests.labour import CompleteLabourRequest, PlanLabourRequest
+from app.presentation.api.schemas.requests.labour_update import LabourUpdateRequest
 from app.presentation.api.schemas.responses.labour import LabourResponse, LabourSummaryResponse
 from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 labour_router = APIRouter(prefix="/labour", tags=["Labour"])
+
+
+@labour_router.post(
+    "/plan",
+    responses={
+        status.HTTP_200_OK: {"model": LabourResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def plan_labour(
+    request_data: PlanLabourRequest,
+    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    labour = await service.plan_labour(
+        birthing_person_id=user.id,
+        first_labour=request_data.first_labour,
+        due_date=request_data.due_date,
+        labour_name=request_data.labour_name,
+    )
+    return LabourResponse(labour=labour)
 
 
 @labour_router.post(
@@ -35,13 +63,12 @@ labour_router = APIRouter(prefix="/labour", tags=["Labour"])
 )
 @inject
 async def begin_labour(
-    request_data: BeginLabourRequest,
     service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await service.begin_labour(user.id, request_data.first_labour)
+    labour = await service.begin_labour(user.id)
     return LabourResponse(labour=labour)
 
 

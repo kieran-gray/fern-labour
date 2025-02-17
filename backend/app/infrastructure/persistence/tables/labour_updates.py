@@ -1,8 +1,8 @@
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.infrastructure.persistence.orm_registry import mapper_registry
 from app.domain.labour_update.enums import LabourUpdateType
+from app.infrastructure.persistence.orm_registry import mapper_registry
 
 labour_updates_table = Table(
     "labour_updates",

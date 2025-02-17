@@ -51,6 +51,12 @@ class MockLabourRepository(LabourRepository):
 
     async def get_by_id(self, labour_id: LabourId) -> Labour | None:
         return self._data.get(labour_id.value, None)
+    
+    async def get_active_labour_by_birthing_person_id(self, birthing_person_id: BirthingPersonId):
+        return next(
+            (
+                labour for labour in self._data.values() if labour.birthing_person_id == birthing_person_id
+            ), None)
 
 
 class MockSubscriberRepository(SubscriberRepository):

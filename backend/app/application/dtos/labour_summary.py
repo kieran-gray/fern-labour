@@ -22,9 +22,14 @@ class LabourSummaryDTO:
     def from_domain(cls, labour: Labour) -> Self:
         """Create DTO from domain aggregate"""
         hospital_recommended = ShouldGoToHospitalService().should_go_to_hospital(labour)
+        duration = (
+            (datetime.now(UTC) - labour.start_time).total_seconds() / 3600
+            if labour.start_time
+            else 0.0
+        )
         return cls(
             id=str(labour.id_.value),
-            duration=(datetime.now(UTC) - labour.start_time).total_seconds() / 3600,
+            duration=duration,
             contraction_count=len(labour.contractions),
             current_phase=labour.current_phase.value,
             hospital_recommended=hospital_recommended,

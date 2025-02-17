@@ -24,10 +24,6 @@ class BirthingPerson(AggregateRoot[BirthingPersonId]):
         )
 
     @property
-    def has_active_labour(self) -> bool:
-        return any(labour.is_active for labour in self.labours)
-
-    @property
     def active_labour(self) -> Labour | None:
         return next((labour for labour in self.labours if labour.is_active), None)
 
@@ -46,7 +42,3 @@ class BirthingPerson(AggregateRoot[BirthingPersonId]):
                     }
                 )
             )
-
-    def add_labour(self, labour: Labour) -> None:
-        if labour not in self.labours:
-            self.labours.append(labour)

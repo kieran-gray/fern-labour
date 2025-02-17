@@ -1,10 +1,10 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from app.domain.labour_update.entity import LabourUpdate
-from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
-from app.domain.labour_update.enums import LabourUpdateType
 from app.domain.labour.vo_labour_id import LabourId
+from app.domain.labour_update.entity import LabourUpdate
+from app.domain.labour_update.enums import LabourUpdateType
+from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 
 
 def test_labour_update_init():
@@ -28,7 +28,7 @@ def test_labour_update_init():
         labour_update_id=labour_update_id,
         labour_id=labour_id,
         message=message,
-        sent_time=sent_time
+        sent_time=sent_time,
     )
 
     assert isinstance(indirect_labour_update, LabourUpdate)

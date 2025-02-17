@@ -12,9 +12,9 @@ from app.application.notifications.notification_service import NotificationServi
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
 from app.domain.base.event import DomainEvent
-from app.domain.labour_update.enums import LabourUpdateType
 from app.domain.birthing_person.exceptions import BirthingPersonNotFoundById
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
+from app.domain.labour_update.enums import LabourUpdateType
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
 
 BIRTHING_PERSON = "test_birthing_person_id"
@@ -56,7 +56,11 @@ async def test_labour_update_posted_event_no_subscribers(
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.ANNOUNCEMENT, "birthing_person_id": BIRTHING_PERSON, "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.ANNOUNCEMENT,
+            "birthing_person_id": BIRTHING_PERSON,
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     await labour_update_posted_event_handler.handle(event.to_dict())
@@ -76,7 +80,11 @@ async def test_labour_update_posted_event_non_existent_birthing_person(
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.ANNOUNCEMENT, "birthing_person_id": "TEST", "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.ANNOUNCEMENT,
+            "birthing_person_id": "TEST",
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     with pytest.raises(BirthingPersonNotFoundById):
@@ -96,7 +104,11 @@ async def test_labour_update_posted_event_non_existent_subscriber(
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.ANNOUNCEMENT, "birthing_person_id": BIRTHING_PERSON, "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.ANNOUNCEMENT,
+            "birthing_person_id": BIRTHING_PERSON,
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     module = "app.application.events.event_handlers.labour_update_posted_event_handler"
@@ -121,7 +133,11 @@ async def test_labour_update_posted_event_has_subscriber_no_contact_methods(
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.ANNOUNCEMENT, "birthing_person_id": BIRTHING_PERSON, "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.ANNOUNCEMENT,
+            "birthing_person_id": BIRTHING_PERSON,
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     await labour_update_posted_event_handler.handle(event.to_dict())
@@ -154,7 +170,11 @@ async def test_labour_update_posted_event_has_subscriber_email(
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.ANNOUNCEMENT, "birthing_person_id": BIRTHING_PERSON, "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.ANNOUNCEMENT,
+            "birthing_person_id": BIRTHING_PERSON,
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     await labour_update_posted_event_handler.handle(event.to_dict())
@@ -187,7 +207,11 @@ async def test_labour_update_posted_event_has_subscriber_sms(
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.ANNOUNCEMENT, "birthing_person_id": BIRTHING_PERSON, "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.ANNOUNCEMENT,
+            "birthing_person_id": BIRTHING_PERSON,
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     await labour_update_posted_event_handler.handle(event.to_dict())
@@ -221,7 +245,11 @@ async def test_labour_update_posted_event_has_subscriber_all_contact_methods(
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.ANNOUNCEMENT, "birthing_person_id": BIRTHING_PERSON, "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.ANNOUNCEMENT,
+            "birthing_person_id": BIRTHING_PERSON,
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     await labour_update_posted_event_handler.handle(event.to_dict())
@@ -233,6 +261,7 @@ async def test_labour_update_posted_event_has_subscriber_all_contact_methods(
         labour_update_posted_event_handler._notification_service._sms_notification_gateway.sent_notifications
         != []
     )
+
 
 async def test_labour_update_posted_event_has_subscriber_all_contact_methods_status_update(
     labour_update_posted_event_handler: LabourUpdatePostedEventHandler,
@@ -254,7 +283,11 @@ async def test_labour_update_posted_event_has_subscriber_all_contact_methods_sta
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.STATUS_UPDATE, "birthing_person_id": BIRTHING_PERSON, "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.STATUS_UPDATE,
+            "birthing_person_id": BIRTHING_PERSON,
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     await labour_update_posted_event_handler.handle(event.to_dict())
@@ -286,7 +319,11 @@ async def test_labour_update_posted_event_has_subscriber_all_contact_methods_no_
     event = DomainEvent(
         id="event_id",
         type="labour.update-posted",
-        data={"labour_update_type": LabourUpdateType.ANNOUNCEMENT, "birthing_person_id": BIRTHING_PERSON, "message": "this is a test"},
+        data={
+            "labour_update_type": LabourUpdateType.ANNOUNCEMENT,
+            "birthing_person_id": BIRTHING_PERSON,
+            "message": "this is a test",
+        },
         time=datetime.now(UTC),
     )
     await labour_update_posted_event_handler.handle(event.to_dict())

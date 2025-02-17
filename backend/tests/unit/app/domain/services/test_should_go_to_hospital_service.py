@@ -13,17 +13,19 @@ from app.domain.labour.constants import (
 )
 from app.domain.labour.entity import Labour
 from app.domain.services.should_go_to_hospital import ShouldGoToHospitalService
+from app.domain.services.begin_labour import BeginLabourService
 from tests.unit.app.conftest import get_contractions
 
 
 @pytest.fixture
 def labour() -> Labour:
-    return Labour.begin(
+    labour = Labour.plan(
         labour_id=UUID("12345678-1234-5678-1234-567812345678"),
         birthing_person_id=BirthingPersonId("87654321-4321-1234-8765-567812345678"),
-        start_time=datetime.now(UTC),
+        due_date=datetime.now(UTC),
         first_labour=True,
     )
+    return BeginLabourService().begin_labour(labour)
 
 
 def test_should_go_to_hospital_returns_false(labour: Labour):

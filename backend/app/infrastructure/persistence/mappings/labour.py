@@ -3,19 +3,18 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite, relationship
 
-from app.domain.labour_update.entity import LabourUpdate
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.entity import Contraction
 from app.domain.contraction.vo_contraction_duration import Duration
 from app.domain.contraction.vo_contraction_id import ContractionId
 from app.domain.labour.entity import Labour
 from app.domain.labour.vo_labour_id import LabourId
-from app.infrastructure.persistence.orm_registry import mapper_registry
-from app.infrastructure.persistence.tables.labour_updates import labour_updates_table
-from app.infrastructure.persistence.tables.contractions import contractions_table
-from app.infrastructure.persistence.tables.labours import labours_table
 from app.domain.labour_update.entity import LabourUpdate
 from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
+from app.infrastructure.persistence.orm_registry import mapper_registry
+from app.infrastructure.persistence.tables.contractions import contractions_table
+from app.infrastructure.persistence.tables.labour_updates import labour_updates_table
+from app.infrastructure.persistence.tables.labours import labours_table
 
 mapper_registry.map_imperatively(
     LabourUpdate,
@@ -52,8 +51,10 @@ mapper_registry.map_imperatively(
     properties={
         "id_": composite(LabourId, labours_table.c.id),
         "birthing_person_id": composite(BirthingPersonId, labours_table.c.birthing_person_id),
-        "start_time": labours_table.c.start_time,
+        "current_phase": labours_table.c.current_phase,
         "first_labour": labours_table.c.first_labour,
+        "due_date": labours_table.c.due_date,
+        "labour_name": labours_table.c.labour_name,
         "contractions": relationship(
             Contraction,
             order_by=contractions_table.c.start_time,
@@ -66,7 +67,7 @@ mapper_registry.map_imperatively(
             cascade="all, delete-orphan",
             lazy="selectin",
         ),
-        "current_phase": labours_table.c.current_phase,
+        "start_time": labours_table.c.start_time,
         "end_time": labours_table.c.end_time,
         "notes": labours_table.c.notes,
     },

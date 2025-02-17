@@ -1,7 +1,5 @@
 from datetime import UTC, datetime
 
-from app.domain.birthing_person.entity import BirthingPerson
-from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
 from app.domain.labour.entity import Labour
 from app.domain.labour.enums import LabourPhase
 from app.domain.labour.exceptions import LabourAlreadyCompleted, LabourHasActiveContraction
@@ -10,24 +8,19 @@ from app.domain.labour.exceptions import LabourAlreadyCompleted, LabourHasActive
 class StartContractionService:
     def start_contraction(
         self,
-        birthing_person: BirthingPerson,
+        labour: Labour,
         intensity: int | None = None,
         start_time: datetime | None = None,
         notes: str | None = None,
     ) -> Labour:
-        active_labour = birthing_person.active_labour
-
-        if not active_labour:
-            raise BirthingPersonDoesNotHaveActiveLabour(birthing_person.id_)
-
-        if active_labour.has_active_contraction:
+        if labour.has_active_contraction:
             raise LabourHasActiveContraction()
 
-        if active_labour.current_phase == LabourPhase.COMPLETE:
+        if labour.current_phase == LabourPhase.COMPLETE:
             raise LabourAlreadyCompleted()
 
-        active_labour.start_contraction(
+        labour.start_contraction(
             intensity=intensity, start_time=start_time or datetime.now(UTC), notes=notes
         )
 
-        return active_labour
+        return labour

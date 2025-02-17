@@ -3,10 +3,10 @@ from datetime import UTC, datetime
 from typing import Self
 from uuid import UUID, uuid4
 
-from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 from app.domain.base.entity import Entity
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.labour_update.enums import LabourUpdateType
+from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 
 
 @dataclass(eq=False, kw_only=True)

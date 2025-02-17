@@ -8,12 +8,12 @@ from app.application.events.event_handlers.birthing_person_send_invite_event_han
 from app.application.events.event_handlers.contact_us_message_sent_event_handler import (
     ContactUsMessageSentEventHandler,
 )
-from app.application.events.event_handlers.labour_update_posted_event_handler import (
-    LabourUpdatePostedEventHandler,
-)
 from app.application.events.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.application.events.event_handlers.labour_completed_event_handler import (
     LabourCompletedEventHandler,
+)
+from app.application.events.event_handlers.labour_update_posted_event_handler import (
+    LabourUpdatePostedEventHandler,
 )
 from app.application.events.event_handlers.subscriber_subscribed_to_event_handler import (
     SubscriberSubscribedToEventHandler,

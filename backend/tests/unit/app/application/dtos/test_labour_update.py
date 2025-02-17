@@ -4,9 +4,9 @@ from uuid import UUID, uuid4
 import pytest
 
 from app.application.dtos.labour_update import LabourUpdateDTO
-from app.domain.labour_update.enums import LabourUpdateType
-from app.domain.labour_update.entity import LabourUpdate
 from app.domain.labour.vo_labour_id import LabourId
+from app.domain.labour_update.entity import LabourUpdate
+from app.domain.labour_update.enums import LabourUpdateType
 
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def labour_update() -> LabourUpdate:
     return LabourUpdate.create(
         labour_update_type=LabourUpdateType.STATUS_UPDATE,
         labour_id=LabourId(uuid4()),
-        message="Test Message"
+        message="Test Message",
     )
 
 

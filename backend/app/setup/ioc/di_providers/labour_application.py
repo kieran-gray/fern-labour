@@ -16,19 +16,6 @@ class LabourApplicationProvider(Provider):
     scope = Scope.REQUEST
 
     @provide
-    def provide_labour_service(
-        self,
-        birthing_person_repository: BirthingPersonRepository,
-        labour_repository: LabourRepository,
-        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
-    ) -> LabourService:
-        return LabourService(
-            birthing_person_repository=birthing_person_repository,
-            labour_repository=labour_repository,
-            event_producer=event_producer,
-        )
-
-    @provide
     def provide_birthing_person_service(
         self,
         birthing_person_repository: BirthingPersonRepository,
@@ -39,8 +26,18 @@ class LabourApplicationProvider(Provider):
         )
 
     @provide
-    def provide_get_labour_service(
+    def provide_labour_service(
         self,
-        birthing_person_repository: BirthingPersonRepository,
-    ) -> GetLabourService:
-        return GetLabourService(birthing_person_repository=birthing_person_repository)
+        birthing_person_service: BirthingPersonService,
+        labour_repository: LabourRepository,
+        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+    ) -> LabourService:
+        return LabourService(
+            birthing_person_service=birthing_person_service,
+            labour_repository=labour_repository,
+            event_producer=event_producer,
+        )
+
+    @provide
+    def provide_get_labour_service(self, labour_repository: LabourRepository) -> GetLabourService:
+        return GetLabourService(labour_repository=labour_repository)

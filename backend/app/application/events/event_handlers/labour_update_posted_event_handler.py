@@ -2,7 +2,6 @@ import logging
 from typing import Any, Protocol
 
 from app.application.dtos.birthing_person import BirthingPersonDTO
-from app.domain.labour_update.enums import LabourUpdateType
 from app.application.dtos.subscriber import SubscriberDTO
 from app.application.events.event_handler import EventHandler
 from app.application.notifications.email_generation_service import EmailGenerationService
@@ -10,6 +9,7 @@ from app.application.notifications.entity import Notification
 from app.application.notifications.notification_service import NotificationService
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
+from app.domain.labour_update.enums import LabourUpdateType
 from app.domain.subscriber.enums import ContactMethod
 from app.domain.subscriber.exceptions import SubscriberNotFoundById
 

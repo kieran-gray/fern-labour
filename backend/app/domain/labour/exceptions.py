@@ -18,6 +18,11 @@ class LabourHasNoActiveContraction(DomainError):
         super().__init__("No active contraction to end")
 
 
+class LabourAlreadyBegun(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Labour has already begun")
+
+
 class LabourAlreadyCompleted(DomainError):
     def __init__(self) -> None:
         super().__init__("Labour is already completed")
