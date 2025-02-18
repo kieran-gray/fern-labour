@@ -9,9 +9,10 @@ from app.application.notifications.entity import Notification
 from app.application.notifications.notification_service import NotificationService
 from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.subscriber_service import SubscriberService
+from app.application.services.subscription_service import SubscriptionService
 from app.domain.labour_update.enums import LabourUpdateType
-from app.domain.subscriber.enums import ContactMethod
 from app.domain.subscriber.exceptions import SubscriberNotFoundById
+from app.domain.subscription.enums import ContactMethod
 
 log = logging.getLogger(__name__)
 
@@ -31,11 +32,13 @@ class LabourUpdatePostedEventHandler(EventHandler):
         self,
         birthing_person_service: BirthingPersonService,
         subscriber_service: SubscriberService,
+        subscription_service: SubscriptionService,
         notification_service: NotificationService,
         email_generation_service: EmailGenerationService,
     ):
         self._birthing_person_service = birthing_person_service
         self._subscriber_service = subscriber_service
+        self._subscription_service = subscription_service
         self._notification_service = notification_service
         self._email_generation_service = email_generation_service
 
@@ -92,18 +95,24 @@ class LabourUpdatePostedEventHandler(EventHandler):
             return
 
         birthing_person_id = event["data"]["birthing_person_id"]
+        labour_id = event["data"]["labour_id"]
+
         birthing_person = await self._birthing_person_service.get_birthing_person(
-            birthing_person_id
+            birthing_person_id=birthing_person_id
         )
 
-        for subscriber_id in birthing_person.subscribers:
+        subscriptions = await self._subscription_service.get_labour_subscriptions(
+            requester_id=birthing_person_id, labour_id=labour_id
+        )
+
+        for subscription in subscriptions:
             try:
-                subscriber = await self._subscriber_service.get(subscriber_id)
+                subscriber = await self._subscriber_service.get(subscription.subscriber_id)
             except SubscriberNotFoundById as err:
                 log.error(err)
                 continue
 
-            for method in subscriber.contact_methods:
+            for method in subscription.contact_methods:
                 if destination := subscriber.destination(method):
                     notification = self._get_notification_generator(method)(
                         birthing_person=birthing_person,

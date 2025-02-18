@@ -4,17 +4,15 @@ import pytest
 import pytest_asyncio
 
 from app.application.services.get_labour_service import GetLabourService
-from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.birthing_person.exceptions import (
     BirthingPersonDoesNotHaveActiveLabour,
-    BirthingPersonNotFoundById,
 )
-from app.domain.birthing_person.repository import BirthingPersonRepository
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.entity import Labour
+from app.domain.labour.exceptions import InvalidLabourId
 from app.domain.labour.repository import LabourRepository
 from app.domain.labour.vo_labour_id import LabourId
-from tests.unit.app.application.conftest import MockBirthingPersonRepository, MockLabourRepository
+from tests.unit.app.application.conftest import MockLabourRepository
 
 BIRTHING_PERSON = "bp_id"
 BIRTHING_PERSON_IN_LABOUR = "bp_2_id"
@@ -73,3 +71,8 @@ async def test_cannot_get_active_labour_summary_for_birthing_person_without_acti
 ) -> None:
     with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
         await get_labour_service.get_active_labour_summary(BIRTHING_PERSON)
+
+
+async def test_invalid_labour_id_raises_error(get_labour_service: GetLabourService) -> None:
+    with pytest.raises(InvalidLabourId):
+        await get_labour_service.get_labour_by_id("test")

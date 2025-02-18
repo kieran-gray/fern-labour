@@ -37,7 +37,6 @@ async def subscriber_repo():
             last_name="Last",
             phone_number="07123123123",
             email="test@email.com",
-            contact_methods=[],
         ),
         SUBSCRIBER_2: Subscriber(
             id_=SubscriberId(SUBSCRIBER_2),
@@ -45,7 +44,6 @@ async def subscriber_repo():
             last_name="Iron",
             phone_number="07999999999",
             email="test@john.com",
-            contact_methods=[],
         ),
     }
     return repo
@@ -68,7 +66,6 @@ async def test_can_register_subscriber(subscriber_service: SubscriberService) ->
         subscriber_id=new_id,
         first_name="test",
         last_name="test",
-        contact_methods=[],
     )
     assert isinstance(subscriber, SubscriberDTO)
     repo = subscriber_service._subscriber_repository
@@ -85,7 +82,6 @@ async def test_cannot_register_subscriber_more_than_once(
             subscriber_id=SUBSCRIBER,
             first_name="test",
             last_name="test",
-            contact_methods=[],
         )
 
 

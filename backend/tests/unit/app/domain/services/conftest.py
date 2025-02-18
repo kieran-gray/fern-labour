@@ -1,5 +1,6 @@
+from datetime import UTC, datetime
+
 import pytest
-from datetime import datetime, UTC
 
 from app.domain.birthing_person.entity import BirthingPerson
 from app.domain.labour.entity import Labour
@@ -22,5 +23,5 @@ def sample_labour(sample_birthing_person: BirthingPerson) -> Labour:
         birthing_person_id=sample_birthing_person.id_,
         first_labour=True,
         due_date=datetime.now(UTC),
-        labour_id=labour_id
+        labour_id=labour_id,
     )

@@ -2,7 +2,7 @@ import logging
 from unittest.mock import patch
 
 from app.application.notifications.entity import Notification
-from app.domain.subscriber.enums import ContactMethod
+from app.domain.subscription.enums import ContactMethod
 from app.infrastructure.notifications.email.smtp_email_notification_gateway import (
     SMTPEmailNotificationGateway,
 )

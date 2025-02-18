@@ -3,6 +3,7 @@ import json
 from app.application.dtos.labour import LabourDTO
 from app.domain.labour.entity import Labour
 
+
 def test_can_convert_to_labour_dto(sample_labour: Labour) -> None:
     dto = LabourDTO.from_domain(sample_labour)
     assert dto.id == str(sample_labour.id_.value)

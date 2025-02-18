@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Self
 
 from app.domain.subscriber.entity import Subscriber
-from app.domain.subscriber.enums import ContactMethod
+from app.domain.subscription.enums import ContactMethod
 
 
 @dataclass
@@ -12,8 +12,6 @@ class SubscriberDTO:
     last_name: str
     phone_number: str | None
     email: str | None
-    contact_methods: list[str]
-    subscribed_to: list[str]
 
     @classmethod
     def from_domain(cls, subscriber: Subscriber) -> Self:
@@ -24,10 +22,6 @@ class SubscriberDTO:
             last_name=subscriber.last_name,
             phone_number=subscriber.phone_number,
             email=subscriber.email,
-            contact_methods=[method.value for method in subscriber.contact_methods],
-            subscribed_to=[
-                birthing_person_id.value for birthing_person_id in subscriber.subscribed_to
-            ],
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -38,8 +32,6 @@ class SubscriberDTO:
             "last_name": self.last_name,
             "phone_number": self.phone_number,
             "email": self.email,
-            "contact_methods": self.contact_methods,
-            "subscribed_to": self.subscribed_to,
         }
 
     def destination(self, contact_method: str) -> str | None:

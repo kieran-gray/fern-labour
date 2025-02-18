@@ -5,7 +5,9 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials
 
+from app.application.security.token_generator import TokenGenerator
 from app.application.services.get_labour_service import GetLabourService
+from app.application.services.labour_invite_service import LabourInviteService
 from app.application.services.labour_service import LabourService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.presentation.api.dependencies import bearer_scheme
@@ -13,9 +15,17 @@ from app.presentation.api.schemas.requests.contraction import (
     EndContractionRequest,
     StartContractionRequest,
 )
-from app.presentation.api.schemas.requests.labour import CompleteLabourRequest, PlanLabourRequest
+from app.presentation.api.schemas.requests.labour import (
+    CompleteLabourRequest,
+    PlanLabourRequest,
+    SendInviteRequest,
+)
 from app.presentation.api.schemas.requests.labour_update import LabourUpdateRequest
-from app.presentation.api.schemas.responses.labour import LabourResponse, LabourSummaryResponse
+from app.presentation.api.schemas.responses.labour import (
+    LabourResponse,
+    LabourSubscriptionTokenResponse,
+    LabourSummaryResponse,
+)
 from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
 
@@ -223,3 +233,53 @@ async def post_labour_update(
         sent_time=request_data.sent_time,
     )
     return LabourResponse(labour=labour)
+
+
+@labour_router.get(
+    "/subscription-token",
+    responses={
+        status.HTTP_200_OK: {"model": LabourSubscriptionTokenResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_subscription_token(
+    token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.SUBSCRIBER)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourSubscriptionTokenResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    token = token_generator.generate(input=user.id)
+    return LabourSubscriptionTokenResponse(token=token)
+
+
+@labour_router.post(
+    "/send_invite",
+    responses={
+        status.HTTP_204_NO_CONTENT: {"model": None},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+@inject
+async def send_invite(
+    request_data: SendInviteRequest,
+    labour_invite_service: Annotated[LabourInviteService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> None:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    await labour_invite_service.send_invite(
+        birthing_person_id=user.id,
+        labour_id=request_data.labour_id,
+        invite_email=request_data.invite_email,
+    )
+    return None

@@ -60,9 +60,7 @@ def test_labour_phase_does_not_decrease_from_active(sample_labour: Labour):
     UpdateLabourPhaseService().update_labour_phase(sample_labour)
     assert sample_labour.current_phase is LabourPhase.ACTIVE
 
-    sample_labour.contractions.extend(
-        generate_contractions(length=0.5, intensity=6)
-    )
+    sample_labour.contractions.extend(generate_contractions(length=0.5, intensity=6))
 
     UpdateLabourPhaseService().update_labour_phase(sample_labour)
     assert sample_labour.current_phase is LabourPhase.ACTIVE
@@ -73,9 +71,7 @@ def test_labour_phase_does_not_decrease_from_transition(
     sample_labour: Labour, contraction_length: float, contraction_intensity: int
 ):
     BeginLabourService().begin_labour(sample_labour)
-    sample_labour.contractions = generate_contractions(
-        length=1.5, intensity=8
-    )
+    sample_labour.contractions = generate_contractions(length=1.5, intensity=8)
     UpdateLabourPhaseService().update_labour_phase(sample_labour)
     assert sample_labour.current_phase is LabourPhase.TRANSITION
 

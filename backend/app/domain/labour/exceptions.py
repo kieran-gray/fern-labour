@@ -1,6 +1,11 @@
 from typing import Any
 
-from app.domain.base.exceptions import DomainError
+from app.domain.base.exceptions import DomainError, DomainValidationError
+
+
+class InvalidLabourId(DomainValidationError):
+    def __init__(self) -> None:
+        super().__init__("Invalid Labour ID.")
 
 
 class LabourHasActiveContraction(DomainError):

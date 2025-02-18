@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from app.domain.subscriber.enums import ContactMethod
+from app.domain.subscription.enums import ContactMethod
 
 
 @dataclass

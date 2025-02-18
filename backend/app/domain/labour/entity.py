@@ -8,7 +8,12 @@ from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.entity import Contraction
 from app.domain.contraction.events import ContractionEnded, ContractionStarted
 from app.domain.labour.enums import LabourPhase
-from app.domain.labour.events import LabourBegun, LabourCompleted, LabourPlanned, LabourUpdatePosted
+from app.domain.labour.events import (
+    LabourBegun,
+    LabourCompleted,
+    LabourPlanned,
+    LabourUpdatePosted,
+)
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.labour_update.entity import LabourUpdate
 from app.domain.labour_update.enums import LabourUpdateType

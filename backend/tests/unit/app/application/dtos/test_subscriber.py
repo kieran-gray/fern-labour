@@ -4,7 +4,7 @@ import pytest
 
 from app.application.dtos.subscriber import SubscriberDTO
 from app.domain.subscriber.entity import Subscriber
-from app.domain.subscriber.enums import ContactMethod
+from app.domain.subscription.enums import ContactMethod
 
 
 @pytest.fixture
@@ -15,7 +15,6 @@ def subscriber() -> Subscriber:
         last_name="Name",
         phone_number="07123123123",
         email="test@email.com",
-        contact_methods=[ContactMethod.SMS.value, ContactMethod.EMAIL.value],
     )
 
 
@@ -26,7 +25,6 @@ def test_can_convert_to_subscriber_dto(subscriber: Subscriber) -> None:
     assert dto.last_name == subscriber.last_name
     assert dto.phone_number == subscriber.phone_number
     assert dto.email == subscriber.email
-    assert dto.contact_methods == [method.value for method in subscriber.contact_methods]
 
 
 def test_can_convert_subscriber_dto_to_dict(subscriber: Subscriber) -> None:

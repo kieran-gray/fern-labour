@@ -6,7 +6,7 @@ from app.application.notifications.notfication_gateway import (
     NotificationGateway,
     SMSNotificationGateway,
 )
-from app.domain.subscriber.enums import ContactMethod
+from app.domain.subscription.enums import ContactMethod
 
 log = logging.getLogger(__name__)
 

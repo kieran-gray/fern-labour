@@ -12,8 +12,8 @@ from app.domain.labour.constants import (
     TIME_BETWEEN_CONTRACTIONS_PAROUS,
 )
 from app.domain.labour.entity import Labour
-from app.domain.services.should_go_to_hospital import ShouldGoToHospitalService
 from app.domain.services.begin_labour import BeginLabourService
+from app.domain.services.should_go_to_hospital import ShouldGoToHospitalService
 from tests.unit.app.conftest import get_contractions
 
 

@@ -6,6 +6,8 @@ class ComponentEnum(StrEnum):
     LABOUR = "labour"
     EVENTS = "events"
     SUBSCRIBER = "subscriber"
+    NOTIFICATIONS = "notifications"
+    SUBSCRIPTIONS = "subscriptions"
 
     def __repr__(self) -> str:
         return self.value

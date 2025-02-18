@@ -24,7 +24,6 @@ class SubscriberService:
         subscriber_id: str,
         first_name: str,
         last_name: str,
-        contact_methods: list[str],
         phone_number: str | None = None,
         email: str | None = None,
     ) -> SubscriberDTO:
@@ -39,7 +38,6 @@ class SubscriberService:
             last_name=last_name,
             phone_number=phone_number,
             email=email,
-            contact_methods=contact_methods,
         )
         await self._subscriber_repository.save(subscriber)
         return SubscriberDTO.from_domain(subscriber)

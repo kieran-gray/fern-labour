@@ -16,8 +16,9 @@ mapper_registry.map_imperatively(
         "id_": composite(BirthingPersonId, birthing_persons_table.c.id),
         "first_name": birthing_persons_table.c.first_name,
         "last_name": birthing_persons_table.c.last_name,
+        "phone_number": birthing_persons_table.c.phone_number,
+        "email": birthing_persons_table.c.email,
         "labours": relationship(Labour, cascade="all"),
-        "subscribers": birthing_persons_table.c.subscribers,
     },
     column_prefix="_",
 )

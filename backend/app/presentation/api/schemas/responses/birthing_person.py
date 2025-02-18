@@ -10,7 +10,3 @@ class BirthingPersonResponse(BaseModel):
 
 class BirthingPersonSummaryResponse(BaseModel):
     birthing_person: BirthingPersonSummaryDTO
-
-
-class BirthingPersonSubscriptionTokenResponse(BaseModel):
-    token: str

@@ -6,8 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.security.token_generator import TokenGenerator
 from app.domain.subscriber.repository import SubscriberRepository
+from app.domain.subscription.repository import SubscriptionRepository
 from app.infrastructure.persistence.repositories.subscriber_repository import (
     SQLAlchemySubscriberRepository,
+)
+from app.infrastructure.persistence.repositories.subscription_repository import (
+    SQLAlchemySubscriptionRepository,
 )
 from app.infrastructure.security.sha256_token_generator import SHA256TokenGenerator
 from app.setup.ioc.di_component_enum import ComponentEnum
@@ -25,6 +29,12 @@ class SubscriberInfrastructureProvider(Provider):
         self, async_session: Annotated[AsyncSession, FromComponent(ComponentEnum.DEFAULT)]
     ) -> SubscriberRepository:
         return SQLAlchemySubscriberRepository(session=async_session)
+
+    @provide(scope=Scope.REQUEST)
+    def provide_subscription_repository(
+        self, async_session: Annotated[AsyncSession, FromComponent(ComponentEnum.DEFAULT)]
+    ) -> SubscriptionRepository:
+        return SQLAlchemySubscriptionRepository(session=async_session)
 
     @provide
     def provide_token_generator(

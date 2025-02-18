@@ -12,3 +12,8 @@ class PlanLabourRequest(BaseModel):
 class CompleteLabourRequest(BaseModel):
     end_time: datetime | None = None
     notes: str | None = None
+
+
+class SendInviteRequest(BaseModel):
+    invite_email: str
+    labour_id: str

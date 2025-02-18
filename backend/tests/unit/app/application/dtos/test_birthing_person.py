@@ -21,7 +21,6 @@ def test_can_convert_to_birthing_person_dto(birthing_person: BirthingPerson) -> 
     assert dto.first_name == birthing_person.first_name
     assert dto.last_name == birthing_person.last_name
     assert dto.labours == birthing_person.labours
-    assert dto.subscribers == birthing_person.subscribers
 
 
 def test_can_convert_birthing_person_dto_to_dict(birthing_person: BirthingPerson) -> None:

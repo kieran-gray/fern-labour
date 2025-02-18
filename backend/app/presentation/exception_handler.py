@@ -26,12 +26,18 @@ from app.domain.labour.exceptions import (
 )
 from app.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
 from app.domain.subscriber.exceptions import (
-    SubscriberAlreadySubscribedToBirthingPerson,
     SubscriberCannotSubscribeToSelf,
     SubscriberExistsWithID,
     SubscriberNotFoundById,
-    SubscriberNotSubscribedToBirthingPerson,
+)
+from app.domain.subscription.exceptions import (
+    SubscriberAlreadySubscribed,
+    SubscriberIsBlocked,
+    SubscriberNotSubscribed,
+    SubscriptionNotFoundById,
     SubscriptionTokenIncorrect,
+    UnauthorizedSubscriptionRequest,
+    UnauthorizedSubscriptionUpdateRequest,
 )
 from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
 
@@ -70,15 +76,19 @@ class ExceptionMapper:
             LabourAlreadyCompleted: status.HTTP_400_BAD_REQUEST,
             LabourAlreadyBegun: status.HTTP_400_BAD_REQUEST,
             CannotCompleteLabourWithActiveContraction: status.HTTP_400_BAD_REQUEST,
-            SubscriberAlreadySubscribedToBirthingPerson: status.HTTP_400_BAD_REQUEST,
+            SubscriberAlreadySubscribed: status.HTTP_400_BAD_REQUEST,
             SubscriberExistsWithID: status.HTTP_409_CONFLICT,
             SubscriberNotFoundById: status.HTTP_404_NOT_FOUND,
-            SubscriberNotSubscribedToBirthingPerson: status.HTTP_400_BAD_REQUEST,
+            SubscriberNotSubscribed: status.HTTP_400_BAD_REQUEST,
             SubscriptionTokenIncorrect: status.HTTP_403_FORBIDDEN,
             SubscriberCannotSubscribeToSelf: status.HTTP_400_BAD_REQUEST,
             AuthorizationError: status.HTTP_401_UNAUTHORIZED,
             InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
             TooSoonSinceLastAnnouncement: status.HTTP_400_BAD_REQUEST,
+            SubscriberIsBlocked: status.HTTP_403_FORBIDDEN,
+            SubscriptionNotFoundById: status.HTTP_404_NOT_FOUND,
+            UnauthorizedSubscriptionRequest: status.HTTP_403_FORBIDDEN,
+            UnauthorizedSubscriptionUpdateRequest: status.HTTP_403_FORBIDDEN,
         }
 
     def get_status_code(self, exc: Exception) -> int:

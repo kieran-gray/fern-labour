@@ -13,7 +13,6 @@ class BirthingPersonDTO:
     first_name: str
     last_name: str
     labours: list[LabourDTO]
-    subscribers: list[str]
 
     @classmethod
     def from_domain(cls, birthing_person: BirthingPerson) -> Self:
@@ -23,7 +22,6 @@ class BirthingPersonDTO:
             first_name=birthing_person.first_name,
             last_name=birthing_person.last_name,
             labours=[LabourDTO.from_domain(labour) for labour in birthing_person.labours],
-            subscribers=[subscriber_id.value for subscriber_id in birthing_person.subscribers],
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -33,5 +31,4 @@ class BirthingPersonDTO:
             "first_name": self.first_name,
             "last_name": self.last_name,
             "labours": [labour.to_dict() for labour in self.labours],
-            "subscribers": self.subscribers,
         }

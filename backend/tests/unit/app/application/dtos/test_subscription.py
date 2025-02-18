@@ -1,0 +1,39 @@
+import json
+from uuid import uuid4
+
+import pytest
+
+from app.application.dtos.subscription import SubscriptionDTO
+from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
+from app.domain.labour.vo_labour_id import LabourId
+from app.domain.subscriber.vo_subscriber_id import SubscriberId
+from app.domain.subscription.entity import Subscription
+from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+
+
+@pytest.fixture
+def subscription() -> Subscription:
+    return Subscription.create(
+        labour_id=LabourId(uuid4()),
+        birthing_person_id=BirthingPersonId("test_birthing_person"),
+        subscriber_id=SubscriberId("test_subscriber"),
+        status=SubscriptionStatus.SUBSCRIBED,
+        role=SubscriberRole.BIRTH_PARTNER,
+        contact_methods=[ContactMethod.SMS],
+    )
+
+
+def test_can_convert_to_subscription_dto(subscription: Subscription) -> None:
+    dto = SubscriptionDTO.from_domain(subscription)
+    assert dto.labour_id == str(subscription.labour_id.value)
+    assert dto.birthing_person_id == subscription.birthing_person_id.value
+    assert dto.subscriber_id == subscription.subscriber_id.value
+    assert dto.status == subscription.status
+    assert dto.role == subscription.role
+    assert dto.contact_methods == subscription.contact_methods
+
+
+def test_can_convert_subscription_dto_to_dict(subscription: Subscription) -> None:
+    dto = SubscriptionDTO.from_domain(subscription)
+    bp_dict = dto.to_dict()
+    json.dumps(bp_dict)

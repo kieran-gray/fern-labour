@@ -9,7 +9,6 @@ from app.domain.birthing_person.exceptions import (
     BirthingPersonHasActiveLabour,
 )
 from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
-from app.domain.labour.enums import LabourPhase
 from app.domain.labour.repository import LabourRepository
 from app.domain.labour_update.enums import LabourUpdateType
 from app.domain.services.begin_labour import BeginLabourService

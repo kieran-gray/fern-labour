@@ -17,8 +17,6 @@ mapper_registry.map_imperatively(
         "last_name": subscribers_table.c.last_name,
         "phone_number": subscribers_table.c.phone_number,
         "email": subscribers_table.c.email,
-        "contact_methods": subscribers_table.c.contact_methods,
-        "subscribed_to": subscribers_table.c.subscribed_to,
     },
     column_prefix="_",
 )

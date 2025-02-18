@@ -10,3 +10,7 @@ class LabourResponse(BaseModel):
 
 class LabourSummaryResponse(BaseModel):
     labour: LabourSummaryDTO
+
+
+class LabourSubscriptionTokenResponse(BaseModel):
+    token: str

@@ -9,7 +9,7 @@ from app.application.notifications.notfication_gateway import (
     SMSNotificationGateway,
 )
 from app.application.notifications.notification_service import NotificationService
-from app.domain.subscriber.enums import ContactMethod
+from app.domain.subscription.enums import ContactMethod
 
 
 class MockEmailNotificationGateway(EmailNotificationGateway):

@@ -1,7 +1,11 @@
 from pydantic import BaseModel
 
-from app.application.dtos.birthing_person_summary import BirthingPersonSummaryDTO
+from app.application.dtos.subscription import SubscriptionDTO
 
 
-class GetSubscriptionsResponse(BaseModel):
-    subscriptions: list[BirthingPersonSummaryDTO]
+class SubscriptionsResponse(BaseModel):
+    subscriptions: list[SubscriptionDTO]
+
+
+class SubscriptionResponse(BaseModel):
+    subscription: SubscriptionDTO
