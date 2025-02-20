@@ -60,6 +60,34 @@ async def plan_labour(
     return LabourResponse(labour=labour)
 
 
+@labour_router.put(
+    "/plan",
+    responses={
+        status.HTTP_200_OK: {"model": LabourResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def update_labour_plan(
+    request_data: PlanLabourRequest,
+    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    labour = await service.update_labour_plan(
+        birthing_person_id=user.id,
+        first_labour=request_data.first_labour,
+        due_date=request_data.due_date,
+        labour_name=request_data.labour_name,
+    )
+    return LabourResponse(labour=labour)
+
+
 @labour_router.post(
     "/begin",
     responses={

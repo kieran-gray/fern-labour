@@ -5,6 +5,20 @@ interface ContractionFrequencyGaps {
   next: number;
 }
 
+export const dueDateToGestationalAge = (dueDate: Date) => {
+  const today = new Date().getTime();
+  const resultDate = new Date();
+  const fortyWeeksInMs = 40 * 7 * 24 * 60 * 60 * 1000;
+  resultDate.setTime(dueDate.getTime() - fortyWeeksInMs);
+
+  const diffInMs = Math.abs(today - resultDate.getTime());
+  const totalDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const weeks = Math.floor(totalDays / 7);
+  const days = totalDays % 7;
+
+  return `${weeks} week${weeks === 0 || weeks > 1 ? 's' : ''} + ${days} day${days === 0 || days > 1 ? 's' : ''}`;
+};
+
 export const formatTimeMilliseconds = (milliseconds: number) => {
   if (milliseconds === 0) {
     return null;
@@ -47,9 +61,7 @@ export const sortContractions = (contractions: ContractionDTO[]): ContractionDTO
 };
 
 export const sortLabours = (labours: LabourDTO[]): LabourDTO[] => {
-  return labours.sort((a, b) =>
-    a.start_time < b.start_time ? -1 : a.start_time > b.start_time ? 1 : 0
-  );
+  return labours.sort((a, b) => (a.due_date < b.due_date ? -1 : a.due_date > b.due_date ? 1 : 0));
 };
 
 export const getTimeSinceLastStarted = (

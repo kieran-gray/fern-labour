@@ -59,6 +59,27 @@ class LabourService:
 
         return LabourDTO.from_domain(labour)
 
+    async def update_labour_plan(
+        self,
+        birthing_person_id: str,
+        first_labour: bool,
+        due_date: datetime,
+        labour_name: str | None = None,
+    ) -> LabourDTO:
+        domain_id = BirthingPersonId(birthing_person_id)
+        _ = await self._birthing_person_service.get_birthing_person(birthing_person_id)
+        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
+        if not labour:
+            raise BirthingPersonDoesNotHaveActiveLabour(birthing_person_id=birthing_person_id)
+
+        labour.update_plan(first_labour=first_labour, due_date=due_date, labour_name=labour_name)
+
+        await self._labour_repository.save(labour)
+
+        await self._event_producer.publish_batch(labour.clear_domain_events())
+
+        return LabourDTO.from_domain(labour)
+
     async def begin_labour(self, birthing_person_id: str) -> LabourDTO:
         domain_id = BirthingPersonId(birthing_person_id)
         labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)

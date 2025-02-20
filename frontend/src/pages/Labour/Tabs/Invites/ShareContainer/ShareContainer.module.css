@@ -1,0 +1,97 @@
+
+.share {
+  padding: 15px;
+  border-radius: 15px;
+  background-color: var(--mantine-color-pink-1);
+}
+
+.controls {
+  display: flex;
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  padding: calc(var(--mantine-spacing-xl));
+
+  @media (max-width: $mantine-breakpoint-md) {
+    padding: calc(var(--mantine-spacing-md));
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+      padding: 0;
+  }
+}
+
+.content {
+  max-width: 480px;
+  margin-right: calc(var(--mantine-spacing-xl) * 3);
+
+  @media (max-width: $mantine-breakpoint-md) {
+    max-width: 100%;
+    margin-right: 0;
+  }
+}
+
+.title {
+  color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+  font-family:
+    "Greycliff CF",
+    var(--mantine-font-family);
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 900;
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    font-size: 28px;
+  }
+}
+
+.control {
+  @media (max-width: $mantine-breakpoint-xs) {
+    flex: 1;
+  }
+}
+
+.image {
+  width: 376px;
+  height: 356px;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    display: none;
+  }
+}
+
+.highlight {
+  position: relative;
+  background-color: var(--mantine-color-blue-light);
+  border-radius: var(--mantine-radius-sm);
+  padding: 4px 12px;
+}
+
+.flexRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: stretch;
+  width: 100%;
+  flex-basis: stretch;
+  flex-wrap: wrap;
+
+  @media (max-width: $mantine-breakpoint-xs) {
+      flex-direction: column;
+  }
+}
+
+.flexRowEnd {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-content: stretch;
+  width: 100%;
+
+  @media (max-width: $mantine-breakpoint-xs) {
+      flex-direction: column;
+  }
+}

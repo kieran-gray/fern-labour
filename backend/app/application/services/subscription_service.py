@@ -1,6 +1,7 @@
 import logging
 from uuid import UUID
 
+from app.application.dtos.subscriber import SubscriberDTO
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
@@ -55,6 +56,21 @@ class SubscriptionService:
             labour_id=LabourId(UUID(labour.id))
         )
         return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
+
+    async def get_labour_subscribers(
+        self, requester_id: str, labour_id: str
+    ) -> list[SubscriberDTO]:
+        labour = await self._get_labour_service.get_labour_by_id(labour_id=labour_id)
+        if requester_id != labour.birthing_person_id:
+            raise UnauthorizedSubscriptionRequest()
+
+        subscriptions = await self._subscription_repository.filter(
+            labour_id=LabourId(UUID(labour.id))
+        )
+        subscribers = await self._subscriber_service.get_many(
+            subscriber_ids=[subscription.subscriber_id.value for subscription in subscriptions]
+        )
+        return subscribers
 
     async def subscribe_to(self, subscriber_id: str, labour_id: str, token: str) -> SubscriptionDTO:
         subscriber = await self._subscriber_service.get(subscriber_id=subscriber_id)

@@ -57,9 +57,9 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
         if labour_id:
             stmt = stmt.where(subscriptions_table.c.labour_id == labour_id.value)
         if subscriber_id:
-            stmt = stmt.where(subscriptions_table.c.subscriber_id == subscriber_id)
+            stmt = stmt.where(subscriptions_table.c.subscriber_id == subscriber_id.value)
         if birthing_person_id:
-            stmt = stmt.where(subscriptions_table.c.birthing_person_id == birthing_person_id)
+            stmt = stmt.where(subscriptions_table.c.birthing_person_id == birthing_person_id.value)
 
         result = await self._session.execute(stmt)
         return list(result.scalars())
@@ -85,9 +85,9 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
         if labour_id:
             stmt = stmt.where(subscriptions_table.c.labour_id == labour_id.value)
         if subscriber_id:
-            stmt = stmt.where(subscriptions_table.c.subscriber_id == subscriber_id)
+            stmt = stmt.where(subscriptions_table.c.subscriber_id == subscriber_id.value)
         if birthing_person_id:
-            stmt = stmt.where(subscriptions_table.c.birthing_person_id == birthing_person_id)
+            stmt = stmt.where(subscriptions_table.c.birthing_person_id == birthing_person_id.value)
 
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()

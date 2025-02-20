@@ -5,8 +5,8 @@ import { Badge, Text } from '@mantine/core';
 import { ApiError, OpenAPI, SubscriberService } from '../../../client';
 import { NotFoundError } from '../../../Errors';
 import ContactMethodsModal from '../../../shared-components/ContactMethodsModal/ContactMethodsModal';
-import { LabourSummaryStatistics } from '../../../shared-components/LabourStatistics/LabourSummaryStatistics';
 import { ContainerLoadingIcon } from '../../../shared-components/PageLoading/Loading';
+import { LabourSummaryStatistics } from '../../Labour/Tabs/Statistics/LabourSummaryStatistics';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 
 export default function Subscriptions() {

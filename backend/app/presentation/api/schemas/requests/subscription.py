@@ -5,6 +5,10 @@ class RemoveSubscriberRequest(BaseModel):
     subscription_id: str
 
 
+class BlockSubscriberRequest(BaseModel):
+    subscription_id: str
+
+
 class UpdateRoleRequest(BaseModel):
     subscription_id: str
     role: str

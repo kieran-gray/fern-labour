@@ -13,6 +13,7 @@ from app.presentation.api.schemas.requests.subscriber import (
     UnsubscribeFromRequest,
 )
 from app.presentation.api.schemas.responses.subscription import (
+    LabourSubscriptionsResponse,
     SubscriptionResponse,
     SubscriptionsResponse,
 )
@@ -98,7 +99,7 @@ async def get_subscriptions(
 @subscription_router.get(
     "/labour_subscriptions/{labour_id}",
     responses={
-        status.HTTP_200_OK: {"model": SubscriptionsResponse},
+        status.HTTP_200_OK: {"model": LabourSubscriptionsResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
@@ -112,9 +113,13 @@ async def get_labour_subscriptions(
     subscription_service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-) -> SubscriptionsResponse:
+) -> LabourSubscriptionsResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
     subscriptions = await subscription_service.get_labour_subscriptions(
         requester_id=user.id, labour_id=labour_id
     )
-    return SubscriptionsResponse(subscriptions=subscriptions)
+    subscribers = await subscription_service.get_labour_subscribers(
+        requester_id=user.id, labour_id=labour_id
+    )
+    # TODO this does a load of duplicate db calls
+    return LabourSubscriptionsResponse(subscriptions=subscriptions, subscribers=subscribers)

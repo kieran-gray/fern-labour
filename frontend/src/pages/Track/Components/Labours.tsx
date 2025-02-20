@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Space, Text } from '@mantine/core';
 import { ApiError, BirthingPersonService, OpenAPI } from '../../../client';
 import { NotFoundError } from '../../../Errors';
-import { LabourStatistics } from '../../../shared-components/LabourStatistics/LabourStatistics';
 import { ContainerLoadingIcon } from '../../../shared-components/PageLoading/Loading';
 import { sortLabours } from '../../../shared-components/utils';
+import { LabourStatistics } from '../../Labour/Tabs/Statistics/LabourStatistics';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 
 export default function Labours() {
@@ -73,7 +73,7 @@ export default function Labours() {
     const labours = data.labours.map((labour) => (
       <div key={labour.id} className={baseClasses.body}>
         <div className={baseClasses.flexRowNoBP}>
-          <Text className={baseClasses.text}>{new Date(labour.start_time).toDateString()}</Text>
+          <Text className={baseClasses.text}>{new Date(labour.due_date).toDateString()}</Text>
           <Badge size="lg" pl={40} pr={40} mb={20} variant="light">
             {labour.current_phase}
           </Badge>

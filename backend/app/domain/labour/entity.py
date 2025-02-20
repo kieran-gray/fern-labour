@@ -63,6 +63,13 @@ class Labour(AggregateRoot[LabourId]):
         )
         return labour
 
+    def update_plan(
+        self, first_labour: bool, due_date: datetime, labour_name: str | None = None
+    ) -> None:
+        self.first_labour = first_labour
+        self.due_date = due_date
+        self.labour_name = labour_name
+
     def begin(self, start_time: datetime | None = None) -> None:
         self.start_time = start_time or datetime.now(UTC)
         self.set_labour_phase(LabourPhase.EARLY)

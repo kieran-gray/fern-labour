@@ -19,6 +19,7 @@ from app.domain.birthing_person.exceptions import (
 )
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
+    InvalidLabourId,
     LabourAlreadyBegun,
     LabourAlreadyCompleted,
     LabourHasActiveContraction,
@@ -89,6 +90,7 @@ class ExceptionMapper:
             SubscriptionNotFoundById: status.HTTP_404_NOT_FOUND,
             UnauthorizedSubscriptionRequest: status.HTTP_403_FORBIDDEN,
             UnauthorizedSubscriptionUpdateRequest: status.HTTP_403_FORBIDDEN,
+            InvalidLabourId: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

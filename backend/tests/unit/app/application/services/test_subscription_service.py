@@ -6,19 +6,15 @@ import pytest
 import pytest_asyncio
 
 from app.application.dtos.labour import LabourDTO
-from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
+from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_service import LabourService
 from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
-from app.domain.birthing_person.entity import BirthingPerson
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.exceptions import LabourNotFoundById
-from app.domain.subscriber.entity import Subscriber
 from app.domain.subscriber.exceptions import SubscriberCannotSubscribeToSelf, SubscriberNotFoundById
-from app.domain.subscriber.vo_subscriber_id import SubscriberId
 from app.domain.subscription.enums import SubscriptionStatus
 from app.domain.subscription.exceptions import (
     SubscriberAlreadySubscribed,
@@ -28,76 +24,37 @@ from app.domain.subscription.exceptions import (
     UnauthorizedSubscriptionRequest,
 )
 from app.domain.subscription.repository import SubscriptionRepository
-from tests.unit.app.application.conftest import (
-    MockBirthingPersonRepository,
-    MockSubscriberRepository,
-)
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"
 
 
-class MockTokenGenerator(TokenGenerator):
-    def generate(self, input: str) -> str:
-        return input
-
-    def validate(self, id: str, token: str):
-        return token == id
-
-
-@pytest_asyncio.fixture
-def event_producer():
-    return AsyncMock()
-
-
-@pytest.fixture
-def token_generator():
-    return MockTokenGenerator()
-
-
-@pytest_asyncio.fixture
-async def birthing_person_repo():
-    repo = MockBirthingPersonRepository()
-    repo._data = {
-        BIRTHING_PERSON: BirthingPerson(
-            id_=BirthingPersonId(BIRTHING_PERSON),
-            first_name="Name",
-            last_name="User",
-            labours=[],
-        )
-    }
-    return repo
-
-
-@pytest_asyncio.fixture
-async def subscriber_repo():
-    repo = MockSubscriberRepository()
-    repo._data = {
-        SUBSCRIBER: Subscriber(
-            id_=SubscriberId(SUBSCRIBER),
-            first_name="First",
-            last_name="Last",
-            phone_number="07123123123",
-            email="test@email.com",
-        )
-    }
-    return repo
-
-
 @pytest_asyncio.fixture
 async def subscription_service(
     get_labour_service: GetLabourService,
+    birthing_person_service: BirthingPersonService,
     subscriber_service: SubscriberService,
     subscription_repo: SubscriptionRepository,
-    event_producer: EventProducer,
     token_generator: TokenGenerator,
 ) -> SubscriptionService:
+    await birthing_person_service.register(
+        birthing_person_id=BIRTHING_PERSON,
+        first_name="Name",
+        last_name="User",
+    )
+    await subscriber_service.register(
+        subscriber_id=SUBSCRIBER,
+        first_name="First",
+        last_name="Last",
+        phone_number="07123123123",
+        email="test@email.com",
+    )
     return SubscriptionService(
         get_labour_service=get_labour_service,
         subscriber_service=subscriber_service,
         subscription_repository=subscription_repo,
         token_generator=token_generator,
-        event_producer=event_producer,
+        event_producer=AsyncMock(),
     )
 
 
@@ -336,5 +293,32 @@ async def test_cannot_query_subscriptions_for_other_labour(
     )
     with pytest.raises(UnauthorizedSubscriptionRequest):
         await subscription_service.get_labour_subscriptions(
+            requester_id=SUBSCRIBER, labour_id=labour.id
+        )
+
+
+async def test_can_query_subscribers_for_own_labour(
+    subscription_service: SubscriptionService, labour: LabourDTO
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    subscriber = await subscription_service._subscriber_service.get(subscriber_id=SUBSCRIBER)
+    await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    subscribers = await subscription_service.get_labour_subscribers(
+        requester_id=BIRTHING_PERSON, labour_id=labour.id
+    )
+    assert subscribers == [subscriber]
+
+
+async def test_cannot_query_subscribers_for_other_labour(
+    subscription_service: SubscriptionService, labour: LabourDTO
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    with pytest.raises(UnauthorizedSubscriptionRequest):
+        await subscription_service.get_labour_subscribers(
             requester_id=SUBSCRIBER, labour_id=labour.id
         )

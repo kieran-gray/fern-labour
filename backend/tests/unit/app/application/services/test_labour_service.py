@@ -52,15 +52,36 @@ async def test_can_plan_labour(labour_service: LabourService) -> None:
     assert isinstance(labour, LabourDTO)
 
 
+async def test_can_update_labour_plan(labour_service: LabourService) -> None:
+    labour = await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    assert isinstance(labour, LabourDTO)
+    assert labour.first_labour
+
+    labour = await labour_service.update_labour_plan(BIRTHING_PERSON, False, labour.due_date)
+    assert not labour.first_labour
+
+
 async def test_cannot_plan_labour_for_non_existent_user(labour_service: LabourService) -> None:
     with pytest.raises(BirthingPersonNotFoundById):
         await labour_service.plan_labour("TEST123456", True, datetime.now(UTC))
+
+
+async def test_cannot_update_labour_plan_for_non_existent_user(
+    labour_service: LabourService,
+) -> None:
+    with pytest.raises(BirthingPersonNotFoundById):
+        await labour_service.update_labour_plan("TEST123456", True, datetime.now(UTC))
 
 
 async def test_cannot_plan_labour_already_has_labour(labour_service: LabourService) -> None:
     await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
     with pytest.raises(BirthingPersonHasActiveLabour):
         await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+
+
+async def test_cannot_update_labour_plan_has_no_labour(labour_service: LabourService) -> None:
+    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
+        await labour_service.update_labour_plan(BIRTHING_PERSON, True, datetime.now(UTC))
 
 
 async def test_can_begin_labour(labour_service: LabourService) -> None:

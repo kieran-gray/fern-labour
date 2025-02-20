@@ -9,6 +9,7 @@ from app.application.services.subscription_management_service import Subscriptio
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.api.schemas.requests.subscription import (
+    BlockSubscriberRequest,
     RemoveSubscriberRequest,
     UpdateContactMethodsRequest,
     UpdateRoleRequest,
@@ -62,7 +63,7 @@ async def remove_subscriber(
 )
 @inject
 async def block_subscriber(
-    request_data: RemoveSubscriberRequest,
+    request_data: BlockSubscriberRequest,
     service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIBER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
