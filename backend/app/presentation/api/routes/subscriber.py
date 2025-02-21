@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials
 
 from app.application.services.subscriber_service import SubscriberService
+from app.domain.subscriber.exceptions import SubscriberNotFoundById
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.api.schemas.responses.subscriber import (
@@ -36,6 +37,37 @@ async def get(
 ) -> SubscriberResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
     subscriber = await service.get(subscriber_id=user.id)
+    return SubscriberResponse(subscriber=subscriber)
+
+
+@subscriber_router.get(
+    "/get-or-create",
+    responses={
+        status.HTTP_200_OK: {"model": SubscriberResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_or_create(
+    service: Annotated[SubscriberService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> SubscriberResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    try:
+        subscriber = await service.get(subscriber_id=user.id)
+    except (SubscriberNotFoundById):
+        subscriber = await service.register(
+            subscriber_id=user.id,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            phone_number=user.phone_number,
+            email=user.email,
+        )
     return SubscriberResponse(subscriber=subscriber)
 
 

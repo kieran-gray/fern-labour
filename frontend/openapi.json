@@ -289,6 +289,72 @@
                 ]
             }
         },
+        "/api/v1/birthing-person/get-or-create": {
+            "get": {
+                "tags": [
+                    "Birthing Person"
+                ],
+                "summary": "Get Or Create",
+                "operationId": "get_or_create_api_v1_birthing_person_get_or_create_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BirthingPersonResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/v1/birthing-person/summary": {
             "get": {
                 "tags": [
@@ -2508,9 +2574,6 @@
                         },
                         "type": "array",
                         "title": "Status Updates"
-                    },
-                    "statistics": {
-                        "$ref": "#/components/schemas/LabourStatisticsDTO"
                     }
                 },
                 "type": "object",
@@ -2528,8 +2591,7 @@
                     "should_call_midwife_urgently",
                     "contractions",
                     "announcements",
-                    "status_updates",
-                    "statistics"
+                    "status_updates"
                 ],
                 "title": "LabourDTO"
             },
@@ -2544,70 +2606,6 @@
                     "labour"
                 ],
                 "title": "LabourResponse"
-            },
-            "LabourStatisticsDTO": {
-                "properties": {
-                    "last_30_mins": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/LabourStatisticsDataDTO"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    },
-                    "last_60_mins": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/LabourStatisticsDataDTO"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    },
-                    "total": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/LabourStatisticsDataDTO"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    }
-                },
-                "type": "object",
-                "title": "LabourStatisticsDTO"
-            },
-            "LabourStatisticsDataDTO": {
-                "properties": {
-                    "contraction_count": {
-                        "type": "integer",
-                        "title": "Contraction Count"
-                    },
-                    "average_duration": {
-                        "type": "number",
-                        "title": "Average Duration"
-                    },
-                    "average_intensity": {
-                        "type": "number",
-                        "title": "Average Intensity"
-                    },
-                    "average_frequency": {
-                        "type": "number",
-                        "title": "Average Frequency"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "contraction_count",
-                    "average_duration",
-                    "average_intensity",
-                    "average_frequency"
-                ],
-                "title": "LabourStatisticsDataDTO"
             },
             "LabourSubscriptionTokenResponse": {
                 "properties": {
@@ -2667,9 +2665,6 @@
                     "hospital_recommended": {
                         "type": "boolean",
                         "title": "Hospital Recommended"
-                    },
-                    "statistics": {
-                        "$ref": "#/components/schemas/LabourStatisticsDTO"
                     }
                 },
                 "type": "object",
@@ -2678,8 +2673,7 @@
                     "duration",
                     "contraction_count",
                     "current_phase",
-                    "hospital_recommended",
-                    "statistics"
+                    "hospital_recommended"
                 ],
                 "title": "LabourSummaryDTO"
             },

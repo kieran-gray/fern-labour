@@ -7,16 +7,17 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { Center, Space, Tabs, Text, Title } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import { Space, Tabs, Text } from '@mantine/core';
 import { ApiError, LabourService, OpenAPI } from '../../client';
 import { NotFoundError } from '../../Errors';
+import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
-import { FooterSimple } from '../../shared-components/Footer/Footer';
-import { Header } from '../../shared-components/Header/Header';
-import { PageLoadingIcon } from '../../shared-components/PageLoading/Loading.tsx';
+import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
 import { LabourProvider } from './LabourContext.tsx';
 import { LabourControls } from './Tabs/Details/LabourControls.tsx';
 import { SubscribersContainer } from './Tabs/Details/ManageSubscribers/ManageSubscribers.tsx';
+import Plan from './Tabs/Details/Plan/Plan.tsx';
 import { InviteContainer } from './Tabs/Invites/InviteContainer/InviteContainer.tsx';
 import { ShareContainer } from './Tabs/Invites/ShareContainer/ShareContainer.tsx';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
@@ -26,6 +27,7 @@ import baseClasses from '../../shared-components/shared-styles.module.css';
 
 export const LabourPage = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -47,62 +49,65 @@ export const LabourPage = () => {
     retry: 0,
   });
 
-  let content = undefined;
-
   if (isPending) {
-    content = (
-      <div style={{ margin: 'auto' }}>
-        <PageLoadingIcon />
-      </div>
+    return (
+      <AppShell>
+        <PageLoading />
+      </AppShell>
     );
-  } else if (isError) {
+  }
+
+  if (isError) {
     if (error instanceof NotFoundError) {
-      content = (
-        <div className={baseClasses.flexColumn}>
-          <LabourControls labour={undefined} />
-          <div className={baseClasses.root}>
-            <div className={baseClasses.header}>
-              <Title fz="xl" className={baseClasses.title}>
-                Begin Labour
-              </Title>
-            </div>
-            <div className={baseClasses.body}>
-              <Text className={baseClasses.text}>You're not currently in active labour.</Text>
-              <Text className={baseClasses.text}>Click the button below to begin</Text>
-              <Space h="xl" />
-              <div className={baseClasses.flexRowEndNoBP} style={{ alignItems: 'stretch' }}>
-                TODO REMOVE THIS WHOLE THING
-              </div>
-            </div>
+      return (
+        <AppShell>
+          <div className={baseClasses.flexPageColumn}>
+            <div style={{ height: '4vh' }} />
+            <Plan
+              labour={undefined}
+              setActiveTab={() => {
+                navigate('/');
+              }}
+            />
           </div>
-        </div>
+        </AppShell>
       );
     }
-    // TODO don't want to do this
-    return <ErrorContainer message={error.message} />;
-  } else {
-    const labour = data;
-    content = (
+    return (
+      <AppShell>
+        <ErrorContainer message={error.message} />;
+      </AppShell>
+    );
+  }
+
+  const labour = data;
+  return (
+    <AppShell>
       <LabourProvider labourId={labour.id}>
-        <Tabs w="100%" defaultValue="track" radius="lg">
-          <Tabs.List grow className={baseClasses.navTabs}>
-            <Tabs.Tab className={baseClasses.navTab} value="details" leftSection={<IconPencil />}>
+        <Tabs
+          w="100%"
+          defaultValue="track"
+          radius="lg"
+          classNames={{
+            list: baseClasses.navTabs,
+            tab: baseClasses.navTab,
+            tabSection: baseClasses.navTabSection,
+          }}
+        >
+          <Tabs.List grow>
+            <Tabs.Tab value="details" leftSection={<IconPencil />}>
               <Text className={baseClasses.navTabText}>Details</Text>
             </Tabs.Tab>
-            <Tabs.Tab className={baseClasses.navTab} value="updates" leftSection={<IconMessage />}>
+            <Tabs.Tab value="updates" leftSection={<IconMessage />}>
               <Text className={baseClasses.navTabText}>Updates</Text>
             </Tabs.Tab>
-            <Tabs.Tab className={baseClasses.navTab} value="track" leftSection={<IconStopwatch />}>
+            <Tabs.Tab value="track" leftSection={<IconStopwatch />}>
               <Text className={baseClasses.navTabText}>Track</Text>
             </Tabs.Tab>
-            <Tabs.Tab
-              className={baseClasses.navTab}
-              value="stats"
-              leftSection={<IconChartHistogram />}
-            >
+            <Tabs.Tab value="stats" leftSection={<IconChartHistogram />}>
               <Text className={baseClasses.navTabText}>Stats</Text>
             </Tabs.Tab>
-            <Tabs.Tab className={baseClasses.navTab} value="invite" leftSection={<IconSend />}>
+            <Tabs.Tab value="invite" leftSection={<IconSend />}>
               <Text className={baseClasses.navTabText}>Invite</Text>
             </Tabs.Tab>
           </Tabs.List>
@@ -135,16 +140,6 @@ export const LabourPage = () => {
           </div>
         </Tabs>
       </LabourProvider>
-    );
-  }
-
-  return (
-    <div style={{ height: '100svh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <Center flex="shrink">{content}</Center>
-      <Space h="xl" />
-      <div style={{ flexGrow: 1 }} />
-      <FooterSimple />
-    </div>
+    </AppShell>
   );
 };

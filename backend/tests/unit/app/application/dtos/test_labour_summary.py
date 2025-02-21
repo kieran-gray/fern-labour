@@ -11,7 +11,6 @@ def test_can_convert_to_labour_summary_dto(sample_labour: Labour) -> None:
     assert dto.contraction_count == len(sample_labour.contractions)
     assert not dto.hospital_recommended
     assert dto.current_phase == sample_labour.current_phase.value
-    assert dto.statistics
 
 
 def test_can_convert_labour_summary_dto_to_dict(sample_labour: Labour) -> None:

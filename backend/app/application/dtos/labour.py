@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Any, Self
 
 from app.application.dtos.contraction import ContractionDTO
-from app.application.dtos.labour_statistics import LabourStatisticsDTO
 from app.application.dtos.labour_update import LabourUpdateDTO
 from app.domain.labour.entity import Labour
 from app.domain.services.should_call_midwife_urgently import ShouldCallMidwifeUrgentlyService
@@ -28,7 +27,6 @@ class LabourDTO:
     contractions: list[ContractionDTO]
     announcements: list[LabourUpdateDTO]
     status_updates: list[LabourUpdateDTO]
-    statistics: LabourStatisticsDTO
 
     @classmethod
     def from_domain(cls, labour: Labour) -> Self:
@@ -52,7 +50,6 @@ class LabourDTO:
             contractions=[ContractionDTO.from_domain(c) for c in labour.contractions],
             announcements=[LabourUpdateDTO.from_domain(a) for a in labour.announcements],
             status_updates=[LabourUpdateDTO.from_domain(s) for s in labour.status_updates],
-            statistics=LabourStatisticsDTO.from_contractions(labour.contractions),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -72,5 +69,4 @@ class LabourDTO:
             "contractions": [c.to_dict() for c in self.contractions],
             "announcements": [a.to_dict() for a in self.announcements],
             "status_updates": [s.to_dict() for s in self.status_updates],
-            "statistics": self.statistics.to_dict(),
         }

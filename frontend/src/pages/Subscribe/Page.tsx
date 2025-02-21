@@ -1,7 +1,7 @@
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Center } from '@mantine/core';
-import { Header } from '../../shared-components/Header/Header';
 import SubscribeForm from './Components/Form';
+import { AppShell } from '../../shared-components/AppShell';
+import baseClasses from '../../shared-components/shared-styles.module.css'
 
 export const SubscribePage: React.FC = () => {
   const { id } = useParams<'id'>();
@@ -12,11 +12,10 @@ export const SubscribePage: React.FC = () => {
   }
 
   return (
-    <div>
-      <Header />
-      <Center flex="shrink" p={15}>
+    <AppShell>
+      <div className={baseClasses.flexPageColumn}>
         <SubscribeForm labourId={id} token={token} />
-      </Center>
-    </div>
+      </div>
+    </AppShell>
   );
 };

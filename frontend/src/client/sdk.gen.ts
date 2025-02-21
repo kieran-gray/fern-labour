@@ -20,6 +20,7 @@ import type {
   GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse,
   GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetData,
   GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetResponse,
+  GetOrCreateApiV1BirthingPersonGetOrCreateGetResponse,
   GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse,
   GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse,
   GetUserApiV1AuthUserGetResponse,
@@ -129,6 +130,24 @@ export class BirthingPersonService {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/birthing-person/',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get Or Create
+   * @returns BirthingPersonResponse Successful Response
+   * @throws ApiError
+   */
+  public static getOrCreateApiV1BirthingPersonGetOrCreateGet(): CancelablePromise<GetOrCreateApiV1BirthingPersonGetOrCreateGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/birthing-person/get-or-create',
       errors: {
         400: 'Bad Request',
         401: 'Unauthorized',

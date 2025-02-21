@@ -83,24 +83,10 @@ export type LabourDTO = {
   contractions: Array<ContractionDTO>;
   announcements: Array<LabourUpdateDTO>;
   status_updates: Array<LabourUpdateDTO>;
-  statistics: LabourStatisticsDTO;
 };
 
 export type LabourResponse = {
   labour: LabourDTO;
-};
-
-export type LabourStatisticsDataDTO = {
-  contraction_count: number;
-  average_duration: number;
-  average_intensity: number;
-  average_frequency: number;
-};
-
-export type LabourStatisticsDTO = {
-  last_30_mins?: LabourStatisticsDataDTO | null;
-  last_60_mins?: LabourStatisticsDataDTO | null;
-  total?: LabourStatisticsDataDTO | null;
 };
 
 export type LabourSubscriptionsResponse = {
@@ -118,7 +104,6 @@ export type LabourSummaryDTO = {
   contraction_count: number;
   current_phase: string;
   hospital_recommended: boolean;
-  statistics: LabourStatisticsDTO;
 };
 
 export type LabourSummaryResponse = {
@@ -244,6 +229,8 @@ export type GetUserApiV1AuthUserGetResponse = User;
 export type RegisterApiV1BirthingPersonRegisterPostResponse = BirthingPersonResponse;
 
 export type GetBirthingPersonApiV1BirthingPersonGetResponse = BirthingPersonResponse;
+
+export type GetOrCreateApiV1BirthingPersonGetOrCreateGetResponse = BirthingPersonResponse;
 
 export type GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse =
   BirthingPersonSummaryResponse;

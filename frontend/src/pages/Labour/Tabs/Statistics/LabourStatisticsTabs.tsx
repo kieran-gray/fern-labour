@@ -1,9 +1,17 @@
-import { Tabs, Text } from '@mantine/core';
-import { LabourStatisticsDTO } from '../../../../client';
+import { Space, Tabs } from '@mantine/core';
+import { ContractionDTO } from '../../../../client';
+import { filterContractions, LabourStatistics } from './LabourStatistics';
+import { LabourStatisticsChart } from './LabourStatisticsChart';
 import { LabourStatisticsTable } from './LabourStatsticsTable';
 import classes from './LabourStatistics.module.css';
 
-export const LabourStatisticsTabs = ({ statistics }: { statistics: LabourStatisticsDTO }) => {
+export const LabourStatisticsTabs = ({
+  contractions,
+  statistics,
+}: {
+  contractions: ContractionDTO[];
+  statistics: LabourStatistics;
+}) => {
   return (
     <Tabs
       variant="pills"
@@ -22,18 +30,30 @@ export const LabourStatisticsTabs = ({ statistics }: { statistics: LabourStatist
         {statistics.total && (
           <Tabs.Panel value="all">
             <LabourStatisticsTable data={statistics.total} />
+            <Space h="lg" />
+            <LabourStatisticsChart contractions={contractions} />
           </Tabs.Panel>
         )}
-        <Tabs.Panel value="60mins">
-          {(statistics.last_60_mins && (
+        {statistics.last_60_mins && (
+          <Tabs.Panel value="60mins">
             <LabourStatisticsTable data={statistics.last_60_mins} />
-          )) || <Text className={classes.labourStatsText}>No data from the past 60 minutes</Text>}
-        </Tabs.Panel>
-        <Tabs.Panel value="30mins">
-          {(statistics.last_30_mins && (
+            <Space h="lg" />
+            <LabourStatisticsChart
+              minutes={60}
+              contractions={filterContractions(contractions, 60)}
+            />
+          </Tabs.Panel>
+        )}
+        {statistics.last_30_mins && (
+          <Tabs.Panel value="30mins">
             <LabourStatisticsTable data={statistics.last_30_mins} />
-          )) || <Text className={classes.labourStatsText}>No data from the past 30 minutes</Text>}
-        </Tabs.Panel>
+            <Space h="lg" />
+            <LabourStatisticsChart
+              minutes={30}
+              contractions={filterContractions(contractions, 30)}
+            />
+          </Tabs.Panel>
+        )}
       </Tabs.List>
     </Tabs>
   );

@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { IconInfoCircle } from '@tabler/icons-react';
 import { Space, Stack, Text, Title } from '@mantine/core';
 import { LabourDTO } from '../../../../client/index.ts';
 import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader.tsx';
@@ -29,11 +30,20 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
               Track your contractions here. Simply press the button below to start a new
               contraction. Click on a completed contraction to edit it.
             </Text>
-            <Stack align="stretch" justify="flex-end" mt="20px">
+            <Stack align="stretch" justify="flex-end" mt="20px" style={{ alignItems: 'center' }}>
               {(sortedContractions.length > 0 && (
                 <ContractionTimeline contractions={sortedContractions} />
               )) || (
-                <Text c="var(--mantine-color-gray-9)" fw={500} mb={30}>
+                <Text
+                  className={baseClasses.importantText}
+                  c="var(--mantine-color-gray-9)"
+                  fw={500}
+                  mb={30}
+                >
+                  <IconInfoCircle
+                    size={20}
+                    style={{ alignSelf: 'center', marginRight: '10px', flexShrink: 0 }}
+                  />
                   When you start your first contraction, we will let your subscribers know that your
                   labour is starting.
                 </Text>

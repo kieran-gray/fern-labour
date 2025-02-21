@@ -53,8 +53,8 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
           {data.labour_name ? data.labour_name : 'Your Labour'}
         </Title>
         <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
-          Take a deep breath—you’ve got this! Here, you can check your labour details and manage your subscribers.
-          Use the tabs above to navigate through the app.
+          Take a deep breath—you’ve got this! Here, you can check your labour details and manage
+          your subscribers. Use the tabs above to navigate through the app.
         </Text>
         <div className={classes.infoRow}>
           <Badge variant="filled" className={classes.labourBadge} size="lg">

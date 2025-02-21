@@ -107,3 +107,18 @@
       display: none;
     }
   }
+
+
+  .labourStatsChartRoot {
+    --chart-grid-color: alpha(var(--mantine-color-black), 0.15);
+    --chart-text-color: var(--mantine-color-gray-8);
+    background-color: var(--mantine-color-white);
+    padding: 30px 30px 10px 30px;
+    border-radius: 15px;
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        padding-top: 30px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+  }

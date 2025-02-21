@@ -18,7 +18,7 @@ export default function ConfirmAnnouncementModal({
     <Modal
       overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
       classNames={{
-        content: classes.root,
+        content: classes.modalRoot,
         header: classes.modalHeader,
         title: classes.modalTitle,
         body: classes.modalBody,

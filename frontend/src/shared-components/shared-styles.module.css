@@ -50,6 +50,13 @@
     }
 }
 
+.navTabSection {
+    @media (max-width: $mantine-breakpoint-sm) {
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+}
+
 .navTabText {
     @media (max-width: $mantine-breakpoint-sm) {
         display: none;
@@ -88,6 +95,17 @@
     font-weight: 700;
     margin-bottom: var(--mantine-spacing-md);
     font-size: var(--mantine-font-size-lg);
+}
+
+.importantText {
+    display: flex;
+    background-color: var(--mantine-color-pink-1);
+    padding: 15px;
+    border-radius: 15px;
+    width: 100%;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .minorText {

@@ -1,10 +1,26 @@
-import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/icons-react';
+import { useState } from 'react';
+import {
+  IconArrowRight,
+  IconCalendar,
+  IconCheck,
+  IconLoader,
+  IconPencil,
+  IconUpload,
+  IconX,
+} from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Radio, Text, TextInput, Title } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { LabourDTO, LabourService, OpenAPI, PlanLabourRequest } from '../../../../../client';
+import { notifications } from '@mantine/notifications';
+import {
+  BirthingPersonService,
+  LabourDTO,
+  LabourService,
+  OpenAPI,
+  PlanLabourRequest,
+} from '../../../../../client';
 import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
 import image from './image.svg';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
@@ -18,6 +34,15 @@ export default function Plan({
   setActiveTab: Function;
 }) {
   const auth = useAuth();
+  const defaultIcon =
+    labour === undefined ? (
+      <IconArrowRight size={18} stroke={1.5} />
+    ) : (
+      <IconUpload size={18} stroke={1.5} />
+    );
+  const [icon, setIcon] = useState<React.ReactNode>(defaultIcon);
+  const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
+
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
   };
@@ -30,7 +55,7 @@ export default function Plan({
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
-      dueDate: labour ? new Date(labour.due_date): new Date(),
+      dueDate: labour ? new Date(labour.due_date) : new Date(),
       firstLabour: labour ? boolToString(labour.first_labour) : 'true',
       labourName: labour ? labour.labour_name : '',
     },
@@ -38,23 +63,44 @@ export default function Plan({
 
   const mutation = useMutation({
     mutationFn: async ({ values, existing }: { values: typeof form.values; existing: boolean }) => {
+      setMutationInProgress(true);
+      setIcon(<IconLoader size={18} stroke={1.5} />);
+      ``;
       const requestBody: PlanLabourRequest = {
         due_date: values.dueDate.toISOString(),
         first_labour: values.firstLabour === 'true',
         labour_name: values.labourName,
       };
       if (existing) {
-        await LabourService.updateLabourPlanApiV1LabourPlanPut({ requestBody })
+        await LabourService.updateLabourPlanApiV1LabourPlanPut({ requestBody });
       } else {
+        await BirthingPersonService.getOrCreateApiV1BirthingPersonGetOrCreateGet();
         await LabourService.planLabourApiV1LabourPlanPost({ requestBody });
       }
     },
-    onSuccess: (labour) => {
+    onSuccess: async (labour) => {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
+      setMutationInProgress(false);
+      setIcon(<IconCheck size={18} stroke={1.5} />);
       setActiveTab('details');
+      await new Promise((r) => setTimeout(r, 1000));
+      setIcon(<IconArrowRight size={18} stroke={1.5} />);
     },
-    onError: (error) => {
-      console.error('Error completing labour', error);
+    onError: async (error) => {
+      setMutationInProgress(false);
+      setIcon(<IconX size={18} stroke={1.5} />);
+      notifications.show({
+        title: 'Error Planning Labour',
+        message: 'Something went wrong. Please try again.',
+        radius: 'lg',
+        color: 'var(--mantine-color-pink-7)',
+      });
+      console.error('Error planning labour', error);
+      await new Promise((r) => setTimeout(r, 1000));
+      setIcon(defaultIcon);
+    },
+    onSettled: () => {
+      setMutationInProgress(false);
     },
   });
 
@@ -80,7 +126,7 @@ export default function Plan({
                     <DatePickerInput
                       placeholder="Due date"
                       rightSection={<IconCalendar size={18} stroke={1.5} />}
-                      valueFormat='DD/MM/YYYY'
+                      valueFormat="DD/MM/YYYY"
                       label="Estimated due date"
                       description="Remember, your due date is only an estimate (only 4% of women give birth on theirs)"
                       radius="lg"
@@ -122,11 +168,11 @@ export default function Plan({
             </div>
             <Image src={image} className={classes.image} />
           </div>
-          {labour === undefined && (
-              <div className={classes.submitRow}>
+          {(labour === undefined && (
+            <div className={classes.submitRow} style={{ justifyContent: 'flex-end' }}>
               <Button
                 color="var(--mantine-color-pink-4)"
-                rightSection={<IconArrowRight size={18} stroke={1.5} />}
+                rightSection={icon}
                 variant="filled"
                 radius="xl"
                 size="md"
@@ -134,15 +180,16 @@ export default function Plan({
                 className={classes.submitButton}
                 styles={{ section: { marginLeft: 22 } }}
                 type="submit"
+                loading={mutationInProgress}
               >
                 Finish Planning Labour
               </Button>
             </div>
-          ) || 
-            <div className={classes.submitRow} style={{justifyContent:'space-between'}}>
+          )) || (
+            <div className={classes.submitRow} style={{ justifyContent: 'space-between' }}>
               <Button
                 color="var(--mantine-color-pink-4)"
-                leftSection={<IconUpload size={18} stroke={1.5} />}
+                leftSection={icon}
                 variant="outline"
                 radius="xl"
                 size="md"
@@ -150,6 +197,7 @@ export default function Plan({
                 className={classes.submitButton}
                 styles={{ section: { marginRight: 22 } }}
                 type="submit"
+                loading={mutationInProgress}
               >
                 Update labour plan
               </Button>
@@ -166,8 +214,8 @@ export default function Plan({
               >
                 Go back to labour details
               </Button>
-          </div>
-          }
+            </div>
+          )}
         </form>
       </div>
     </div>

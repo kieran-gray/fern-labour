@@ -1,9 +1,9 @@
 import { Table } from '@mantine/core';
-import { LabourStatisticsDataDTO } from '../../../../client';
 import { formatTimeSeconds } from '../../../../shared-components/utils';
+import { LabourStatisticsData } from './LabourStatistics';
 import classes from './LabourStatistics.module.css';
 
-export const LabourStatisticsTable = ({ data }: { data: LabourStatisticsDataDTO }) => {
+export const LabourStatisticsTable = ({ data }: { data: LabourStatisticsData }) => {
   return (
     <Table variant="vertical" borderColor="var(--mantine-color-pink-2)">
       <Table.Tbody>
