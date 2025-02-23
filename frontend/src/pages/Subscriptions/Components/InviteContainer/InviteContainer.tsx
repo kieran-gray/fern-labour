@@ -4,16 +4,14 @@ import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { LabourService, OpenAPI, SendInviteRequest } from '../../../../../client';
-import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
-import { useLabour } from '../../../LabourContext';
+import { OpenAPI } from '../../../../client';
+import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
 import image from './invite.svg';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
+import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './InviteContainer.module.css';
 
 export function InviteContainer() {
   const auth = useAuth();
-  const labourId = useLabour();
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -31,10 +29,8 @@ export function InviteContainer() {
 
   const mutation = useMutation({
     mutationFn: async (values: typeof form.values) => {
-      const requestBody: SendInviteRequest = { invite_email: values.email, labour_id: labourId };
-      await LabourService.sendInviteApiV1LabourSendInvitePost({
-        requestBody,
-      });
+      // TODO subscriber invite
+      console.log(values);
     },
     onSuccess: () => {
       notifications.show({
@@ -56,10 +52,10 @@ export function InviteContainer() {
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>Invite friends and family by email</Title>
+            <Title order={3}>Know an expecting mum? Invite her to join!</Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              Invite your friends and family to keep them in the loop and let them track your labour
-              in real time. They’ll be able to support you every step of the way!
+              Introduce her to a simple way to keep family and friends informed throughout her labor
+              experience.
             </Text>
             <Group className={classes.group}>
               <form
@@ -74,7 +70,7 @@ export function InviteContainer() {
                     rightSectionPointerEvents="none"
                     rightSection={<IconAt size={16} />}
                     label="Email"
-                    placeholder="friend@email.com"
+                    placeholder="mum@email.com"
                     key={form.key('email')}
                     size="lg"
                     {...form.getInputProps('email')}

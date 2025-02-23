@@ -75,7 +75,7 @@ export const LabourPage = () => {
     }
     return (
       <AppShell>
-        <ErrorContainer message={error.message} />;
+        <ErrorContainer message={error.message} />
       </AppShell>
     );
   }

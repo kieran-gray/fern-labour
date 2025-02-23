@@ -4,7 +4,6 @@ import { useAuth } from 'react-oidc-context';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ApiError, LabourService, LabourUpdateRequest, OpenAPI } from '../../../../../client';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 
 export function PostStatusUpdateButton({
   message,
@@ -43,15 +42,7 @@ export function PostStatusUpdateButton({
           title: 'Error',
           message: 'Something went wrong, please try again.',
           radius: 'lg',
-          color: 'var(--mantine-color-pink-9)',
-          classNames: {
-            title: baseClasses.notificationTitle,
-            description: baseClasses.notificationDescription,
-          },
-          style: {
-            backgroundColor: 'var(--mantine-color-pink-4)',
-            color: 'var(--mantine-color-white)',
-          },
+          color: 'var(--mantine-color-pink-7)',
         });
       }
     },

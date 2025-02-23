@@ -1,15 +1,15 @@
 import { Route, Routes } from 'react-router-dom';
 import { appRoutes } from './constants.ts';
 import { ContactPage } from './pages/Contact/Page.tsx';
+import { HomePage } from './pages/Home/Page.tsx';
 import { NotFoundPage } from './pages/NotFound/Page.tsx';
 import { SubscribePage } from './pages/Subscribe/Page.tsx';
-import { HomePage } from './pages/Home/Page.tsx';
 
 export function Router() {
   return (
     <Routes>
-      <Route path={appRoutes.labour}>
-        <Route index path={appRoutes.labour} element={<HomePage />} />
+      <Route path={appRoutes.home}>
+        <Route index path={appRoutes.home} element={<HomePage />} />
         <Route path={appRoutes.notFound} element={<NotFoundPage />} />
         <Route path={appRoutes.contact} element={<ContactPage />} />
         <Route path={appRoutes.subscribe} element={<SubscribePage />} />

@@ -15,7 +15,6 @@ export type BirthingPersonSummaryDTO = {
   id: string;
   first_name: string;
   last_name: string;
-  active_labour: LabourSummaryDTO | null;
 };
 
 export type BirthingPersonSummaryResponse = {
@@ -162,8 +161,19 @@ export type SubscriberResponse = {
   subscriber: SubscriberDTO;
 };
 
+export type SubscriberSubscriptionsResponse = {
+  subscriptions: Array<SubscriptionDTO>;
+  birthing_persons: Array<BirthingPersonSummaryDTO>;
+};
+
 export type SubscribeToRequest = {
   token: string;
+};
+
+export type SubscriptionDataResponse = {
+  subscription: SubscriptionDTO;
+  birthing_person: BirthingPersonSummaryDTO;
+  labour: LabourDTO;
 };
 
 export type SubscriptionDTO = {
@@ -247,6 +257,12 @@ export type HealthcheckApiV1HealthGetResponse = {
   [key: string]: string;
 };
 
+export type GetLabourByIdApiV1LabourGetLabourIdGetData = {
+  labourId: string;
+};
+
+export type GetLabourByIdApiV1LabourGetLabourIdGetResponse = LabourResponse;
+
 export type UpdateLabourPlanApiV1LabourPlanPutData = {
   requestBody: PlanLabourRequest;
 };
@@ -300,6 +316,8 @@ export type SendInviteApiV1LabourSendInvitePostResponse = void;
 
 export type GetApiV1SubscriberGetResponse = SubscriberResponse;
 
+export type GetOrCreateApiV1SubscriberGetOrCreateGetResponse = SubscriberResponse;
+
 export type RegisterApiV1SubscriberRegisterPostResponse = SubscriberResponse;
 
 export type SubscribeToApiV1SubscriptionSubscribeLabourIdPostData = {
@@ -316,6 +334,16 @@ export type UnsubscribeFromApiV1SubscriptionUnsubscribePostData = {
 export type UnsubscribeFromApiV1SubscriptionUnsubscribePostResponse = SubscriptionResponse;
 
 export type GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse = SubscriptionsResponse;
+
+export type GetSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGetResponse =
+  SubscriberSubscriptionsResponse;
+
+export type GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetData = {
+  subscriptionId: string;
+};
+
+export type GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetResponse =
+  SubscriptionDataResponse;
 
 export type GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetData = {
   labourId: string;

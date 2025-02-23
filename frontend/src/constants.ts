@@ -1,5 +1,5 @@
 export const appRoutes = {
-  labour: '/',
+  home: '/',
   notFound: '/*',
   subscribe: '/subscribe/:id',
   contact: '/contact',

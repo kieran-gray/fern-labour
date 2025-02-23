@@ -6,7 +6,6 @@ import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ApiError, LabourService, LabourUpdateRequest, OpenAPI } from '../../../../../client';
 import ConfirmAnnouncementModal from './ConfirmAnnouncement';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 
 export default function MakeAnnouncementButton({
   message,
@@ -46,15 +45,7 @@ export default function MakeAnnouncementButton({
           title: 'Error',
           message: 'Wait at least 10 seconds between announcements',
           radius: 'lg',
-          color: 'var(--mantine-color-pink-9)',
-          classNames: {
-            title: baseClasses.notificationTitle,
-            description: baseClasses.notificationDescription,
-          },
-          style: {
-            backgroundColor: 'var(--mantine-color-pink-4)',
-            color: 'var(--mantine-color-white)',
-          },
+          color: 'var(--mantine-color-pink-7)',
         });
       }
     },

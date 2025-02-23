@@ -66,20 +66,12 @@ export default function SubscribeForm({
         title: 'Error',
         message,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-9)',
-        classNames: {
-          title: baseClasses.notificationTitle,
-          description: baseClasses.notificationDescription,
-        },
-        style: {
-          backgroundColor: 'var(--mantine-color-pink-4)',
-          color: 'var(--mantine-color-white)',
-        },
+        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
   return (
-    <div className={baseClasses.root} style={{marginTop: '4vh'}}>
+    <div className={baseClasses.root} style={{ marginTop: '4vh' }}>
       <div className={baseClasses.header}>
         <div className={baseClasses.title}>Subscribe</div>
       </div>

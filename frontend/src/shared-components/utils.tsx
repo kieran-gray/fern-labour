@@ -96,3 +96,7 @@ export const secondsElapsed = (contraction: ContractionDTO): number => {
   const now = Date.now();
   return Math.round((now - timestamp) / 1000);
 };
+
+export function pluraliseName(name: string): string {
+  return name.endsWith('s') ? `${name}'` : `${name}'s`;
+}

@@ -1,13 +1,12 @@
-import { IconInfoCircle } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Avatar, Group, Table, Text, Tooltip } from '@mantine/core';
 import { OpenAPI, SubscriberDTO, SubscriptionService } from '../../../../../../client';
 import { ErrorContainer } from '../../../../../../shared-components/ErrorContainer/ErrorContainer';
+import { ImportantText } from '../../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoading } from '../../../../../../shared-components/PageLoading/PageLoading';
 import { useLabour } from '../../../../LabourContext';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
-import baseClasses from '../../../../../../shared-components/shared-styles.module.css';
 import classes from './SubscribersTable.module.css';
 
 export function SubscribersTable() {
@@ -94,12 +93,6 @@ export function SubscribersTable() {
     );
   }
   return (
-    <Text className={baseClasses.importantText}>
-      <IconInfoCircle
-        size={20}
-        style={{ alignSelf: 'center', marginRight: '10px', flexShrink: 0 }}
-      />
-      You don't have any subscribers yet, share invites with loved ones in the invite tab.{' '}
-    </Text>
+    <ImportantText message="You don't have any subscribers yet, share invites with loved ones in the invite tab." />
   );
 }

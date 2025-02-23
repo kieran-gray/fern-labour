@@ -18,9 +18,15 @@ import type {
   GetApiV1SubscriberGetResponse,
   GetBirthingPersonApiV1BirthingPersonGetResponse,
   GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse,
+  GetLabourByIdApiV1LabourGetLabourIdGetData,
+  GetLabourByIdApiV1LabourGetLabourIdGetResponse,
   GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetData,
   GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetResponse,
   GetOrCreateApiV1BirthingPersonGetOrCreateGetResponse,
+  GetOrCreateApiV1SubscriberGetOrCreateGetResponse,
+  GetSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGetResponse,
+  GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetData,
+  GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetResponse,
   GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse,
   GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse,
   GetUserApiV1AuthUserGetResponse,
@@ -231,6 +237,33 @@ export class HealthService {
 }
 
 export class LabourService {
+  /**
+   * Get Labour By Id
+   * @param data The data for the request.
+   * @param data.labourId
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static getLabourByIdApiV1LabourGetLabourIdGet(
+    data: GetLabourByIdApiV1LabourGetLabourIdGetData
+  ): CancelablePromise<GetLabourByIdApiV1LabourGetLabourIdGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/labour/get/{labour_id}',
+      path: {
+        labour_id: data.labourId,
+      },
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
   /**
    * Update Labour Plan
    * @param data The data for the request.
@@ -500,6 +533,24 @@ export class SubscriberService {
   }
 
   /**
+   * Get Or Create
+   * @returns SubscriberResponse Successful Response
+   * @throws ApiError
+   */
+  public static getOrCreateApiV1SubscriberGetOrCreateGet(): CancelablePromise<GetOrCreateApiV1SubscriberGetOrCreateGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/subscriber/get-or-create',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
    * Register
    * @returns SubscriberResponse Successful Response
    * @throws ApiError
@@ -586,6 +637,50 @@ export class SubscriptionService {
         400: 'Bad Request',
         401: 'Unauthorized',
         404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get Subscriber Subscriptions
+   * @returns SubscriberSubscriptionsResponse Successful Response
+   * @throws ApiError
+   */
+  public static getSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGet(): CancelablePromise<GetSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/subscription/subscriber_subscriptions',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get Subscription By Id
+   * @param data The data for the request.
+   * @param data.subscriptionId
+   * @returns SubscriptionDataResponse Successful Response
+   * @throws ApiError
+   */
+  public static getSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGet(
+    data: GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetData
+  ): CancelablePromise<GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/subscription/subscription-data/{subscription_id}',
+      path: {
+        subscription_id: data.subscriptionId,
+      },
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
         500: 'Internal Server Error',
       },
     });

@@ -487,6 +487,72 @@
                 ]
             }
         },
+        "/api/v1/subscriber/get-or-create": {
+            "get": {
+                "tags": [
+                    "Subscriber"
+                ],
+                "summary": "Get Or Create",
+                "operationId": "get_or_create_api_v1_subscriber_get_or_create_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriberResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/v1/subscriber/register": {
             "post": {
                 "tags": [
@@ -800,6 +866,159 @@
                         "HTTPBearer": []
                     }
                 ]
+            }
+        },
+        "/api/v1/subscription/subscriber_subscriptions": {
+            "get": {
+                "tags": [
+                    "Subscription"
+                ],
+                "summary": "Get Subscriber Subscriptions",
+                "operationId": "get_subscriber_subscriptions_api_v1_subscription_subscriber_subscriptions_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriberSubscriptionsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/subscription/subscription-data/{subscription_id}": {
+            "get": {
+                "tags": [
+                    "Subscription"
+                ],
+                "summary": "Get Subscription By Id",
+                "operationId": "get_subscription_by_id_api_v1_subscription_subscription_data__subscription_id__get",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "subscription_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Subscription Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriptionDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/v1/subscription/labour_subscriptions/{labour_id}": {
@@ -1271,6 +1490,103 @@
                         "HTTPBearer": []
                     }
                 ]
+            }
+        },
+        "/api/v1/labour/get/{labour_id}": {
+            "get": {
+                "tags": [
+                    "Labour"
+                ],
+                "summary": "Get Labour By Id",
+                "operationId": "get_labour_by_id_api_v1_labour_get__labour_id__get",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "labour_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Labour Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/v1/labour/plan": {
@@ -2224,24 +2540,13 @@
                     "last_name": {
                         "type": "string",
                         "title": "Last Name"
-                    },
-                    "active_labour": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/LabourSummaryDTO"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
                     }
                 },
                 "type": "object",
                 "required": [
                     "id",
                     "first_name",
-                    "last_name",
-                    "active_labour"
+                    "last_name"
                 ],
                 "title": "BirthingPersonSummaryDTO"
             },
@@ -2934,6 +3239,30 @@
                 ],
                 "title": "SubscriberResponse"
             },
+            "SubscriberSubscriptionsResponse": {
+                "properties": {
+                    "subscriptions": {
+                        "items": {
+                            "$ref": "#/components/schemas/SubscriptionDTO"
+                        },
+                        "type": "array",
+                        "title": "Subscriptions"
+                    },
+                    "birthing_persons": {
+                        "items": {
+                            "$ref": "#/components/schemas/BirthingPersonSummaryDTO"
+                        },
+                        "type": "array",
+                        "title": "Birthing Persons"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "subscriptions",
+                    "birthing_persons"
+                ],
+                "title": "SubscriberSubscriptionsResponse"
+            },
             "SubscriptionDTO": {
                 "properties": {
                     "id": {
@@ -2979,6 +3308,26 @@
                     "contact_methods"
                 ],
                 "title": "SubscriptionDTO"
+            },
+            "SubscriptionDataResponse": {
+                "properties": {
+                    "subscription": {
+                        "$ref": "#/components/schemas/SubscriptionDTO"
+                    },
+                    "birthing_person": {
+                        "$ref": "#/components/schemas/BirthingPersonSummaryDTO"
+                    },
+                    "labour": {
+                        "$ref": "#/components/schemas/LabourDTO"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "subscription",
+                    "birthing_person",
+                    "labour"
+                ],
+                "title": "SubscriptionDataResponse"
             },
             "SubscriptionResponse": {
                 "properties": {
