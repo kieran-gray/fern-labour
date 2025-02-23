@@ -99,7 +99,7 @@ class LabourCompletedEventHandler(EventHandler):
         birthing_person_id = event["data"]["birthing_person_id"]
         labour_id = event["data"]["labour_id"]
 
-        birthing_person = await self._birthing_person_service.get_birthing_person(
+        birthing_person = await self._birthing_person_service.get(
             birthing_person_id=birthing_person_id
         )
         subscriptions = await self._subscription_service.get_labour_subscriptions(

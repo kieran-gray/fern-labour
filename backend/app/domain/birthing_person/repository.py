@@ -33,3 +33,14 @@ class BirthingPersonRepository(Protocol):
         Returns:
             The birthing_person if found, else returns None
         """
+
+    async def get_by_ids(self, birthing_person_ids: list[BirthingPersonId]) -> list[BirthingPerson]:
+        """
+        Retrieve a list of birthing persons by their IDs.
+
+        Args:
+            birthing_person_ids: The IDs of the birthing persons to retrieve
+
+        Returns:
+            A list of birthing persons
+        """

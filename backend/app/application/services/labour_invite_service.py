@@ -51,9 +51,7 @@ class LabourInviteService:
         )
 
     async def send_invite(self, birthing_person_id: str, labour_id: str, invite_email: str) -> None:
-        birthing_person = await self._birthing_person_service.get_birthing_person(
-            birthing_person_id
-        )
+        birthing_person = await self._birthing_person_service.get(birthing_person_id)
         subscriptions = await self._subscription_service.get_labour_subscriptions(
             requester_id=birthing_person_id, labour_id=labour_id
         )

@@ -44,7 +44,7 @@ class BirthingPersonService:
         await self._birthing_person_repository.save(birthing_person)
         return BirthingPersonDTO.from_domain(birthing_person)
 
-    async def get_birthing_person(self, birthing_person_id: str) -> BirthingPersonDTO:
+    async def get(self, birthing_person_id: str) -> BirthingPersonDTO:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
         if not birthing_person:
@@ -52,12 +52,33 @@ class BirthingPersonService:
 
         return BirthingPersonDTO.from_domain(birthing_person)
 
-    async def get_birthing_person_summary(
-        self, birthing_person_id: str
-    ) -> BirthingPersonSummaryDTO:
+    async def get_many(self, birthing_person_ids: list[str]) -> list[BirthingPersonDTO]:
+        domain_ids = [
+            BirthingPersonId(birthing_person_id) for birthing_person_id in birthing_person_ids
+        ]
+        birthing_persons = await self._birthing_person_repository.get_by_ids(domain_ids)
+        # TODO handle missing, same for subscriber
+        return [
+            BirthingPersonDTO.from_domain(birthing_person) for birthing_person in birthing_persons
+        ]
+
+    async def get_summary(self, birthing_person_id: str) -> BirthingPersonSummaryDTO:
         domain_id = BirthingPersonId(birthing_person_id)
         birthing_person = await self._birthing_person_repository.get_by_id(domain_id)
         if not birthing_person:
             raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
 
         return BirthingPersonSummaryDTO.from_domain(birthing_person)
+
+    async def get_many_summary(
+        self, birthing_person_ids: list[str]
+    ) -> list[BirthingPersonSummaryDTO]:
+        domain_ids = [
+            BirthingPersonId(birthing_person_id) for birthing_person_id in birthing_person_ids
+        ]
+        birthing_persons = await self._birthing_person_repository.get_by_ids(domain_ids)
+        # TODO handle missing, same for subscriber
+        return [
+            BirthingPersonSummaryDTO.from_domain(birthing_person)
+            for birthing_person in birthing_persons
+        ]

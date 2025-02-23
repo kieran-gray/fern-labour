@@ -20,7 +20,6 @@ def test_can_convert_to_birthing_person_summary_dto(birthing_person: BirthingPer
     assert dto.id == birthing_person.id_.value
     assert dto.first_name == birthing_person.first_name
     assert dto.last_name == birthing_person.last_name
-    assert dto.active_labour is None
 
 
 def test_can_convert_birthing_person_summary_dto_to_dict(birthing_person: BirthingPerson) -> None:

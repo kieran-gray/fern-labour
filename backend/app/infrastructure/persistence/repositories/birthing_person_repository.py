@@ -51,3 +51,20 @@ class SQLAlchemyBirthingPersonRepository(BirthingPersonRepository):
 
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_by_ids(self, birthing_person_ids: list[BirthingPersonId]) -> list[BirthingPerson]:
+        """
+        Retrieve a list of birthing persons by their IDs.
+
+        Args:
+            birthing_person_ids: The IDs of the birthing persons to retrieve
+
+        Returns:
+            A list of birthing persons
+        """
+        stmt = select(BirthingPerson).where(
+            birthing_persons_table.c.id.in_([b.value for b in birthing_person_ids])
+        )
+
+        result = await self._session.execute(stmt)
+        return list(result.scalars())

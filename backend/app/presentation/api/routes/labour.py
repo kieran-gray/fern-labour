@@ -32,6 +32,31 @@ from app.setup.ioc.di_component_enum import ComponentEnum
 labour_router = APIRouter(prefix="/labour", tags=["Labour"])
 
 
+@labour_router.get(
+    "/get/{labour_id}",
+    responses={
+        status.HTTP_200_OK: {"model": LabourResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_labour_by_id(
+    labour_id: str,
+    service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourResponse:
+    _ = auth_controller.get_authenticated_user(credentials=credentials)
+    # TODO critical check user is authorized
+    labour = await service.get_labour_by_id(labour_id=labour_id)
+    return LabourResponse(labour=labour)
+
+
 @labour_router.post(
     "/plan",
     responses={
@@ -281,6 +306,7 @@ async def get_subscription_token(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionTokenResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
+    # TODO critical this is not correct, use labour id
     token = token_generator.generate(input=user.id)
     return LabourSubscriptionTokenResponse(token=token)
 

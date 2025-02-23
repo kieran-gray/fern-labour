@@ -65,7 +65,7 @@ async def get_birthing_person(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> BirthingPersonResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    birthing_person = await service.get_birthing_person(birthing_person_id=user.id)
+    birthing_person = await service.get(birthing_person_id=user.id)
     return BirthingPersonResponse(birthing_person=birthing_person)
 
 
@@ -88,8 +88,8 @@ async def get_or_create(
 ) -> BirthingPersonResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
     try:
-        birthing_person = await service.get_birthing_person(birthing_person_id=user.id)
-    except (BirthingPersonNotFoundById):
+        birthing_person = await service.get(birthing_person_id=user.id)
+    except BirthingPersonNotFoundById:
         birthing_person = await service.register(
             birthing_person_id=user.id,
             first_name=user.first_name,
@@ -118,5 +118,5 @@ async def get_birthing_person_summary(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> BirthingPersonSummaryResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    birthing_person = await service.get_birthing_person_summary(birthing_person_id=user.id)
+    birthing_person = await service.get_summary(birthing_person_id=user.id)
     return BirthingPersonSummaryResponse(birthing_person=birthing_person)

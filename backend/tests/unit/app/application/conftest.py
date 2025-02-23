@@ -45,6 +45,13 @@ class MockBirthingPersonRepository(BirthingPersonRepository):
     async def get_by_id(self, birthing_person_id: BirthingPersonId) -> BirthingPerson | None:
         return self._data.get(birthing_person_id.value, None)
 
+    async def get_by_ids(self, birthing_person_ids: list[BirthingPersonId]) -> list[BirthingPerson]:
+        birthing_persons = []
+        for birthing_person_id in birthing_person_ids:
+            if birthing_person := self._data.get(birthing_person_id.value, None):
+                birthing_persons.append(birthing_person)
+        return birthing_persons
+
 
 class MockLabourRepository(LabourRepository):
     _data = {}

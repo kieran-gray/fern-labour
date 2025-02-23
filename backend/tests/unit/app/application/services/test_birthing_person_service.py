@@ -29,32 +29,50 @@ async def test_cannot_register_multiple_birthing_persons_with_same_id(
 async def test_get_birthing_person(birthing_person_service: BirthingPersonService):
     birthing_person_id = "test"
     await birthing_person_service.register(birthing_person_id, "User", "Name")
-    birthing_person = await birthing_person_service.get_birthing_person(birthing_person_id)
+    birthing_person = await birthing_person_service.get(birthing_person_id)
 
     assert isinstance(birthing_person, BirthingPersonDTO)
     assert birthing_person.first_name == "User"
     assert birthing_person.last_name == "Name"
 
 
+async def test_get_many_birthing_persons(birthing_person_service: BirthingPersonService):
+    ids = ["test1", "test2", "test3"]
+    for id in ids:
+        await birthing_person_service.register(id, "User", "Name")
+    birthing_persons = await birthing_person_service.get_many(ids)
+
+    assert len(birthing_persons) == 3
+
+
 async def test_cannot_get_non_existent_birthing_person(
     birthing_person_service: BirthingPersonService,
 ):
     with pytest.raises(BirthingPersonNotFoundById):
-        await birthing_person_service.get_birthing_person("test")
+        await birthing_person_service.get("test")
 
 
 async def test_get_birthing_person_summary(birthing_person_service: BirthingPersonService):
     birthing_person_id = "test"
     await birthing_person_service.register(birthing_person_id, "User", "Name")
-    birthing_person = await birthing_person_service.get_birthing_person_summary(birthing_person_id)
+    birthing_person = await birthing_person_service.get_summary(birthing_person_id)
 
     assert isinstance(birthing_person, BirthingPersonSummaryDTO)
     assert birthing_person.first_name == "User"
     assert birthing_person.last_name == "Name"
 
 
+async def test_get_many_birthing_person_summaries(birthing_person_service: BirthingPersonService):
+    ids = ["test1", "test2", "test3"]
+    for id in ids:
+        await birthing_person_service.register(id, "User", "Name")
+    birthing_persons = await birthing_person_service.get_many_summary(ids)
+
+    assert len(birthing_persons) == 3
+
+
 async def test_cannot_get_summary_for_non_existent_birthing_person(
     birthing_person_service: BirthingPersonService,
 ):
     with pytest.raises(BirthingPersonNotFoundById):
-        await birthing_person_service.get_birthing_person_summary("test")
+        await birthing_person_service.get_summary("test")

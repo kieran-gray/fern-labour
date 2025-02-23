@@ -5,7 +5,7 @@ from app.domain.base.exceptions import DomainError, DomainValidationError
 
 class SubscriptionIdInvalid(DomainValidationError):
     def __init__(self) -> None:
-        super().__init__("Subscriber ID is invalid.")
+        super().__init__("Subscription ID is invalid.")
 
 
 class SubscriberRoleInvalid(DomainValidationError):

@@ -60,7 +60,7 @@ async def get_or_create(
     user = auth_controller.get_authenticated_user(credentials=credentials)
     try:
         subscriber = await service.get(subscriber_id=user.id)
-    except (SubscriberNotFoundById):
+    except SubscriberNotFoundById:
         subscriber = await service.register(
             subscriber_id=user.id,
             first_name=user.first_name,

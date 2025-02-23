@@ -1,7 +1,6 @@
 import logging
 from uuid import UUID
 
-from app.application.dtos.subscriber import SubscriberDTO
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
@@ -15,10 +14,13 @@ from app.domain.subscriber.exceptions import SubscriberCannotSubscribeToSelf
 from app.domain.subscriber.vo_subscriber_id import SubscriberId
 from app.domain.subscription.exceptions import (
     SubscriberNotSubscribed,
+    SubscriptionIdInvalid,
+    SubscriptionNotFoundById,
     SubscriptionTokenIncorrect,
     UnauthorizedSubscriptionRequest,
 )
 from app.domain.subscription.repository import SubscriptionRepository
+from app.domain.subscription.vo_subscription_id import SubscriptionId
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +40,28 @@ class SubscriptionService:
         self._token_generator = token_generator
         self._event_producer = event_producer
 
+    async def get_by_id(self, requester_id: str, subscription_id: str) -> SubscriptionDTO:
+        try:
+            subscription_domain_id = SubscriptionId(UUID(subscription_id))
+        except ValueError:
+            raise SubscriptionIdInvalid()
+
+        subscription = await self._subscription_repository.get_by_id(
+            subscription_id=subscription_domain_id
+        )
+        if not subscription:
+            raise SubscriptionNotFoundById(subscription_id=subscription_id)
+
+        if (
+            subscription.subscriber_id.value != requester_id
+            and subscription.birthing_person_id.value != requester_id
+        ):
+            raise UnauthorizedSubscriptionRequest()
+
+        return SubscriptionDTO.from_domain(subscription)
+
     async def get_subscriber_subscriptions(self, subscriber_id: str) -> list[SubscriptionDTO]:
+        # Getting the subscriber ensures that one exists, and handles throwing accurate error if not
         subscriber = await self._subscriber_service.get(subscriber_id=subscriber_id)
         subscriptions = await self._subscription_repository.filter(
             subscriber_id=SubscriberId(subscriber.id)
@@ -56,21 +79,6 @@ class SubscriptionService:
             labour_id=LabourId(UUID(labour.id))
         )
         return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
-
-    async def get_labour_subscribers(
-        self, requester_id: str, labour_id: str
-    ) -> list[SubscriberDTO]:
-        labour = await self._get_labour_service.get_labour_by_id(labour_id=labour_id)
-        if requester_id != labour.birthing_person_id:
-            raise UnauthorizedSubscriptionRequest()
-
-        subscriptions = await self._subscription_repository.filter(
-            labour_id=LabourId(UUID(labour.id))
-        )
-        subscribers = await self._subscriber_service.get_many(
-            subscriber_ids=[subscription.subscriber_id.value for subscription in subscriptions]
-        )
-        return subscribers
 
     async def subscribe_to(self, subscriber_id: str, labour_id: str, token: str) -> SubscriptionDTO:
         subscriber = await self._subscriber_service.get(subscriber_id=subscriber_id)
