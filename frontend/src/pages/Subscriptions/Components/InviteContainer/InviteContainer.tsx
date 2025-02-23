@@ -54,8 +54,8 @@ export function InviteContainer() {
           <div className={classes.content}>
             <Title order={3}>Know an expecting mum? Invite her to join!</Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              Introduce her to a simple way to keep family and friends informed throughout her labour
-              experience.
+              Introduce her to a simple way to keep family and friends informed throughout her
+              labour experience.
             </Text>
             <Group className={classes.group}>
               <form
