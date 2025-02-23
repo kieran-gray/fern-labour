@@ -29,7 +29,8 @@ class AuthController(Protocol):
         Get currently authenticated user information. Requires valid token.
 
         Args:
-            credentials (AuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+            credentials (AuthorizationCredentials):
+                Bearer token provided via HTTP Authorization header.
 
         Raises:
             AuthorizationError: If the token is invalid or not provided.

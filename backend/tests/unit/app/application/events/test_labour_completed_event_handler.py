@@ -197,8 +197,9 @@ async def test_labour_completed_event_has_subscriber_all_contact_methods(
         birthing_person_id=BIRTHING_PERSON, labour_id=labour.id, notes="FINDME"
     )
     await labour_completed_event_handler.handle(event.to_dict())
-    sent_emails = labour_completed_event_handler._notification_service._email_notification_gateway.sent_notifications
-    sent_sms = labour_completed_event_handler._notification_service._sms_notification_gateway.sent_notifications
+    notification_service = labour_completed_event_handler._notification_service
+    sent_emails = notification_service._email_notification_gateway.sent_notifications
+    sent_sms = notification_service._sms_notification_gateway.sent_notifications
     assert sent_emails != []
     assert sent_sms != []
     assert "FINDME" in sent_emails[0].message

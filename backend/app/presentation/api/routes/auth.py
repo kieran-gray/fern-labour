@@ -45,7 +45,8 @@ async def get_user(
     Get currently logged in user. Requires a valid token for access.
 
     Args:
-        credentials (HTTPAuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+        credentials (HTTPAuthorizationCredentials):
+            Bearer token provided via HTTP Authorization header.
 
     Returns:
         User: Information about the authenticated user.

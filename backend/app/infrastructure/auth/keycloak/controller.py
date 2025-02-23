@@ -38,7 +38,8 @@ class KeycloakAuthController:
         Access a protected resource that requires valid token authentication.
 
         Args:
-            credentials (AuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+            credentials (AuthorizationCredentials):
+                Bearer token provided via HTTP Authorization header.
 
         Raises:
             HTTPException: If the token is invalid or not provided.

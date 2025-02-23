@@ -209,8 +209,9 @@ async def test_labour_update_posted_event_has_subscriber_all_contact_methods(
         birthing_person_id=BIRTHING_PERSON, labour_id=labour.id, message="FINDME"
     )
     await labour_update_posted_event_handler.handle(event.to_dict())
-    sent_emails = labour_update_posted_event_handler._notification_service._email_notification_gateway.sent_notifications
-    sent_sms = labour_update_posted_event_handler._notification_service._sms_notification_gateway.sent_notifications
+    notification_service = labour_update_posted_event_handler._notification_service
+    sent_emails = notification_service._email_notification_gateway.sent_notifications
+    sent_sms = notification_service._sms_notification_gateway.sent_notifications
     assert sent_emails != []
     assert sent_sms != []
     assert "FINDME" in sent_emails[0].message
@@ -244,7 +245,7 @@ async def test_labour_update_posted_event_has_subscriber_all_contact_methods_sta
     assert not has_sent_sms(labour_update_posted_event_handler)
 
 
-async def test_labour_update_posted_event_has_subscriber_all_contact_methods_no_phone_number_or_email(
+async def test_labour_update_posted_event_has_subscriber_all_contact_mthds_no_phone_number_or_email(
     labour_update_posted_event_handler: LabourUpdatePostedEventHandler,
     labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
