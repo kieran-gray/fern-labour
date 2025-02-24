@@ -3,18 +3,17 @@ from typing import Self
 from uuid import UUID, uuid4
 
 from app.domain.base.aggregate_root import AggregateRoot
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.vo_labour_id import LabourId
-from app.domain.subscriber.vo_subscriber_id import SubscriberId
 from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from app.domain.subscription.vo_subscription_id import SubscriptionId
+from app.domain.user.vo_user_id import UserId
 
 
 @dataclass(eq=False, kw_only=True)
 class Subscription(AggregateRoot[SubscriptionId]):
     labour_id: LabourId
-    birthing_person_id: BirthingPersonId
-    subscriber_id: SubscriberId
+    birthing_person_id: UserId
+    subscriber_id: UserId
     role: SubscriberRole
     status: SubscriptionStatus
     contact_methods: list[ContactMethod] = field(default_factory=list)
@@ -24,8 +23,8 @@ class Subscription(AggregateRoot[SubscriptionId]):
         cls,
         *,
         labour_id: LabourId,
-        birthing_person_id: BirthingPersonId,
-        subscriber_id: SubscriberId,
+        birthing_person_id: UserId,
+        subscriber_id: UserId,
         status: SubscriptionStatus = SubscriptionStatus.SUBSCRIBED,
         role: SubscriberRole = SubscriberRole.FRIENDS_AND_FAMILY,
         contact_methods: list[ContactMethod] | None = None,

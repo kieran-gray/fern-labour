@@ -72,7 +72,7 @@
                     "Auth"
                 ],
                 "summary": "Get User",
-                "description": "Get currently logged in user. Requires a valid token for access.\n\nArgs:\n    credentials (HTTPAuthorizationCredentials): Bearer token provided via HTTP Authorization header.\n\nReturns:\n    User: Information about the authenticated user.",
+                "description": "Get currently logged in user. Requires a valid token for access.\n\nArgs:\n    credentials (HTTPAuthorizationCredentials):\n        Bearer token provided via HTTP Authorization header.\n\nReturns:\n    User: Information about the authenticated user.",
                 "operationId": "get_user_api_v1_auth_user_get",
                 "responses": {
                     "200": {
@@ -80,7 +80,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/User"
+                                    "$ref": "#/components/schemas/UserDTO"
                                 }
                             }
                         }
@@ -157,86 +157,20 @@
                 }
             }
         },
-        "/api/v1/birthing-person/register": {
-            "post": {
-                "tags": [
-                    "Birthing Person"
-                ],
-                "summary": "Register",
-                "operationId": "register_api_v1_birthing_person_register_post",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BirthingPersonResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/birthing-person/": {
+        "/api/v1/user/": {
             "get": {
                 "tags": [
-                    "Birthing Person"
+                    "User"
                 ],
-                "summary": "Get Birthing Person",
-                "operationId": "get_birthing_person_api_v1_birthing_person__get",
+                "summary": "Get User",
+                "operationId": "get_user_api_v1_user__get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BirthingPersonResponse"
+                                    "$ref": "#/components/schemas/UserResponse"
                                 }
                             }
                         }
@@ -289,284 +223,20 @@
                 ]
             }
         },
-        "/api/v1/birthing-person/get-or-create": {
+        "/api/v1/user/summary": {
             "get": {
                 "tags": [
-                    "Birthing Person"
+                    "User"
                 ],
-                "summary": "Get Or Create",
-                "operationId": "get_or_create_api_v1_birthing_person_get_or_create_get",
+                "summary": "Get User Summary",
+                "operationId": "get_user_summary_api_v1_user_summary_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BirthingPersonResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/birthing-person/summary": {
-            "get": {
-                "tags": [
-                    "Birthing Person"
-                ],
-                "summary": "Get Birthing Person Summary",
-                "operationId": "get_birthing_person_summary_api_v1_birthing_person_summary_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BirthingPersonSummaryResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/subscriber/": {
-            "get": {
-                "tags": [
-                    "Subscriber"
-                ],
-                "summary": "Get",
-                "operationId": "get_api_v1_subscriber__get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SubscriberResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/subscriber/get-or-create": {
-            "get": {
-                "tags": [
-                    "Subscriber"
-                ],
-                "summary": "Get Or Create",
-                "operationId": "get_or_create_api_v1_subscriber_get_or_create_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SubscriberResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExceptionSchema"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/subscriber/register": {
-            "post": {
-                "tags": [
-                    "Subscriber"
-                ],
-                "summary": "Register",
-                "operationId": "register_api_v1_subscriber_register_post",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SubscriberResponse"
+                                    "$ref": "#/components/schemas/UserSummaryResponse"
                                 }
                             }
                         }
@@ -2484,84 +2154,6 @@
     },
     "components": {
         "schemas": {
-            "BirthingPersonDTO": {
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "title": "Id"
-                    },
-                    "first_name": {
-                        "type": "string",
-                        "title": "First Name"
-                    },
-                    "last_name": {
-                        "type": "string",
-                        "title": "Last Name"
-                    },
-                    "labours": {
-                        "items": {
-                            "$ref": "#/components/schemas/LabourDTO"
-                        },
-                        "type": "array",
-                        "title": "Labours"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "first_name",
-                    "last_name",
-                    "labours"
-                ],
-                "title": "BirthingPersonDTO"
-            },
-            "BirthingPersonResponse": {
-                "properties": {
-                    "birthing_person": {
-                        "$ref": "#/components/schemas/BirthingPersonDTO"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "birthing_person"
-                ],
-                "title": "BirthingPersonResponse"
-            },
-            "BirthingPersonSummaryDTO": {
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "title": "Id"
-                    },
-                    "first_name": {
-                        "type": "string",
-                        "title": "First Name"
-                    },
-                    "last_name": {
-                        "type": "string",
-                        "title": "Last Name"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "first_name",
-                    "last_name"
-                ],
-                "title": "BirthingPersonSummaryDTO"
-            },
-            "BirthingPersonSummaryResponse": {
-                "properties": {
-                    "birthing_person": {
-                        "$ref": "#/components/schemas/BirthingPersonSummaryDTO"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "birthing_person"
-                ],
-                "title": "BirthingPersonSummaryResponse"
-            },
             "BlockSubscriberRequest": {
                 "properties": {
                     "subscription_id": {
@@ -2936,7 +2528,7 @@
                     },
                     "subscribers": {
                         "items": {
-                            "$ref": "#/components/schemas/SubscriberDTO"
+                            "$ref": "#/components/schemas/UserSummaryDTO"
                         },
                         "type": "array",
                         "title": "Subscribers"
@@ -3180,65 +2772,6 @@
                 ],
                 "title": "SubscribeToRequest"
             },
-            "SubscriberDTO": {
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "title": "Id"
-                    },
-                    "first_name": {
-                        "type": "string",
-                        "title": "First Name"
-                    },
-                    "last_name": {
-                        "type": "string",
-                        "title": "Last Name"
-                    },
-                    "phone_number": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Phone Number"
-                    },
-                    "email": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Email"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "id",
-                    "first_name",
-                    "last_name",
-                    "phone_number",
-                    "email"
-                ],
-                "title": "SubscriberDTO"
-            },
-            "SubscriberResponse": {
-                "properties": {
-                    "subscriber": {
-                        "$ref": "#/components/schemas/SubscriberDTO"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "subscriber"
-                ],
-                "title": "SubscriberResponse"
-            },
             "SubscriberSubscriptionsResponse": {
                 "properties": {
                     "subscriptions": {
@@ -3250,7 +2783,7 @@
                     },
                     "birthing_persons": {
                         "items": {
-                            "$ref": "#/components/schemas/BirthingPersonSummaryDTO"
+                            "$ref": "#/components/schemas/UserSummaryDTO"
                         },
                         "type": "array",
                         "title": "Birthing Persons"
@@ -3315,7 +2848,7 @@
                         "$ref": "#/components/schemas/SubscriptionDTO"
                     },
                     "birthing_person": {
-                        "$ref": "#/components/schemas/BirthingPersonSummaryDTO"
+                        "$ref": "#/components/schemas/UserSummaryDTO"
                     },
                     "labour": {
                         "$ref": "#/components/schemas/LabourDTO"
@@ -3427,19 +2960,11 @@
                 ],
                 "title": "UpdateRoleRequest"
             },
-            "User": {
+            "UserDTO": {
                 "properties": {
                     "id": {
                         "type": "string",
                         "title": "Id"
-                    },
-                    "username": {
-                        "type": "string",
-                        "title": "Username"
-                    },
-                    "email": {
-                        "type": "string",
-                        "title": "Email"
                     },
                     "first_name": {
                         "type": "string",
@@ -3448,6 +2973,10 @@
                     "last_name": {
                         "type": "string",
                         "title": "Last Name"
+                    },
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
                     },
                     "phone_number": {
                         "anyOf": [
@@ -3464,12 +2993,59 @@
                 "type": "object",
                 "required": [
                     "id",
-                    "username",
+                    "first_name",
+                    "last_name",
                     "email",
+                    "phone_number"
+                ],
+                "title": "UserDTO"
+            },
+            "UserResponse": {
+                "properties": {
+                    "user": {
+                        "$ref": "#/components/schemas/UserDTO"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user"
+                ],
+                "title": "UserResponse"
+            },
+            "UserSummaryDTO": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "title": "First Name"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Last Name"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
                     "first_name",
                     "last_name"
                 ],
-                "title": "User"
+                "title": "UserSummaryDTO"
+            },
+            "UserSummaryResponse": {
+                "properties": {
+                    "user": {
+                        "$ref": "#/components/schemas/UserSummaryDTO"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user"
+                ],
+                "title": "UserSummaryResponse"
             },
             "ValidationError": {
                 "properties": {

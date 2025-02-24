@@ -8,14 +8,12 @@ import pytest_asyncio
 from app.application.dtos.labour import LabourDTO
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_service import LabourService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
+from app.application.services.user_service import UserService
 from app.domain.labour.exceptions import LabourNotFoundById
-from app.domain.subscriber.exceptions import SubscriberCannotSubscribeToSelf, SubscriberNotFoundById
 from app.domain.subscription.enums import SubscriptionStatus
 from app.domain.subscription.exceptions import (
     SubscriberAlreadySubscribed,
@@ -27,6 +25,9 @@ from app.domain.subscription.exceptions import (
     UnauthorizedSubscriptionRequest,
 )
 from app.domain.subscription.repository import SubscriptionRepository
+from app.domain.user.entity import User
+from app.domain.user.exceptions import UserCannotSubscribeToSelf, UserNotFoundById
+from app.domain.user.vo_user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"
@@ -35,26 +36,32 @@ SUBSCRIBER = "subscriber_id"
 @pytest_asyncio.fixture
 async def subscription_service(
     get_labour_service: GetLabourService,
-    birthing_person_service: BirthingPersonService,
-    subscriber_service: SubscriberService,
+    user_service: UserService,
     subscription_repo: SubscriptionRepository,
     token_generator: TokenGenerator,
 ) -> SubscriptionService:
-    await birthing_person_service.register(
-        birthing_person_id=BIRTHING_PERSON,
-        first_name="Name",
-        last_name="User",
+    await user_service._user_repository.save(
+        User(
+            id_=UserId(BIRTHING_PERSON),
+            username="test789",
+            first_name="user",
+            last_name="name",
+            email="test@birthing.com",
+        )
     )
-    await subscriber_service.register(
-        subscriber_id=SUBSCRIBER,
-        first_name="First",
-        last_name="Last",
-        phone_number="07123123123",
-        email="test@email.com",
+    await user_service._user_repository.save(
+        User(
+            id_=UserId(SUBSCRIBER),
+            username="test456",
+            first_name="sub",
+            last_name="scriber",
+            email="test@subscriber.com",
+            phone_number="07123123123",
+        )
     )
     return SubscriptionService(
         get_labour_service=get_labour_service,
-        subscriber_service=subscriber_service,
+        user_service=user_service,
         subscription_repository=subscription_repo,
         token_generator=token_generator,
         event_producer=AsyncMock(),
@@ -229,12 +236,9 @@ async def test_cannot_subscribe_to_labour_when_blocked(
 async def test_cannot_subscribe_to_own_labour(
     subscription_service: SubscriptionService, labour: LabourDTO
 ) -> None:
-    await subscription_service._subscriber_service.register(
-        subscriber_id=BIRTHING_PERSON, first_name="test", last_name="user"
-    )
     token = subscription_service._token_generator.generate(labour.id)
 
-    with pytest.raises(SubscriberCannotSubscribeToSelf):
+    with pytest.raises(UserCannotSubscribeToSelf):
         await subscription_service.subscribe_to(
             subscriber_id=BIRTHING_PERSON, labour_id=labour.id, token=token
         )
@@ -253,7 +257,7 @@ async def test_cannot_subscribe_with_non_existent_subscriber(
     subscription_service: SubscriptionService, labour: LabourDTO
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
-    with pytest.raises(SubscriberNotFoundById):
+    with pytest.raises(UserNotFoundById):
         await subscription_service.subscribe_to("TEST", labour_id=labour.id, token=token)
 
 
@@ -315,7 +319,7 @@ async def test_cannot_unsubscribed_from_labour_not_subscribed_to(
 async def test_cannot_unsubscribe_with_non_existent_subscriber(
     subscription_service: SubscriptionService, labour: LabourDTO
 ) -> None:
-    with pytest.raises(SubscriberNotFoundById):
+    with pytest.raises(UserNotFoundById):
         await subscription_service.unsubscribe_from(subscriber_id="TEST", labour_id=labour.id)
 
 

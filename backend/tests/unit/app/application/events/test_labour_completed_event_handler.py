@@ -10,14 +10,15 @@ from app.application.events.event_handlers.labour_completed_event_handler import
 )
 from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notification_service import NotificationService
-from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.labour_service import LabourService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
+from app.application.services.user_service import UserService
 from app.domain.base.event import DomainEvent
-from app.domain.birthing_person.exceptions import BirthingPersonNotFoundById
 from app.domain.subscription.enums import ContactMethod
+from app.domain.user.entity import User
+from app.domain.user.exceptions import UserNotFoundById
+from app.domain.user.vo_user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"
@@ -44,27 +45,32 @@ def has_sent_sms(event_handler: LabourCompletedEventHandler) -> bool:
 
 @pytest_asyncio.fixture
 async def labour_completed_event_handler(
-    birthing_person_service: BirthingPersonService,
-    subscriber_service: SubscriberService,
+    user_service: UserService,
     notification_service: NotificationService,
     subscription_service: SubscriptionService,
     email_generation_service: EmailGenerationService,
 ) -> LabourCompletedEventHandler:
-    await birthing_person_service.register(
-        birthing_person_id=BIRTHING_PERSON,
-        first_name="user",
-        last_name="name",
+    await user_service._user_repository.save(
+        User(
+            id_=UserId(BIRTHING_PERSON),
+            username="test789",
+            first_name="user",
+            last_name="name",
+            email="test@birthing.com",
+        )
     )
-    await subscriber_service.register(
-        subscriber_id=SUBSCRIBER,
-        first_name="sub",
-        last_name="scriber",
-        phone_number="07123123123",
-        email="test@subscriber.com",
+    await user_service._user_repository.save(
+        User(
+            id_=UserId(SUBSCRIBER),
+            username="test456",
+            first_name="sub",
+            last_name="scriber",
+            email="test@subscriber.com",
+            phone_number="07123123123",
+        )
     )
     return LabourCompletedEventHandler(
-        birthing_person_service=birthing_person_service,
-        subscriber_service=subscriber_service,
+        user_service=user_service,
         notification_service=notification_service,
         subscription_service=subscription_service,
         email_generation_service=email_generation_service,
@@ -91,7 +97,7 @@ async def test_labour_completed_event_non_existent_birthing_person(
     labour_completed_event_handler: LabourCompletedEventHandler,
 ) -> None:
     event = generate_domain_event(birthing_person_id="TEST", labour_id="TEST")
-    with pytest.raises(BirthingPersonNotFoundById):
+    with pytest.raises(UserNotFoundById):
         await labour_completed_event_handler.handle(event.to_dict())
 
 
@@ -106,14 +112,14 @@ async def test_labour_completed_event_non_existent_subscriber(
     await labour_completed_event_handler._subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
-    labour_completed_event_handler._subscriber_service._subscriber_repository._data = {}
+    labour_completed_event_handler._user_service._user_repository._data.pop(SUBSCRIBER)
 
     event = generate_domain_event(birthing_person_id=BIRTHING_PERSON, labour_id=labour.id)
     module = "app.application.events.event_handlers.labour_completed_event_handler"
     with caplog.at_level(logging.ERROR, logger=module):
         await labour_completed_event_handler.handle(event.to_dict())
         assert len(caplog.records) == 1
-        assert caplog.messages[0] == f"Subscriber with id '{SUBSCRIBER}' is not found."
+        assert caplog.messages[0] == f"User with id '{SUBSCRIBER}' is not found."
 
 
 async def test_labour_completed_event_has_subscriber_no_contact_methods(
@@ -211,16 +217,20 @@ async def test_labour_completed_event_has_subscriber_all_contact_methods_no_phon
     labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
 ) -> None:
-    subscriber = await labour_completed_event_handler._subscriber_service.register(
-        subscriber_id="new_subscriber",
-        first_name="test",
-        last_name="noContact",
+    await labour_completed_event_handler._user_service._user_repository.save(
+        User(
+            id_=UserId("new_subscriber"),
+            username="test123",
+            first_name="test",
+            last_name="noContact",
+            email="",
+        )
     )
     token = labour_completed_event_handler._subscription_service._token_generator.generate(
         labour.id
     )
     subscription = await labour_completed_event_handler._subscription_service.subscribe_to(
-        subscriber_id=subscriber.id, labour_id=labour.id, token=token
+        subscriber_id="new_subscriber", labour_id=labour.id, token=token
     )
     await subscription_management_service.update_contact_methods(
         requester_id="new_subscriber",

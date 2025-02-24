@@ -1,11 +1,11 @@
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.entity import Labour
 from app.domain.labour.enums import LabourPhase
 from app.domain.labour.repository import LabourRepository
 from app.domain.labour.vo_labour_id import LabourId
+from app.domain.user.vo_user_id import UserId
 from app.infrastructure.persistence.tables.labours import labours_table
 
 
@@ -48,9 +48,7 @@ class SQLAlchemyLabourRepository(LabourRepository):
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_labours_by_birthing_person_id(
-        self, birthing_person_id: BirthingPersonId
-    ) -> list[Labour]:
+    async def get_labours_by_birthing_person_id(self, birthing_person_id: UserId) -> list[Labour]:
         """
         Retrieve an labours by Birthing Person ID.
 
@@ -66,7 +64,7 @@ class SQLAlchemyLabourRepository(LabourRepository):
         return list(result.scalars())
 
     async def get_active_labour_by_birthing_person_id(
-        self, birthing_person_id: BirthingPersonId
+        self, birthing_person_id: UserId
     ) -> Labour | None:
         """
         Retrieve an active labour by Birthing Person ID.

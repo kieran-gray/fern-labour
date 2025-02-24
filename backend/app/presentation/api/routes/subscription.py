@@ -5,13 +5,12 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials
 
-from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.get_labour_service import GetLabourService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_service import SubscriptionService
+from app.application.services.user_service import UserService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.presentation.api.dependencies import bearer_scheme
-from app.presentation.api.schemas.requests.subscriber import (
+from app.presentation.api.schemas.requests.subscription import (
     SubscribeToRequest,
     UnsubscribeFromRequest,
 )
@@ -43,7 +42,7 @@ subscription_router = APIRouter(prefix="/subscription", tags=["Subscription"])
 async def subscribe_to(
     labour_id: str,
     request_data: SubscribeToRequest,
-    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionResponse:
@@ -68,7 +67,7 @@ async def subscribe_to(
 @inject
 async def unsubscribe_from(
     request_data: UnsubscribeFromRequest,
-    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionResponse:
@@ -92,7 +91,7 @@ async def unsubscribe_from(
 )
 @inject
 async def get_subscriptions(
-    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionsResponse:
@@ -114,15 +113,17 @@ async def get_subscriptions(
 )
 @inject
 async def get_subscriber_subscriptions(
-    subscription_service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
-    birthing_person_service: Annotated[BirthingPersonService, FromComponent(ComponentEnum.LABOUR)],
+    subscription_service: Annotated[
+        SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    ],
+    user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriberSubscriptionsResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
     subscriptions = await subscription_service.get_subscriber_subscriptions(subscriber_id=user.id)
-    birthing_persons = await birthing_person_service.get_many_summary(
-        birthing_person_ids=[subscription.birthing_person_id for subscription in subscriptions]
+    birthing_persons = await user_service.get_many_summary(
+        user_ids=[subscription.birthing_person_id for subscription in subscriptions]
     )
     return SubscriberSubscriptionsResponse(
         subscriptions=subscriptions, birthing_persons=birthing_persons
@@ -143,8 +144,10 @@ async def get_subscriber_subscriptions(
 @inject
 async def get_subscription_by_id(
     subscription_id: str,
-    subscription_service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
-    birthing_person_service: Annotated[BirthingPersonService, FromComponent(ComponentEnum.LABOUR)],
+    subscription_service: Annotated[
+        SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    ],
+    user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
     get_labour_service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -153,9 +156,7 @@ async def get_subscription_by_id(
     subscription = await subscription_service.get_by_id(
         requester_id=user.id, subscription_id=subscription_id
     )
-    birthing_person = await birthing_person_service.get_summary(
-        birthing_person_id=subscription.birthing_person_id
-    )
+    birthing_person = await user_service.get_summary(user_id=subscription.birthing_person_id)
     labour = await get_labour_service.get_labour_by_id(labour_id=subscription.labour_id)
     return SubscriptionDataResponse(
         subscription=subscription, birthing_person=birthing_person, labour=labour
@@ -176,8 +177,10 @@ async def get_subscription_by_id(
 @inject
 async def get_labour_subscriptions(
     labour_id: str,
-    subscription_service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)],
-    subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    subscription_service: Annotated[
+        SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    ],
+    user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionsResponse:
@@ -185,7 +188,7 @@ async def get_labour_subscriptions(
     subscriptions = await subscription_service.get_labour_subscriptions(
         requester_id=user.id, labour_id=labour_id
     )
-    subscribers = await subscriber_service.get_many(
-        subscriber_ids=[subscription.subscriber_id for subscription in subscriptions]
+    subscribers = await user_service.get_many_summary(
+        user_ids=[subscription.subscriber_id for subscription in subscriptions]
     )
     return LabourSubscriptionsResponse(subscriptions=subscriptions, subscribers=subscribers)

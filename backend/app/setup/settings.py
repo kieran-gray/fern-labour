@@ -18,6 +18,8 @@ class KeycloakSettings(BaseModel):
     realm: str = Field(alias="KEYCLOAK_REALM")
     client_id: str = Field(alias="KEYCLOAK_CLIENT_ID")
     client_secret: str = Field(alias="KEYCLOAK_CLIENT_SECRET")
+    admin_username: str = Field(alias="KEYCLOAK_ADMIN")
+    admin_password: str = Field(alias="KEYCLOAK_ADMIN_PASSWORD")
     jwt_algorithm: Literal[
         "HS256",
         "HS384",

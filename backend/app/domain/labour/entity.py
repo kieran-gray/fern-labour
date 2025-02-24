@@ -4,7 +4,6 @@ from typing import Self
 from uuid import UUID, uuid4
 
 from app.domain.base.aggregate_root import AggregateRoot
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.entity import Contraction
 from app.domain.contraction.events import ContractionEnded, ContractionStarted
 from app.domain.labour.enums import LabourPhase
@@ -17,6 +16,7 @@ from app.domain.labour.events import (
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.labour_update.entity import LabourUpdate
 from app.domain.labour_update.enums import LabourUpdateType
+from app.domain.user.vo_user_id import UserId
 
 
 @dataclass(eq=False, kw_only=True)
@@ -26,7 +26,7 @@ class Labour(AggregateRoot[LabourId]):
     Maintains consistency across all contractions and enforces labour-specific rules.
     """
 
-    birthing_person_id: BirthingPersonId
+    birthing_person_id: UserId
     current_phase: LabourPhase = LabourPhase.PLANNED
     first_labour: bool
     due_date: datetime
@@ -40,7 +40,7 @@ class Labour(AggregateRoot[LabourId]):
     @classmethod
     def plan(
         cls,
-        birthing_person_id: BirthingPersonId,
+        birthing_person_id: UserId,
         first_labour: bool,
         due_date: datetime,
         labour_name: str | None = None,

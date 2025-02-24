@@ -6,6 +6,8 @@ KEYCLOAK_DOCKER_URL = "http://keycloak:8080"
 KEYCLOAK_REALM  = "labour_tracker"
 KEYCLOAK_CLIENT_ID  = "labour_tracker_backend"
 KEYCLOAK_CLIENT_SECRET  = "changeme"
+KEYCLOAK_ADMIN = ""
+KEYCLOAK_ADMIN_PASSWORD = ""
 # JWT_ALGORITHM can be set to "HS256", "HS384", "HS512", "RS256", "RS384", "RS512"
 JWT_ALGORITHM = "HS256"
 

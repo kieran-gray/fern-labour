@@ -1,17 +1,15 @@
 import logging
 from typing import Any, Protocol
 
-from app.application.dtos.birthing_person import BirthingPersonDTO
-from app.application.dtos.subscriber import SubscriberDTO
+from app.application.dtos.user import UserDTO
 from app.application.events.event_handler import EventHandler
 from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.entity import Notification
 from app.application.notifications.notification_service import NotificationService
-from app.application.services.birthing_person_service import BirthingPersonService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_service import SubscriptionService
-from app.domain.subscriber.exceptions import SubscriberNotFoundById
+from app.application.services.user_service import UserService
 from app.domain.subscription.enums import ContactMethod
+from app.domain.user.exceptions import UserNotFoundById
 
 log = logging.getLogger(__name__)
 
@@ -19,8 +17,8 @@ log = logging.getLogger(__name__)
 class LabourCompletedNotificationGenerator(Protocol):
     def __call__(
         self,
-        birthing_person: BirthingPersonDTO,
-        subscriber: SubscriberDTO,
+        birthing_person: UserDTO,
+        subscriber: UserDTO,
         notes: str,
         destination: str,
     ) -> Notification: ...
@@ -29,22 +27,20 @@ class LabourCompletedNotificationGenerator(Protocol):
 class LabourCompletedEventHandler(EventHandler):
     def __init__(
         self,
-        birthing_person_service: BirthingPersonService,
-        subscriber_service: SubscriberService,
+        user_service: UserService,
         subscription_service: SubscriptionService,
         notification_service: NotificationService,
         email_generation_service: EmailGenerationService,
     ):
-        self._birthing_person_service = birthing_person_service
-        self._subscriber_service = subscriber_service
+        self._user_service = user_service
         self._subscription_service = subscription_service
         self._notification_service = notification_service
         self._email_generation_service = email_generation_service
 
     def _generate_email(
         self,
-        birthing_person: BirthingPersonDTO,
-        subscriber: SubscriberDTO,
+        birthing_person: UserDTO,
+        subscriber: UserDTO,
         notes: str,
         destination: str,
     ) -> Notification:
@@ -66,8 +62,8 @@ class LabourCompletedEventHandler(EventHandler):
 
     def _generate_sms(
         self,
-        birthing_person: BirthingPersonDTO,
-        subscriber: SubscriberDTO,
+        birthing_person: UserDTO,
+        subscriber: UserDTO,
         notes: str,
         destination: str,
     ) -> Notification:
@@ -99,17 +95,15 @@ class LabourCompletedEventHandler(EventHandler):
         birthing_person_id = event["data"]["birthing_person_id"]
         labour_id = event["data"]["labour_id"]
 
-        birthing_person = await self._birthing_person_service.get(
-            birthing_person_id=birthing_person_id
-        )
+        birthing_person = await self._user_service.get(user_id=birthing_person_id)
         subscriptions = await self._subscription_service.get_labour_subscriptions(
             requester_id=birthing_person_id, labour_id=labour_id
         )
 
         for subscription in subscriptions:
             try:
-                subscriber = await self._subscriber_service.get(subscription.subscriber_id)
-            except SubscriberNotFoundById as err:
+                subscriber = await self._user_service.get(user_id=subscription.subscriber_id)
+            except UserNotFoundById as err:
                 log.error(err)
                 continue
 

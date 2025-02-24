@@ -15,7 +15,6 @@ import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import {
-  BirthingPersonService,
   LabourDTO,
   LabourService,
   OpenAPI,
@@ -74,7 +73,6 @@ export default function Plan({
       if (existing) {
         await LabourService.updateLabourPlanApiV1LabourPlanPut({ requestBody });
       } else {
-        await BirthingPersonService.getOrCreateApiV1BirthingPersonGetOrCreateGet();
         await LabourService.planLabourApiV1LabourPlanPost({ requestBody });
       }
     },

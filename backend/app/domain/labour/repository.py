@@ -1,8 +1,8 @@
 from typing import Protocol
 
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.entity import Labour
 from app.domain.labour.vo_labour_id import LabourId
+from app.domain.user.vo_user_id import UserId
 
 
 class LabourRepository(Protocol):
@@ -35,9 +35,7 @@ class LabourRepository(Protocol):
             The labour if found, None otherwise
         """
 
-    async def get_labours_by_birthing_person_id(
-        self, birthing_person_id: BirthingPersonId
-    ) -> list[Labour]:
+    async def get_labours_by_birthing_person_id(self, birthing_person_id: UserId) -> list[Labour]:
         """
         Retrieve an labours by Birthing Person ID.
 
@@ -49,7 +47,7 @@ class LabourRepository(Protocol):
         """
 
     async def get_active_labour_by_birthing_person_id(
-        self, birthing_person_id: BirthingPersonId
+        self, birthing_person_id: UserId
     ) -> Labour | None:
         """
         Retrieve an active labour by Birthing Person ID.

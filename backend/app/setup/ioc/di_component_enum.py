@@ -5,7 +5,7 @@ class ComponentEnum(StrEnum):
     DEFAULT = ""
     LABOUR = "labour"
     EVENTS = "events"
-    SUBSCRIBER = "subscriber"
+    USER = "user"
     NOTIFICATIONS = "notifications"
     SUBSCRIPTIONS = "subscriptions"
 

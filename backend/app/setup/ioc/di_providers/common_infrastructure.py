@@ -12,8 +12,8 @@ from sqlalchemy.ext.asyncio import (
 
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.infrastructure.auth.interfaces.service import AuthService
-from app.infrastructure.auth.keycloak.controller import KeycloakAuthController
-from app.infrastructure.auth.keycloak.service import KeycloakAuthService
+from app.infrastructure.auth.keycloak.auth_controller import KeycloakAuthController
+from app.infrastructure.auth.keycloak.auth_service import KeycloakAuthService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.ioc.di_providers.common_settings import PostgresDsn
 from app.setup.settings import Settings, SqlaEngineSettings

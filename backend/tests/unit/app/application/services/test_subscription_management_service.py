@@ -6,11 +6,10 @@ import pytest_asyncio
 
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.labour_service import LabourService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
+from app.application.services.user_service import UserService
 from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from app.domain.subscription.exceptions import (
     SubscriberRoleInvalid,
@@ -19,6 +18,8 @@ from app.domain.subscription.exceptions import (
     SubscriptionNotFoundById,
     UnauthorizedSubscriptionUpdateRequest,
 )
+from app.domain.user.entity import User
+from app.domain.user.vo_user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"
@@ -26,19 +27,29 @@ SUBSCRIBER = "subscriber_id"
 
 @pytest_asyncio.fixture
 async def subscription(
-    birthing_person_service: BirthingPersonService,
-    subscriber_service: SubscriberService,
+    user_service: UserService,
     labour_service: LabourService,
     subscription_service: SubscriptionService,
     token_generator: TokenGenerator,
 ) -> SubscriptionDTO:
-    await birthing_person_service.register(
-        birthing_person_id=BIRTHING_PERSON,
-        first_name="Name",
-        last_name="User",
+    await user_service._user_repository.save(
+        User(
+            id_=UserId(BIRTHING_PERSON),
+            username="test789",
+            first_name="user",
+            last_name="name",
+            email="test@birthing.com",
+        )
     )
-    await subscriber_service.register(
-        subscriber_id=SUBSCRIBER, first_name="First", last_name="Last"
+    await user_service._user_repository.save(
+        User(
+            id_=UserId(SUBSCRIBER),
+            username="test456",
+            first_name="sub",
+            last_name="scriber",
+            email="test@subscriber.com",
+            phone_number="07123123123",
+        )
     )
     labour = await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)

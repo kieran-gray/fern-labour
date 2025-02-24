@@ -15,21 +15,18 @@ import type {
   EndContractionApiV1LabourContractionEndPutResponse,
   GetActiveLabourApiV1LabourActiveGetResponse,
   GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse,
-  GetApiV1SubscriberGetResponse,
-  GetBirthingPersonApiV1BirthingPersonGetResponse,
-  GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse,
   GetLabourByIdApiV1LabourGetLabourIdGetData,
   GetLabourByIdApiV1LabourGetLabourIdGetResponse,
   GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetData,
   GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetResponse,
-  GetOrCreateApiV1BirthingPersonGetOrCreateGetResponse,
-  GetOrCreateApiV1SubscriberGetOrCreateGetResponse,
   GetSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGetResponse,
   GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetData,
   GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetResponse,
   GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse,
   GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse,
   GetUserApiV1AuthUserGetResponse,
+  GetUserApiV1UserGetResponse,
+  GetUserSummaryApiV1UserSummaryGetResponse,
   HealthcheckApiV1HealthGetResponse,
   LoginApiV1AuthLoginPostData,
   LoginApiV1AuthLoginPostResponse,
@@ -38,8 +35,6 @@ import type {
   PostLabourUpdateApiV1LabourLabourUpdatePostData,
   PostLabourUpdateApiV1LabourLabourUpdatePostResponse,
   RedirectToDocsGetResponse,
-  RegisterApiV1BirthingPersonRegisterPostResponse,
-  RegisterApiV1SubscriberRegisterPostResponse,
   RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutData,
   RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutResponse,
   SendInviteApiV1LabourSendInvitePostData,
@@ -93,91 +88,18 @@ export class AuthService {
    * Get currently logged in user. Requires a valid token for access.
    *
    * Args:
-   * credentials (HTTPAuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+   * credentials (HTTPAuthorizationCredentials):
+   * Bearer token provided via HTTP Authorization header.
    *
    * Returns:
    * User: Information about the authenticated user.
-   * @returns User Successful Response
+   * @returns UserDTO Successful Response
    * @throws ApiError
    */
   public static getUserApiV1AuthUserGet(): CancelablePromise<GetUserApiV1AuthUserGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/auth/user',
-    });
-  }
-}
-
-export class BirthingPersonService {
-  /**
-   * Register
-   * @returns BirthingPersonResponse Successful Response
-   * @throws ApiError
-   */
-  public static registerApiV1BirthingPersonRegisterPost(): CancelablePromise<RegisterApiV1BirthingPersonRegisterPostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/birthing-person/register',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Birthing Person
-   * @returns BirthingPersonResponse Successful Response
-   * @throws ApiError
-   */
-  public static getBirthingPersonApiV1BirthingPersonGet(): CancelablePromise<GetBirthingPersonApiV1BirthingPersonGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/birthing-person/',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Or Create
-   * @returns BirthingPersonResponse Successful Response
-   * @throws ApiError
-   */
-  public static getOrCreateApiV1BirthingPersonGetOrCreateGet(): CancelablePromise<GetOrCreateApiV1BirthingPersonGetOrCreateGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/birthing-person/get-or-create',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Birthing Person Summary
-   * @returns BirthingPersonSummaryResponse Successful Response
-   * @throws ApiError
-   */
-  public static getBirthingPersonSummaryApiV1BirthingPersonSummaryGet(): CancelablePromise<GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/birthing-person/summary',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
     });
   }
 }
@@ -513,62 +435,6 @@ export class LabourService {
   }
 }
 
-export class SubscriberService {
-  /**
-   * Get
-   * @returns SubscriberResponse Successful Response
-   * @throws ApiError
-   */
-  public static getApiV1SubscriberGet(): CancelablePromise<GetApiV1SubscriberGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/subscriber/',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Or Create
-   * @returns SubscriberResponse Successful Response
-   * @throws ApiError
-   */
-  public static getOrCreateApiV1SubscriberGetOrCreateGet(): CancelablePromise<GetOrCreateApiV1SubscriberGetOrCreateGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/subscriber/get-or-create',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Register
-   * @returns SubscriberResponse Successful Response
-   * @throws ApiError
-   */
-  public static registerApiV1SubscriberRegisterPost(): CancelablePromise<RegisterApiV1SubscriberRegisterPostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/subscriber/register',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-}
-
 export class SubscriptionService {
   /**
    * Subscribe To
@@ -813,6 +679,44 @@ export class SubscriptionManagementService {
         403: 'Forbidden',
         404: 'Not Found',
         422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+}
+
+export class UserService {
+  /**
+   * Get User
+   * @returns UserResponse Successful Response
+   * @throws ApiError
+   */
+  public static getUserApiV1UserGet(): CancelablePromise<GetUserApiV1UserGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/user/',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get User Summary
+   * @returns UserSummaryResponse Successful Response
+   * @throws ApiError
+   */
+  public static getUserSummaryApiV1UserSummaryGet(): CancelablePromise<GetUserSummaryApiV1UserSummaryGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/user/summary',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
         500: 'Internal Server Error',
       },
     });

@@ -17,3 +17,11 @@ class UpdateRoleRequest(BaseModel):
 class UpdateContactMethodsRequest(BaseModel):
     subscription_id: str
     contact_methods: list[str]
+
+
+class SubscribeToRequest(BaseModel):
+    token: str
+
+
+class UnsubscribeFromRequest(BaseModel):
+    labour_id: str

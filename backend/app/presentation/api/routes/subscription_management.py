@@ -38,7 +38,7 @@ subscription_management_router = APIRouter(
 @inject
 async def remove_subscriber(
     request_data: RemoveSubscriberRequest,
-    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionResponse:
@@ -64,7 +64,7 @@ async def remove_subscriber(
 @inject
 async def block_subscriber(
     request_data: BlockSubscriberRequest,
-    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionResponse:
@@ -90,7 +90,7 @@ async def block_subscriber(
 @inject
 async def update_role(
     request_data: UpdateRoleRequest,
-    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionResponse:
@@ -116,7 +116,7 @@ async def update_role(
 @inject
 async def update_contact_methods(
     request_data: UpdateContactMethodsRequest,
-    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIBER)],
+    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionResponse:

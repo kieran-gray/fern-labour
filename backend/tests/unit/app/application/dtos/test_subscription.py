@@ -4,19 +4,18 @@ from uuid import uuid4
 import pytest
 
 from app.application.dtos.subscription import SubscriptionDTO
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.vo_labour_id import LabourId
-from app.domain.subscriber.vo_subscriber_id import SubscriberId
 from app.domain.subscription.entity import Subscription
 from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from app.domain.user.vo_user_id import UserId
 
 
 @pytest.fixture
 def subscription() -> Subscription:
     return Subscription.create(
         labour_id=LabourId(uuid4()),
-        birthing_person_id=BirthingPersonId("test_birthing_person"),
-        subscriber_id=SubscriberId("test_subscriber"),
+        birthing_person_id=UserId("test_birthing_person"),
+        subscriber_id=UserId("test_subscriber"),
         status=SubscriptionStatus.SUBSCRIBED,
         role=SubscriberRole.BIRTH_PARTNER,
         contact_methods=[ContactMethod.SMS],

@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, String, Table
+from sqlalchemy import Boolean, Column, DateTime, Enum, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.domain.labour.enums import LabourPhase
@@ -8,7 +8,7 @@ labours_table = Table(
     "labours",
     mapper_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
-    Column("birthing_person_id", String, ForeignKey("birthing_persons.id"), nullable=False),
+    Column("birthing_person_id", String, nullable=False),
     Column("first_labour", Boolean, nullable=False),
     Column("due_date", DateTime(timezone=True), nullable=False),
     Column("labour_name", String, nullable=True),

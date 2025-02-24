@@ -14,9 +14,8 @@ from app.application.events.event_handlers.labour_update_posted_event_handler im
 )
 from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notification_service import NotificationService
-from app.application.services.birthing_person_service import BirthingPersonService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_service import SubscriptionService
+from app.application.services.user_service import UserService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
 
@@ -28,12 +27,9 @@ class EventsApplicationProvider(Provider):
     @provide
     def get_labour_update_posted_event_handler(
         self,
-        birthing_person_service: Annotated[
-            BirthingPersonService, FromComponent(ComponentEnum.LABOUR)
-        ],
-        subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
         subscription_service: Annotated[
-            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)
+            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
@@ -43,8 +39,7 @@ class EventsApplicationProvider(Provider):
         ],
     ) -> LabourUpdatePostedEventHandler:
         return LabourUpdatePostedEventHandler(
-            birthing_person_service=birthing_person_service,
-            subscriber_service=subscriber_service,
+            user_service=user_service,
             subscription_service=subscription_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,
@@ -53,12 +48,9 @@ class EventsApplicationProvider(Provider):
     @provide
     def get_labour_begun_event_handler(
         self,
-        birthing_person_service: Annotated[
-            BirthingPersonService, FromComponent(ComponentEnum.LABOUR)
-        ],
-        subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
         subscription_service: Annotated[
-            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)
+            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
@@ -68,8 +60,7 @@ class EventsApplicationProvider(Provider):
         ],
     ) -> LabourBegunEventHandler:
         return LabourBegunEventHandler(
-            birthing_person_service=birthing_person_service,
-            subscriber_service=subscriber_service,
+            user_service=user_service,
             subscription_service=subscription_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,
@@ -78,12 +69,9 @@ class EventsApplicationProvider(Provider):
     @provide
     def get_labour_completed_event_handler(
         self,
-        birthing_person_service: Annotated[
-            BirthingPersonService, FromComponent(ComponentEnum.LABOUR)
-        ],
-        subscriber_service: Annotated[SubscriberService, FromComponent(ComponentEnum.SUBSCRIBER)],
+        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
         subscription_service: Annotated[
-            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIBER)
+            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
@@ -93,8 +81,7 @@ class EventsApplicationProvider(Provider):
         ],
     ) -> LabourCompletedEventHandler:
         return LabourCompletedEventHandler(
-            birthing_person_service=birthing_person_service,
-            subscriber_service=subscriber_service,
+            user_service=user_service,
             subscription_service=subscription_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,

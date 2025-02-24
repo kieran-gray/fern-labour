@@ -301,7 +301,7 @@ async def post_labour_update(
 )
 @inject
 async def get_subscription_token(
-    token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.SUBSCRIBER)],
+    token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionTokenResponse:

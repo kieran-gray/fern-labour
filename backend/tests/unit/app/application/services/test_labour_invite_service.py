@@ -7,16 +7,17 @@ import pytest_asyncio
 from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notification_service import NotificationService
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.labour_invite_service import (
     LabourInviteService,
 )
 from app.application.services.labour_service import LabourService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_service import SubscriptionService
-from app.domain.birthing_person.exceptions import BirthingPersonNotFoundById
+from app.application.services.user_service import UserService
 from app.domain.labour.exceptions import LabourNotFoundById
 from app.domain.subscription.exceptions import SubscriberAlreadySubscribed
+from app.domain.user.entity import User
+from app.domain.user.exceptions import UserNotFoundById
+from app.domain.user.vo_user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person"
 SUBSCRIBER = "test_subscriber"
@@ -24,28 +25,34 @@ SUBSCRIBER = "test_subscriber"
 
 @pytest_asyncio.fixture
 async def labour_invite_service(
-    birthing_person_service: BirthingPersonService,
+    user_service: UserService,
     notification_service: NotificationService,
-    subscriber_service: SubscriberService,
     subscription_service: SubscriptionService,
     email_generation_service: EmailGenerationService,
     token_generator: TokenGenerator,
 ) -> LabourInviteService:
-    await birthing_person_service.register(
-        birthing_person_id=BIRTHING_PERSON,
-        first_name="user",
-        last_name="name",
+    await user_service._user_repository.save(
+        User(
+            id_=UserId(BIRTHING_PERSON),
+            username="test789",
+            first_name="user",
+            last_name="name",
+            email="test@birthing.com",
+        )
     )
-    await subscriber_service.register(
-        subscriber_id=SUBSCRIBER,
-        first_name="test",
-        last_name="user",
-        email="test@email.com",
+    await user_service._user_repository.save(
+        User(
+            id_=UserId(SUBSCRIBER),
+            username="test456",
+            first_name="sub",
+            last_name="scriber",
+            email="test@subscriber.com",
+            phone_number="07123123123",
+        )
     )
     return LabourInviteService(
-        birthing_person_service=birthing_person_service,
+        user_service=user_service,
         notification_service=notification_service,
-        subscriber_service=subscriber_service,
         subscription_service=subscription_service,
         email_generation_service=email_generation_service,
         token_generator=token_generator,
@@ -72,7 +79,7 @@ async def test_can_send_invite(
 async def test_cannnot_send_invite_for_non_existent_birthing_person(
     labour_invite_service: LabourInviteService,
 ) -> None:
-    with pytest.raises(BirthingPersonNotFoundById):
+    with pytest.raises(UserNotFoundById):
         await labour_invite_service.send_invite(
             birthing_person_id="fake", labour_id=str(uuid4()), invite_email="test@email.com"
         )
@@ -103,5 +110,7 @@ async def test_cannnot_send_invite_for_email_already_subscribed(
 
     with pytest.raises(SubscriberAlreadySubscribed):
         await labour_invite_service.send_invite(
-            birthing_person_id=BIRTHING_PERSON, labour_id=labour.id, invite_email="test@email.com"
+            birthing_person_id=BIRTHING_PERSON,
+            labour_id=labour.id,
+            invite_email="test@subscriber.com",
         )

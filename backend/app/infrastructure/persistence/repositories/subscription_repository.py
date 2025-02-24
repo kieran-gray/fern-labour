@@ -1,12 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.labour.vo_labour_id import LabourId
-from app.domain.subscriber.vo_subscriber_id import SubscriberId
 from app.domain.subscription.entity import Subscription
 from app.domain.subscription.repository import SubscriptionRepository
 from app.domain.subscription.vo_subscription_id import SubscriptionId
+from app.domain.user.vo_user_id import UserId
 from app.infrastructure.persistence.tables.subscriptions import subscriptions_table
 
 
@@ -39,8 +38,8 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
     async def filter(
         self,
         labour_id: LabourId | None = None,
-        subscriber_id: SubscriberId | None = None,
-        birthing_person_id: BirthingPersonId | None = None,
+        subscriber_id: UserId | None = None,
+        birthing_person_id: UserId | None = None,
     ) -> list[Subscription]:
         """
         Filter subscriptions based on inputs.
@@ -67,8 +66,8 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
     async def filter_one_or_none(
         self,
         labour_id: LabourId | None = None,
-        subscriber_id: SubscriberId | None = None,
-        birthing_person_id: BirthingPersonId | None = None,
+        subscriber_id: UserId | None = None,
+        birthing_person_id: UserId | None = None,
     ) -> Subscription | None:
         """
         Filter subscriptions based on inputs.

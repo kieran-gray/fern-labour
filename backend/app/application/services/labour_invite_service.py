@@ -1,13 +1,12 @@
 import logging
 
-from app.application.dtos.birthing_person import BirthingPersonDTO
+from app.application.dtos.user import UserDTO
 from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.entity import Notification
 from app.application.notifications.notification_service import NotificationService
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.birthing_person_service import BirthingPersonService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_service import SubscriptionService
+from app.application.services.user_service import UserService
 from app.domain.subscription.enums import ContactMethod
 from app.domain.subscription.exceptions import SubscriberAlreadySubscribed
 
@@ -17,23 +16,21 @@ log = logging.getLogger(__name__)
 class LabourInviteService:
     def __init__(
         self,
-        birthing_person_service: BirthingPersonService,
+        user_service: UserService,
         notification_service: NotificationService,
-        subscriber_service: SubscriberService,
         subscription_service: SubscriptionService,
         email_generation_service: EmailGenerationService,
         token_generator: TokenGenerator,
     ):
-        self._birthing_person_service = birthing_person_service
+        self._user_service = user_service
         self._notification_service = notification_service
-        self._subscriber_service = subscriber_service
         self._subscription_service = subscription_service
         self._email_generation_service = email_generation_service
         self._token_generator = token_generator
 
     def _generate_email(
         self,
-        birthing_person: BirthingPersonDTO,
+        birthing_person: UserDTO,
         labour_id: str,
         destination: str,
     ) -> Notification:
@@ -51,13 +48,13 @@ class LabourInviteService:
         )
 
     async def send_invite(self, birthing_person_id: str, labour_id: str, invite_email: str) -> None:
-        birthing_person = await self._birthing_person_service.get(birthing_person_id)
+        birthing_person = await self._user_service.get(birthing_person_id)
         subscriptions = await self._subscription_service.get_labour_subscriptions(
             requester_id=birthing_person_id, labour_id=labour_id
         )
         subscriber_ids = [subscription.subscriber_id for subscription in subscriptions]
 
-        subscribers = await self._subscriber_service.get_many(subscriber_ids)
+        subscribers = await self._user_service.get_many(subscriber_ids)
         subscriber_emails = [subscriber.email for subscriber in subscribers]
         if invite_email in subscriber_emails:
             raise SubscriberAlreadySubscribed()

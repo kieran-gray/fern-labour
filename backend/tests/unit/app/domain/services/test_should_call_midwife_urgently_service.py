@@ -3,13 +3,13 @@ from uuid import UUID
 
 import pytest
 
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.constants import (
     CONTRACTION_MAX_IN_10_MINS,
     CONTRACTION_MAX_TIME_SECONDS,
 )
 from app.domain.labour.entity import Labour
 from app.domain.services.should_call_midwife_urgently import ShouldCallMidwifeUrgentlyService
+from app.domain.user.vo_user_id import UserId
 from tests.unit.app.conftest import get_contractions
 
 
@@ -17,7 +17,7 @@ from tests.unit.app.conftest import get_contractions
 def labour() -> Labour:
     return Labour.plan(
         labour_id=UUID("12345678-1234-5678-1234-567812345678"),
-        birthing_person_id=BirthingPersonId("87654321-4321-1234-8765-567812345678"),
+        birthing_person_id=UserId("87654321-4321-1234-8765-567812345678"),
         due_date=datetime.now(UTC),
         first_labour=True,
     )

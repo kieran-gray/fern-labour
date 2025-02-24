@@ -20,6 +20,8 @@ class MockConfigReader(ConfigReader):
                     "KEYCLOAK_REALM": "test",
                     "KEYCLOAK_CLIENT_ID": "test_client",
                     "KEYCLOAK_CLIENT_SECRET": "ABC123",
+                    "KEYCLOAK_ADMIN": "user",
+                    "KEYCLOAK_ADMIN_PASSWORD": "pass",
                     "JWT_ALGORITHM": "RS256",
                 },
                 "subscriber_token": {

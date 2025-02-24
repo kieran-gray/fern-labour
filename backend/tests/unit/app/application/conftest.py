@@ -13,44 +13,40 @@ from app.application.notifications.notfication_gateway import (
 )
 from app.application.notifications.notification_service import NotificationService
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_service import LabourService
-from app.application.services.subscriber_service import SubscriberService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
-from app.domain.birthing_person.entity import BirthingPerson
-from app.domain.birthing_person.repository import BirthingPersonRepository
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
+from app.application.services.user_service import UserService
 from app.domain.labour.entity import Labour
 from app.domain.labour.repository import LabourRepository
 from app.domain.labour.vo_labour_id import LabourId
-from app.domain.subscriber.entity import Subscriber
-from app.domain.subscriber.repository import SubscriberRepository
-from app.domain.subscriber.vo_subscriber_id import SubscriberId
 from app.domain.subscription.entity import Subscription
 from app.domain.subscription.repository import SubscriptionRepository
 from app.domain.subscription.vo_subscription_id import SubscriptionId
+from app.domain.user.entity import User
+from app.domain.user.repository import UserRepository
+from app.domain.user.vo_user_id import UserId
 
 
-class MockBirthingPersonRepository(BirthingPersonRepository):
+class MockUserRepository(UserRepository):
     _data = {}
 
-    async def save(self, birthing_person: BirthingPerson) -> None:
-        self._data[birthing_person.id_.value] = birthing_person
+    async def save(self, user: User) -> None:
+        self._data[user.id_.value] = user
 
-    async def delete(self, birthing_person: BirthingPerson) -> None:
-        self._data.pop(birthing_person.id_.value)
+    async def delete(self, user: User) -> None:
+        self._data.pop(user.id_.value)
 
-    async def get_by_id(self, birthing_person_id: BirthingPersonId) -> BirthingPerson | None:
-        return self._data.get(birthing_person_id.value, None)
+    async def get_by_id(self, user_id: UserId) -> User | None:
+        return self._data.get(user_id.value, None)
 
-    async def get_by_ids(self, birthing_person_ids: list[BirthingPersonId]) -> list[BirthingPerson]:
-        birthing_persons = []
-        for birthing_person_id in birthing_person_ids:
-            if birthing_person := self._data.get(birthing_person_id.value, None):
-                birthing_persons.append(birthing_person)
-        return birthing_persons
+    async def get_by_ids(self, user_ids: list[UserId]) -> list[User]:
+        users = []
+        for user_id in user_ids:
+            if user := self._data.get(user_id.value, None):
+                users.append(user)
+        return users
 
 
 class MockLabourRepository(LabourRepository):
@@ -65,7 +61,7 @@ class MockLabourRepository(LabourRepository):
     async def get_by_id(self, labour_id: LabourId) -> Labour | None:
         return self._data.get(labour_id.value, None)
 
-    async def get_active_labour_by_birthing_person_id(self, birthing_person_id: BirthingPersonId):
+    async def get_active_labour_by_birthing_person_id(self, birthing_person_id: UserId):
         return next(
             (
                 labour
@@ -74,26 +70,6 @@ class MockLabourRepository(LabourRepository):
             ),
             None,
         )
-
-
-class MockSubscriberRepository(SubscriberRepository):
-    _data = {}
-
-    async def save(self, subscriber: Subscriber) -> None:
-        self._data[subscriber.id_.value] = subscriber
-
-    async def delete(self, subscriber: Subscriber) -> None:
-        self._data.pop(subscriber.id_.value)
-
-    async def get_by_id(self, subscriber_id: SubscriberId) -> Subscriber | None:
-        return self._data.get(subscriber_id.value, None)
-
-    async def get_by_ids(self, subscriber_ids: list[SubscriberId]) -> list[Subscriber]:
-        subscribers = []
-        for subscriber_id in subscriber_ids:
-            if subscriber := self._data.get(subscriber_id.value, None):
-                subscribers.append(subscriber)
-        return subscribers
 
 
 class MockSubscriptionRepository(SubscriptionRepository):
@@ -118,8 +94,8 @@ class MockSubscriptionRepository(SubscriptionRepository):
     async def filter(
         self,
         labour_id: LabourId | None = None,
-        subscriber_id: SubscriberId | None = None,
-        birthing_person_id: BirthingPersonId | None = None,
+        subscriber_id: UserId | None = None,
+        birthing_person_id: UserId | None = None,
     ) -> list[Subscription]:
         subscriptions = []
         for subscription in self._data.values():
@@ -135,8 +111,8 @@ class MockSubscriptionRepository(SubscriptionRepository):
     async def filter_one_or_none(
         self,
         labour_id: LabourId | None = None,
-        subscriber_id: SubscriberId | None = None,
-        birthing_person_id: BirthingPersonId | None = None,
+        subscriber_id: UserId | None = None,
+        birthing_person_id: UserId | None = None,
     ) -> Subscription | None:
         found_subscription = None
         for subscription in self._data.values():
@@ -153,15 +129,8 @@ class MockSubscriptionRepository(SubscriptionRepository):
 
 
 @pytest_asyncio.fixture
-async def birthing_person_repo() -> BirthingPersonRepository:
-    repo = MockBirthingPersonRepository()
-    repo._data = {}
-    return repo
-
-
-@pytest_asyncio.fixture
-async def subscriber_repo() -> SubscriberRepository:
-    repo = MockSubscriberRepository()
+async def user_repo() -> UserRepository:
+    repo = MockUserRepository()
     repo._data = {}
     return repo
 
@@ -215,31 +184,17 @@ def token_generator() -> TokenGenerator:
 
 
 @pytest_asyncio.fixture
-async def birthing_person_service(
-    birthing_person_repo: BirthingPersonRepository,
-) -> BirthingPersonService:
-    return BirthingPersonService(
-        birthing_person_repository=birthing_person_repo, event_producer=AsyncMock()
-    )
-
-
-@pytest_asyncio.fixture
-async def subscriber_service(
-    subscriber_repo: SubscriberRepository, token_generator: TokenGenerator
-) -> SubscriberService:
-    return SubscriberService(
-        subscriber_repository=subscriber_repo,
-        token_generator=token_generator,
-    )
+async def user_service(user_repo: UserRepository) -> UserService:
+    return UserService(user_repository=user_repo)
 
 
 @pytest_asyncio.fixture
 async def labour_service(
-    birthing_person_service: BirthingPersonService,
+    user_service: UserService,
     labour_repo: LabourRepository,
 ) -> LabourService:
     return LabourService(
-        birthing_person_service=birthing_person_service,
+        user_service=user_service,
         labour_repository=labour_repo,
         event_producer=AsyncMock(),
     )
@@ -257,13 +212,13 @@ async def get_labour_service(
 @pytest_asyncio.fixture
 async def subscription_service(
     get_labour_service: GetLabourService,
-    subscriber_service: SubscriberService,
+    user_service: UserService,
     subscription_repo: SubscriptionRepository,
     token_generator: TokenGenerator,
 ) -> SubscriptionService:
     return SubscriptionService(
         get_labour_service=get_labour_service,
-        subscriber_service=subscriber_service,
+        user_service=user_service,
         subscription_repository=subscription_repo,
         token_generator=token_generator,
         event_producer=AsyncMock(),

@@ -5,13 +5,10 @@ from app.application.dtos.subscription import SubscriptionDTO
 from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
 from app.application.services.get_labour_service import GetLabourService
-from app.application.services.subscriber_service import SubscriberService
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
+from app.application.services.user_service import UserService
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.services.subscribe_to import SubscribeToService
 from app.domain.services.unsubscribe_from import UnsubscribeFromService
-from app.domain.subscriber.exceptions import SubscriberCannotSubscribeToSelf
-from app.domain.subscriber.vo_subscriber_id import SubscriberId
 from app.domain.subscription.exceptions import (
     SubscriberNotSubscribed,
     SubscriptionIdInvalid,
@@ -21,6 +18,8 @@ from app.domain.subscription.exceptions import (
 )
 from app.domain.subscription.repository import SubscriptionRepository
 from app.domain.subscription.vo_subscription_id import SubscriptionId
+from app.domain.user.exceptions import UserCannotSubscribeToSelf
+from app.domain.user.vo_user_id import UserId
 
 log = logging.getLogger(__name__)
 
@@ -29,13 +28,13 @@ class SubscriptionService:
     def __init__(
         self,
         get_labour_service: GetLabourService,
-        subscriber_service: SubscriberService,
+        user_service: UserService,
         subscription_repository: SubscriptionRepository,
         token_generator: TokenGenerator,
         event_producer: EventProducer,
     ):
         self._get_labour_service = get_labour_service
-        self._subscriber_service = subscriber_service
+        self._user_service = user_service
         self._subscription_repository = subscription_repository
         self._token_generator = token_generator
         self._event_producer = event_producer
@@ -62,9 +61,9 @@ class SubscriptionService:
 
     async def get_subscriber_subscriptions(self, subscriber_id: str) -> list[SubscriptionDTO]:
         # Getting the subscriber ensures that one exists, and handles throwing accurate error if not
-        subscriber = await self._subscriber_service.get(subscriber_id=subscriber_id)
+        subscriber = await self._user_service.get(user_id=subscriber_id)
         subscriptions = await self._subscription_repository.filter(
-            subscriber_id=SubscriberId(subscriber.id)
+            subscriber_id=UserId(subscriber.id)
         )
         return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
 
@@ -81,18 +80,18 @@ class SubscriptionService:
         return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
 
     async def subscribe_to(self, subscriber_id: str, labour_id: str, token: str) -> SubscriptionDTO:
-        subscriber = await self._subscriber_service.get(subscriber_id=subscriber_id)
+        subscriber = await self._user_service.get(user_id=subscriber_id)
         labour = await self._get_labour_service.get_labour_by_id(labour_id=labour_id)
 
         if labour.birthing_person_id == subscriber_id:
-            raise SubscriberCannotSubscribeToSelf()
+            raise UserCannotSubscribeToSelf()
 
         if not self._token_generator.validate(labour.id, token):
             raise SubscriptionTokenIncorrect()
 
         labour_domain_id = LabourId(UUID(labour.id))
-        birthing_person_domain_id = BirthingPersonId(labour.birthing_person_id)
-        subscriber_domain_id = SubscriberId(subscriber.id)
+        birthing_person_domain_id = UserId(labour.birthing_person_id)
+        subscriber_domain_id = UserId(subscriber.id)
 
         subscription = await self._subscription_repository.filter_one_or_none(
             subscriber_id=subscriber_domain_id, labour_id=labour_domain_id
@@ -115,10 +114,10 @@ class SubscriptionService:
         return SubscriptionDTO.from_domain(subscription)
 
     async def unsubscribe_from(self, subscriber_id: str, labour_id: str) -> SubscriptionDTO:
-        subscriber = await self._subscriber_service.get(subscriber_id=subscriber_id)
+        subscriber = await self._user_service.get(user_id=subscriber_id)
 
         labour_domain_id = LabourId(UUID(labour_id))
-        subscriber_domain_id = SubscriberId(subscriber.id)
+        subscriber_domain_id = UserId(subscriber.id)
 
         subscription = await self._subscription_repository.filter_one_or_none(
             subscriber_id=subscriber_domain_id, labour_id=labour_domain_id

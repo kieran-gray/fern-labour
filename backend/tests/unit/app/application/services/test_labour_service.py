@@ -6,17 +6,17 @@ import pytest_asyncio
 
 from app.application.dtos.labour import LabourDTO
 from app.application.events.producer import EventProducer
-from app.application.services.birthing_person_service import BirthingPersonService
 from app.application.services.labour_service import LabourService
-from app.domain.birthing_person.entity import BirthingPerson
-from app.domain.birthing_person.exceptions import (
-    BirthingPersonDoesNotHaveActiveLabour,
-    BirthingPersonHasActiveLabour,
-    BirthingPersonNotFoundById,
-)
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
+from app.application.services.user_service import UserService
 from app.domain.labour.enums import LabourPhase
 from app.domain.labour.repository import LabourRepository
+from app.domain.user.entity import User
+from app.domain.user.exceptions import (
+    UserDoesNotHaveActiveLabour,
+    UserHasActiveLabour,
+    UserNotFoundById,
+)
+from app.domain.user.vo_user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 
@@ -29,19 +29,20 @@ def event_producer():
 @pytest_asyncio.fixture
 async def labour_service(
     labour_repo: LabourRepository,
-    birthing_person_service: BirthingPersonService,
+    user_service: UserService,
     event_producer: EventProducer,
 ) -> LabourService:
-    birthing_person_service._birthing_person_repository._data = {
-        BIRTHING_PERSON: BirthingPerson(
-            id_=BirthingPersonId(BIRTHING_PERSON),
+    user_service._user_repository._data = {
+        BIRTHING_PERSON: User(
+            id_=UserId(BIRTHING_PERSON),
+            username="test123",
             first_name="Name",
             last_name="User",
-            labours=[],
+            email="test@email.com",
         )
     }
     return LabourService(
-        birthing_person_service=birthing_person_service,
+        user_service=user_service,
         labour_repository=labour_repo,
         event_producer=event_producer,
     )
@@ -62,25 +63,25 @@ async def test_can_update_labour_plan(labour_service: LabourService) -> None:
 
 
 async def test_cannot_plan_labour_for_non_existent_user(labour_service: LabourService) -> None:
-    with pytest.raises(BirthingPersonNotFoundById):
+    with pytest.raises(UserNotFoundById):
         await labour_service.plan_labour("TEST123456", True, datetime.now(UTC))
 
 
 async def test_cannot_update_labour_plan_for_non_existent_user(
     labour_service: LabourService,
 ) -> None:
-    with pytest.raises(BirthingPersonNotFoundById):
+    with pytest.raises(UserNotFoundById):
         await labour_service.update_labour_plan("TEST123456", True, datetime.now(UTC))
 
 
 async def test_cannot_plan_labour_already_has_labour(labour_service: LabourService) -> None:
     await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
-    with pytest.raises(BirthingPersonHasActiveLabour):
+    with pytest.raises(UserHasActiveLabour):
         await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
 
 
 async def test_cannot_update_labour_plan_has_no_labour(labour_service: LabourService) -> None:
-    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
+    with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.update_labour_plan(BIRTHING_PERSON, True, datetime.now(UTC))
 
 
@@ -90,7 +91,7 @@ async def test_can_begin_labour(labour_service: LabourService) -> None:
 
 
 async def test_cannot_begin_unplanned_labour(labour_service: LabourService) -> None:
-    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
+    with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.begin_labour(BIRTHING_PERSON)
 
 
@@ -101,7 +102,7 @@ async def test_can_complete_labour(labour_service: LabourService) -> None:
 
 
 async def test_cannot_complete_labour_for_non_existent_user(labour_service: LabourService) -> None:
-    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
+    with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.complete_labour("TEST123456")
 
 
@@ -120,7 +121,7 @@ async def test_starting_contraction_begins_labour(labour_service: LabourService)
 async def test_cannot_start_contraction_for_non_existent_user(
     labour_service: LabourService,
 ) -> None:
-    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
+    with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.start_contraction("TEST123456")
 
 
@@ -132,7 +133,7 @@ async def test_can_end_contraction(labour_service: LabourService) -> None:
 
 
 async def test_cannot_end_contraction_for_non_existent_user(labour_service: LabourService) -> None:
-    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
+    with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.end_contraction("TEST123456", intensity=5)
 
 
@@ -148,7 +149,7 @@ async def test_can_post_labour_update(labour_service: LabourService) -> None:
 async def test_cannot_post_labour_update_for_non_existent_user(
     labour_service: LabourService,
 ) -> None:
-    with pytest.raises(BirthingPersonDoesNotHaveActiveLabour):
+    with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.post_labour_update(
             "TEST123456", labour_update_type="announcement", message="Test message"
         )

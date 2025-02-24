@@ -3,7 +3,6 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite, relationship
 
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.entity import Contraction
 from app.domain.contraction.vo_contraction_duration import Duration
 from app.domain.contraction.vo_contraction_id import ContractionId
@@ -11,6 +10,7 @@ from app.domain.labour.entity import Labour
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.labour_update.entity import LabourUpdate
 from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
+from app.domain.user.vo_user_id import UserId
 from app.infrastructure.persistence.orm_registry import mapper_registry
 from app.infrastructure.persistence.tables.contractions import contractions_table
 from app.infrastructure.persistence.tables.labour_updates import labour_updates_table
@@ -50,7 +50,7 @@ mapper_registry.map_imperatively(
     labours_table,
     properties={
         "id_": composite(LabourId, labours_table.c.id),
-        "birthing_person_id": composite(BirthingPersonId, labours_table.c.birthing_person_id),
+        "birthing_person_id": composite(UserId, labours_table.c.birthing_person_id),
         "current_phase": labours_table.c.current_phase,
         "first_labour": labours_table.c.first_labour,
         "due_date": labours_table.c.due_date,
