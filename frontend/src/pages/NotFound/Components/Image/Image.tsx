@@ -6,7 +6,7 @@ import classes from './Image.module.css';
 export function NotFoundImage() {
   const navigate = useNavigate();
   return (
-    <Container className={classes.root} mt="4vh">
+    <Container className={classes.root}>
       <SimpleGrid spacing={{ base: 40, sm: 80 }} cols={{ base: 1, sm: 2 }}>
         <Image src={image} className={classes.mobileImage} />
         <div>

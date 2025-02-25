@@ -2,6 +2,7 @@ from collections.abc import Iterable
 
 from dishka import Provider
 
+from app.setup.ioc.di_providers.admin_application import AdminApplicationProvider
 from app.setup.ioc.di_providers.common_infrastructure import CommonInfrastructureProvider
 from app.setup.ioc.di_providers.common_settings import CommonSettingsProvider
 from app.setup.ioc.di_providers.events_application import EventsApplicationProvider
@@ -19,6 +20,7 @@ from app.setup.ioc.di_providers.user_infrastructure import UserInfrastructurePro
 
 def get_providers() -> Iterable[Provider]:
     return (
+        AdminApplicationProvider(),
         CommonSettingsProvider(),
         CommonInfrastructureProvider(),
         EventsApplicationProvider(),

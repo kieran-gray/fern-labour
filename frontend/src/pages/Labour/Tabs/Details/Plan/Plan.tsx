@@ -14,12 +14,7 @@ import { Button, Group, Image, Radio, Text, TextInput, Title } from '@mantine/co
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import {
-  LabourDTO,
-  LabourService,
-  OpenAPI,
-  PlanLabourRequest,
-} from '../../../../../client';
+import { LabourDTO, LabourService, OpenAPI, PlanLabourRequest } from '../../../../../client';
 import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
 import image from './image.svg';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';

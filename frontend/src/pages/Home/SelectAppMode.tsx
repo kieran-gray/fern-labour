@@ -48,7 +48,7 @@ export function SelectAppMode() {
 
   return (
     <div className={baseClasses.flexPageColumn}>
-      <div className={baseClasses.root} style={{ marginTop: '4vh' }}>
+      <div className={baseClasses.root}>
         <ContainerHeader title="Welcome" />
         <div className={baseClasses.body}>
           <div className={baseClasses.inner}>

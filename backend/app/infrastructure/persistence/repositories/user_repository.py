@@ -41,7 +41,7 @@ class KeycloakUserRepository(UserRepository):
         raise NotImplementedError("user save not implemented")
 
     async def delete(self, user: User) -> None:
-        raise NotImplementedError("user save not implemented")
+        raise NotImplementedError("user delete not implemented")
 
     async def get_by_id(self, user_id: UserId) -> User | None:
         user = await self._keycloak_admin.a_get_user(

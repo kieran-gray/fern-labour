@@ -14,7 +14,7 @@ export const SubscriptionsPage = () => {
   }
   return (
     <AppShell>
-      <div className={baseClasses.flexPageColumn} style={{ marginTop: '4vh' }}>
+      <div className={baseClasses.flexPageColumn}>
         <SubscriptionsContainer />
         <Space h="xl" />
         <InviteContainer />

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Avatar, Group, ScrollArea, Text, Title } from '@mantine/core';
-import { BirthingPersonSummaryDTO, LabourDTO } from '../../../../client';
+import { LabourDTO, UserSummaryDTO } from '../../../../client';
 import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
 import { pluraliseName } from '../../../../shared-components/utils';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
@@ -11,7 +11,7 @@ export function StatusUpdates({
   birthingPerson,
 }: {
   labour: LabourDTO;
-  birthingPerson: BirthingPersonSummaryDTO;
+  birthingPerson: UserSummaryDTO;
 }) {
   const statusUpdates = labour.status_updates;
   const viewport = useRef<HTMLDivElement>(null);

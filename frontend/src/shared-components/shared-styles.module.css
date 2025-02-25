@@ -171,6 +171,7 @@
     justify-content: space-around;
     align-items: center;
     padding: calc(var(--mantine-spacing-lg));
+    margin-top: 4vh;
 
     @media (max-width: $mantine-breakpoint-md) {
         padding: calc(var(--mantine-spacing-md));

@@ -48,10 +48,16 @@ class CORSSettings(BaseModel):
         return [str(origin).rstrip("/") for origin in all_origins]
 
 
+class CloudflareSettings(BaseModel):
+    cloudflare_url: str = Field(alias="CLOUDFLARE_URL")
+    cloudflare_secret_key: str = Field(alias="CLOUDFLARE_SECRET_KEY")
+
+
 class SecuritySettings(BaseModel):
     cors: CORSSettings
     keycloak: KeycloakSettings
     subscriber_token: SubscriberTokenSettings
+    cloudflare: CloudflareSettings
 
 
 class LoggingSettings(BaseModel):

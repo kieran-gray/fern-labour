@@ -2,10 +2,12 @@ from typing import Annotated
 
 from dishka import FromComponent
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Request, status
 
-from app.application.events.producer import EventProducer
-from app.domain.base.event import DomainEvent
+from app.application.services.contact_service import ContactService
+from app.infrastructure.security.interfaces.request_verification_service import (
+    RequestVerificationService,
+)
 from app.presentation.api.schemas.requests.contact import ContactUsRequest
 from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
@@ -25,9 +27,18 @@ contact_us_router = APIRouter(prefix="/contact-us", tags=["Contact Us"])
 )
 @inject
 async def contact_us_send_message(
+    request: Request,
     request_data: ContactUsRequest,
-    event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+    request_verification_service: Annotated[
+        RequestVerificationService, FromComponent(ComponentEnum.DEFAULT)
+    ],
+    contact_service: Annotated[ContactService, FromComponent(ComponentEnum.ADMIN)],
 ) -> None:
-    event = DomainEvent.create(data=request_data.model_dump(), event_type="contact-us.message-sent")
-    await event_producer.publish(event=event)
+    await request_verification_service.verify(token=request_data.token, ip=request.client.host)
+    await contact_service.send_contact_email(
+        email=request_data.email,
+        name=request_data.name,
+        message=request_data.message,
+        user_id=request_data.user_id,
+    )
     return None

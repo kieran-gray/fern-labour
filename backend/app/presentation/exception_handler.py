@@ -36,6 +36,11 @@ from app.domain.user.exceptions import (
     UserNotFoundById,
 )
 from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
+from app.infrastructure.security.interfaces.exceptions import (
+    InvalidVerificationTokenException,
+    RequestVerificationError,
+    VerificationTokenAlreadyUsedException,
+)
 
 log = logging.getLogger(__name__)
 
@@ -83,6 +88,9 @@ class ExceptionMapper:
             UnauthorizedSubscriptionRequest: status.HTTP_403_FORBIDDEN,
             UnauthorizedSubscriptionUpdateRequest: status.HTTP_403_FORBIDDEN,
             InvalidLabourId: status.HTTP_400_BAD_REQUEST,
+            RequestVerificationError: status.HTTP_400_BAD_REQUEST,
+            VerificationTokenAlreadyUsedException: status.HTTP_400_BAD_REQUEST,
+            InvalidVerificationTokenException: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

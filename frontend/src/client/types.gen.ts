@@ -18,6 +18,7 @@ export type ContactUsRequest = {
   email: string;
   name: string;
   message: string;
+  token: string;
   user_id?: string | null;
 };
 
@@ -182,6 +183,7 @@ export type UpdateRoleRequest = {
 
 export type UserDTO = {
   id: string;
+  username: string;
   first_name: string;
   last_name: string;
   email: string;

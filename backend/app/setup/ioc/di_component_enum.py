@@ -3,6 +3,7 @@ from enum import StrEnum
 
 class ComponentEnum(StrEnum):
     DEFAULT = ""
+    ADMIN = "admin"
     LABOUR = "labour"
     EVENTS = "events"
     USER = "user"

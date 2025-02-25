@@ -2228,6 +2228,10 @@
                         "type": "string",
                         "title": "Message"
                     },
+                    "token": {
+                        "type": "string",
+                        "title": "Token"
+                    },
                     "user_id": {
                         "anyOf": [
                             {
@@ -2244,7 +2248,8 @@
                 "required": [
                     "email",
                     "name",
-                    "message"
+                    "message",
+                    "token"
                 ],
                 "title": "ContactUsRequest"
             },
@@ -2966,6 +2971,10 @@
                         "type": "string",
                         "title": "Id"
                     },
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
                     "first_name": {
                         "type": "string",
                         "title": "First Name"
@@ -2993,6 +3002,7 @@
                 "type": "object",
                 "required": [
                     "id",
+                    "username",
                     "first_name",
                     "last_name",
                     "email",

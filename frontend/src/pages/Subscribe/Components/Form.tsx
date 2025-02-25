@@ -71,7 +71,7 @@ export default function SubscribeForm({
     },
   });
   return (
-    <div className={baseClasses.root} style={{ marginTop: '4vh' }}>
+    <div className={baseClasses.root}>
       <div className={baseClasses.header}>
         <div className={baseClasses.title}>Subscribe</div>
       </div>

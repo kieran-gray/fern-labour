@@ -62,7 +62,6 @@ export const LabourPage = () => {
       return (
         <AppShell>
           <div className={baseClasses.flexPageColumn}>
-            <div style={{ height: '4vh' }} />
             <Plan
               labour={undefined}
               setActiveTab={() => {

@@ -1,8 +1,8 @@
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { Avatar, Button, Group, Table, Text, Tooltip } from '@mantine/core';
-import { BirthingPersonSummaryDTO, OpenAPI, SubscriptionService } from '../../../../../client';
+import { Avatar, Button, Group, Table, Text } from '@mantine/core';
+import { OpenAPI, SubscriptionService } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { useSubscription } from '../../../../Subscription/SubscriptionContext';
@@ -41,10 +41,6 @@ export function SubscriptionsTable() {
     return <ImportantText message={error.message} />;
   }
 
-  const getTooltip = (birthingPerson: BirthingPersonSummaryDTO): string => {
-    return `${birthingPerson.first_name} ${birthingPerson.last_name}`;
-  };
-
   const birthingPersons = data.birthing_persons || [];
 
   const birthingPersonById = Object.fromEntries(
@@ -56,14 +52,7 @@ export function SubscriptionsTable() {
       <Table.Tr key={subscription.id} bd="none">
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Tooltip
-              label={getTooltip(birthing_person)}
-              multiline
-              withArrow
-              transitionProps={{ duration: 200 }}
-            >
-              <Avatar radius="xl" color="var(--mantine-color-pink-5)" />
-            </Tooltip>
+            <Avatar radius="xl" color="var(--mantine-color-pink-5)" />
             <div>
               <Text fz="sm" fw={500} className={classes.cropText}>
                 {birthing_person.first_name} {birthing_person.last_name}
