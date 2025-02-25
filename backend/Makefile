@@ -7,8 +7,8 @@ PYPROJECT_TOML=pyproject.toml
 		lint 
 
 format:
-	uv run ruff check $(SRC_DIR) $(TEST_DIR) --fix
 	uv run ruff format $(SRC_DIR) $(TEST_DIR)
+	uv run ruff check $(SRC_DIR) $(TEST_DIR) --fix
 
 lint:
 	uv run mypy $(SRC_DIR)

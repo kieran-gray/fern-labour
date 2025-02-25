@@ -1,0 +1,102 @@
+import { IconAt, IconSend } from '@tabler/icons-react';
+import { useMutation } from '@tanstack/react-query';
+import { useAuth } from 'react-oidc-context';
+import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
+import { OpenAPI } from '../../../../client';
+import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
+import image from './invite.svg';
+import baseClasses from '../../../../shared-components/shared-styles.module.css';
+import classes from './InviteContainer.module.css';
+
+export function InviteContainer() {
+  const auth = useAuth();
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      email: '',
+    },
+
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+    },
+  });
+
+  OpenAPI.TOKEN = async () => {
+    return auth.user?.access_token || '';
+  };
+
+  const mutation = useMutation({
+    mutationFn: async (values: typeof form.values) => {
+      // TODO subscriber invite
+      console.log(values);
+    },
+    onSuccess: () => {
+      notifications.show({
+        title: 'Success',
+        message: `Invite email sent`,
+        radius: 'lg',
+        color: 'var(--mantine-color-green-3)',
+      });
+      form.reset();
+    },
+    onError: (error) => {
+      console.error('Error sending invite', error);
+    },
+  });
+
+  return (
+    <div className={baseClasses.root}>
+      <ContainerHeader title="Invite" />
+      <div className={baseClasses.body}>
+        <div className={classes.inner}>
+          <div className={classes.content}>
+            <Title order={3}>Know an expecting mum? Invite her to join!</Title>
+            <Text c="var(--mantine-color-gray-7)" mt="md">
+              Introduce her to a simple way to keep family and friends informed throughout her
+              labour experience.
+            </Text>
+            <Group className={classes.group}>
+              <form
+                onSubmit={form.onSubmit((values) => mutation.mutate(values))}
+                style={{ width: '100%' }}
+              >
+                <div className={classes.flexRowEnd}>
+                  <TextInput
+                    withAsterisk
+                    radius="lg"
+                    mt="md"
+                    rightSectionPointerEvents="none"
+                    rightSection={<IconAt size={16} />}
+                    label="Email"
+                    placeholder="mum@email.com"
+                    key={form.key('email')}
+                    size="lg"
+                    {...form.getInputProps('email')}
+                  />
+                  <Space w="md" />
+                  <Button
+                    color="var(--mantine-color-pink-4)"
+                    variant="filled"
+                    rightSection={<IconSend size={20} stroke={1.5} />}
+                    radius="xl"
+                    size="md"
+                    pr={14}
+                    h={48}
+                    mt="var(--mantine-spacing-lg)"
+                    styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
+                    type="submit"
+                  >
+                    Send invite
+                  </Button>
+                </div>
+              </form>
+            </Group>
+          </div>
+          <Image src={image} className={classes.image} />
+        </div>
+      </div>
+    </div>
+  );
+}

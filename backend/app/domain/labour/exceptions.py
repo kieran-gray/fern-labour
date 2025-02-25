@@ -1,6 +1,11 @@
 from typing import Any
 
-from app.domain.base.exceptions import DomainError
+from app.domain.base.exceptions import DomainError, DomainValidationError
+
+
+class InvalidLabourId(DomainValidationError):
+    def __init__(self) -> None:
+        super().__init__("Invalid Labour ID.")
 
 
 class LabourHasActiveContraction(DomainError):
@@ -18,9 +23,14 @@ class LabourHasNoActiveContraction(DomainError):
         super().__init__("No active contraction to end")
 
 
-class LabourCompleted(DomainError):
+class LabourAlreadyBegun(DomainError):
     def __init__(self) -> None:
-        super().__init__("Cannot start contraction for completed labour")
+        super().__init__("Labour has already begun")
+
+
+class LabourAlreadyCompleted(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Labour is already completed")
 
 
 class LabourNotFoundById(DomainError):

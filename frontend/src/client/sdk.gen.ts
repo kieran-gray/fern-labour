@@ -4,8 +4,9 @@ import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
 import type {
-  BeginLabourApiV1LabourBeginPostData,
   BeginLabourApiV1LabourBeginPostResponse,
+  BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutData,
+  BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutResponse,
   CompleteLabourApiV1LabourCompletePutData,
   CompleteLabourApiV1LabourCompletePutResponse,
   ContactUsSendMessageApiV1ContactUsPostData,
@@ -14,32 +15,42 @@ import type {
   EndContractionApiV1LabourContractionEndPutResponse,
   GetActiveLabourApiV1LabourActiveGetResponse,
   GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse,
-  GetApiV1SubscriberGetResponse,
-  GetBirthingPersonApiV1BirthingPersonGetResponse,
-  GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse,
-  GetSubscribersApiV1SubscriberSubscribersGetResponse,
-  GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse,
-  GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse,
+  GetLabourByIdApiV1LabourGetLabourIdGetData,
+  GetLabourByIdApiV1LabourGetLabourIdGetResponse,
+  GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetData,
+  GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetResponse,
+  GetSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGetResponse,
+  GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetData,
+  GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetResponse,
+  GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse,
+  GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse,
   GetUserApiV1AuthUserGetResponse,
+  GetUserApiV1UserGetResponse,
+  GetUserSummaryApiV1UserSummaryGetResponse,
   HealthcheckApiV1HealthGetResponse,
   LoginApiV1AuthLoginPostData,
   LoginApiV1AuthLoginPostResponse,
-  MakeAnnouncementApiV1LabourAnnouncementMakePostData,
-  MakeAnnouncementApiV1LabourAnnouncementMakePostResponse,
+  PlanLabourApiV1LabourPlanPostData,
+  PlanLabourApiV1LabourPlanPostResponse,
+  PostLabourUpdateApiV1LabourLabourUpdatePostData,
+  PostLabourUpdateApiV1LabourLabourUpdatePostResponse,
   RedirectToDocsGetResponse,
-  RegisterApiV1BirthingPersonRegisterPostResponse,
-  RegisterApiV1SubscriberRegisterPostData,
-  RegisterApiV1SubscriberRegisterPostResponse,
-  RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostData,
-  RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostResponse,
-  SendInviteApiV1BirthingPersonSendInvitePostData,
-  SendInviteApiV1BirthingPersonSendInvitePostResponse,
+  RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutData,
+  RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutResponse,
+  SendInviteApiV1LabourSendInvitePostData,
+  SendInviteApiV1LabourSendInvitePostResponse,
   StartContractionApiV1LabourContractionStartPostData,
   StartContractionApiV1LabourContractionStartPostResponse,
-  SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostData,
-  SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostResponse,
-  UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData,
-  UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse,
+  SubscribeToApiV1SubscriptionSubscribeLabourIdPostData,
+  SubscribeToApiV1SubscriptionSubscribeLabourIdPostResponse,
+  UnsubscribeFromApiV1SubscriptionUnsubscribePostData,
+  UnsubscribeFromApiV1SubscriptionUnsubscribePostResponse,
+  UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutData,
+  UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutResponse,
+  UpdateLabourPlanApiV1LabourPlanPutData,
+  UpdateLabourPlanApiV1LabourPlanPutResponse,
+  UpdateRoleApiV1SubscriptionManagementUpdateRolePutData,
+  UpdateRoleApiV1SubscriptionManagementUpdateRolePutResponse,
 } from './types.gen';
 
 export class AuthService {
@@ -77,141 +88,18 @@ export class AuthService {
    * Get currently logged in user. Requires a valid token for access.
    *
    * Args:
-   * credentials (HTTPAuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+   * credentials (HTTPAuthorizationCredentials):
+   * Bearer token provided via HTTP Authorization header.
    *
    * Returns:
    * User: Information about the authenticated user.
-   * @returns User Successful Response
+   * @returns UserDTO Successful Response
    * @throws ApiError
    */
   public static getUserApiV1AuthUserGet(): CancelablePromise<GetUserApiV1AuthUserGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/auth/user',
-    });
-  }
-}
-
-export class BirthingPersonService {
-  /**
-   * Register
-   * @returns BirthingPersonResponse Successful Response
-   * @throws ApiError
-   */
-  public static registerApiV1BirthingPersonRegisterPost(): CancelablePromise<RegisterApiV1BirthingPersonRegisterPostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/birthing-person/register',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Birthing Person
-   * @returns BirthingPersonResponse Successful Response
-   * @throws ApiError
-   */
-  public static getBirthingPersonApiV1BirthingPersonGet(): CancelablePromise<GetBirthingPersonApiV1BirthingPersonGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/birthing-person/',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Birthing Person Summary
-   * @returns BirthingPersonSummaryResponse Successful Response
-   * @throws ApiError
-   */
-  public static getBirthingPersonSummaryApiV1BirthingPersonSummaryGet(): CancelablePromise<GetBirthingPersonSummaryApiV1BirthingPersonSummaryGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/birthing-person/summary',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Subscription Token
-   * @returns BirthingPersonSubscriptionTokenResponse Successful Response
-   * @throws ApiError
-   */
-  public static getSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGet(): CancelablePromise<GetSubscriptionTokenApiV1BirthingPersonSubscriptionTokenGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/birthing-person/subscription-token',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Remove Subscriber
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns void Successful Response
-   * @throws ApiError
-   */
-  public static removeSubscriberApiV1BirthingPersonRemoveSubscriberPost(
-    data: RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostData
-  ): CancelablePromise<RemoveSubscriberApiV1BirthingPersonRemoveSubscriberPostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/birthing-person/remove_subscriber',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Send Invite
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns void Successful Response
-   * @throws ApiError
-   */
-  public static sendInviteApiV1BirthingPersonSendInvitePost(
-    data: SendInviteApiV1BirthingPersonSendInvitePostData
-  ): CancelablePromise<SendInviteApiV1BirthingPersonSendInvitePostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/birthing-person/send_invite',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
     });
   }
 }
@@ -272,18 +160,45 @@ export class HealthService {
 
 export class LabourService {
   /**
-   * Begin Labour
+   * Get Labour By Id
+   * @param data The data for the request.
+   * @param data.labourId
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static getLabourByIdApiV1LabourGetLabourIdGet(
+    data: GetLabourByIdApiV1LabourGetLabourIdGetData
+  ): CancelablePromise<GetLabourByIdApiV1LabourGetLabourIdGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/labour/get/{labour_id}',
+      path: {
+        labour_id: data.labourId,
+      },
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Update Labour Plan
    * @param data The data for the request.
    * @param data.requestBody
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static beginLabourApiV1LabourBeginPost(
-    data: BeginLabourApiV1LabourBeginPostData
-  ): CancelablePromise<BeginLabourApiV1LabourBeginPostResponse> {
+  public static updateLabourPlanApiV1LabourPlanPut(
+    data: UpdateLabourPlanApiV1LabourPlanPutData
+  ): CancelablePromise<UpdateLabourPlanApiV1LabourPlanPutResponse> {
     return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/labour/begin',
+      method: 'PUT',
+      url: '/api/v1/labour/plan',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {
@@ -291,6 +206,49 @@ export class LabourService {
         401: 'Unauthorized',
         404: 'Not Found',
         422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Plan Labour
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static planLabourApiV1LabourPlanPost(
+    data: PlanLabourApiV1LabourPlanPostData
+  ): CancelablePromise<PlanLabourApiV1LabourPlanPostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/labour/plan',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Begin Labour
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static beginLabourApiV1LabourBeginPost(): CancelablePromise<BeginLabourApiV1LabourBeginPostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/labour/begin',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
         500: 'Internal Server Error',
       },
     });
@@ -408,23 +366,67 @@ export class LabourService {
   }
 
   /**
-   * Make Announcement
+   * Post Labour Update
    * @param data The data for the request.
    * @param data.requestBody
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static makeAnnouncementApiV1LabourAnnouncementMakePost(
-    data: MakeAnnouncementApiV1LabourAnnouncementMakePostData
-  ): CancelablePromise<MakeAnnouncementApiV1LabourAnnouncementMakePostResponse> {
+  public static postLabourUpdateApiV1LabourLabourUpdatePost(
+    data: PostLabourUpdateApiV1LabourLabourUpdatePostData
+  ): CancelablePromise<PostLabourUpdateApiV1LabourLabourUpdatePostResponse> {
     return __request(OpenAPI, {
       method: 'POST',
-      url: '/api/v1/labour/announcement/make',
+      url: '/api/v1/labour/labour-update',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {
         400: 'Bad Request',
         401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get Subscription Token
+   * @returns LabourSubscriptionTokenResponse Successful Response
+   * @throws ApiError
+   */
+  public static getSubscriptionTokenApiV1LabourSubscriptionTokenGet(): CancelablePromise<GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/labour/subscription-token',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Send Invite
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns void Successful Response
+   * @throws ApiError
+   */
+  public static sendInviteApiV1LabourSendInvitePost(
+    data: SendInviteApiV1LabourSendInvitePostData
+  ): CancelablePromise<SendInviteApiV1LabourSendInvitePostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/labour/send_invite',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
         404: 'Not Found',
         422: 'Validation Error',
         500: 'Internal Server Error',
@@ -433,66 +435,23 @@ export class LabourService {
   }
 }
 
-export class SubscriberService {
-  /**
-   * Get
-   * @returns SubscriberResponse Successful Response
-   * @throws ApiError
-   */
-  public static getApiV1SubscriberGet(): CancelablePromise<GetApiV1SubscriberGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/subscriber/',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Register
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns SubscriberResponse Successful Response
-   * @throws ApiError
-   */
-  public static registerApiV1SubscriberRegisterPost(
-    data: RegisterApiV1SubscriberRegisterPostData
-  ): CancelablePromise<RegisterApiV1SubscriberRegisterPostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/subscriber/register',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
+export class SubscriptionService {
   /**
    * Subscribe To
    * @param data The data for the request.
-   * @param data.birthingPersonId
+   * @param data.labourId
    * @param data.requestBody
-   * @returns SubscriberResponse Successful Response
+   * @returns SubscriptionResponse Successful Response
    * @throws ApiError
    */
-  public static subscribeToApiV1SubscriberSubscribeToBirthingPersonIdPost(
-    data: SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostData
-  ): CancelablePromise<SubscribeToApiV1SubscriberSubscribeToBirthingPersonIdPostResponse> {
+  public static subscribeToApiV1SubscriptionSubscribeLabourIdPost(
+    data: SubscribeToApiV1SubscriptionSubscribeLabourIdPostData
+  ): CancelablePromise<SubscribeToApiV1SubscriptionSubscribeLabourIdPostResponse> {
     return __request(OpenAPI, {
       method: 'POST',
-      url: '/api/v1/subscriber/subscribe_to/{birthing_person_id}',
+      url: '/api/v1/subscription/subscribe/{labour_id}',
       path: {
-        birthing_person_id: data.birthingPersonId,
+        labour_id: data.labourId,
       },
       body: data.requestBody,
       mediaType: 'application/json',
@@ -510,15 +469,15 @@ export class SubscriberService {
    * Unsubscribe From
    * @param data The data for the request.
    * @param data.requestBody
-   * @returns SubscriberResponse Successful Response
+   * @returns SubscriptionResponse Successful Response
    * @throws ApiError
    */
-  public static unsubscribeFromApiV1SubscriberUnsubscribeFromPost(
-    data: UnsubscribeFromApiV1SubscriberUnsubscribeFromPostData
-  ): CancelablePromise<UnsubscribeFromApiV1SubscriberUnsubscribeFromPostResponse> {
+  public static unsubscribeFromApiV1SubscriptionUnsubscribePost(
+    data: UnsubscribeFromApiV1SubscriptionUnsubscribePostData
+  ): CancelablePromise<UnsubscribeFromApiV1SubscriptionUnsubscribePostResponse> {
     return __request(OpenAPI, {
       method: 'POST',
-      url: '/api/v1/subscriber/unsubscribe_from',
+      url: '/api/v1/subscription/unsubscribe',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {
@@ -533,13 +492,13 @@ export class SubscriberService {
 
   /**
    * Get Subscriptions
-   * @returns GetSubscriptionsResponse Successful Response
+   * @returns SubscriptionsResponse Successful Response
    * @throws ApiError
    */
-  public static getSubscriptionsApiV1SubscriberSubscriptionsGet(): CancelablePromise<GetSubscriptionsApiV1SubscriberSubscriptionsGetResponse> {
+  public static getSubscriptionsApiV1SubscriptionSubscriptionsGet(): CancelablePromise<GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
-      url: '/api/v1/subscriber/subscriptions',
+      url: '/api/v1/subscription/subscriptions',
       errors: {
         400: 'Bad Request',
         401: 'Unauthorized',
@@ -550,14 +509,210 @@ export class SubscriberService {
   }
 
   /**
-   * Get Subscribers
-   * @returns SubscriberListResponse Successful Response
+   * Get Subscriber Subscriptions
+   * @returns SubscriberSubscriptionsResponse Successful Response
    * @throws ApiError
    */
-  public static getSubscribersApiV1SubscriberSubscribersGet(): CancelablePromise<GetSubscribersApiV1SubscriberSubscribersGetResponse> {
+  public static getSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGet(): CancelablePromise<GetSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
-      url: '/api/v1/subscriber/subscribers',
+      url: '/api/v1/subscription/subscriber_subscriptions',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get Subscription By Id
+   * @param data The data for the request.
+   * @param data.subscriptionId
+   * @returns SubscriptionDataResponse Successful Response
+   * @throws ApiError
+   */
+  public static getSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGet(
+    data: GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetData
+  ): CancelablePromise<GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/subscription/subscription-data/{subscription_id}',
+      path: {
+        subscription_id: data.subscriptionId,
+      },
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get Labour Subscriptions
+   * @param data The data for the request.
+   * @param data.labourId
+   * @returns LabourSubscriptionsResponse Successful Response
+   * @throws ApiError
+   */
+  public static getLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGet(
+    data: GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetData
+  ): CancelablePromise<GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/subscription/labour_subscriptions/{labour_id}',
+      path: {
+        labour_id: data.labourId,
+      },
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+}
+
+export class SubscriptionManagementService {
+  /**
+   * Remove Subscriber
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns SubscriptionResponse Successful Response
+   * @throws ApiError
+   */
+  public static removeSubscriberApiV1SubscriptionManagementRemoveSubscriberPut(
+    data: RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutData
+  ): CancelablePromise<RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/subscription-management/remove-subscriber',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Block Subscriber
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns SubscriptionResponse Successful Response
+   * @throws ApiError
+   */
+  public static blockSubscriberApiV1SubscriptionManagementBlockSubscriberPut(
+    data: BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutData
+  ): CancelablePromise<BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/subscription-management/block-subscriber',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Update Role
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns SubscriptionResponse Successful Response
+   * @throws ApiError
+   */
+  public static updateRoleApiV1SubscriptionManagementUpdateRolePut(
+    data: UpdateRoleApiV1SubscriptionManagementUpdateRolePutData
+  ): CancelablePromise<UpdateRoleApiV1SubscriptionManagementUpdateRolePutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/subscription-management/update-role',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Update Contact Methods
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns SubscriptionResponse Successful Response
+   * @throws ApiError
+   */
+  public static updateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPut(
+    data: UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutData
+  ): CancelablePromise<UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/subscription-management/update-contact-methods',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+}
+
+export class UserService {
+  /**
+   * Get User
+   * @returns UserResponse Successful Response
+   * @throws ApiError
+   */
+  public static getUserApiV1UserGet(): CancelablePromise<GetUserApiV1UserGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/user/',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get User Summary
+   * @returns UserSummaryResponse Successful Response
+   * @throws ApiError
+   */
+  public static getUserSummaryApiV1UserSummaryGet(): CancelablePromise<GetUserSummaryApiV1UserSummaryGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/user/summary',
       errors: {
         400: 'Bad Request',
         401: 'Unauthorized',

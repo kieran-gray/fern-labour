@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { ApiError, OpenAPI, SubscriberService, SubscribeToRequest } from '../../../client';
+import { ApiError, OpenAPI, SubscribeToRequest, SubscriptionService } from '../../../client';
 import image from './image.svg';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './Form.module.css';
@@ -12,10 +12,10 @@ import classes from './Form.module.css';
 const SUBSCRIBER_TOKEN_LENGTH = 5;
 
 export default function SubscribeForm({
-  birthingPersonId,
+  labourId,
   token,
 }: {
-  birthingPersonId: string;
+  labourId: string;
   token: string | null;
 }) {
   const auth = useAuth();
@@ -39,15 +39,17 @@ export default function SubscribeForm({
   const mutation = useMutation({
     mutationFn: async (values: typeof form.values) => {
       const requestBody: SubscribeToRequest = { token: values.token };
-      const response =
-        await SubscriberService.subscribeToApiV1SubscriberSubscribeToBirthingPersonIdPost({
-          requestBody,
-          birthingPersonId,
-        });
-      return response.subscriber;
+      const response = await SubscriptionService.subscribeToApiV1SubscriptionSubscribeLabourIdPost({
+        requestBody,
+        labourId,
+      });
+      return response.subscription;
     },
-    onSuccess: (subscriber) => {
-      queryClient.setQueryData(['subscriber', auth.user?.profile.sub], subscriber);
+    onSuccess: (subscription) => {
+      queryClient.setQueryData(
+        ['subscription', subscription.id, auth.user?.profile.sub],
+        subscription
+      );
       navigate('/');
     },
     onError: (error) => {
@@ -64,20 +66,12 @@ export default function SubscribeForm({
         title: 'Error',
         message,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-9)',
-        classNames: {
-          title: baseClasses.notificationTitle,
-          description: baseClasses.notificationDescription,
-        },
-        style: {
-          backgroundColor: 'var(--mantine-color-pink-4)',
-          color: 'var(--mantine-color-white)',
-        },
+        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
   return (
-    <div className={baseClasses.root} style={{ maxWidth: '1100px' }}>
+    <div className={baseClasses.root}>
       <div className={baseClasses.header}>
         <div className={baseClasses.title}>Subscribe</div>
       </div>

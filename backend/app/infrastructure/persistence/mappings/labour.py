@@ -3,31 +3,31 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite, relationship
 
-from app.domain.announcement.entity import Announcement
-from app.domain.announcement.vo_announcement_id import AnnouncementId
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
 from app.domain.contraction.entity import Contraction
 from app.domain.contraction.vo_contraction_duration import Duration
 from app.domain.contraction.vo_contraction_id import ContractionId
 from app.domain.labour.entity import Labour
 from app.domain.labour.vo_labour_id import LabourId
+from app.domain.labour_update.entity import LabourUpdate
+from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
+from app.domain.user.vo_user_id import UserId
 from app.infrastructure.persistence.orm_registry import mapper_registry
-from app.infrastructure.persistence.tables.announcements import announcements_table
 from app.infrastructure.persistence.tables.contractions import contractions_table
+from app.infrastructure.persistence.tables.labour_updates import labour_updates_table
 from app.infrastructure.persistence.tables.labours import labours_table
 
 mapper_registry.map_imperatively(
-    Announcement,
-    announcements_table,
+    LabourUpdate,
+    labour_updates_table,
     properties={
-        "id_": composite(AnnouncementId, announcements_table.c.id),
-        "labour_id": composite(LabourId, announcements_table.c.labour_id),
-        "message": announcements_table.c.message,
-        "sent_time": announcements_table.c.sent_time,
+        "id_": composite(LabourUpdateId, labour_updates_table.c.id),
+        "labour_update_type": labour_updates_table.c.labour_update_type,
+        "labour_id": composite(LabourId, labour_updates_table.c.labour_id),
+        "message": labour_updates_table.c.message,
+        "sent_time": labour_updates_table.c.sent_time,
     },
     column_prefix="_",
 )
-
 
 mapper_registry.map_imperatively(
     Contraction,
@@ -50,22 +50,24 @@ mapper_registry.map_imperatively(
     labours_table,
     properties={
         "id_": composite(LabourId, labours_table.c.id),
-        "birthing_person_id": composite(BirthingPersonId, labours_table.c.birthing_person_id),
-        "start_time": labours_table.c.start_time,
+        "birthing_person_id": composite(UserId, labours_table.c.birthing_person_id),
+        "current_phase": labours_table.c.current_phase,
         "first_labour": labours_table.c.first_labour,
+        "due_date": labours_table.c.due_date,
+        "labour_name": labours_table.c.labour_name,
         "contractions": relationship(
             Contraction,
             order_by=contractions_table.c.start_time,
             cascade="all, delete-orphan",
             lazy="selectin",
         ),
-        "announcements": relationship(
-            Announcement,
-            order_by=announcements_table.c.sent_time,
+        "labour_updates": relationship(
+            LabourUpdate,
+            order_by=labour_updates_table.c.sent_time,
             cascade="all, delete-orphan",
             lazy="selectin",
         ),
-        "current_phase": labours_table.c.current_phase,
+        "start_time": labours_table.c.start_time,
         "end_time": labours_table.c.end_time,
         "notes": labours_table.c.notes,
     },

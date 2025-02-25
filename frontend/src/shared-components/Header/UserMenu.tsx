@@ -4,10 +4,13 @@ import {
   IconLogout,
   IconPassword,
   IconSettings,
+  IconSwitchHorizontal,
   IconTrash,
 } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
+import { useNavigate } from 'react-router-dom';
 import { Anchor, Avatar, Group, Menu, Space, Text, UnstyledButton } from '@mantine/core';
+import { AppMode, useMode } from '../../pages/Home/SelectAppMode';
 import classes from './Header.module.css';
 
 interface UserButtonProps extends React.ComponentPropsWithoutRef<'button'> {
@@ -33,6 +36,9 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
 
 export function UserMenu() {
   const auth = useAuth();
+  const navigate = useNavigate();
+  const { mode, setMode } = useMode();
+  const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
 
   return (
     <Group justify="center">
@@ -44,6 +50,20 @@ export function UserMenu() {
           />
         </Menu.Target>
         <Menu.Dropdown>
+          {mode !== null && (
+            <>
+              <Menu.Label>Current Mode: {mode}</Menu.Label>
+              <Menu.Item
+                leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}
+                onClick={() => {
+                  setMode(switchToMode);
+                  navigate('/');
+                }}
+              >
+                Switch to {switchToMode} mode
+              </Menu.Item>
+            </>
+          )}
           <Menu.Label>Settings</Menu.Label>
           <Menu.Item
             leftSection={<IconSettings size={16} stroke={1.5} />}
@@ -90,9 +110,27 @@ export function UserMenu() {
 
 export function MobileUserMenu() {
   const auth = useAuth();
+  const navigate = useNavigate();
+  const { mode, setMode } = useMode();
+  const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
 
   return (
     <>
+      {mode !== null && (
+        <>
+          <Text className={classes.drawerLabel}>Current Mode: {mode}</Text>
+          <Anchor<'a'>
+            key="update"
+            className={classes.mainLink}
+            onClick={() => {
+              setMode(switchToMode);
+              navigate('/');
+            }}
+          >
+            Switch to {switchToMode} Mode
+          </Anchor>
+        </>
+      )}
       <Text className={classes.drawerLabel}>Settings</Text>
       <Anchor<'a'>
         key="update"

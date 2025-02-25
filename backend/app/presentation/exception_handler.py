@@ -10,29 +10,37 @@ from fastapi.responses import ORJSONResponse
 from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
-from app.domain.announcement.exceptions import TooSoonSinceLastAnnouncement
 from app.domain.base.exceptions import DomainError
-from app.domain.birthing_person.exceptions import (
-    BirthingPersonDoesNotHaveActiveLabour,
-    BirthingPersonExistsWithID,
-    BirthingPersonHasActiveLabour,
-    BirthingPersonNotFoundById,
-)
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
-    LabourCompleted,
+    InvalidLabourId,
+    LabourAlreadyBegun,
+    LabourAlreadyCompleted,
     LabourHasActiveContraction,
     LabourHasNoActiveContraction,
 )
-from app.domain.subscriber.exceptions import (
-    SubscriberAlreadySubscribedToBirthingPerson,
-    SubscriberCannotSubscribeToSelf,
-    SubscriberExistsWithID,
-    SubscriberNotFoundById,
-    SubscriberNotSubscribedToBirthingPerson,
+from app.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
+from app.domain.subscription.exceptions import (
+    SubscriberAlreadySubscribed,
+    SubscriberIsBlocked,
+    SubscriberNotSubscribed,
+    SubscriptionNotFoundById,
     SubscriptionTokenIncorrect,
+    UnauthorizedSubscriptionRequest,
+    UnauthorizedSubscriptionUpdateRequest,
+)
+from app.domain.user.exceptions import (
+    UserCannotSubscribeToSelf,
+    UserDoesNotHaveActiveLabour,
+    UserHasActiveLabour,
+    UserNotFoundById,
 )
 from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
+from app.infrastructure.security.interfaces.exceptions import (
+    InvalidVerificationTokenException,
+    RequestVerificationError,
+    VerificationTokenAlreadyUsedException,
+)
 
 log = logging.getLogger(__name__)
 
@@ -60,23 +68,29 @@ class ExceptionMapper:
             pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
             DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
             ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-            BirthingPersonNotFoundById: status.HTTP_404_NOT_FOUND,
-            BirthingPersonExistsWithID: status.HTTP_409_CONFLICT,
-            BirthingPersonHasActiveLabour: status.HTTP_400_BAD_REQUEST,
-            BirthingPersonDoesNotHaveActiveLabour: status.HTTP_404_NOT_FOUND,
+            UserNotFoundById: status.HTTP_404_NOT_FOUND,
+            UserHasActiveLabour: status.HTTP_400_BAD_REQUEST,
+            UserDoesNotHaveActiveLabour: status.HTTP_404_NOT_FOUND,
             LabourHasActiveContraction: status.HTTP_400_BAD_REQUEST,
             LabourHasNoActiveContraction: status.HTTP_400_BAD_REQUEST,
-            LabourCompleted: status.HTTP_400_BAD_REQUEST,
+            LabourAlreadyCompleted: status.HTTP_400_BAD_REQUEST,
+            LabourAlreadyBegun: status.HTTP_400_BAD_REQUEST,
             CannotCompleteLabourWithActiveContraction: status.HTTP_400_BAD_REQUEST,
-            SubscriberAlreadySubscribedToBirthingPerson: status.HTTP_400_BAD_REQUEST,
-            SubscriberExistsWithID: status.HTTP_409_CONFLICT,
-            SubscriberNotFoundById: status.HTTP_404_NOT_FOUND,
-            SubscriberNotSubscribedToBirthingPerson: status.HTTP_400_BAD_REQUEST,
+            SubscriberAlreadySubscribed: status.HTTP_400_BAD_REQUEST,
+            SubscriberNotSubscribed: status.HTTP_400_BAD_REQUEST,
             SubscriptionTokenIncorrect: status.HTTP_403_FORBIDDEN,
-            SubscriberCannotSubscribeToSelf: status.HTTP_400_BAD_REQUEST,
+            UserCannotSubscribeToSelf: status.HTTP_400_BAD_REQUEST,
             AuthorizationError: status.HTTP_401_UNAUTHORIZED,
             InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
             TooSoonSinceLastAnnouncement: status.HTTP_400_BAD_REQUEST,
+            SubscriberIsBlocked: status.HTTP_403_FORBIDDEN,
+            SubscriptionNotFoundById: status.HTTP_404_NOT_FOUND,
+            UnauthorizedSubscriptionRequest: status.HTTP_403_FORBIDDEN,
+            UnauthorizedSubscriptionUpdateRequest: status.HTTP_403_FORBIDDEN,
+            InvalidLabourId: status.HTTP_400_BAD_REQUEST,
+            RequestVerificationError: status.HTTP_400_BAD_REQUEST,
+            VerificationTokenAlreadyUsedException: status.HTTP_400_BAD_REQUEST,
+            InvalidVerificationTokenException: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

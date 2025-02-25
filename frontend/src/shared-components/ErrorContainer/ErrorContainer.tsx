@@ -10,8 +10,8 @@ export function ErrorContainer({ message }: { message: string }) {
         </div>
         <div className={baseClasses.body}>
           <div className={baseClasses.text}>{message}</div>
-          <div style={{ marginTop: '30px', marginBottom: '10px' }}>
-            <a href="/" className={baseClasses.button}>
+          <div className={classes.controls}>
+            <a href="/" className={classes.button}>
               Go Home
             </a>
           </div>

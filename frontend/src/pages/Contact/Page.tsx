@@ -1,16 +1,13 @@
-import { FooterSimple } from '../../shared-components/Footer/Footer';
-import { Header } from '../../shared-components/Header/Header';
+import { AppShell } from '../../shared-components/AppShell';
 import { ContactUs } from './ContactUs/ContactUs';
+import baseClasses from '../../shared-components/shared-styles.module.css';
 
 export const ContactPage = () => {
   return (
-    <div style={{ height: '100svh', display: 'flex', flexDirection: 'column' }}>
-      <Header active="" />
-      <div style={{ padding: '15px' }}>
+    <AppShell>
+      <div className={baseClasses.flexPageColumn}>
         <ContactUs />
       </div>
-      <div style={{ flexGrow: 1 }} />
-      <FooterSimple />
-    </div>
+    </AppShell>
   );
 };

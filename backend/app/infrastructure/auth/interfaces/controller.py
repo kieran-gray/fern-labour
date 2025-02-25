@@ -1,6 +1,7 @@
 from typing import Protocol
 
-from app.infrastructure.auth.interfaces.models import AuthorizationCredentials, User
+from app.application.dtos.user import UserDTO
+from app.infrastructure.auth.interfaces.models import AuthorizationCredentials
 from app.infrastructure.auth.interfaces.schemas import TokenResponse
 
 
@@ -24,12 +25,13 @@ class AuthController(Protocol):
             TokenResponse: Contains the access token upon successful authentication.
         """
 
-    def get_authenticated_user(self, credentials: AuthorizationCredentials) -> User:
+    def get_authenticated_user(self, credentials: AuthorizationCredentials) -> UserDTO:
         """
         Get currently authenticated user information. Requires valid token.
 
         Args:
-            credentials (AuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+            credentials (AuthorizationCredentials):
+                Bearer token provided via HTTP Authorization header.
 
         Raises:
             AuthorizationError: If the token is invalid or not provided.

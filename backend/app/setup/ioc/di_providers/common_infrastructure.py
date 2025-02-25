@@ -12,8 +12,14 @@ from sqlalchemy.ext.asyncio import (
 
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.infrastructure.auth.interfaces.service import AuthService
-from app.infrastructure.auth.keycloak.controller import KeycloakAuthController
-from app.infrastructure.auth.keycloak.service import KeycloakAuthService
+from app.infrastructure.auth.keycloak.auth_controller import KeycloakAuthController
+from app.infrastructure.auth.keycloak.auth_service import KeycloakAuthService
+from app.infrastructure.security.cloudflare.turnstile_request_verification_service import (
+    TurnstileRequestVerificationService,
+)
+from app.infrastructure.security.interfaces.request_verification_service import (
+    RequestVerificationService,
+)
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.ioc.di_providers.common_settings import PostgresDsn
 from app.setup.settings import Settings, SqlaEngineSettings
@@ -88,3 +94,12 @@ class CommonInfrastructureProvider(Provider):
     @provide
     def provide_auth_controller(self, auth_service: AuthService) -> AuthController:
         return KeycloakAuthController(auth_service=auth_service)
+
+    @provide
+    def provide_request_verification_service(
+        self, settings: Settings
+    ) -> RequestVerificationService:
+        return TurnstileRequestVerificationService(
+            cloudflare_url=settings.security.cloudflare.cloudflare_url,
+            cloudflare_secret_key=settings.security.cloudflare.cloudflare_secret_key,
+        )

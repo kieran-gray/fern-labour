@@ -1,0 +1,13 @@
+table {
+    --table-highlight-on-hover-color: var(--mantine-color-pink-1);
+}
+
+.cropText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
+    @media (max-width: $mantine-breakpoint-sm) {
+        max-width: 20vw;
+      }
+  }

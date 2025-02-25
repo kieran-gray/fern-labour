@@ -43,11 +43,6 @@ def create_app(settings: Settings) -> FastAPI:
         title="Labour Tracker",
         lifespan=lifespan,
         default_response_class=ORJSONResponse,
-        swagger_ui_init_oauth={
-            "usePkceWithAuthorizationCodeGrant": True,
-            "clientId": settings.security.keycloak.client_id,
-            "clientSecret": settings.security.keycloak.client_secret,  # ATTENTION: NOT FOR PRODUCTION
-        },
     )
     configure_app(new_app, settings)
     return new_app

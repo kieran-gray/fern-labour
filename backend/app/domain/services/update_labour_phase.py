@@ -1,11 +1,11 @@
-from app.domain.birthing_person.entity import BirthingPerson
-from app.domain.birthing_person.exceptions import BirthingPersonDoesNotHaveActiveLabour
 from app.domain.labour.entity import Labour
 from app.domain.labour.enums import LabourPhase
+from app.domain.labour.exceptions import LabourAlreadyCompleted
 
 
 class UpdateLabourPhaseService:
     labour_phase_order = [
+        LabourPhase.PLANNED,
         LabourPhase.EARLY,
         LabourPhase.ACTIVE,
         LabourPhase.TRANSITION,
@@ -13,14 +13,11 @@ class UpdateLabourPhaseService:
         LabourPhase.COMPLETE,
     ]
 
-    def update_labour_phase(self, birthing_person: BirthingPerson) -> Labour:
-        active_labour = birthing_person.active_labour
+    def update_labour_phase(self, labour: Labour) -> Labour:
+        if labour.current_phase is LabourPhase.COMPLETE:
+            raise LabourAlreadyCompleted()
 
-        if not active_labour:
-            raise BirthingPersonDoesNotHaveActiveLabour(birthing_person.id_)
-
-        assert birthing_person.active_labour
-        recent_contractions = birthing_person.active_labour.contractions[-5:]
+        recent_contractions = labour.contractions[-5:]
         avg_intensity = sum(c.intensity for c in recent_contractions if c.intensity) / len(
             recent_contractions
         )
@@ -28,7 +25,7 @@ class UpdateLabourPhaseService:
             recent_contractions
         )
 
-        new_phase = active_labour.current_phase
+        new_phase = labour.current_phase
 
         if avg_intensity >= 8 and avg_duration >= 1.5:
             new_phase = LabourPhase.TRANSITION
@@ -36,8 +33,8 @@ class UpdateLabourPhaseService:
             new_phase = LabourPhase.ACTIVE
 
         if self.labour_phase_order.index(new_phase) > self.labour_phase_order.index(
-            active_labour.current_phase
+            labour.current_phase
         ):
-            active_labour.set_labour_phase(new_phase)
+            labour.set_labour_phase(new_phase)
 
-        return active_labour
+        return labour

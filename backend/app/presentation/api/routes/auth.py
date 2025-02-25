@@ -5,8 +5,8 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, Form
 from fastapi.security import HTTPAuthorizationCredentials
 
+from app.application.dtos.user import UserDTO
 from app.infrastructure.auth.interfaces.controller import AuthController
-from app.infrastructure.auth.interfaces.models import User
 from app.infrastructure.auth.interfaces.schemas import TokenResponse
 from app.presentation.api.dependencies import bearer_scheme
 
@@ -35,17 +35,18 @@ async def login(
 
 
 # Define the protected endpoint
-@auth_router.get("/user", response_model=User)
+@auth_router.get("/user", response_model=UserDTO)
 @inject
 async def get_user(
     auth_controller: Annotated[AuthController, FromComponent()],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-) -> User:
+) -> UserDTO:
     """
     Get currently logged in user. Requires a valid token for access.
 
     Args:
-        credentials (HTTPAuthorizationCredentials): Bearer token provided via HTTP Authorization header.
+        credentials (HTTPAuthorizationCredentials):
+            Bearer token provided via HTTP Authorization header.
 
     Returns:
         User: Information about the authenticated user.

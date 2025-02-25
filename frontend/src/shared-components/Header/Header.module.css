@@ -1,11 +1,9 @@
 .header {
-    height: 84px;
-    margin-bottom: 4vh;
+    height: 60px;
     background-color: var(--mantine-color-pink-3);
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
   }
 
   .drawer {
@@ -43,7 +41,7 @@
 }
 
   .inner {
-    height: 84px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -71,7 +69,7 @@
 
   .linksDrawer {
     padding-top: var(--mantine-spacing-lg);
-    height: 84px;
+    height: 60px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -94,17 +92,18 @@
     font-weight: 700;
     border: 2px solid transparent;
     transition:
-      border-color 100ms ease,
-      color 100ms ease;
+      border-color 200ms ease,
+      background-color 200ms ease,
+      color 200ms ease;
   
     @mixin hover {
-      color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+      color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-white));
       background-color: var(--mantine-color-pink-1);
       text-decoration: none;
     }
   
     &[data-active] {
-      color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+      color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-white));
       border-color: var(--mantine-color-pink-4);
     }
   }

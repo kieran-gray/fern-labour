@@ -45,7 +45,7 @@ services:
       - ./htmlcov:/app/htmlcov
     command: [ "debugpy", "--listen", "0.0.0.0:5678", "-m", "app.run" ]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -54,7 +54,7 @@ services:
     image: postgres:16.2
     restart: "no"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       retries: 5
       start_period: 30s
@@ -73,6 +73,14 @@ services:
       - POSTGRES_DB=${POSTGRES_DB?Variable not set}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
+    command: 
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_wal_senders=1"
+      - "-c"
+      - "max_replication_slots=1"
 
   backend-pre-start:
     image: '${DOCKER_IMAGE_REPOSITORY}${DOCKER_IMAGE_BACKEND?Variable not set}:latest'
@@ -112,7 +120,7 @@ services:
 
   keycloak:
     image: '${STACK_NAME?Variable not set}-keycloak:latest'
-    build: 
+    build:
       context: ./keycloak
     restart: "no"
     environment:
@@ -134,7 +142,7 @@ services:
     ports:
       - "8080:8080"
       - "9000:9000"
-    command: 
+    command:
       - start-dev
       - --import-realm
     networks:
@@ -179,7 +187,7 @@ services:
     networks:
       - default
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list" ]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -220,7 +228,7 @@ services:
     volumes:
       - ./frontend:/app
       - ./.env:/app/.env
-    command: ["npm", "run", "dev"]
+    command: [ "npm", "run", "dev" ]
 
   marketing:
     image: '${DOCKER_IMAGE_MARKETING?Variable not set}:latest'
@@ -240,7 +248,7 @@ services:
     environment:
       - NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL?variable not set}
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?variable not set}
-    command: ["npm", "run", "dev"]
+    command: [ "npm", "run", "dev" ]
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -267,6 +275,7 @@ volumes:
   app-db-data:
   kafka-volume:
   zookeeper-volume:
+
 
 networks:
   traefik-public:

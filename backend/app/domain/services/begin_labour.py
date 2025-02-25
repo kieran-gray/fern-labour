@@ -1,15 +1,13 @@
-from app.domain.birthing_person.entity import BirthingPerson
-from app.domain.birthing_person.exceptions import BirthingPersonHasActiveLabour
 from app.domain.labour.entity import Labour
+from app.domain.labour.enums import LabourPhase
+from app.domain.labour.exceptions import LabourAlreadyBegun
 
 
 class BeginLabourService:
-    def begin_labour(self, birthing_person: BirthingPerson, first_labour: bool) -> BirthingPerson:
-        if birthing_person.has_active_labour:
-            raise BirthingPersonHasActiveLabour(birthing_person.id_)
+    def begin_labour(self, labour: Labour) -> Labour:
+        if labour.current_phase is not LabourPhase.PLANNED:
+            raise LabourAlreadyBegun()
 
-        labour = Labour.begin(birthing_person_id=birthing_person.id_, first_labour=first_labour)
+        labour.begin()
 
-        birthing_person.add_labour(labour)
-
-        return birthing_person
+        return labour

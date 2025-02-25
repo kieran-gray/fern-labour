@@ -1,0 +1,124 @@
+.labourStatsWrapper {
+    background-color: var(--mantine-color-pink-3);
+    border-radius: var(--mantine-radius-xl);
+  }
+  
+  .labourStatsTitle {
+    color: var(--mantine-color-white);
+    font-weight: 700;
+    font-size: var(--mantine-font-size-md);
+    line-height: 1;
+  }
+  
+  .labourStatsHeader {
+    background-color: var(--mantine-color-pink-3);
+    border: 3px solid var(--mantine-color-pink-3);
+    border-radius: var(--mantine-radius-xl);
+    padding-top: 5px;
+    padding-bottom: 5px;
+  
+    &:hover {
+      background-color: var(--mantine-color-pink-3);
+      border: 3px solid var(--mantine-color-pink-4);
+    }
+  }
+  
+  .labourStatsPanel {
+    padding: 20px 0px 0px 10px;
+    border: 5px solid #ff7964;
+    border-bottom-left-radius: var(--mantine-radius-xl);
+    border-bottom-right-radius: var(--mantine-radius-xl);
+    background-color: var(--mantine-color-pink-1);
+    height: auto;
+    min-width: 220px;
+    flex: 1;
+  }
+  
+  .labourStatsText {
+    color: var(--mantine-color-gray-9);
+    font-weight: 500;
+    font-size: var(--mantine-font-size-md);
+  }
+
+  .labourStatsTabsRoot {
+    background-color: var(--mantine-color-pink-1);
+    border-radius: var(--mantine-radius-lg);
+    padding: 10px;
+    flex-direction: column;
+  }
+
+  .labourStatsTabsPanel {
+    width: 100%;
+    padding: calc(var(--mantine-spacing-md));
+
+    @media (max-width: $mantine-breakpoint-md) {
+      padding: calc(var(--mantine-spacing-md));
+    }
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        padding: calc(var(--mantine-spacing-xs) / 3);
+    }
+  }
+
+  .labourStatsTabsTab {
+    border-radius: var(--mantine-radius-md);
+    font-weight: 600;
+    flex-grow: 1;
+      
+    &[data-active] {
+      background-color: var(--mantine-color-pink-4);
+    }
+  }
+
+  .inner {
+    display: flex;
+    justify-content: space-between;
+    padding: calc(var(--mantine-spacing-xl));
+
+    @media (max-width: $mantine-breakpoint-md) {
+        padding: calc(var(--mantine-spacing-md));
+    }
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        padding: 0;
+    }
+  } 
+
+  .content {
+    max-width: 470px;
+    margin-right: calc(var(--mantine-spacing-xl) * 3);
+
+    @media (max-width: $mantine-breakpoint-md) {
+      max-width: 100%;
+      margin-right: 0;
+    }
+  }
+
+  .tableHeader {
+    background-color: var(--mantine-color-pink-1);
+    font-weight: 600;
+  }
+
+  .image {
+    width: 376px;
+    height: 356px;
+  
+    @media (max-width: $mantine-breakpoint-md) {
+      display: none;
+    }
+  }
+
+
+  .labourStatsChartRoot {
+    --chart-grid-color: alpha(var(--mantine-color-black), 0.15);
+    --chart-text-color: var(--mantine-color-gray-8);
+    background-color: var(--mantine-color-white);
+    padding: 30px 30px 10px;
+    border-radius: 15px;
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        padding-top: 30px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+  }

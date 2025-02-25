@@ -1,8 +1,6 @@
 export const appRoutes = {
-  track: '/',
+  home: '/',
   notFound: '/*',
-  share: '/share',
-  labour: '/labour',
   subscribe: '/subscribe/:id',
   contact: '/contact',
 } as const;

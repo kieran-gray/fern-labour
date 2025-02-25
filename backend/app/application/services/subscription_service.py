@@ -1,15 +1,25 @@
 import logging
+from uuid import UUID
 
-from app.application.dtos.subscriber import SubscriberDTO
+from app.application.dtos.subscription import SubscriptionDTO
 from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
-from app.domain.birthing_person.exceptions import BirthingPersonNotFoundById
-from app.domain.birthing_person.repository import BirthingPersonRepository
-from app.domain.birthing_person.vo_birthing_person_id import BirthingPersonId
-from app.domain.subscriber.entity import Subscriber
-from app.domain.subscriber.exceptions import SubscriberNotFoundById, SubscriptionTokenIncorrect
-from app.domain.subscriber.repository import SubscriberRepository
-from app.domain.subscriber.vo_subscriber_id import SubscriberId
+from app.application.services.get_labour_service import GetLabourService
+from app.application.services.user_service import UserService
+from app.domain.labour.vo_labour_id import LabourId
+from app.domain.services.subscribe_to import SubscribeToService
+from app.domain.services.unsubscribe_from import UnsubscribeFromService
+from app.domain.subscription.exceptions import (
+    SubscriberNotSubscribed,
+    SubscriptionIdInvalid,
+    SubscriptionNotFoundById,
+    SubscriptionTokenIncorrect,
+    UnauthorizedSubscriptionRequest,
+)
+from app.domain.subscription.repository import SubscriptionRepository
+from app.domain.subscription.vo_subscription_id import SubscriptionId
+from app.domain.user.exceptions import UserCannotSubscribeToSelf
+from app.domain.user.vo_user_id import UserId
 
 log = logging.getLogger(__name__)
 
@@ -17,50 +27,109 @@ log = logging.getLogger(__name__)
 class SubscriptionService:
     def __init__(
         self,
-        birthing_person_repository: BirthingPersonRepository,
-        subscriber_repository: SubscriberRepository,
+        get_labour_service: GetLabourService,
+        user_service: UserService,
+        subscription_repository: SubscriptionRepository,
         token_generator: TokenGenerator,
         event_producer: EventProducer,
     ):
-        self._birthing_person_repository = birthing_person_repository
-        self._subscriber_repository = subscriber_repository
+        self._get_labour_service = get_labour_service
+        self._user_service = user_service
+        self._subscription_repository = subscription_repository
         self._token_generator = token_generator
         self._event_producer = event_producer
 
-    async def _get_subscriber(self, subscriber_id: str) -> Subscriber:
-        domain_id = SubscriberId(subscriber_id)
-        subscriber = await self._subscriber_repository.get_by_id(domain_id)
-        if not subscriber:
-            raise SubscriberNotFoundById(subscriber_id=subscriber_id)
-        return subscriber
+    async def get_by_id(self, requester_id: str, subscription_id: str) -> SubscriptionDTO:
+        try:
+            subscription_domain_id = SubscriptionId(UUID(subscription_id))
+        except ValueError:
+            raise SubscriptionIdInvalid()
 
-    async def subscribe_to(
-        self, subscriber_id: str, birthing_person_id: str, token: str
-    ) -> SubscriberDTO:
-        subscriber = await self._get_subscriber(subscriber_id=subscriber_id)
-        birthing_person_domain_id = BirthingPersonId(birthing_person_id)
-        birthing_person = await self._birthing_person_repository.get_by_id(
-            birthing_person_domain_id
+        subscription = await self._subscription_repository.get_by_id(
+            subscription_id=subscription_domain_id
         )
-        if not birthing_person:
-            raise BirthingPersonNotFoundById(birthing_person_id=birthing_person_id)
+        if not subscription:
+            raise SubscriptionNotFoundById(subscription_id=subscription_id)
 
-        if not self._token_generator.validate(birthing_person_id, token):
+        if (
+            subscription.subscriber_id.value != requester_id
+            and subscription.birthing_person_id.value != requester_id
+        ):
+            raise UnauthorizedSubscriptionRequest()
+
+        return SubscriptionDTO.from_domain(subscription)
+
+    async def get_subscriber_subscriptions(self, subscriber_id: str) -> list[SubscriptionDTO]:
+        # Getting the subscriber ensures that one exists, and handles throwing accurate error if not
+        subscriber = await self._user_service.get(user_id=subscriber_id)
+        subscriptions = await self._subscription_repository.filter(
+            subscriber_id=UserId(subscriber.id)
+        )
+        return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
+
+    async def get_labour_subscriptions(
+        self, requester_id: str, labour_id: str
+    ) -> list[SubscriptionDTO]:
+        labour = await self._get_labour_service.get_labour_by_id(labour_id=labour_id)
+        if requester_id != labour.birthing_person_id:
+            raise UnauthorizedSubscriptionRequest()
+
+        subscriptions = await self._subscription_repository.filter(
+            labour_id=LabourId(UUID(labour.id))
+        )
+        return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
+
+    async def subscribe_to(self, subscriber_id: str, labour_id: str, token: str) -> SubscriptionDTO:
+        subscriber = await self._user_service.get(user_id=subscriber_id)
+        labour = await self._get_labour_service.get_labour_by_id(labour_id=labour_id)
+
+        if labour.birthing_person_id == subscriber_id:
+            raise UserCannotSubscribeToSelf()
+
+        if not self._token_generator.validate(labour.id, token):
             raise SubscriptionTokenIncorrect()
 
-        subscriber.subscribe_to(birthing_person_domain_id)
-        await self._subscriber_repository.save(subscriber)
+        labour_domain_id = LabourId(UUID(labour.id))
+        birthing_person_domain_id = UserId(labour.birthing_person_id)
+        subscriber_domain_id = UserId(subscriber.id)
 
-        await self._event_producer.publish_batch(subscriber.clear_domain_events())
+        subscription = await self._subscription_repository.filter_one_or_none(
+            subscriber_id=subscriber_domain_id, labour_id=labour_domain_id
+        )
+        if subscription:
+            subscription = SubscribeToService().subscribe_to_from_existing_subscription(
+                subscription=subscription
+            )
+        else:
+            subscription = SubscribeToService().subscribe_to(
+                labour_id=labour_domain_id,
+                birthing_person_id=birthing_person_domain_id,
+                subscriber_id=subscriber_domain_id,
+            )
 
-        return SubscriberDTO.from_domain(subscriber)
+        await self._subscription_repository.save(subscription)
 
-    async def unsubscribe_from(self, subscriber_id: str, birthing_person_id: str) -> SubscriberDTO:
-        subscriber = await self._get_subscriber(subscriber_id=subscriber_id)
+        await self._event_producer.publish_batch(subscription.clear_domain_events())
 
-        subscriber.unsubscribe_from(BirthingPersonId(birthing_person_id))
-        await self._subscriber_repository.save(subscriber)
+        return SubscriptionDTO.from_domain(subscription)
 
-        await self._event_producer.publish_batch(subscriber.clear_domain_events())
+    async def unsubscribe_from(self, subscriber_id: str, labour_id: str) -> SubscriptionDTO:
+        subscriber = await self._user_service.get(user_id=subscriber_id)
 
-        return SubscriberDTO.from_domain(subscriber)
+        labour_domain_id = LabourId(UUID(labour_id))
+        subscriber_domain_id = UserId(subscriber.id)
+
+        subscription = await self._subscription_repository.filter_one_or_none(
+            subscriber_id=subscriber_domain_id, labour_id=labour_domain_id
+        )
+
+        if not subscription:
+            raise SubscriberNotSubscribed()
+
+        subscription = UnsubscribeFromService().unsubscribe_from(subscription=subscription)
+
+        await self._subscription_repository.save(subscription)
+
+        await self._event_producer.publish_batch(subscription.clear_domain_events())
+
+        return SubscriptionDTO.from_domain(subscription)

@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from app.infrastructure.auth.interfaces.models import User
+from app.application.dtos.user import UserDTO
 
 
 class AuthService(Protocol):
@@ -9,7 +9,7 @@ class AuthService(Protocol):
         Authenticate the user and return an access token.
         """
 
-    def verify_token(self, token: str) -> User:
+    def verify_token(self, token: str) -> UserDTO:
         """
         Verify the given token and return user information.
         """
