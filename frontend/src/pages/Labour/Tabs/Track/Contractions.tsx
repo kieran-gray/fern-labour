@@ -7,6 +7,7 @@ import { sortContractions } from '../../../../shared-components/utils.tsx';
 import { ActiveContractionControls } from './ActiveContractionControls.tsx';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert.tsx';
+import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital.tsx';
 import ContractionTimeline from './ContractionTimeline.tsx';
 import StartContractionButton from './StartContractionButton.tsx';
 import { StopwatchHandle } from './Stopwatch/Stopwatch.tsx';
@@ -52,8 +53,9 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
             <div className={baseClasses.flexColumnEnd}>
               {sortedContractions.length > 0 && <Space h="xl" />}
               <Stack align="stretch" justify="flex-end">
-                {labour.should_call_midwife_urgently && <CallMidwifeAlert />}
-                {labour.should_go_to_hospital && <GoToHospitalAlert />}
+                {labour.recommendations.call_midwife && <CallMidwifeAlert />}
+                {labour.recommendations.go_to_hospital && <GoToHospitalAlert />}
+                {labour.recommendations.prepare_for_hospital && <PrepareForHospitalAlert />}
                 {activeContraction && (
                   <ActiveContractionControls
                     stopwatchRef={stopwatchRef}

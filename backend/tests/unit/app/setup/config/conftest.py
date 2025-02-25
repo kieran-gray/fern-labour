@@ -27,6 +27,10 @@ class MockConfigReader(ConfigReader):
                 "subscriber_token": {
                     "SUBSCRIBER_TOKEN_SALT": "salty",
                 },
+                "cloudflare": {
+                    "CLOUDFLARE_URL": "test",
+                    "CLOUDFLARE_SECRET_KEY": "secret",
+                },
             },
             "logging": {
                 "LOG_LEVEL": "WARNING",

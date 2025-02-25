@@ -57,8 +57,9 @@ export type LabourDTO = {
   start_time: string | null;
   end_time: string | null;
   notes: string | null;
-  should_go_to_hospital: boolean;
-  should_call_midwife_urgently: boolean;
+  recommendations: {
+    [key: string]: boolean;
+  };
   contractions: Array<ContractionDTO>;
   announcements: Array<LabourUpdateDTO>;
   status_updates: Array<LabourUpdateDTO>;

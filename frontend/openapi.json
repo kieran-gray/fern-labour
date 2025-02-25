@@ -2448,13 +2448,12 @@
                         ],
                         "title": "Notes"
                     },
-                    "should_go_to_hospital": {
-                        "type": "boolean",
-                        "title": "Should Go To Hospital"
-                    },
-                    "should_call_midwife_urgently": {
-                        "type": "boolean",
-                        "title": "Should Call Midwife Urgently"
+                    "recommendations": {
+                        "additionalProperties": {
+                            "type": "boolean"
+                        },
+                        "type": "object",
+                        "title": "Recommendations"
                     },
                     "contractions": {
                         "items": {
@@ -2489,8 +2488,7 @@
                     "start_time",
                     "end_time",
                     "notes",
-                    "should_go_to_hospital",
-                    "should_call_midwife_urgently",
+                    "recommendations",
                     "contractions",
                     "announcements",
                     "status_updates"

@@ -4,10 +4,10 @@ class RequestVerificationError(Exception):
 
 
 class VerificationTokenAlreadyUsedException(RequestVerificationError):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(message="Verification token has already been used.")
 
 
 class InvalidVerificationTokenException(RequestVerificationError):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(message="Verification token is invalid.")

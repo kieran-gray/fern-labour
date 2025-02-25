@@ -68,7 +68,7 @@ export function ContactUs() {
     },
     onSettled: () => {
       setIsLoading(false);
-    }
+    },
   });
 
   const alertIcon = <IconInfoCircle />;

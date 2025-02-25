@@ -53,7 +53,7 @@ export function ActiveContractionControls({
         ]}
       />
       <Space h="xl" />
-      <EndContractionButton intensity={intensity} />
+      <EndContractionButton intensity={intensity} activeContraction={activeContraction} />
     </div>
   );
 }

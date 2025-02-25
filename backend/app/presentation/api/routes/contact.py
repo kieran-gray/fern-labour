@@ -34,7 +34,7 @@ async def contact_us_send_message(
     ],
     contact_service: Annotated[ContactService, FromComponent(ComponentEnum.ADMIN)],
 ) -> None:
-    await request_verification_service.verify(token=request_data.token, ip=request.client.host)
+    await request_verification_service.verify(token=request_data.token, ip=request.client.host)  # type: ignore
     await contact_service.send_contact_email(
         email=request_data.email,
         name=request_data.name,
