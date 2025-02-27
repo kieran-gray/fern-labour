@@ -17,8 +17,8 @@ export const Hero03 = ({
   description = 'Real-time updates for family and friends, without the endless check-ins.',
   ...containerProps
 }: Hero03Props) => (
-  <Container pos="relative" h="100vh" mah={950} style={{ overflow: 'hidden' }} fluid>
-    <Container component="section" h="100vh" mah={950} mx="auto" size="xl" {...containerProps}>
+  <Container pos="relative" h="100vh" mah={750} style={{ overflow: 'hidden' }} fluid>
+    <Container component="section" h="100vh" mah={750} mx="auto" size="xl" {...containerProps}>
       <Box
         pos="absolute"
         top={0}
