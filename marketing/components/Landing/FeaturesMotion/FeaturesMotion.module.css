@@ -1,0 +1,9 @@
+.cell {
+    background-color: var(--mantine-color-white);
+    border: 1px solid var(--mantine-color-gray-2);
+  }
+
+.cellTitle {
+    color: var(--mantine-color-pink-6);
+    font-weight: 700;
+}

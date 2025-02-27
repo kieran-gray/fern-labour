@@ -1,0 +1,194 @@
+'use client';
+
+import NextLink from 'next/link';
+import { IconArrowRight } from '@tabler/icons-react';
+import { motion } from 'motion/react';
+import {
+  Anchor,
+  Burger,
+  Button,
+  Container,
+  ContainerProps,
+  Drawer,
+  Flex,
+  Group,
+  MantineBreakpoint,
+  MantineRadius,
+  Text,
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import classes from './PillHeader.module.css';
+
+export type HeaderLink = {
+  label: string;
+  href: string;
+};
+
+const HEADER_LINKS: HeaderLink[] = [
+  { label: 'Home', href: '#home' },
+  { label: 'Features', href: '#features' },
+  { label: 'Pricing', href: '#pricing' },
+  { label: 'FAQs', href: '#faqs' },
+];
+
+const OTHER_PAGE_HEADER_LINKS: HeaderLink[] = [{ label: 'Home', href: '/' }];
+
+type Header01Props = ContainerProps & {
+  /** Logo to display in the header */
+  logo?: React.ReactNode;
+
+  /** Links to display in the header */
+  links?: HeaderLink[];
+
+  /** Title for the call to action button */
+  callToActionTitle?: string;
+
+  /** URL for the call to action button */
+  callToActionUrl?: string;
+
+  /** Callback for when the menu is toggled */
+  onMenuToggle?: () => void;
+
+  /** Whether the menu is open */
+  isMenuOpen?: boolean;
+
+  /** Breakpoint at which the menu is displayed */
+  breakpoint?: MantineBreakpoint;
+
+  /** Border radius of the header */
+  radius?: MantineRadius | number;
+
+  /** Is this the landing page? */
+  landingPage?: boolean;
+};
+
+export const Header01 = ({
+  style,
+  breakpoint = 'xs',
+  logo = (
+    <>
+      <NextLink href="/">
+        <img src="/logo/logo.svg" className={classes.icon} alt="Fern Logo" />
+      </NextLink>
+      <Text fw="bold" fz={24} mx="xs">
+        Fern Labour
+      </Text>
+    </>
+  ),
+  callToActionTitle = 'Join Now',
+  callToActionUrl = '#',
+  links = HEADER_LINKS,
+  onMenuToggle,
+  isMenuOpen,
+  h = 60,
+  radius = 30,
+  landingPage = true,
+  ...containerProps
+}: Header01Props) => {
+  const [opened, { toggle }] = useDisclosure(false);
+
+  const useLinks = landingPage ? links : OTHER_PAGE_HEADER_LINKS;
+  const navLinks = useLinks.map((link) => (
+    <Anchor
+      key={link.href}
+      className={classes.link}
+      href={link.href}
+      component={NextLink}
+      td="none"
+      onClick={(event) => {
+        if (link.href.startsWith('#')) {
+          event.preventDefault();
+          const element = document.getElementById(link.href);
+          const headerOffset = 100;
+          const elementPos = element!.getBoundingClientRect().top;
+          const offsetPos = elementPos + window.scrollY - headerOffset;
+          window.scrollTo({ top: offsetPos, behavior: 'smooth' });
+          if (opened) {
+            toggle();
+          }
+        }
+      }}
+    >
+      {link.label}
+    </Anchor>
+  ));
+  const ctaButton = (
+    <Button
+      component={NextLink}
+      href={callToActionUrl}
+      className={classes.cta}
+      radius="xl"
+      rightSection={<IconArrowRight size={16} />}
+      style={{ flexShrink: 0 }}
+    >
+      {callToActionTitle}
+    </Button>
+  );
+
+  return (
+    <Container
+      className={classes.container}
+      component="header"
+      style={{ borderRadius: radius, ...style }}
+      mt="10px"
+      w={{ base: '100%', [breakpoint]: 'fit-content' }}
+      h={h}
+      {...containerProps}
+    >
+      <Flex
+        justify="space-between"
+        align="center"
+        h="100%"
+        style={{ overflow: 'hidden' }}
+        gap="lg"
+        wrap="nowrap"
+      >
+        <Group gap={0} style={{ flexShrink: 0 }}>
+          <Burger
+            size="sm"
+            opened={opened}
+            onClick={toggle}
+            hiddenFrom={breakpoint}
+            color="var(--mantine-color-white)"
+            title="Navigation Menu"
+          />
+          {logo}
+        </Group>
+        <Drawer
+          size="xs"
+          classNames={{ content: classes.drawer, header: classes.drawer }}
+          overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+          position="right"
+          opened={opened}
+          onClose={toggle}
+        >
+          <div className={classes.linksDrawer}>
+            {navLinks}
+            {ctaButton}
+          </div>
+        </Drawer>
+        <motion.div
+          initial={{ width: 0, opacity: 0 }}
+          whileInView={{ width: 'fit-content', opacity: 1 }}
+          transition={{ duration: 0.8, ease: 'easeInOut' }}
+          viewport={{ once: true }}
+        >
+          <Flex
+            flex={1}
+            justify="center"
+            px="lg"
+            h="100%"
+            align="center"
+            wrap="nowrap"
+            visibleFrom={breakpoint}
+            gap="lg"
+            className={classes['link-container']}
+          >
+            {navLinks}
+          </Flex>
+        </motion.div>
+        {ctaButton}
+      </Flex>
+    </Container>
+  );
+};

@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { IconBrandInstagram, IconInfoCircle } from '@tabler/icons-react';
+import { IconInfoCircle } from '@tabler/icons-react';
+import Turnstile from 'react-turnstile';
 import {
-  ActionIcon,
   Alert,
   Button,
   Container,
   Group,
   SimpleGrid,
+  Space,
   Text,
   Textarea,
   TextInput,
@@ -16,13 +17,10 @@ import { useForm } from '@mantine/form';
 import { ContactIconsList } from './ContactIcons.tsx';
 import classes from './ContactUs.module.css';
 
-const social = [
-  { icon: IconBrandInstagram, link: process.env.NEXT_PUBLIC_INSTAGRAM_URL, title: 'Instagram' },
-];
-
 export function ContactUs() {
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const icon = <IconInfoCircle />;
   const form = useForm({
     mode: 'uncontrolled',
@@ -49,7 +47,12 @@ export function ContactUs() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          email: values.email,
+          name: values.name,
+          message: values.message,
+          token: turnstileToken,
+        }),
       });
 
       if (!response.ok) {
@@ -71,21 +74,6 @@ export function ContactUs() {
     }
   };
 
-  const icons = social.map((data, index) => (
-    <ActionIcon
-      target="_blank"
-      key={index}
-      component="a"
-      href={data.link}
-      size={28}
-      className={classes.social}
-      variant="transparent"
-      title={data.title}
-    >
-      <data.icon size={22} stroke={1.5} />
-    </ActionIcon>
-  ));
-
   return (
     <Container mt={20} className={classes.wrapper} size="lg">
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={50}>
@@ -95,7 +83,6 @@ export function ContactUs() {
             Leave your email and we will get back to you within 24 hours
           </Text>
           <ContactIconsList />
-          <Group mt="xl">{icons}</Group>
         </div>
         <form className={classes.form} onSubmit={form.onSubmit((values) => handleSubmit(values))}>
           {status.type && (
@@ -138,6 +125,11 @@ export function ContactUs() {
             mt="md"
             classNames={{ input: classes.input, label: classes.inputLabel }}
             {...form.getInputProps('message')}
+          />
+          <Space h={10} />
+          <Turnstile
+            sitekey="0x4AAAAAAA-eKMn9GfnERlf2"
+            onVerify={(token) => setTurnstileToken(token)}
           />
           <Group justify="flex-end" mt="md">
             <Button

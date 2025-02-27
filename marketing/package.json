@@ -22,9 +22,14 @@
     "@mantine/hooks": "7.16.1",
     "@next/bundle-analyzer": "^15.1.5",
     "@tabler/icons-react": "^3.28.1",
+    "@tsparticles/engine": "^3.8.1",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.8.1",
+    "motion": "^12.4.7",
     "next": "15.1.5",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "react-turnstile": "^1.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

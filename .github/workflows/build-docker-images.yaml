@@ -1,5 +1,4 @@
 name: Build Docker Images
-
 on:
   push:
     branches: ['main']
@@ -11,15 +10,41 @@ on:
       - '.github/workflows/**'
 
 jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      marketing: ${{ steps.filter.outputs.marketing }}
+      keycloak: ${{ steps.filter.outputs.keycloak }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+            marketing:
+              - 'marketing/**'
+            keycloak:
+              - 'keycloak/**'
+
   backend:
-    if: github.event_name == 'push' && contains(github.event.changes, 'backend/')
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.backend == 'true' }}
     uses: ./.github/workflows/build-and-push.yaml
     with:
       directory: backend
       image-name: labour-tracker-backend
 
   frontend:
-    if: github.event_name == 'push' && contains(github.event.changes, 'frontend/')
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.frontend == 'true' }}
     uses: ./.github/workflows/build-and-push.yaml
     with:
       directory: frontend
@@ -32,7 +57,8 @@ jobs:
         VITE_POST_LOGOUT_REDIRECT=${{ vars.VITE_POST_LOGOUT_REDIRECT }}
 
   marketing:
-    if: github.event_name == 'push' && contains(github.event.changes, 'marketing/')
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.marketing == 'true' }}
     uses: ./.github/workflows/build-and-push.yaml
     with:
       directory: marketing
@@ -42,7 +68,8 @@ jobs:
         INSTAGRAM_URL=${{ vars.INSTAGRAM_URL }}
 
   keycloak:
-    if: github.event_name == 'push' && contains(github.event.changes, 'keycloak/')
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.keycloak == 'true' }}
     uses: ./.github/workflows/build-and-push.yaml
     with:
       directory: keycloak

@@ -2,6 +2,7 @@
     padding: 40px;
     background-color: var(--mantine-color-pink-0);
     border-radius: var(--mantine-radius-xl);
+    position: relative;
   }
   
   .title {
