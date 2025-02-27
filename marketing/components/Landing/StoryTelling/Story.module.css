@@ -2,6 +2,7 @@
   background-color: var(--mantine-color-pink-0);
   border-radius: var(--mantine-radius-xl);
   padding: 0 40px;
+  position: relative;
 }
 
 .inner {
@@ -10,7 +11,7 @@
     padding-top: calc(var(--mantine-spacing-xl) * 3);
     padding-bottom: calc(var(--mantine-spacing-xl) * 3);
 
-    @media (max-width: $mantine-breakpoint-md) {
+    @media (max-width: $mantine-breakpoint-sm) {
       padding-top: calc(var(--mantine-spacing-md) * 3);
       padding-bottom: calc(var(--mantine-spacing-md) * 3);
     }
@@ -18,9 +19,10 @@
   
   .content {
     max-width: 480px;
-    margin-right: calc(var(--mantine-spacing-xl) * 3);
+    min-width: 280px;
+    margin-right: calc(var(--mantine-spacing-md));
   
-    @media (max-width: $mantine-breakpoint-md) {
+    @media (max-width: $mantine-breakpoint-sm) {
       max-width: 100%;
       margin-right: 0;
     }
@@ -45,12 +47,47 @@
       flex: 1;
     }
   }
+
+  .comingSoonImageBig {
+    width: 380px;
+    height: 300px;
   
-  .image {
-    width: 376px;
-    height: 356px;
-  
-    @media (max-width: $mantine-breakpoint-md) {
+    @media (max-width: $mantine-breakpoint-sm) {
       display: none;
+    }
+  }
+  
+  .bigImage {
+    width: 400px;
+    height: 370px;
+  
+    @media (max-width: $mantine-breakpoint-sm) {
+      display: none;
+    }
+  }
+
+  .smallImage {
+    display: none;
+  
+    @media (max-width: $mantine-breakpoint-sm) {
+      display: block;
+      width: 300px;
+      height: 200px;
+      align-self: center;
+      justify-self: center;
+    }
+  }
+
+  .flexRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .text {
+    font-size: 20px;
+
+    @media (max-width: $mantine-breakpoint-xs) {
+      font-size: 16px;
     }
   }
