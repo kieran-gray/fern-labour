@@ -156,7 +156,7 @@ export const Pricing01 = () => {
           title="Basic"
           description=""
           cta={
-            <Button component={NextLink} href="#" size="lg" variant="light" fullWidth>
+            <Button component={NextLink} href="#" size="lg" radius='xl' variant="light" fullWidth>
               Get started
             </Button>
           }
@@ -207,7 +207,7 @@ export const Pricing01 = () => {
           title="Plus"
           description=""
           cta={
-            <Button className={classes.cta} component={NextLink} href="#" size="lg" fullWidth>
+            <Button className={classes.cta} component={NextLink} radius='xl' href="#" size="lg" fullWidth>
               Get started
             </Button>
           }
@@ -257,7 +257,7 @@ export const Pricing01 = () => {
           title="Advanced"
           description=""
           cta={
-            <Button component={NextLink} href="#" size="lg" variant="light" fullWidth>
+            <Button component={NextLink} href="#" radius='xl' size="lg" variant="light" fullWidth>
               Get started
             </Button>
           }
