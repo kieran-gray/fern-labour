@@ -13,6 +13,7 @@ This template comes with the following features:
 
 ## npm scripts
 
+
 ### Build and dev scripts
 
 - `dev` – start dev server
