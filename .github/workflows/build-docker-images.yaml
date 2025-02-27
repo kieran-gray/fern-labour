@@ -9,6 +9,10 @@ on:
       - 'keycloak/**'
       - '.github/workflows/**'
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   check-changes:
     runs-on: ubuntu-latest
