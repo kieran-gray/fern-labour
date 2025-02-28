@@ -49,6 +49,8 @@ import type {
   UnsubscribeFromApiV1SubscriptionUnsubscribePostResponse,
   UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutData,
   UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutResponse,
+  UpdateContractionApiV1LabourContractionUpdatePutData,
+  UpdateContractionApiV1LabourContractionUpdatePutResponse,
   UpdateLabourPlanApiV1LabourPlanPutData,
   UpdateLabourPlanApiV1LabourPlanPutResponse,
   UpdateRoleApiV1SubscriptionManagementUpdateRolePutData,
@@ -294,6 +296,31 @@ export class LabourService {
     return __request(OpenAPI, {
       method: 'PUT',
       url: '/api/v1/labour/contraction/end',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Update Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static updateContractionApiV1LabourContractionUpdatePut(
+    data: UpdateContractionApiV1LabourContractionUpdatePutData
+  ): CancelablePromise<UpdateContractionApiV1LabourContractionUpdatePutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/labour/contraction/update',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {

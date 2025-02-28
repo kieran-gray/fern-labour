@@ -181,6 +181,14 @@ export type UpdateContactMethodsRequest = {
   contact_methods: Array<string>;
 };
 
+export type UpdateContractionRequest = {
+  contraction_id: string;
+  start_time?: string | null;
+  end_time?: string | null;
+  intensity?: number | null;
+  notes?: string | null;
+};
+
 export type UpdateRoleRequest = {
   subscription_id: string;
   role: string;
@@ -266,6 +274,12 @@ export type EndContractionApiV1LabourContractionEndPutData = {
 };
 
 export type EndContractionApiV1LabourContractionEndPutResponse = LabourResponse;
+
+export type UpdateContractionApiV1LabourContractionUpdatePutData = {
+  requestBody: UpdateContractionRequest;
+};
+
+export type UpdateContractionApiV1LabourContractionUpdatePutResponse = LabourResponse;
 
 export type CompleteLabourApiV1LabourCompletePutData = {
   requestBody: CompleteLabourRequest;
