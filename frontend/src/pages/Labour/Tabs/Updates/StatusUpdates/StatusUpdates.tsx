@@ -6,6 +6,7 @@ import { LabourUpdateDTO } from '../../../../../client';
 import { PostStatusUpdateButton } from './PostStatusUpdate';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './StatusUpdates.module.css';
+import { ManageStatusUpdateMenu } from './ManageStatusUpdateMenu';
 
 export function StatusUpdates({
   statusUpdates,
@@ -32,6 +33,8 @@ export function StatusUpdates({
               {new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at')}
             </Text>
           </div>
+          <div style={{flexGrow: 1}} />
+          <ManageStatusUpdateMenu statusUpdateId={data.id} />
         </Group>
         <Text pl={54} pt="sm" size="sm" fw="400">
           {data.message}

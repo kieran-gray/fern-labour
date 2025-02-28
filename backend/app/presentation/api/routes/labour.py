@@ -20,7 +20,10 @@ from app.presentation.api.schemas.requests.labour import (
     PlanLabourRequest,
     SendInviteRequest,
 )
-from app.presentation.api.schemas.requests.labour_update import LabourUpdateRequest
+from app.presentation.api.schemas.requests.labour_update import (
+    DeleteLabourUpdateRequest,
+    LabourUpdateRequest,
+)
 from app.presentation.api.schemas.responses.labour import (
     LabourResponse,
     LabourSubscriptionTokenResponse,
@@ -284,6 +287,32 @@ async def post_labour_update(
         labour_update_type=request_data.labour_update_type,
         message=request_data.message,
         sent_time=request_data.sent_time,
+    )
+    return LabourResponse(labour=labour)
+
+
+@labour_router.delete(
+    "/labour-update",
+    responses={
+        status.HTTP_200_OK: {"model": LabourResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def delete_labour_update(
+    request_data: DeleteLabourUpdateRequest,
+    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    labour = await service.delete_labour_update(
+        birthing_person_id=user.id,
+        labour_update_id=request_data.labour_update_id,
     )
     return LabourResponse(labour=labour)
 

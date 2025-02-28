@@ -14,10 +14,12 @@ from app.domain.base.exceptions import DomainError
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
     InvalidLabourId,
+    InvalidLabourUpdateId,
     LabourAlreadyBegun,
     LabourAlreadyCompleted,
     LabourHasActiveContraction,
     LabourHasNoActiveContraction,
+    LabourUpdateNotFoundById,
 )
 from app.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
 from app.domain.subscription.exceptions import (
@@ -91,6 +93,8 @@ class ExceptionMapper:
             RequestVerificationError: status.HTTP_400_BAD_REQUEST,
             VerificationTokenAlreadyUsedException: status.HTTP_400_BAD_REQUEST,
             InvalidVerificationTokenException: status.HTTP_400_BAD_REQUEST,
+            InvalidLabourUpdateId: status.HTTP_400_BAD_REQUEST,
+            LabourUpdateNotFoundById: status.HTTP_404_NOT_FOUND,
         }
 
     def get_status_code(self, exc: Exception) -> int:

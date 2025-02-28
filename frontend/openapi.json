@@ -1969,6 +1969,90 @@
                         "HTTPBearer": []
                     }
                 ]
+            },
+            "delete": {
+                "tags": [
+                    "Labour"
+                ],
+                "summary": "Delete Labour Update",
+                "operationId": "delete_labour_update_api_v1_labour_labour_update_delete",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeleteLabourUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
             }
         },
         "/api/v1/labour/subscription-token": {
@@ -2316,6 +2400,19 @@
                     "is_active"
                 ],
                 "title": "ContractionDTO"
+            },
+            "DeleteLabourUpdateRequest": {
+                "properties": {
+                    "labour_update_id": {
+                        "type": "string",
+                        "title": "Labour Update Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "labour_update_id"
+                ],
+                "title": "DeleteLabourUpdateRequest"
             },
             "EndContractionRequest": {
                 "properties": {

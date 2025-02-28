@@ -8,6 +8,11 @@ class InvalidLabourId(DomainValidationError):
         super().__init__("Invalid Labour ID.")
 
 
+class InvalidLabourUpdateId(DomainValidationError):
+    def __init__(self) -> None:
+        super().__init__("Invalid Labour Update ID.")
+
+
 class LabourHasActiveContraction(DomainError):
     def __init__(self) -> None:
         super().__init__("Cannot start a new contraction while one is active")
@@ -36,3 +41,8 @@ class LabourAlreadyCompleted(DomainError):
 class LabourNotFoundById(DomainError):
     def __init__(self, labour_id: Any) -> None:
         super().__init__(f"Labour with id '{labour_id}' is not found.")
+
+
+class LabourUpdateNotFoundById(DomainError):
+    def __init__(self, labour_update_id: Any) -> None:
+        super().__init__(f"Labour Update with id '{labour_update_id}' is not found.")

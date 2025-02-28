@@ -13,9 +13,11 @@ from app.domain.labour.events import (
     LabourPlanned,
     LabourUpdatePosted,
 )
+from app.domain.labour.exceptions import LabourUpdateNotFoundById
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.labour_update.entity import LabourUpdate
 from app.domain.labour_update.enums import LabourUpdateType
+from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 from app.domain.user.vo_user_id import UserId
 
 
@@ -192,3 +194,10 @@ class Labour(AggregateRoot[LabourId]):
                 }
             )
         )
+
+    def delete_labour_update(self, labour_update_id: LabourUpdateId) -> bool:
+        for labour_update in self.labour_updates:
+            if labour_update.id_ == labour_update_id:
+                self.labour_updates.remove(labour_update)
+                return True
+        raise LabourUpdateNotFoundById(labour_update_id)
