@@ -70,7 +70,7 @@ export const Header01 = ({
       <NextLink href="/">
         <img src="/logo/logo.svg" className={classes.icon} alt="Fern Logo" />
       </NextLink>
-      <Text fw="bold" fz={24} mx="xs">
+      <Text fw="bold" className={classes.title}>
         Fern Labour
       </Text>
     </>
@@ -131,10 +131,23 @@ export const Header01 = ({
         href={callToActionUrl}
         className={classes.cta}
         radius="xl"
-        size="xs"
+        size="sm"
         rightSection={<IconArrowRight size={16} />}
         style={{ flexShrink: 0 }}
         hiddenFrom="sm"
+        visibleFrom='xs'
+      >
+        {callToActionTitle}
+      </Button>
+      <Button
+        component={NextLink}
+        href={callToActionUrl}
+        className={classes.cta}
+        radius="xl"
+        size="xs"
+        rightSection={<IconArrowRight size={16} />}
+        style={{ flexShrink: 0 }}
+        hiddenFrom='xs'
       >
         {callToActionTitle}
       </Button>
