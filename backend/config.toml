@@ -1,4 +1,6 @@
 # Any values that are set in .env will replace these values.
+[base]
+ENVIRONMENT = ""
 
 [security.keycloak]
 KEYCLOAK_SERVER_URL = "http://localhost:8080"
