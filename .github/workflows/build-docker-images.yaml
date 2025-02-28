@@ -70,6 +70,7 @@ jobs:
       build-args: |
         BACKEND_API_URL=${{ vars.BACKEND_API_URL }}
         INSTAGRAM_URL=${{ vars.INSTAGRAM_URL }}
+        FRONTEND_URL=${{ vars.FRONTEND_URL }}
 
   keycloak:
     needs: check-changes

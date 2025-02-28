@@ -29,7 +29,8 @@
     "next": "15.1.5",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-turnstile": "^1.1.4"
+    "react-turnstile": "^1.1.4",
+    "use-debounce": "^10.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

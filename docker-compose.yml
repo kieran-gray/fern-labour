@@ -239,6 +239,7 @@ services:
         - NODE_ENV=development
         - BACKEND_API_URL=${BACKEND_API_URL?variable not set}
         - INSTAGRAM_URL=${INSTAGRAM_URL?variable not set}
+        - FRONTEND_URL=${FRONTEND_HOST?variable not set}
     restart: "no"
     networks:
       - traefik-public
@@ -247,6 +248,7 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL?variable not set}
+      - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_HOST?variable not set}
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?variable not set}
     command: [ "npm", "run", "dev" ]
 
