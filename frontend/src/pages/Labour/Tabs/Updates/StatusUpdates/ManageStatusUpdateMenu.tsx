@@ -2,12 +2,8 @@ import { IconDotsVertical, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
-import {
-  DeleteLabourUpdateRequest,
-  LabourService,
-  OpenAPI,
-} from '../../../../../client';
 import { notifications } from '@mantine/notifications';
+import { DeleteLabourUpdateRequest, LabourService, OpenAPI } from '../../../../../client';
 
 export function ManageStatusUpdateMenu({ statusUpdateId }: { statusUpdateId: string }) {
   const auth = useAuth();
@@ -19,11 +15,9 @@ export function ManageStatusUpdateMenu({ statusUpdateId }: { statusUpdateId: str
   const deleteStatusUpdate = useMutation({
     mutationFn: async () => {
       const requestBody: DeleteLabourUpdateRequest = { labour_update_id: statusUpdateId };
-      await LabourService.deleteLabourUpdateApiV1LabourLabourUpdateDelete(
-        {
-          requestBody,
-        }
-      );
+      await LabourService.deleteLabourUpdateApiV1LabourLabourUpdateDelete({
+        requestBody,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });

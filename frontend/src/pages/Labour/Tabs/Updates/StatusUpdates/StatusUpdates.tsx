@@ -3,10 +3,10 @@ import { IconPencil, IconSwitchHorizontal } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
 import { Avatar, Button, Group, ScrollArea, Text, TextInput, Title } from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
+import { ManageStatusUpdateMenu } from './ManageStatusUpdateMenu';
 import { PostStatusUpdateButton } from './PostStatusUpdate';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './StatusUpdates.module.css';
-import { ManageStatusUpdateMenu } from './ManageStatusUpdateMenu';
 
 export function StatusUpdates({
   statusUpdates,
@@ -33,7 +33,7 @@ export function StatusUpdates({
               {new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at')}
             </Text>
           </div>
-          <div style={{flexGrow: 1}} />
+          <div style={{ flexGrow: 1 }} />
           <ManageStatusUpdateMenu statusUpdateId={data.id} />
         </Group>
         <Text pl={54} pt="sm" size="sm" fw="400">
