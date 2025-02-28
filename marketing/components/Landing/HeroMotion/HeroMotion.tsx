@@ -63,7 +63,7 @@ export const Hero03 = ({
                 mb="lg"
                 style={{ textTransform: 'none', border: 'none' }}
                 hiddenFrom="sm"
-                visibleFrom='xs'
+                visibleFrom="xs"
               >
                 {badge}
               </Badge>

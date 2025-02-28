@@ -4,8 +4,8 @@ import type { AppProps } from 'next/app';
 import { Quicksand } from 'next/font/google';
 import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
-import { theme } from '../theme';
 import ResponsiveParticles from '@/components/ResponsiveParticles/ResponsiveParticles';
+import { theme } from '../theme';
 
 const quicksand = Quicksand({ subsets: ['latin'] });
 
