@@ -135,7 +135,7 @@ export const Header01 = ({
         rightSection={<IconArrowRight size={16} />}
         style={{ flexShrink: 0 }}
         hiddenFrom="sm"
-        visibleFrom='xs'
+        visibleFrom="xs"
       >
         {callToActionTitle}
       </Button>
@@ -147,7 +147,7 @@ export const Header01 = ({
         size="xs"
         rightSection={<IconArrowRight size={16} />}
         style={{ flexShrink: 0 }}
-        hiddenFrom='xs'
+        hiddenFrom="xs"
       >
         {callToActionTitle}
       </Button>
