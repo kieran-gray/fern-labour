@@ -11,7 +11,13 @@ from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
 from app.domain.base.exceptions import DomainError
-from app.domain.contraction.exceptions import CannotUpdateActiveContraction, ContractionIdInvalid, ContractionNotFoundById, ContractionStartTimeAfterEndTime, ContractionsOverlappingAfterUpdate
+from app.domain.contraction.exceptions import (
+    CannotUpdateActiveContraction,
+    ContractionIdInvalid,
+    ContractionNotFoundById,
+    ContractionsOverlappingAfterUpdate,
+    ContractionStartTimeAfterEndTime,
+)
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
     InvalidLabourId,

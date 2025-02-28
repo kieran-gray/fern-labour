@@ -69,10 +69,10 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
   };
 
   const updateTime = (dateTime: string, time: string) => {
-    const split = dateTime.split("T")
-    split[1] = `${time}Z`
-    return split.join("T")
-  }
+    const split = dateTime.split('T');
+    split[1] = `${time}Z`;
+    return split.join('T');
+  };
 
   const mutation = useMutation({
     mutationFn: async ({
@@ -83,8 +83,14 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
       contractionId: string;
     }) => {
       setMutationInProgress(true);
-      const startTime = values.startTime !== '' ? updateTime(contractionData!.startTime, values.startTime) : contractionData!.startTime;
-      const endTime = values.endTime !== '' ? updateTime(contractionData!.endTime, values.endTime) : contractionData!.endTime;
+      const startTime =
+        values.startTime !== ''
+          ? updateTime(contractionData!.startTime, values.startTime)
+          : contractionData!.startTime;
+      const endTime =
+        values.endTime !== ''
+          ? updateTime(contractionData!.endTime, values.endTime)
+          : contractionData!.endTime;
 
       const requestBody: UpdateContractionRequest = {
         start_time: startTime,
@@ -106,7 +112,7 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
         radius: 'lg',
         color: 'var(--mantine-color-green-3)',
       });
-      close()
+      close();
     },
     onError: async (_) => {
       setMutationInProgress(false);
@@ -119,7 +125,7 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
     },
     onSettled: () => {
       form.reset();
-    }
+    },
   });
 
   const timelineContractions = contractions.map((contraction) => (
@@ -229,7 +235,6 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
               markLabel: classes.markLabel,
               track: classes.track,
             }}
-            
             color="var(--mantine-color-pink-4)"
             key={form.key('intensity')}
             size="xl"
@@ -255,7 +260,7 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
             h={48}
             className={classes.submitButton}
             styles={{ section: { marginRight: 22 } }}
-            style={{width: '100%'}}
+            style={{ width: '100%' }}
             type="submit"
             loading={mutationInProgress}
           >
