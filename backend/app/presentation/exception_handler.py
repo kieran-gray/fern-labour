@@ -11,6 +11,7 @@ from pydantic_core import ErrorDetails
 
 from app.application.base.exceptions import ApplicationError
 from app.domain.base.exceptions import DomainError
+from app.domain.contraction.exceptions import CannotUpdateActiveContraction, ContractionIdInvalid, ContractionNotFoundById, ContractionStartTimeAfterEndTime, ContractionsOverlappingAfterUpdate
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
     InvalidLabourId,
@@ -95,6 +96,11 @@ class ExceptionMapper:
             InvalidVerificationTokenException: status.HTTP_400_BAD_REQUEST,
             InvalidLabourUpdateId: status.HTTP_400_BAD_REQUEST,
             LabourUpdateNotFoundById: status.HTTP_404_NOT_FOUND,
+            ContractionStartTimeAfterEndTime: status.HTTP_400_BAD_REQUEST,
+            ContractionIdInvalid: status.HTTP_400_BAD_REQUEST,
+            ContractionsOverlappingAfterUpdate: status.HTTP_400_BAD_REQUEST,
+            ContractionNotFoundById: status.HTTP_404_NOT_FOUND,
+            CannotUpdateActiveContraction: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:
