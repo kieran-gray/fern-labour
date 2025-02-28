@@ -1,8 +1,11 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
 import pytest
 
+from app.domain.contraction.entity import Contraction
 from app.domain.labour.entity import Labour
+from app.domain.labour.vo_labour_id import LabourId
 from app.domain.user.entity import User
 from app.domain.user.vo_user_id import UserId
 
@@ -28,3 +31,19 @@ def sample_labour(sample_user: User) -> Labour:
         due_date=datetime.now(UTC),
         labour_id=labour_id,
     )
+
+
+def generate_contractions(length: float, intensity: int) -> list[Contraction]:
+    contraction_list = []
+    last_start_time = None
+    for _ in range(5):
+        start_time = last_start_time or datetime.now(UTC)
+        end_time = start_time + timedelta(minutes=length)
+
+        contraction = Contraction.start(labour_id=LabourId(uuid4()), start_time=start_time)
+        contraction.end(end_time=end_time, intensity=intensity)
+
+        contraction_list.append(contraction)
+        last_start_time = start_time
+
+    return contraction_list

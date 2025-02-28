@@ -3,11 +3,11 @@ __all__ = ("initialize_mapping", "create_app_with_container")
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import sentry_sdk
 from dishka import AsyncContainer, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-import sentry_sdk
 from starlette.middleware.cors import CORSMiddleware
 
 from app.infrastructure.persistence import initialize_mapping
