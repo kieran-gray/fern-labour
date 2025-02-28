@@ -43,7 +43,7 @@ const data = [
     title: 'Instagram',
     description: 'fernlabour',
     icon: IconBrandInstagram,
-    link: 'https://www.instagram.com/fernlabour/',
+    link: process.env.NEXT_PUBLIC_INSTAGRAM_URL,
   },
 ];
 

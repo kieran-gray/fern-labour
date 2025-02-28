@@ -8,7 +8,7 @@ export default function Contact() {
       <Header01
         breakpoint="sm"
         callToActionTitle="Go to app"
-        callToActionUrl="http://localhost:5173"
+        callToActionUrl={process.env.NEXT_PUBLIC_FRONTEND_URL}
         h="80"
         radius="50px"
         landingPage={false}

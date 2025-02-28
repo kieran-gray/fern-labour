@@ -113,16 +113,32 @@ export const Header01 = ({
     </Anchor>
   ));
   const ctaButton = (
-    <Button
-      component={NextLink}
-      href={callToActionUrl}
-      className={classes.cta}
-      radius="xl"
-      rightSection={<IconArrowRight size={16} />}
-      style={{ flexShrink: 0 }}
-    >
-      {callToActionTitle}
-    </Button>
+    <>
+      <Button
+        component={NextLink}
+        href={callToActionUrl}
+        className={classes.cta}
+        radius="xl"
+        size="md"
+        rightSection={<IconArrowRight size={16} />}
+        style={{ flexShrink: 0 }}
+        visibleFrom="sm"
+      >
+        {callToActionTitle}
+      </Button>
+      <Button
+        component={NextLink}
+        href={callToActionUrl}
+        className={classes.cta}
+        radius="xl"
+        size="xs"
+        rightSection={<IconArrowRight size={16} />}
+        style={{ flexShrink: 0 }}
+        hiddenFrom="sm"
+      >
+        {callToActionTitle}
+      </Button>
+    </>
   );
 
   return (
@@ -162,10 +178,7 @@ export const Header01 = ({
           opened={opened}
           onClose={toggle}
         >
-          <div className={classes.linksDrawer}>
-            {navLinks}
-            {ctaButton}
-          </div>
+          <div className={classes.linksDrawer}>{navLinks}</div>
         </Drawer>
         <motion.div
           initial={{ width: 0, opacity: 0 }}

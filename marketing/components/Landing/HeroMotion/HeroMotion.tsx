@@ -63,6 +63,19 @@ export const Hero03 = ({
                 mb="lg"
                 style={{ textTransform: 'none', border: 'none' }}
                 hiddenFrom="sm"
+                visibleFrom="xs"
+              >
+                {badge}
+              </Badge>
+              <Badge
+                variant="default"
+                p="md"
+                bg="var(--mantine-color-pink-5)"
+                c="var(--mantine-color-white)"
+                size="sm"
+                mb="lg"
+                style={{ textTransform: 'none', border: 'none' }}
+                hiddenFrom="xs"
               >
                 {badge}
               </Badge>
