@@ -11,11 +11,13 @@ export const LandingPage = () => {
   return (
     <div style={{ padding: '15px' }}>
       <Hero03 />
-      <Story01 />
-      <Space h="xl" />
-      <Story02 />
-      <Space h="xl" />
-      <Story03 />
+      <div style={{ overflow: 'hidden' }}>
+        <Story01 />
+        <Space h="xl" />
+        <Story02 />
+        <Space h="xl" />
+        <Story03 />
+      </div>
       <Feature02 />
       <Pricing01 />
       <FaqWithImage />
