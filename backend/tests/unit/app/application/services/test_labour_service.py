@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock
+from uuid import uuid4
 
 import pytest
 import pytest_asyncio
@@ -9,6 +10,7 @@ from app.application.events.producer import EventProducer
 from app.application.services.labour_service import LabourService
 from app.application.services.user_service import UserService
 from app.domain.labour.enums import LabourPhase
+from app.domain.labour.exceptions import InvalidLabourUpdateId, LabourUpdateNotFoundById
 from app.domain.labour.repository import LabourRepository
 from app.domain.user.entity import User
 from app.domain.user.exceptions import (
@@ -153,3 +155,44 @@ async def test_cannot_post_labour_update_for_non_existent_user(
         await labour_service.post_labour_update(
             "TEST123456", labour_update_type="announcement", message="Test message"
         )
+
+
+async def test_can_delete_labour_update(labour_service: LabourService) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    labour = await labour_service.post_labour_update(
+        BIRTHING_PERSON, labour_update_type="announcement", message="Test message"
+    )
+    labour_update = labour.announcements[0]
+    await labour_service.delete_labour_update(BIRTHING_PERSON, labour_update_id=labour_update.id)
+
+
+async def test_cannot_delete_labour_update_for_non_existent_user(
+    labour_service: LabourService,
+) -> None:
+    with pytest.raises(UserDoesNotHaveActiveLabour):
+        await labour_service.delete_labour_update(BIRTHING_PERSON, labour_update_id="test")
+        
+
+async def test_cannot_delete_labour_update_with_invalid_id(
+    labour_service: LabourService,
+) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.post_labour_update(
+        BIRTHING_PERSON, labour_update_type="announcement", message="Test message"
+    )
+    with pytest.raises(InvalidLabourUpdateId):
+        await labour_service.delete_labour_update(BIRTHING_PERSON, labour_update_id="test")
+
+
+async def test_cannot_delete_labour_update_not_found(
+    labour_service: LabourService,
+) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.post_labour_update(
+        BIRTHING_PERSON, labour_update_type="announcement", message="Test message"
+    )
+    with pytest.raises(LabourUpdateNotFoundById):
+        await labour_service.delete_labour_update(BIRTHING_PERSON, labour_update_id=str(uuid4()))

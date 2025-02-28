@@ -1,12 +1,15 @@
 import logging
 from datetime import datetime
+from uuid import UUID
 
 from app.application.dtos.labour import LabourDTO
 from app.application.events.producer import EventProducer
 from app.application.services.user_service import UserService
 from app.domain.labour.entity import Labour
+from app.domain.labour.exceptions import InvalidLabourUpdateId
 from app.domain.labour.repository import LabourRepository
 from app.domain.labour_update.enums import LabourUpdateType
+from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 from app.domain.services.begin_labour import BeginLabourService
 from app.domain.services.complete_labour import CompleteLabourService
 from app.domain.services.end_contraction import EndContractionService
@@ -170,6 +173,29 @@ class LabourService:
             message=message,
             sent_time=sent_time,
         )
+        await self._labour_repository.save(labour)
+
+        await self._event_producer.publish_batch(labour.clear_domain_events())
+
+        return LabourDTO.from_domain(labour)
+
+    async def delete_labour_update(
+        self,
+        birthing_person_id: str,
+        labour_update_id: str,
+    ) -> LabourDTO:
+        domain_id = UserId(birthing_person_id)
+        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
+        if not labour:
+            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+
+        try:
+            labour_update_domain_id = LabourUpdateId(UUID(labour_update_id))
+        except ValueError:
+            raise InvalidLabourUpdateId()
+
+        labour.delete_labour_update(labour_update_id=labour_update_domain_id)
+
         await self._labour_repository.save(labour)
 
         await self._event_producer.publish_batch(labour.clear_domain_events())

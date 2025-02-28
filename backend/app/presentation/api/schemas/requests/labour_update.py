@@ -9,3 +9,7 @@ class LabourUpdateRequest(BaseModel):
     labour_update_type: LabourUpdateType
     message: str
     sent_time: datetime | None = None
+
+
+class DeleteLabourUpdateRequest(BaseModel):
+    labour_update_id: str

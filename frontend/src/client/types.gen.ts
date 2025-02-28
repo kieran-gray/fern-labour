@@ -33,6 +33,10 @@ export type ContractionDTO = {
   is_active: boolean;
 };
 
+export type DeleteLabourUpdateRequest = {
+  labour_update_id: string;
+};
+
 export type EndContractionRequest = {
   intensity: number;
   end_time?: string | null;
@@ -278,6 +282,12 @@ export type PostLabourUpdateApiV1LabourLabourUpdatePostData = {
 };
 
 export type PostLabourUpdateApiV1LabourLabourUpdatePostResponse = LabourResponse;
+
+export type DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData = {
+  requestBody: DeleteLabourUpdateRequest;
+};
+
+export type DeleteLabourUpdateApiV1LabourLabourUpdateDeleteResponse = LabourResponse;
 
 export type GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse =
   LabourSubscriptionTokenResponse;
