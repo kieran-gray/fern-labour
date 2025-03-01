@@ -22,7 +22,7 @@ jobs:
       marketing: ${{ steps.filter.outputs.marketing }}
       keycloak: ${{ steps.filter.outputs.keycloak }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@v2
