@@ -3,6 +3,7 @@ __all__ = ("initialize_mapping", "create_app_with_container")
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import sentry_sdk
 from dishka import AsyncContainer, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
@@ -38,7 +39,27 @@ def create_app_with_container(settings: Settings) -> FastAPI:
     return new_app
 
 
+def initialise_sentry(settings: Settings) -> None:
+    sentry_sdk.init(
+        environment=settings.base.environment,
+        dsn="https://2e8e095bfd691bcc7f238e080ee09d07@o4508898015838208.ingest.de.sentry.io/4508898110210128",
+        # Add data like request headers and IP for users,
+        # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+        send_default_pii=True,
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for tracing.
+        traces_sample_rate=1.0,
+        _experiments={
+            # Set continuous_profiling_auto_start to True
+            # to automatically start the profiler on when
+            # possible.
+            "continuous_profiling_auto_start": True,
+        },
+    )
+
+
 def create_app(settings: Settings) -> FastAPI:
+    initialise_sentry(settings=settings)
     new_app: FastAPI = FastAPI(
         title="Labour Tracker",
         lifespan=lifespan,

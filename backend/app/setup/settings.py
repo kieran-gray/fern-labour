@@ -12,6 +12,10 @@ from app.setup.readers.toml import TomlConfigReader
 log = logging.getLogger(__name__)
 
 
+class BaseSettings(BaseModel):
+    environment: str = Field(alias="ENVIRONMENT")
+
+
 class KeycloakSettings(BaseModel):
     server_url: str = Field(alias="KEYCLOAK_SERVER_URL")
     docker_url: str | None = Field(alias="KEYCLOAK_DOCKER_URL", default=None)
@@ -165,6 +169,7 @@ class EventSettings(BaseModel):
 
 
 class Settings(BaseModel):
+    base: BaseSettings
     security: SecuritySettings
     logging: LoggingSettings
     uvicorn: UvicornSettings

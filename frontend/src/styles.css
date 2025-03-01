@@ -1,5 +1,5 @@
 body {
-    background-color: #fff2eb;
+    background-color: #fff;
 }
 
 @keyframes float {
@@ -16,7 +16,7 @@ body {
     height: 100%;
     z-index: -1;
     overflow: hidden;
-    background-color: #fff2eb
+    background-color: #fff
 }
 
 .bubble {

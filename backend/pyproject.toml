@@ -21,6 +21,7 @@ dependencies = [
     "python-keycloak>=5.1.1",
     "python-multipart>=0.0.20",
     "rtoml<1.0.0,>=0.11.0",
+    "sentry-sdk[fastapi]>=2.22.0",
     "sqlalchemy[mypy]==2.0.36",
     "twilio>=9.4.1",
     "uvicorn<1.0.0,>=0.32.0",

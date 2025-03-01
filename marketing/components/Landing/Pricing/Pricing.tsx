@@ -10,6 +10,7 @@ import {
   IconSignLeft,
   IconSpeakerphone,
   IconStopwatch,
+  IconUser,
   IconUsers,
   IconUsersGroup,
 } from '@tabler/icons-react';
@@ -162,7 +163,7 @@ export const Pricing01 = () => {
           }
           icon={
             <Icon>
-              <IconStopwatch size={21} />
+              <IconUser size={21} />
             </Icon>
           }
           price="Free"

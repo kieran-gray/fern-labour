@@ -9,6 +9,7 @@ from app.application.dtos.labour import LabourDTO
 from app.application.events.producer import EventProducer
 from app.application.services.labour_service import LabourService
 from app.application.services.user_service import UserService
+from app.domain.contraction.exceptions import ContractionIdInvalid
 from app.domain.labour.enums import LabourPhase
 from app.domain.labour.exceptions import InvalidLabourUpdateId, LabourUpdateNotFoundById
 from app.domain.labour.repository import LabourRepository
@@ -134,6 +135,44 @@ async def test_can_end_contraction(labour_service: LabourService) -> None:
     await labour_service.end_contraction(BIRTHING_PERSON, intensity=5)
 
 
+async def test_can_update_contraction(labour_service: LabourService) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.start_contraction(BIRTHING_PERSON)
+    labour = await labour_service.end_contraction(BIRTHING_PERSON, intensity=5)
+
+    new_start_time = datetime(2020, 1, 1, 1, 1, tzinfo=UTC)
+    new_end_time = datetime(2020, 1, 1, 1, 2, 30, tzinfo=UTC)
+
+    labour = await labour_service.update_contraction(
+        BIRTHING_PERSON,
+        labour.contractions[0].id,
+        start_time=new_start_time,
+        end_time=new_end_time,
+        intensity=2,
+        notes="test update",
+    )
+
+    contraction = labour.contractions[0]
+    assert contraction.duration == 90
+    assert contraction.intensity == 2
+    assert contraction.notes == "test update"
+    assert contraction.start_time == new_start_time
+    assert contraction.end_time == new_end_time
+
+
+async def test_cannot_update_contraction_without_labour(labour_service: LabourService) -> None:
+    with pytest.raises(UserDoesNotHaveActiveLabour):
+        await labour_service.update_contraction(BIRTHING_PERSON, "test", intensity=2)
+
+
+async def test_cannot_update_contraction_with_invalid_id(labour_service: LabourService) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    with pytest.raises(ContractionIdInvalid):
+        await labour_service.update_contraction(BIRTHING_PERSON, "test", intensity=2)
+
+
 async def test_cannot_end_contraction_for_non_existent_user(labour_service: LabourService) -> None:
     with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.end_contraction("TEST123456", intensity=5)
@@ -172,7 +211,7 @@ async def test_cannot_delete_labour_update_for_non_existent_user(
 ) -> None:
     with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.delete_labour_update(BIRTHING_PERSON, labour_update_id="test")
-        
+
 
 async def test_cannot_delete_labour_update_with_invalid_id(
     labour_service: LabourService,

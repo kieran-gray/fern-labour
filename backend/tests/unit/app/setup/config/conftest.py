@@ -9,6 +9,9 @@ from app.setup.readers.abstract import ConfigReader
 class MockConfigReader(ConfigReader):
     def read(self, path: Path) -> dict[str, Any]:
         return {
+            "base": {
+                "ENVIRONMENT": "test",
+            },
             "security": {
                 "cors": {
                     "BACKEND_CORS_ORIGINS": "http://localhost,https://localhost",

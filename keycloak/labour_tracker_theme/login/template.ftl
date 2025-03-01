@@ -81,11 +81,7 @@
         );
         function updateDarkMode(isEnabled) {
           const { classList } = document.documentElement;
-          if (isEnabled) {
-            classList.add(DARK_MODE_CLASS);
-          } else {
-            classList.remove(DARK_MODE_CLASS);
-          }
+          classList.remove(DARK_MODE_CLASS);
         }
     </script>
 </head>

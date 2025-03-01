@@ -14,6 +14,7 @@ from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.api.schemas.requests.contraction import (
     EndContractionRequest,
     StartContractionRequest,
+    UpdateContractionRequest,
 )
 from app.presentation.api.schemas.requests.labour import (
     CompleteLabourRequest,
@@ -189,6 +190,36 @@ async def end_contraction(
         birthing_person_id=user.id,
         intensity=request_data.intensity,
         end_time=request_data.end_time,
+        notes=request_data.notes,
+    )
+    return LabourResponse(labour=labour)
+
+
+@labour_router.put(
+    "/contraction/update",
+    responses={
+        status.HTTP_200_OK: {"model": LabourResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def update_contraction(
+    request_data: UpdateContractionRequest,
+    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    labour = await service.update_contraction(
+        birthing_person_id=user.id,
+        contraction_id=request_data.contraction_id,
+        start_time=request_data.start_time,
+        end_time=request_data.end_time,
+        intensity=request_data.intensity,
         notes=request_data.notes,
     )
     return LabourResponse(labour=labour)
