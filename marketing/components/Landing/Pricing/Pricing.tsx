@@ -154,7 +154,7 @@ export const Pricing01 = () => {
         gap="xl"
       >
         <PricingCard
-          title="Basic"
+          title="Solo"
           description=""
           cta={
             <Button component={NextLink} href="#" size="lg" radius="xl" variant="light" fullWidth>
@@ -205,7 +205,7 @@ export const Pricing01 = () => {
               Most popular
             </Badge>
           }
-          title="Plus"
+          title="Inner-Circle"
           description=""
           cta={
             <Button
@@ -262,7 +262,7 @@ export const Pricing01 = () => {
               Best Value
             </Badge>
           }
-          title="Advanced"
+          title="Community"
           description=""
           cta={
             <Button component={NextLink} href="#" radius="xl" size="lg" variant="light" fullWidth>
