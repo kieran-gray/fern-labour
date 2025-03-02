@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Particles, { initParticlesEngine } from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
-import { useDebouncedCallback } from 'use-debounce';
 
 const ResponsiveParticles = () => {
   const [init, setInit] = useState(false);
@@ -17,7 +16,7 @@ const ResponsiveParticles = () => {
   });
 
   // Function to update particle configuration based on screen size
-  const updateParticlesConfig = useDebouncedCallback(() => {
+  const updateParticlesConfig = () => {
     const width = window.innerWidth;
 
     // Responsive configuration
@@ -50,29 +49,16 @@ const ResponsiveParticles = () => {
     }
 
     setParticleConfig(config);
-  }, 500);
+  };
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
       await loadSlim(engine);
     }).then(() => {
+      updateParticlesConfig();
       setInit(true);
     });
   }, []);
-
-  // Effect to handle window resize
-  useEffect(() => {
-    // Initial configuration
-    updateParticlesConfig();
-
-    // Add event listener for window resize
-    window.addEventListener('resize', updateParticlesConfig);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', updateParticlesConfig);
-    };
-  }, [updateParticlesConfig]);
 
   if (init) {
     return (
