@@ -49,7 +49,7 @@ const ResponsiveParticles = () => {
     }
 
     setParticleConfig(config);
-  }
+  };
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
