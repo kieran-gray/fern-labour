@@ -4,6 +4,7 @@
     position: sticky;
     top: 10px;
     z-index: 100;
+    flex-shrink: 0;
   }
   
   .link-container {
