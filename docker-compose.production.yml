@@ -252,6 +252,8 @@ services:
 
       # Enable redirection for HTTP and HTTPS
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-http.middlewares=https-redirect
+      - traefik.http.middlewares.mywwwremove.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwremove.redirectregex.replacement=https://$${1}
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing.middlewares=mywwwremove
 
 volumes:
