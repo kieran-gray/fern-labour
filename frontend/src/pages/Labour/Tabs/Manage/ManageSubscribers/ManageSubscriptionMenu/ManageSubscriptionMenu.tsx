@@ -3,6 +3,7 @@ import { IconBan, IconCircleMinus, IconDots } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import {
   BlockSubscriberRequest,
   OpenAPI,
@@ -12,7 +13,7 @@ import {
 import ConfirmActionModal from './ConfirmActionModal';
 
 export function ManageSubscriptionMenu({ subscription_id }: { subscription_id: string }) {
-  const [getConfimation, setGetConfimation] = useState<string | undefined>(undefined);
+  const [getConfirmation, setGetConfirmation] = useState<string | undefined>(undefined);
   const [confirmed, setConfirmed] = useState<string | undefined>(undefined);
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
@@ -32,8 +33,13 @@ export function ManageSubscriptionMenu({ subscription_id }: { subscription_id: s
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
     },
-    onError: (error) => {
-      console.error('Error removing subscriber', error);
+    onError: () => {
+      notifications.show({
+        title: 'Error removing subscriber',
+        message: 'Something went wrong. Please try again.',
+        radius: 'lg',
+        color: 'var(--mantine-color-pink-7)',
+      });
     },
   });
 
@@ -49,26 +55,31 @@ export function ManageSubscriptionMenu({ subscription_id }: { subscription_id: s
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
     },
-    onError: (error) => {
-      console.error('Error blocking subscriber', error);
+    onError: () => {
+      notifications.show({
+        title: 'Error blocking subscriber',
+        message: 'Something went wrong. Please try again.',
+        radius: 'lg',
+        color: 'var(--mantine-color-pink-7)',
+      });
     },
   });
 
-  if (getConfimation) {
+  if (getConfirmation) {
     if (confirmed) {
-      if (getConfimation === 'remove') {
+      if (getConfirmation === 'remove') {
         removeSubscriberMutation.mutate();
-      } else if (getConfimation === 'block') {
+      } else if (getConfirmation === 'block') {
         blockSubscriberMutation.mutate();
       }
-      setGetConfimation(undefined);
+      setGetConfirmation(undefined);
       setConfirmed(undefined);
     } else {
       return (
         <ConfirmActionModal
-          setGetConfirmation={setGetConfimation}
+          setGetConfirmation={setGetConfirmation}
           setConfirmed={setConfirmed}
-          action={getConfimation}
+          action={getConfirmation}
         />
       );
     }
@@ -86,14 +97,14 @@ export function ManageSubscriptionMenu({ subscription_id }: { subscription_id: s
         <Menu.Item
           color="red"
           leftSection={<IconCircleMinus size={20} stroke={1.5} />}
-          onClick={() => setGetConfimation('remove')}
+          onClick={() => setGetConfirmation('remove')}
         >
           Remove
         </Menu.Item>
         <Menu.Item
           color="red"
           leftSection={<IconBan size={20} stroke={1.5} />}
-          onClick={() => setGetConfimation('block')}
+          onClick={() => setGetConfirmation('block')}
         >
           Block
         </Menu.Item>

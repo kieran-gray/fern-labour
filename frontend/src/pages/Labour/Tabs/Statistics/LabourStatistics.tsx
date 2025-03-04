@@ -143,7 +143,7 @@ export const LabourStatistics = ({
             </Text>
           </>
         )}
-        {labour.start_time && (
+        {labour.start_time && labour.end_time == null && (
           <Text className={classes.labourStatsText}>
             <strong>Elapsed Time: </strong>
             {formatTimeSeconds(

@@ -11,12 +11,15 @@ import type {
   CompleteLabourApiV1LabourCompletePutResponse,
   ContactUsSendMessageApiV1ContactUsPostData,
   ContactUsSendMessageApiV1ContactUsPostResponse,
+  DeleteLabourApiV1LabourDeleteLabourIdDeleteData,
+  DeleteLabourApiV1LabourDeleteLabourIdDeleteResponse,
   DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData,
   DeleteLabourUpdateApiV1LabourLabourUpdateDeleteResponse,
   EndContractionApiV1LabourContractionEndPutData,
   EndContractionApiV1LabourContractionEndPutResponse,
   GetActiveLabourApiV1LabourActiveGetResponse,
   GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse,
+  GetAllLaboursApiV1LabourGetAllGetResponse,
   GetLabourByIdApiV1LabourGetLabourIdGetData,
   GetLabourByIdApiV1LabourGetLabourIdGetResponse,
   GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetData,
@@ -163,6 +166,25 @@ export class HealthService {
 }
 
 export class LabourService {
+  /**
+   * Get All Labours
+   * @returns LabourListResponse Successful Response
+   * @throws ApiError
+   */
+  public static getAllLaboursApiV1LabourGetAllGet(): CancelablePromise<GetAllLaboursApiV1LabourGetAllGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/labour/get-all',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
   /**
    * Get Labour By Id
    * @param data The data for the request.
@@ -348,6 +370,33 @@ export class LabourService {
       url: '/api/v1/labour/complete',
       body: data.requestBody,
       mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Delete Labour
+   * @param data The data for the request.
+   * @param data.labourId
+   * @returns unknown Successful Response
+   * @returns void No Content
+   * @throws ApiError
+   */
+  public static deleteLabourApiV1LabourDeleteLabourIdDelete(
+    data: DeleteLabourApiV1LabourDeleteLabourIdDeleteData
+  ): CancelablePromise<DeleteLabourApiV1LabourDeleteLabourIdDeleteResponse> {
+    return __request(OpenAPI, {
+      method: 'DELETE',
+      url: '/api/v1/labour/delete/{labour_id}',
+      path: {
+        labour_id: data.labourId,
+      },
       errors: {
         400: 'Bad Request',
         401: 'Unauthorized',

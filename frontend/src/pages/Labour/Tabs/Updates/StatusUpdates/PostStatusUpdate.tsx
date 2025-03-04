@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { IconSend } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ApiError, LabourService, LabourUpdateRequest, OpenAPI } from '../../../../../client';
+import { LabourService, LabourUpdateRequest, OpenAPI } from '../../../../../client';
 
 export function PostStatusUpdateButton({
   message,
@@ -12,6 +13,7 @@ export function PostStatusUpdateButton({
   message: string;
   setUpdate: Function;
 }) {
+  const [mutationInProgress, setMutationInProgress] = useState(false);
   const auth = useAuth();
 
   OpenAPI.TOKEN = async () => {
@@ -22,6 +24,7 @@ export function PostStatusUpdateButton({
 
   const mutation = useMutation({
     mutationFn: async (message: string) => {
+      setMutationInProgress(true);
       const requestBody: LabourUpdateRequest = {
         labour_update_type: 'status_update',
         sent_time: new Date().toISOString(),
@@ -36,15 +39,16 @@ export function PostStatusUpdateButton({
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
       setUpdate('');
     },
-    onError: (error) => {
-      if (error instanceof ApiError) {
-        notifications.show({
-          title: 'Error',
-          message: 'Something went wrong, please try again.',
-          radius: 'lg',
-          color: 'var(--mantine-color-pink-7)',
-        });
-      }
+    onError: () => {
+      notifications.show({
+        title: 'Error',
+        message: 'Something went wrong, please try again.',
+        radius: 'lg',
+        color: 'var(--mantine-color-pink-7)',
+      });
+    },
+    onSettled: () => {
+      setMutationInProgress(false);
     },
   });
 
@@ -59,6 +63,7 @@ export function PostStatusUpdateButton({
       style={{ minWidth: '200px' }}
       type="submit"
       disabled={!message}
+      loading={mutationInProgress}
       onClick={() => mutation.mutate(message)}
     >
       Post Update

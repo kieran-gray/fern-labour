@@ -15,6 +15,7 @@ export default function MakeAnnouncementButton({
   setAnnouncement: Function;
 }) {
   const [getConfimation, setGetConfimation] = useState(false);
+  const [mutationInProgress, setMutationInProgress] = useState(false);
   const [confirmedMakeAnnouncement, setConfirmedMakeAnnouncement] = useState(false);
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
@@ -25,6 +26,7 @@ export default function MakeAnnouncementButton({
 
   const mutation = useMutation({
     mutationFn: async (message: string) => {
+      setMutationInProgress(true);
       const requestBody: LabourUpdateRequest = {
         labour_update_type: 'announcement',
         sent_time: new Date().toISOString(),
@@ -47,7 +49,17 @@ export default function MakeAnnouncementButton({
           radius: 'lg',
           color: 'var(--mantine-color-pink-7)',
         });
+      } else {
+        notifications.show({
+          title: 'Error making announcement',
+          message: 'Something went wrong. Please try again.',
+          radius: 'lg',
+          color: 'var(--mantine-color-pink-7)',
+        });
       }
+    },
+    onSettled: () => {
+      setMutationInProgress(false);
     },
   });
 
@@ -76,6 +88,7 @@ export default function MakeAnnouncementButton({
       variant="filled"
       style={{ minWidth: '200px' }}
       disabled={!message}
+      loading={mutationInProgress}
       onClick={() => {
         if (message !== '') {
           setGetConfimation(true);

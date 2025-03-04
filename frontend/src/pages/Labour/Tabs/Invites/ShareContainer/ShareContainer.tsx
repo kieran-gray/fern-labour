@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Group, Image, Space, Text, Title } from '@mantine/core';
 import { LabourService, OpenAPI } from '../../../../../client';
+import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
 import { ErrorContainer } from '../../../../../shared-components/ErrorContainer/ErrorContainer';
 import { PageLoading } from '../../../../../shared-components/PageLoading/PageLoading';
 import { useLabour } from '../../../LabourContext';
@@ -13,7 +14,7 @@ import classes from './ShareContainer.module.css';
 
 export function ShareContainer() {
   const auth = useAuth();
-  const labourId = useLabour();
+  const { labourId } = useLabour();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
   };
@@ -40,11 +41,7 @@ export function ShareContainer() {
 
   return (
     <div className={baseClasses.root}>
-      <div className={baseClasses.header}>
-        <Title fz="xl" className={baseClasses.title}>
-          Share
-        </Title>
-      </div>
+      <ContainerHeader title="Share" />
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
@@ -66,12 +63,10 @@ export function ShareContainer() {
                   You'll also need this code: <strong>{data}</strong>
                 </Text>
               </div>
-              <div className={classes.controls}>
-                <div className={classes.flexRow}>
-                  <CopyButton text={shareText} />
-                  <Space w="sm" />
-                  <QRButton url={`${shareUrl}?token=${data}`} />
-                </div>
+              <div className={classes.flexRow}>
+                <CopyButton text={shareText} />
+                <Space w="sm" />
+                <QRButton url={`${shareUrl}?token=${data}`} />
               </div>
             </Group>
           </div>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { IconHourglassHigh } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
@@ -16,10 +17,13 @@ import { contractionDurationSeconds } from '../../../../shared-components/utils'
 export default function EndContractionButton({
   intensity,
   activeContraction,
+  disabled
 }: {
   intensity: number;
   activeContraction: ContractionDTO;
+  disabled: boolean;
 }) {
+  const [mutationInProgress, setMutationInProgress] = useState(false);
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -29,6 +33,7 @@ export default function EndContractionButton({
 
   const mutation = useMutation({
     mutationFn: async ({ intensity, endTime }: { intensity: number; endTime: string }) => {
+      setMutationInProgress(true);
       const requestBody: EndContractionRequest = { end_time: endTime, intensity };
       const response = await LabourService.endContractionApiV1LabourContractionEndPut({
         requestBody,
@@ -71,6 +76,7 @@ export default function EndContractionButton({
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      setMutationInProgress(false);
     },
   });
 
@@ -82,10 +88,12 @@ export default function EndContractionButton({
       radius="xl"
       size="xl"
       variant="white"
+      loading={mutationInProgress}
       onClick={() => {
         const endTime = new Date().toISOString();
         mutation.mutate({ intensity, endTime });
       }}
+      disabled={disabled}
     >
       End Contraction
     </Button>

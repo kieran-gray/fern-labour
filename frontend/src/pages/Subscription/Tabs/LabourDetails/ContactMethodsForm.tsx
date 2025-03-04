@@ -1,13 +1,6 @@
 import { useState } from 'react';
-import {
-  IconCheck,
-  IconInfoCircle,
-  IconLoader,
-  IconSelector,
-  IconUpload,
-  IconX,
-} from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { IconCheck, IconLoader, IconSelector, IconUpload, IconX } from '@tabler/icons-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, MultiSelect } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -17,8 +10,10 @@ import {
   SubscriptionDTO,
   SubscriptionManagementService,
   UpdateContactMethodsRequest,
+  UserService,
 } from '../../../../client';
 import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
+import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './ContactMethodsForm.module.css';
 
@@ -33,6 +28,26 @@ export default function ContactMethodsForm({ subscription }: { subscription: Sub
     return auth.user?.access_token || '';
   };
   const queryClient = useQueryClient();
+
+  const { status, data } = useQuery({
+    queryKey: ['subscriber', auth.user?.profile.sub],
+    queryFn: async () => {
+      try {
+        const response = await UserService.getUserApiV1UserGet();
+        return response;
+      } catch (err) {
+        throw new Error('Failed to load subscriber. Please try again later.');
+      }
+    },
+  });
+
+  let contactMethodsWarning = null;
+  if (status === 'success') {
+    if (subscription.contact_methods.includes('sms') && data.user.phone_number == null) {
+      contactMethodsWarning =
+        "You have selected to receive text message alerts but you don't have a phone number set on your profile. Set one by clicking 'Update Profile' in the app menu.";
+    }
+  }
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -99,9 +114,13 @@ export default function ContactMethodsForm({ subscription }: { subscription: Sub
         <div className={classes.inner}>
           <div className={classes.content}>
             {subscription.contact_methods.length === 0 && (
-              <div className={baseClasses.importantText} style={{ marginBottom: '20px' }}>
-                <IconInfoCircle style={{ alignSelf: 'center', marginRight: '10px' }} />
-                You will only receive live notifications if you add your preferred methods below
+              <div style={{ marginBottom: '20px' }}>
+                <ImportantText message=" You will only receive live notifications if you add your preferred methods below" />
+              </div>
+            )}
+            {contactMethodsWarning != null && (
+              <div style={{ marginBottom: '20px' }}>
+                <ImportantText message={contactMethodsWarning} />
               </div>
             )}
 

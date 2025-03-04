@@ -7,11 +7,13 @@ import { NotFoundError } from '../../../../../Errors';
 import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { dueDateToGestationalAge } from '../../../../../shared-components/utils';
+import { useLabour } from '../../../LabourContext';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './LabourDetails.module.css';
 
 export default function LabourDetails({ setActiveTab }: { setActiveTab: Function }) {
   const auth = useAuth();
+  const { labourId } = useLabour();
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -21,7 +23,9 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
     queryKey: ['labour', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await LabourService.getActiveLabourApiV1LabourActiveGet();
+        const response = await LabourService.getLabourByIdApiV1LabourGetLabourIdGet({
+          labourId: labourId!,
+        });
         return response.labour;
       } catch (err) {
         if (err instanceof ApiError && err.status === 404) {

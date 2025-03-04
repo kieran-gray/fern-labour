@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -13,7 +14,8 @@ import classes from './InviteContainer.module.css';
 
 export function InviteContainer() {
   const auth = useAuth();
-  const labourId = useLabour();
+  const { labourId } = useLabour();
+  const [mutationInProgress, setMutationInProgress] = useState(false);
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -31,7 +33,8 @@ export function InviteContainer() {
 
   const mutation = useMutation({
     mutationFn: async (values: typeof form.values) => {
-      const requestBody: SendInviteRequest = { invite_email: values.email, labour_id: labourId };
+      setMutationInProgress(true);
+      const requestBody: SendInviteRequest = { invite_email: values.email, labour_id: labourId! };
       await LabourService.sendInviteApiV1LabourSendInvitePost({
         requestBody,
       });
@@ -45,8 +48,16 @@ export function InviteContainer() {
       });
       form.reset();
     },
-    onError: (error) => {
-      console.error('Error sending invite', error);
+    onError: () => {
+      notifications.show({
+        title: 'Error sending invite',
+        message: 'Something went wrong. Please try again.',
+        radius: 'lg',
+        color: 'var(--mantine-color-pink-7)',
+      });
+    },
+    onSettled: () => {
+      setMutationInProgress(false);
     },
   });
 
@@ -89,6 +100,7 @@ export function InviteContainer() {
                     pr={14}
                     h={48}
                     mt="var(--mantine-spacing-lg)"
+                    loading={mutationInProgress}
                     styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
                     type="submit"
                   >

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { Space, Stack, Text, Title } from '@mantine/core';
-import { LabourDTO } from '../../../../client/index.ts';
+import { ContractionDTO, LabourDTO } from '../../../../client/index.ts';
 import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader.tsx';
 import { sortContractions } from '../../../../shared-components/utils.tsx';
 import { ActiveContractionControls } from './ActiveContractionControls.tsx';
@@ -19,6 +19,11 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
 
   const sortedContractions = sortContractions(labour.contractions);
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
+
+  const anyPlaceholderContractions = (contractions: ContractionDTO[]) => {
+    return contractions.some(contraction => contraction.id === 'placeholder')
+  }
+  const containsPlaceholderContractions = anyPlaceholderContractions(labour.contractions);
 
   return (
     <div className={baseClasses.root}>
@@ -60,9 +65,12 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
                   <ActiveContractionControls
                     stopwatchRef={stopwatchRef}
                     activeContraction={activeContraction}
+                    disabled={containsPlaceholderContractions}
                   />
                 )}
-                {!activeContraction && <StartContractionButton stopwatchRef={stopwatchRef} />}
+                {!activeContraction &&
+                  <StartContractionButton stopwatchRef={stopwatchRef} />
+                }
               </Stack>
             </div>
           </div>

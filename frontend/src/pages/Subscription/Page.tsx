@@ -13,7 +13,6 @@ import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
 import { pluraliseName } from '../../shared-components/utils.tsx';
-import { InviteContainer } from '../Subscriptions/Components/InviteContainer/InviteContainer.tsx';
 import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions.tsx';
 import { useSubscription } from './SubscriptionContext.tsx';
 import { Announcements } from './Tabs/Announcements/Announcements.tsx';
@@ -103,8 +102,6 @@ export const SubscriptionPage = () => {
           <Tabs.Panel value="subscriptions">
             <Space h="xl" />
             <SubscriptionsContainer />
-            <Space h="xl" />
-            <InviteContainer />
           </Tabs.Panel>
           <Tabs.Panel value="details">
             <Space h="xl" />

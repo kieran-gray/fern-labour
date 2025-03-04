@@ -4,7 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { CompleteLabourRequest, LabourService, OpenAPI } from '../../../../../client';
+import { useLabour } from '../../../LabourContext';
 import ConfirmCompleteLabourModal from './ConfirmCompleteLabour';
 
 export default function CompleteLabourButton({
@@ -16,8 +18,10 @@ export default function CompleteLabourButton({
 }) {
   const auth = useAuth();
   const navigate = useNavigate();
+  const { setLabourId } = useLabour();
   const [getConfimation, setGetConfimation] = useState(false);
   const [confirmedCompleteLabour, setConfirmedCompleteLabour] = useState(false);
+  const [isMutating, setIsMutating] = useState(false);
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
   };
@@ -25,6 +29,7 @@ export default function CompleteLabourButton({
 
   const mutation = useMutation({
     mutationFn: async (labourNotes: string) => {
+      setIsMutating(true);
       const requestBody: CompleteLabourRequest = {
         end_time: new Date().toISOString(),
         notes: labourNotes,
@@ -34,10 +39,20 @@ export default function CompleteLabourButton({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['birthingPerson', auth.user?.profile.sub] });
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      setLabourId(null);
       navigate('/');
     },
     onError: (error) => {
       console.error('Error completing labour', error);
+      notifications.show({
+        title: 'Error Completing Labour',
+        message: 'Something went wrong. Please try again.',
+        radius: 'lg',
+        color: 'var(--mantine-color-pink-7)',
+      });
+    },
+    onSettled: () => {
+      setIsMutating(false);
     },
   });
 
@@ -68,6 +83,7 @@ export default function CompleteLabourButton({
           color="var(--mantine-color-pink-4)"
           radius="xl"
           variant="filled"
+          loading={isMutating}
           onClick={(event) => event.preventDefault()}
         >
           Complete Labour
