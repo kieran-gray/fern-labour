@@ -11,7 +11,14 @@ from app.application.services.labour_service import LabourService
 from app.application.services.user_service import UserService
 from app.domain.contraction.exceptions import ContractionIdInvalid
 from app.domain.labour.enums import LabourPhase
-from app.domain.labour.exceptions import CannotDeleteActiveLabour, InvalidLabourId, InvalidLabourUpdateId, LabourNotFoundById, LabourUpdateNotFoundById, UnauthorizedLabourRequest
+from app.domain.labour.exceptions import (
+    CannotDeleteActiveLabour,
+    InvalidLabourId,
+    InvalidLabourUpdateId,
+    LabourNotFoundById,
+    LabourUpdateNotFoundById,
+    UnauthorizedLabourRequest,
+)
 from app.domain.labour.repository import LabourRepository
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.user.entity import User
@@ -51,7 +58,7 @@ async def labour_service(
             first_name="Test",
             last_name="Smith",
             email="test@smith.com",
-        )
+        ),
     }
     return LabourService(
         user_service=user_service,

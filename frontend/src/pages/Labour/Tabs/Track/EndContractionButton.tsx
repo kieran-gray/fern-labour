@@ -17,7 +17,7 @@ import { contractionDurationSeconds } from '../../../../shared-components/utils'
 export default function EndContractionButton({
   intensity,
   activeContraction,
-  disabled
+  disabled,
 }: {
   intensity: number;
   activeContraction: ContractionDTO;

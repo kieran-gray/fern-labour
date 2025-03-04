@@ -16,7 +16,7 @@ import { useLabour } from '../../LabourContext';
 import { StopwatchHandle } from './Stopwatch/Stopwatch';
 
 export default function StartContractionButton({
-  stopwatchRef
+  stopwatchRef,
 }: {
   stopwatchRef: RefObject<StopwatchHandle>;
 }) {

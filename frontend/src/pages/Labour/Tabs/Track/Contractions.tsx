@@ -21,8 +21,8 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
 
   const anyPlaceholderContractions = (contractions: ContractionDTO[]) => {
-    return contractions.some(contraction => contraction.id === 'placeholder')
-  }
+    return contractions.some((contraction) => contraction.id === 'placeholder');
+  };
   const containsPlaceholderContractions = anyPlaceholderContractions(labour.contractions);
 
   return (
@@ -68,9 +68,7 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
                     disabled={containsPlaceholderContractions}
                   />
                 )}
-                {!activeContraction &&
-                  <StartContractionButton stopwatchRef={stopwatchRef} />
-                }
+                {!activeContraction && <StartContractionButton stopwatchRef={stopwatchRef} />}
               </Stack>
             </div>
           </div>

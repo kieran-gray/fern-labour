@@ -13,7 +13,8 @@ export function LabourHistory() {
           <div className={classes.content}>
             <Title order={3}>Your past and present labours</Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              Here, you can view all of your past and present labours. Soon you will be able to revisit a labour after you have completed it.
+              Here, you can view all of your past and present labours. Soon you will be able to
+              revisit a labour after you have completed it.
             </Text>
           </div>
         </div>

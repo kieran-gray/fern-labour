@@ -9,7 +9,7 @@ import classes from './Contractions.module.css';
 export function ActiveContractionControls({
   stopwatchRef,
   activeContraction,
-  disabled
+  disabled,
 }: {
   stopwatchRef: RefObject<StopwatchHandle>;
   activeContraction: ContractionDTO;
@@ -55,7 +55,11 @@ export function ActiveContractionControls({
         ]}
       />
       <Space h="xl" />
-      <EndContractionButton intensity={intensity} activeContraction={activeContraction} disabled={disabled} />
+      <EndContractionButton
+        intensity={intensity}
+        activeContraction={activeContraction}
+        disabled={disabled}
+      />
     </div>
   );
 }

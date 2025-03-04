@@ -1,4 +1,3 @@
-from typing import Any
 import pytest_asyncio
 
 from app.application.notifications.email_generation_service import EmailGenerationService
@@ -22,7 +21,7 @@ async def contact_service(
     return ContactService(
         notification_service=notification_service,
         email_generation_service=email_generation_service,
-        contact_email="support@test.com"
+        contact_email="support@test.com",
     )
 
 

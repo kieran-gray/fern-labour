@@ -7,8 +7,8 @@ import {
   formatTimeSeconds,
   getTimeSinceLastStarted,
 } from '../../../../shared-components/utils';
-import classes from './Contractions.module.css';
 import { EditContractionModal } from './EditContractionModal';
+import classes from './Contractions.module.css';
 
 const DOTTED_LINE_FREQUENCY_GAP = 1800000;
 
@@ -100,9 +100,9 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
 
   return (
     <>
-      {contractionData && 
+      {contractionData && (
         <EditContractionModal contractionData={contractionData} opened={opened} close={close} />
-      }
+      )}
       <ScrollArea.Autosize mah={500} viewportRef={viewport}>
         <Timeline
           ml={30}

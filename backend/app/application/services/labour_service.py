@@ -262,7 +262,7 @@ class LabourService:
 
         if labour.birthing_person_id.value != birthing_person_id:
             raise UnauthorizedLabourRequest()
-        
+
         if labour.is_active:
             raise CannotDeleteActiveLabour()
 
