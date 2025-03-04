@@ -30,6 +30,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - DATABASE_ENCRYPTION_KEY=${DATABASE_ENCRYPTION_KEY?variable not set}
     volumes:
       - ./${SRC_DIR}:/app/${SRC_DIR}
       - ./${CONFIG_TOML}:/${CONFIG_TOML}
@@ -242,16 +243,17 @@ services:
 
       - traefik.http.services.${STACK_NAME?Variable not set}-marketing.loadbalancer.server.port=81
 
-      - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-http.rule=Host(`${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-http.rule=Host(`${DOMAIN?Variable not set}`) || Host(`www.${DOMAIN}`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-http.entrypoints=http
 
-      - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-https.rule=Host(`${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-https.rule=Host(`${DOMAIN?Variable not set}`) || Host(`www.${DOMAIN}`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-https.entrypoints=https
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-https.tls=true
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-https.tls.certresolver=le
 
       # Enable redirection for HTTP and HTTPS
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing-http.middlewares=https-redirect
+      - traefik.http.routers.${STACK_NAME?Variable not set}-marketing.middlewares=mywwwremove
 
 volumes:
   app-db-data:
