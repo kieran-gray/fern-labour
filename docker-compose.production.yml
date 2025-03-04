@@ -149,7 +149,6 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-keycloak-https.tls.certresolver=le
       - traefik.http.services.${STACK_NAME?Variable not set}-keycloak.loadbalancer.server.port=8080
     volumes:
-      - ./keycloak/labour_tracker_theme:/opt/keycloak/themes/labour_tracker_theme
       - ./keycloak/realms:/opt/keycloak/data/import:ro
 
   zookeeper:
