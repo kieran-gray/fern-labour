@@ -1,4 +1,4 @@
-import { RefObject } from 'react';
+import { RefObject, useState } from 'react';
 import { IconHourglassLow } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
@@ -20,8 +20,9 @@ export default function StartContractionButton({
 }: {
   stopwatchRef: RefObject<StopwatchHandle>;
 }) {
+  const [mutationInProgress, setMutationInProgress] = useState(false);
   const auth = useAuth();
-  const labourId = useLabour();
+  const { labourId } = useLabour();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
   };
@@ -31,7 +32,7 @@ export default function StartContractionButton({
     const startTime = new Date().toISOString();
     const contraction: ContractionDTO = {
       id: 'placeholder',
-      labour_id: labourId,
+      labour_id: labourId!,
       start_time: startTime,
       end_time: startTime,
       duration: 0,
@@ -44,6 +45,7 @@ export default function StartContractionButton({
 
   const mutation = useMutation({
     mutationFn: async (contraction: ContractionDTO) => {
+      setMutationInProgress(true);
       stopwatchRef.current?.start();
       const requestBody: StartContractionRequest = {
         start_time: contraction.start_time,
@@ -82,6 +84,7 @@ export default function StartContractionButton({
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      setMutationInProgress(false);
     },
   });
 
@@ -93,6 +96,7 @@ export default function StartContractionButton({
       radius="xl"
       size="xl"
       variant="outline"
+      loading={mutationInProgress}
       onClick={() => mutation.mutate(createNewContraction())}
     >
       Start Contraction

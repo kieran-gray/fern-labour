@@ -11,6 +11,7 @@
 
     @media (max-width: $mantine-breakpoint-sm) {
         flex-direction: column;
+        border: 0px;
     }
 }
 
@@ -73,6 +74,7 @@
     text-transform: uppercase;
     font-weight: 700;
     font-size: var(--mantine-font-size-xl);
+
 }
 
 .body {
@@ -171,10 +173,11 @@
     justify-content: space-around;
     align-items: center;
     padding: calc(var(--mantine-spacing-lg));
-    margin-top: 4vh;
+    margin-top: 2vh;
 
     @media (max-width: $mantine-breakpoint-md) {
         padding: calc(var(--mantine-spacing-md));
+        margin-top: 1vh;
     }
 
     @media (max-width: $mantine-breakpoint-xs) {

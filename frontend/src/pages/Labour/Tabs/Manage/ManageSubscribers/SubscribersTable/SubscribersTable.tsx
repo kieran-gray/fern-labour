@@ -11,7 +11,7 @@ import classes from './SubscribersTable.module.css';
 
 export function SubscribersTable() {
   const auth = useAuth();
-  const labourId = useLabour();
+  const { labourId } = useLabour();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
   };
@@ -21,7 +21,7 @@ export function SubscribersTable() {
     queryFn: async () => {
       const response =
         await SubscriptionService.getLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGet(
-          { labourId }
+          { labourId: labourId! }
         );
       return response;
     },

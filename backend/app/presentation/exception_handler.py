@@ -20,6 +20,7 @@ from app.domain.contraction.exceptions import (
 )
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
+    CannotDeleteActiveLabour,
     InvalidLabourId,
     InvalidLabourUpdateId,
     LabourAlreadyBegun,
@@ -27,6 +28,7 @@ from app.domain.labour.exceptions import (
     LabourHasActiveContraction,
     LabourHasNoActiveContraction,
     LabourUpdateNotFoundById,
+    UnauthorizedLabourRequest,
 )
 from app.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
 from app.domain.subscription.exceptions import (
@@ -107,6 +109,8 @@ class ExceptionMapper:
             ContractionsOverlappingAfterUpdate: status.HTTP_400_BAD_REQUEST,
             ContractionNotFoundById: status.HTTP_404_NOT_FOUND,
             CannotUpdateActiveContraction: status.HTTP_400_BAD_REQUEST,
+            UnauthorizedLabourRequest: status.HTTP_403_FORBIDDEN,
+            CannotDeleteActiveLabour: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

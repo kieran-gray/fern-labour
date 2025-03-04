@@ -72,6 +72,7 @@ async def labour_begun_event_handler(
         notification_service=notification_service,
         subscription_service=subscription_service,
         email_generation_service=email_generation_service,
+        tracking_link="http://localhost:5173",
     )
 
 

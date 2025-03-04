@@ -58,7 +58,13 @@ class MockConfigReader(ConfigReader):
                     "SQLA_MAX_OVERFLOW": 0,
                 },
             },
-            "notifications": {"email": {"SUPPORT_EMAIL": "support@example.com"}, "twilio": {}},
+            "notifications": {
+                "email": {
+                    "SUPPORT_EMAIL": "support@example.com",
+                    "TRACKING_LINK": "http://test.com",
+                },
+                "twilio": {},
+            },
             "events": {
                 "kafka_producer": {},
                 "kafka_consumer": {},

@@ -44,7 +44,7 @@ class SubscriptionManagementService:
         if requester_id != subscription.birthing_person_id.value:
             raise UnauthorizedSubscriptionUpdateRequest()
 
-        subscription.update_status(SubscriptionStatus.REMOVED)  # TODO maybe domain service
+        subscription.update_status(SubscriptionStatus.REMOVED)
 
         await self._subscription_repository.save(subscription)
 
@@ -58,7 +58,7 @@ class SubscriptionManagementService:
         if requester_id != subscription.birthing_person_id.value:
             raise UnauthorizedSubscriptionUpdateRequest()
 
-        subscription.update_status(SubscriptionStatus.BLOCKED)  # TODO maybe domain service
+        subscription.update_status(SubscriptionStatus.BLOCKED)
 
         await self._subscription_repository.save(subscription)
 
@@ -79,7 +79,7 @@ class SubscriptionManagementService:
         except ValueError:
             raise SubscriberRoleInvalid(role=role)
 
-        subscription.update_role(new_role)  # TODO maybe domain service
+        subscription.update_role(new_role)
 
         await self._subscription_repository.save(subscription)
 
@@ -102,7 +102,7 @@ class SubscriptionManagementService:
             except ValueError:
                 raise SubscriptionContactMethodInvalid(contact_method=contact_method)
 
-        subscription.update_contact_methods(new_contact_methods)  # TODO maybe domain service
+        subscription.update_contact_methods(new_contact_methods)
 
         await self._subscription_repository.save(subscription)
 

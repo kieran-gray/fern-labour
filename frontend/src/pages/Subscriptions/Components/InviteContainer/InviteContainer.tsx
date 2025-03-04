@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -11,6 +12,7 @@ import baseClasses from '../../../../shared-components/shared-styles.module.css'
 import classes from './InviteContainer.module.css';
 
 export function InviteContainer() {
+  const [mutationInProgress, setMutationInProgress] = useState(false);
   const auth = useAuth();
   const form = useForm({
     mode: 'uncontrolled',
@@ -29,6 +31,7 @@ export function InviteContainer() {
 
   const mutation = useMutation({
     mutationFn: async (values: typeof form.values) => {
+      setMutationInProgress(true);
       // TODO subscriber invite
       console.log(values);
     },
@@ -41,8 +44,16 @@ export function InviteContainer() {
       });
       form.reset();
     },
-    onError: (error) => {
-      console.error('Error sending invite', error);
+    onError: () => {
+      notifications.show({
+        title: 'Error Sending Invite',
+        message: 'Something went wrong. Please try again.',
+        radius: 'lg',
+        color: 'var(--mantine-color-pink-7)',
+      });
+    },
+    onSettled: () => {
+      setMutationInProgress(false);
     },
   });
 
@@ -87,6 +98,7 @@ export function InviteContainer() {
                     mt="var(--mantine-spacing-lg)"
                     styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
                     type="submit"
+                    loading={mutationInProgress}
                   >
                     Send invite
                   </Button>

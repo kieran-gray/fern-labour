@@ -1,0 +1,14 @@
+table {
+    --table-highlight-on-hover-color: var(--mantine-color-pink-1);
+}
+
+.cropText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%
+  }
+
+  .submitButton {
+    white-space: unset;
+  }

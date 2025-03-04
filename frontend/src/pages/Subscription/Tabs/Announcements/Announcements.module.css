@@ -1,5 +1,5 @@
 .scrollArea {
-  background-color: var(--mantine-color-white);
+  background-color: var(--mantine-color-pink-0);
   padding: 10px;
   border-radius: 15px;
 }
@@ -19,7 +19,7 @@
     position: relative;
     padding: 10px 20px;
     border-radius: 25px;
-    color: var(--mantine-color-white);
+    color: var(--mantine-color-pink-0);
     background: var(--mantine-color-pink-5);
     align-self: end;
 
@@ -41,7 +41,7 @@
     &::after {
         right: -26px;
         width: 26px;
-        background-color: var(--mantine-color-white);
+        background-color: var(--mantine-color-pink-0);
         border-bottom-left-radius: 10px;
     }
 }

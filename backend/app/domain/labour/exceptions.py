@@ -46,3 +46,13 @@ class LabourNotFoundById(DomainError):
 class LabourUpdateNotFoundById(DomainError):
     def __init__(self, labour_update_id: Any) -> None:
         super().__init__(f"Labour Update with id '{labour_update_id}' is not found.")
+
+
+class UnauthorizedLabourRequest(DomainError):
+    def __init__(self) -> None:
+        super().__init__("User is not authorized to access requested labour.")
+
+
+class CannotDeleteActiveLabour(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Cannot delete active labour.")

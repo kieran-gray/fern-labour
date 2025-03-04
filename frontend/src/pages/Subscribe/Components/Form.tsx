@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +19,7 @@ export default function SubscribeForm({
   labourId: string;
   token: string | null;
 }) {
+  const [mutationInProgress, setMutationInProgress] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
   const form = useForm({
@@ -38,6 +40,7 @@ export default function SubscribeForm({
 
   const mutation = useMutation({
     mutationFn: async (values: typeof form.values) => {
+      setMutationInProgress(true);
       const requestBody: SubscribeToRequest = { token: values.token };
       const response = await SubscriptionService.subscribeToApiV1SubscriptionSubscribeLabourIdPost({
         requestBody,
@@ -68,6 +71,9 @@ export default function SubscribeForm({
         radius: 'lg',
         color: 'var(--mantine-color-pink-7)',
       });
+    },
+    onSettled: () => {
+      setMutationInProgress(false);
     },
   });
   return (
@@ -104,6 +110,7 @@ export default function SubscribeForm({
                       radius="lg"
                       variant="filled"
                       type="submit"
+                      loading={mutationInProgress}
                     >
                       Submit
                     </Button>

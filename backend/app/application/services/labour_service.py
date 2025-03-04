@@ -8,8 +8,15 @@ from app.application.services.user_service import UserService
 from app.domain.contraction.exceptions import ContractionIdInvalid
 from app.domain.contraction.vo_contraction_id import ContractionId
 from app.domain.labour.entity import Labour
-from app.domain.labour.exceptions import InvalidLabourUpdateId
+from app.domain.labour.exceptions import (
+    CannotDeleteActiveLabour,
+    InvalidLabourId,
+    InvalidLabourUpdateId,
+    LabourNotFoundById,
+    UnauthorizedLabourRequest,
+)
 from app.domain.labour.repository import LabourRepository
+from app.domain.labour.vo_labour_id import LabourId
 from app.domain.labour_update.enums import LabourUpdateType
 from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 from app.domain.services.begin_labour import BeginLabourService
@@ -238,3 +245,29 @@ class LabourService:
         await self._event_producer.publish_batch(labour.clear_domain_events())
 
         return LabourDTO.from_domain(labour)
+
+    async def delete_labour(
+        self,
+        birthing_person_id: str,
+        labour_id: str,
+    ) -> None:
+        try:
+            labour_domain_id = LabourId(UUID(labour_id))
+        except ValueError:
+            raise InvalidLabourId()
+
+        labour = await self._labour_repository.get_by_id(labour_id=labour_domain_id)
+        if not labour:
+            raise LabourNotFoundById(labour_id=labour_id)
+
+        if labour.birthing_person_id.value != birthing_person_id:
+            raise UnauthorizedLabourRequest()
+
+        if labour.is_active:
+            raise CannotDeleteActiveLabour()
+
+        await self._labour_repository.delete(labour)
+
+        await self._event_producer.publish_batch(labour.clear_domain_events())
+
+        return None

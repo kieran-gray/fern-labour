@@ -28,6 +28,8 @@ services:
       # https-redirect middleware to redirect HTTP to HTTPS
       - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
       - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+      - traefik.http.middlewares.mywwwremove.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.mywwwremove.redirectregex.replacement=https://$${1}
       # traefik-http set up only to use the middleware to redirect to https
       - traefik.http.routers.traefik-dashboard-http.middlewares=https-redirect
       # admin-auth middleware with HTTP Basic auth

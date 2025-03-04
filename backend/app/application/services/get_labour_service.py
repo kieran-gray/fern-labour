@@ -27,6 +27,13 @@ class GetLabourService:
 
         return labour
 
+    async def get_all_labours(self, birthing_person_id: str) -> list[LabourDTO]:
+        domain_id = UserId(birthing_person_id)
+        labours = await self._labour_repository.get_labours_by_birthing_person_id(
+            birthing_person_id=domain_id
+        )
+        return [LabourDTO.from_domain(labour) for labour in labours]
+
     async def get_labour_by_id(self, labour_id: str) -> LabourDTO:
         try:
             domain_id = LabourId(UUID(labour_id))

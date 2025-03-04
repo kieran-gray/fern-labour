@@ -68,6 +68,7 @@ SMTP_SSL = false
 SMTP_TLS = false
 SMTP_PORT = 1025
 SUPPORT_EMAIL = "support@fernlabour.com"
+TRACKING_LINK = "https://track.fernlabour.com"
 
 
 [notifications.twilio]

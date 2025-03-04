@@ -69,6 +69,10 @@ export type LabourDTO = {
   status_updates: Array<LabourUpdateDTO>;
 };
 
+export type LabourListResponse = {
+  labours: Array<LabourDTO>;
+};
+
 export type LabourResponse = {
   labour: LabourDTO;
 };
@@ -243,6 +247,8 @@ export type HealthcheckApiV1HealthGetResponse = {
   [key: string]: string;
 };
 
+export type GetAllLaboursApiV1LabourGetAllGetResponse = LabourListResponse;
+
 export type GetLabourByIdApiV1LabourGetLabourIdGetData = {
   labourId: string;
 };
@@ -286,6 +292,12 @@ export type CompleteLabourApiV1LabourCompletePutData = {
 };
 
 export type CompleteLabourApiV1LabourCompletePutResponse = LabourResponse;
+
+export type DeleteLabourApiV1LabourDeleteLabourIdDeleteData = {
+  labourId: string;
+};
+
+export type DeleteLabourApiV1LabourDeleteLabourIdDeleteResponse = unknown | void;
 
 export type GetActiveLabourApiV1LabourActiveGetResponse = LabourResponse;
 

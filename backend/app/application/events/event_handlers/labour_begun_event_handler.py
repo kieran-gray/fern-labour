@@ -30,11 +30,13 @@ class LabourBegunEventHandler(EventHandler):
         subscription_service: SubscriptionService,
         notification_service: NotificationService,
         email_generation_service: EmailGenerationService,
+        tracking_link: str,
     ):
         self._user_service = user_service
         self._subscription_service = subscription_service
         self._notification_service = notification_service
         self._email_generation_service = email_generation_service
+        self._tracking_link = tracking_link
 
     def _generate_email(
         self,
@@ -49,7 +51,7 @@ class LabourBegunEventHandler(EventHandler):
             "birthing_person_name": f"{birthing_person.first_name} {birthing_person.last_name}",
             "subscriber_first_name": subscriber.first_name,
             "update": update,
-            "link": "https://track.fernlabour.com",  # TODO not hardcoded
+            "link": self._tracking_link,
         }
         message = self._email_generation_service.generate("labour_update.html", email_data)
         return Notification(

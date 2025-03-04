@@ -163,6 +163,7 @@ dependencies = [
     { name = "rtoml" },
     { name = "sentry-sdk", extra = ["fastapi"] },
     { name = "sqlalchemy", extra = ["mypy"] },
+    { name = "sqlalchemy-utils" },
     { name = "twilio" },
     { name = "uvicorn" },
     { name = "uvloop" },
@@ -201,6 +202,7 @@ requires-dist = [
     { name = "rtoml", specifier = ">=0.11.0,<1.0.0" },
     { name = "sentry-sdk", extras = ["fastapi"], specifier = ">=2.22.0" },
     { name = "sqlalchemy", extras = ["mypy"], specifier = "==2.0.36" },
+    { name = "sqlalchemy-utils", specifier = ">=0.41.2" },
     { name = "twilio", specifier = ">=9.4.1" },
     { name = "uvicorn", specifier = ">=0.32.0,<1.0.0" },
     { name = "uvloop", specifier = ">=0.21.0,<1.0.0" },
@@ -1244,6 +1246,18 @@ wheels = [
 [package.optional-dependencies]
 mypy = [
     { name = "mypy" },
+]
+
+[[package]]
+name = "sqlalchemy-utils"
+version = "0.41.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sqlalchemy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4d/bf/abfd5474cdd89ddd36dbbde9c6efba16bfa7f5448913eba946fed14729da/SQLAlchemy-Utils-0.41.2.tar.gz", hash = "sha256:bc599c8c3b3319e53ce6c5c3c471120bd325d0071fb6f38a10e924e3d07b9990", size = 138017 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d5/f0/dc4757b83ac1ab853cf222df8535ed73973e0c203d983982ba7b8bc60508/SQLAlchemy_Utils-0.41.2-py3-none-any.whl", hash = "sha256:85cf3842da2bf060760f955f8467b87983fb2e30f1764fd0e24a48307dc8ec6e", size = 93083 },
 ]
 
 [[package]]
