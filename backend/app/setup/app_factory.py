@@ -64,9 +64,9 @@ def create_app(settings: Settings) -> FastAPI:
         title="Labour Tracker",
         lifespan=lifespan,
         default_response_class=ORJSONResponse,
-        docs_url=None,
-        redoc_url=None,
-        openapi_url=None,
+        # docs_url=None,
+        # redoc_url=None,
+        # openapi_url=None,
     )
     configure_app(new_app, settings)
     return new_app

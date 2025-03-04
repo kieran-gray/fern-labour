@@ -14,6 +14,7 @@ from app.application.notifications.notification_service import NotificationServi
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.setup.settings import Settings
 
 
 class EventsApplicationProvider(Provider):
@@ -33,12 +34,14 @@ class EventsApplicationProvider(Provider):
         email_generation_service: Annotated[
             EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
+        settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourUpdatePostedEventHandler:
         return LabourUpdatePostedEventHandler(
             user_service=user_service,
             subscription_service=subscription_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,
+            tracking_link=settings.notifications.email.tracking_link,
         )
 
     @provide
@@ -54,12 +57,14 @@ class EventsApplicationProvider(Provider):
         email_generation_service: Annotated[
             EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
+        settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourBegunEventHandler:
         return LabourBegunEventHandler(
             user_service=user_service,
             subscription_service=subscription_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,
+            tracking_link=settings.notifications.email.tracking_link,
         )
 
     @provide
@@ -75,10 +80,12 @@ class EventsApplicationProvider(Provider):
         email_generation_service: Annotated[
             EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
+        settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourCompletedEventHandler:
         return LabourCompletedEventHandler(
             user_service=user_service,
             subscription_service=subscription_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,
+            tracking_link=settings.notifications.email.tracking_link,
         )

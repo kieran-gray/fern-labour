@@ -6,9 +6,11 @@ from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
 from app.application.services.get_labour_service import GetLabourService
 from app.application.services.user_service import UserService
+from app.domain.labour.exceptions import UnauthorizedLabourRequest
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.services.subscribe_to import SubscribeToService
 from app.domain.services.unsubscribe_from import UnsubscribeFromService
+from app.domain.subscription.enums import SubscriptionStatus
 from app.domain.subscription.exceptions import (
     SubscriberNotSubscribed,
     SubscriptionIdInvalid,
@@ -60,7 +62,6 @@ class SubscriptionService:
         return SubscriptionDTO.from_domain(subscription)
 
     async def get_subscriber_subscriptions(self, subscriber_id: str) -> list[SubscriptionDTO]:
-        # Getting the subscriber ensures that one exists, and handles throwing accurate error if not
         subscriber = await self._user_service.get(user_id=subscriber_id)
         subscriptions = await self._subscription_repository.filter(
             subscriber_id=UserId(subscriber.id)
@@ -133,3 +134,23 @@ class SubscriptionService:
         await self._event_producer.publish_batch(subscription.clear_domain_events())
 
         return SubscriptionDTO.from_domain(subscription)
+
+    async def can_user_access_labour(self, requester_id: str, labour_id: str) -> bool:
+        user = await self._user_service.get(user_id=requester_id)
+
+        labour_domain_id = LabourId(UUID(labour_id))
+        user_domain_id = UserId(user.id)
+
+        labour = await self._get_labour_service.get_labour_by_id(labour_id=labour_id)
+        if labour.birthing_person_id == requester_id:
+            return True
+
+        subscriptions = await self._subscription_repository.filter(labour_id=labour_domain_id)
+
+        for subscription in subscriptions:
+            if (
+                subscription.subscriber_id == user_domain_id
+                and subscription.status == SubscriptionStatus.SUBSCRIBED
+            ):
+                return True
+        raise UnauthorizedLabourRequest()

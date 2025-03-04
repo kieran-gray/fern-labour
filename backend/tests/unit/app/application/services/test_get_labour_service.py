@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 import pytest
 import pytest_asyncio
 
+from app.application.dtos.labour import LabourDTO
 from app.application.services.get_labour_service import GetLabourService
 from app.domain.labour.entity import Labour
 from app.domain.labour.exceptions import InvalidLabourId
@@ -76,3 +77,10 @@ async def test_cannot_get_active_labour_summary_for_birthing_person_without_acti
 async def test_invalid_labour_id_raises_error(get_labour_service: GetLabourService) -> None:
     with pytest.raises(InvalidLabourId):
         await get_labour_service.get_labour_by_id("test")
+
+
+async def test_can_get_all_labours(get_labour_service: GetLabourService) -> None:
+    response = await get_labour_service.get_all_labours(BIRTHING_PERSON_IN_LABOUR)
+    assert isinstance(response, list)
+    assert len(response) == 1
+    assert isinstance(response[0], LabourDTO)

@@ -11,8 +11,9 @@ from app.application.services.labour_service import LabourService
 from app.application.services.user_service import UserService
 from app.domain.contraction.exceptions import ContractionIdInvalid
 from app.domain.labour.enums import LabourPhase
-from app.domain.labour.exceptions import InvalidLabourUpdateId, LabourUpdateNotFoundById
+from app.domain.labour.exceptions import CannotDeleteActiveLabour, InvalidLabourId, InvalidLabourUpdateId, LabourNotFoundById, LabourUpdateNotFoundById, UnauthorizedLabourRequest
 from app.domain.labour.repository import LabourRepository
+from app.domain.labour.vo_labour_id import LabourId
 from app.domain.user.entity import User
 from app.domain.user.exceptions import (
     UserDoesNotHaveActiveLabour,
@@ -22,6 +23,7 @@ from app.domain.user.exceptions import (
 from app.domain.user.vo_user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
+OTHER_USER = "test_id"
 
 
 @pytest_asyncio.fixture
@@ -42,6 +44,13 @@ async def labour_service(
             first_name="Name",
             last_name="User",
             email="test@email.com",
+        ),
+        OTHER_USER: User(
+            id_=UserId(OTHER_USER),
+            username="abc123",
+            first_name="Test",
+            last_name="Smith",
+            email="test@smith.com",
         )
     }
     return LabourService(
@@ -235,3 +244,38 @@ async def test_cannot_delete_labour_update_not_found(
     )
     with pytest.raises(LabourUpdateNotFoundById):
         await labour_service.delete_labour_update(BIRTHING_PERSON, labour_update_id=str(uuid4()))
+
+
+async def test_can_delete_labour(labour_service: LabourService):
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    labour = await labour_service.complete_labour(BIRTHING_PERSON)
+    await labour_service.delete_labour(BIRTHING_PERSON, labour_id=labour.id)
+
+    assert not await labour_service._labour_repository.get_by_id(labour_id=LabourId(labour.id))
+
+
+async def test_cannot_delete_labour_in_progress(labour_service: LabourService):
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    labour = await labour_service.begin_labour(BIRTHING_PERSON)
+
+    with pytest.raises(CannotDeleteActiveLabour):
+        await labour_service.delete_labour(BIRTHING_PERSON, labour_id=labour.id)
+
+
+async def test_cannot_delete_labour_not_own(labour_service: LabourService):
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    labour = await labour_service.begin_labour(BIRTHING_PERSON)
+
+    with pytest.raises(UnauthorizedLabourRequest):
+        await labour_service.delete_labour(OTHER_USER, labour_id=labour.id)
+
+
+async def test_cannot_delete_labour_does_not_exist(labour_service: LabourService):
+    with pytest.raises(LabourNotFoundById):
+        await labour_service.delete_labour(BIRTHING_PERSON, labour_id=str(uuid4()))
+
+
+async def test_cannot_delete_labour_invalid_id(labour_service: LabourService):
+    with pytest.raises(InvalidLabourId):
+        await labour_service.delete_labour(OTHER_USER, labour_id="test123")

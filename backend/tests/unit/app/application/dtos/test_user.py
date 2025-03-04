@@ -27,6 +27,14 @@ def test_can_convert_to_user_dto(user: User) -> None:
     assert dto.email == user.email
 
 
+def test_can_convert_to_user_summary_dto(user: User) -> None:
+    dto = UserDTO.from_domain(user)
+    summary_dto = dto.to_summary()
+    assert dto.id == summary_dto.id
+    assert dto.first_name == summary_dto.first_name
+    assert dto.last_name == summary_dto.last_name
+
+
 def test_can_convert_user_dto_to_dict(user: User) -> None:
     dto = UserDTO.from_domain(user)
     bp_dict = dto.to_dict()

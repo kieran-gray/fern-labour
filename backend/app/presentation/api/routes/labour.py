@@ -9,6 +9,7 @@ from app.application.security.token_generator import TokenGenerator
 from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_invite_service import LabourInviteService
 from app.application.services.labour_service import LabourService
+from app.application.services.subscription_service import SubscriptionService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.api.schemas.requests.contraction import (
@@ -26,6 +27,7 @@ from app.presentation.api.schemas.requests.labour_update import (
     LabourUpdateRequest,
 )
 from app.presentation.api.schemas.responses.labour import (
+    LabourListResponse,
     LabourResponse,
     LabourSubscriptionTokenResponse,
     LabourSummaryResponse,
@@ -34,6 +36,29 @@ from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 labour_router = APIRouter(prefix="/labour", tags=["Labour"])
+
+
+@labour_router.get(
+    "/get-all",
+    responses={
+        status.HTTP_200_OK: {"model": LabourListResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_all_labours(
+    service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourListResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    labours = await service.get_all_labours(birthing_person_id=user.id)
+    return LabourListResponse(labours=labours)
 
 
 @labour_router.get(
@@ -52,11 +77,14 @@ labour_router = APIRouter(prefix="/labour", tags=["Labour"])
 async def get_labour_by_id(
     labour_id: str,
     service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    subscription_service: Annotated[
+        SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    ],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
-    _ = auth_controller.get_authenticated_user(credentials=credentials)
-    # TODO critical check user is authorized
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    await subscription_service.can_user_access_labour(requester_id=user.id, labour_id=labour_id)
     labour = await service.get_labour_by_id(labour_id=labour_id)
     return LabourResponse(labour=labour)
 
@@ -250,6 +278,29 @@ async def complete_labour(
     return LabourResponse(labour=labour)
 
 
+@labour_router.delete(
+    "/delete/{labour_id}",
+    responses={
+        status.HTTP_204_NO_CONTENT: {"model": None},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def delete_labour(
+    labour_id: str,
+    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> None:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    await service.delete_labour(birthing_person_id=user.id, labour_id=labour_id)
+    return
+
+
 @labour_router.get(
     "/active",
     responses={
@@ -361,13 +412,14 @@ async def delete_labour_update(
 )
 @inject
 async def get_subscription_token(
+    service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
     token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionTokenResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    # TODO critical this is not correct, use labour id
-    token = token_generator.generate(input=user.id)
+    labour = await service.get_active_labour(birthing_person_id=user.id)
+    token = token_generator.generate(input=labour.id)
     return LabourSubscriptionTokenResponse(token=token)
 
 

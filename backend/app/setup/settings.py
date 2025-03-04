@@ -123,6 +123,7 @@ class EmailSettings(BaseModel):
     smtp_ssl: bool = Field(alias="SMTP_SSL", default=False)
     smtp_port: int = Field(alias="SMTP_PORT", default=587)
     support_email: str = Field(alias="SUPPORT_EMAIL")
+    tracking_link: str = Field(alias="TRACKING_LINK")
 
     @property
     def emails_enabled(self) -> bool:

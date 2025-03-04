@@ -12,5 +12,9 @@ class LabourSummaryResponse(BaseModel):
     labour: LabourSummaryDTO
 
 
+class LabourListResponse(BaseModel):
+    labours: list[LabourDTO]
+
+
 class LabourSubscriptionTokenResponse(BaseModel):
     token: str

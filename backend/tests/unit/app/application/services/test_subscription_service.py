@@ -13,7 +13,7 @@ from app.application.services.labour_service import LabourService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
-from app.domain.labour.exceptions import LabourNotFoundById
+from app.domain.labour.exceptions import LabourNotFoundById, UnauthorizedLabourRequest
 from app.domain.subscription.enums import SubscriptionStatus
 from app.domain.subscription.exceptions import (
     SubscriberAlreadySubscribed,
@@ -360,3 +360,83 @@ async def test_cannot_query_subscriptions_for_other_labour(
         await subscription_service.get_labour_subscriptions(
             requester_id=SUBSCRIBER, labour_id=labour.id
         )
+
+
+async def test_can_user_access_labour_subscriber(
+    subscription_service: SubscriptionService, labour: LabourDTO
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    assert await subscription_service.can_user_access_labour(
+        requester_id=SUBSCRIBER, labour_id=labour.id
+    )
+
+
+async def test_cannot_access_labour_when_not_subscribed(
+    subscription_service: SubscriptionService, labour: LabourDTO
+) -> None:
+    with pytest.raises(UnauthorizedLabourRequest):
+        await subscription_service.can_user_access_labour(
+            requester_id=SUBSCRIBER, labour_id=labour.id
+        )
+
+
+async def test_cannot_access_labour_when_subscription_status_unsubscribed(
+    subscription_service: SubscriptionService, labour: LabourDTO
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
+
+    with pytest.raises(UnauthorizedLabourRequest):
+        await subscription_service.can_user_access_labour(
+            requester_id=SUBSCRIBER, labour_id=labour.id
+        )
+
+
+async def test_cannot_access_labour_when_subscription_status_blocked(
+    subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
+    labour: LabourDTO,
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_management_service.block_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    with pytest.raises(UnauthorizedLabourRequest):
+        await subscription_service.can_user_access_labour(
+            requester_id=SUBSCRIBER, labour_id=labour.id
+        )
+
+
+async def test_can_access_labour_when_subscription_status_removed(
+    subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
+    labour: LabourDTO,
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_management_service.remove_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    with pytest.raises(UnauthorizedLabourRequest):
+        await subscription_service.can_user_access_labour(
+            requester_id=SUBSCRIBER, labour_id=labour.id
+        )
+
+
+async def test_can_user_access_labour_own_labour(
+    subscription_service: SubscriptionService, labour: LabourDTO
+) -> None:
+    assert await subscription_service.can_user_access_labour(
+        requester_id=BIRTHING_PERSON, labour_id=labour.id
+    )
