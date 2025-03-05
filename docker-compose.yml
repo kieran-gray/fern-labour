@@ -130,8 +130,8 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_DB: postgres
-      KC_DB_URL_HOST: db
-      KC_DB_URL: jdbc:postgresql://db:${POSTGRES_PORT}/keycloak
+      KC_DB_URL_HOST: ${POSTGRES_HOST}
+      KC_DB_URL: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/keycloak
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KC_PROXY_HEADERS: xforwarded

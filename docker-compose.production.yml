@@ -7,9 +7,6 @@ services:
       - traefik-public
       - default
     depends_on:
-      db:
-        condition: service_healthy
-        restart: true
       backend-pre-start:
         condition: service_completed_successfully
         restart: false
@@ -25,7 +22,7 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - EMAILS_FROM_EMAIL=${EMAILS_FROM_EMAIL}
-      - POSTGRES_HOST=db
+      - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
@@ -54,37 +51,9 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls.certresolver=le
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect
 
-  db:
-    image: postgres:16.2
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
-    volumes:
-      - app-db-data:/var/lib/postgresql/data/pgdata
-      - ./keycloak/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-    env_file:
-      - .env
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-    environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
-      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
-      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-
   backend-pre-start:
     image: '${DOCKER_IMAGE_REPOSITORY?Variable not set}/${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: "no"
-    depends_on:
-      db:
-        condition: service_healthy
-        restart: true
     env_file:
       - .env
     environment:
@@ -121,8 +90,8 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_DB: postgres
-      KC_DB_URL_HOST: db
-      KC_DB_URL: jdbc:postgresql://db:${POSTGRES_PORT}/keycloak
+      KC_DB_URL_HOST: ${POSTGRES_HOST}
+      KC_DB_URL: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/keycloak
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KC_PROXY_HEADERS: xforwarded
@@ -257,7 +226,6 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing.middlewares=mywwwremove
 
 volumes:
-  app-db-data:
   kafka-volume:
   zookeeper-volume:
 
