@@ -17,7 +17,7 @@ export const PrivacyPageContent = () => {
                 leftSection={<IconArrowUp size={16} />}
                 style={transitionStyles}
                 onClick={() => scrollTo({ y: 0 })}
-                bg={'var(--mantine-color-pink-4)'}
+                bg="var(--mantine-color-pink-4)"
                 radius="lg"
               >
                 Scroll to top

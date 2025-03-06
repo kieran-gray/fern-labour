@@ -31,7 +31,7 @@ export const PrivacyPolicy = () => {
         </li>
       </ul>
       <p>
-        <strong>Questions or concerns?</strong> Reading this Privacy Notice will help you understand
+        <strong>Questions or concerns?</strong> Reading this Privacy Notice will help you understand
         your privacy rights and choices. We are responsible for making decisions about how your
         personal information is processed. If you do not agree with our policies and practices,
         please do not use our Services. If you still have any questions or concerns, please contact
@@ -50,13 +50,13 @@ export const PrivacyPolicy = () => {
             using our
           </em>
         </strong>
-         
+
         <a href="#toc">
           <strong>
             <em>table of contents</em>
           </strong>
         </a>
-         
+
         <strong>
           <em>below to find the section you are looking for.</em>
         </strong>
@@ -64,15 +64,15 @@ export const PrivacyPolicy = () => {
       <p>
         <strong>What personal information do we process?</strong> When you visit, use, or navigate
         our Services, we may process personal information depending on how you interact with us and
-        the Services, the choices you make, and the products and features you use. Learn more about 
+        the Services, the choices you make, and the products and features you use. Learn more about
         <a href="#personalinfo">personal information you disclose to us</a>.
       </p>
       <p>
-        <strong>Do we process any sensitive personal information?</strong> Some of the information
+        <strong>Do we process any sensitive personal information?</strong> Some of the information
         may be considered &#39;special&#39; or &#39;sensitive&#39; in certain jurisdictions, for
         example your racial or ethnic origins, sexual orientation, and religious beliefs. We may
         process sensitive personal information when necessary with your consent or as otherwise
-        permitted by applicable law. Learn more about 
+        permitted by applicable law. Learn more about
         <a href="#sensitiveinfo">sensitive information we process</a>.
       </p>
       <p>
@@ -84,12 +84,12 @@ export const PrivacyPolicy = () => {
         improve, and administer our Services, communicate with you, for security and fraud
         prevention, and to comply with law. We may also process your information for other purposes
         with your consent. We process your information only when we have a valid legal reason to do
-        so. Learn more about <a href="#infouse">how we process your information</a>.
+        so. Learn more about <a href="#infouse">how we process your information</a>.
       </p>
       <p>
         <strong>In what situations and with which parties do we share personal information?</strong>{' '}
         We may share information in specific situations and with specific third parties. Learn more
-        about <a href="#whoshare">when and with whom we share your personal information</a>.
+        about <a href="#whoshare">when and with whom we share your personal information</a>.
       </p>
       <p>
         <strong>How do we keep your information safe?</strong> We have adequate organisational and
@@ -97,13 +97,13 @@ export const PrivacyPolicy = () => {
         no electronic transmission over the internet or information storage technology can be
         guaranteed to be 100% secure, so we cannot promise or guarantee that hackers,
         cybercriminals, or other unauthorised third parties will not be able to defeat our security
-        and improperly collect, access, steal, or modify your information. Learn more about 
+        and improperly collect, access, steal, or modify your information. Learn more about
         <a href="#infosafe">how we keep your information safe</a>.
       </p>
       <p>
         <strong>What are your rights?</strong> Depending on where you are located geographically,
         the applicable privacy law may mean you have certain rights regarding your personal
-        information. Learn more about <a href="#privacyrights">your privacy rights</a>.
+        information. Learn more about <a href="#privacyrights">your privacy rights</a>.
       </p>
       <p>
         <strong>How do you exercise your rights?</strong> The easiest way to exercise your rights is
@@ -111,7 +111,7 @@ export const PrivacyPolicy = () => {
         data protection laws.
       </p>
       <p>
-        Want to learn more about what we do with any information we collect? 
+        Want to learn more about what we do with any information we collect?
         <a href="#toc">Review the Privacy Notice in full</a>.
       </p>
       <h2 id="toc">TABLE OF CONTENTS</h2>
@@ -161,11 +161,11 @@ export const PrivacyPolicy = () => {
       <h2 id="infocollect">1. WHAT INFORMATION DO WE COLLECT?</h2>
       <h3 id="personal-information-you-disclose-to-us">Personal information you disclose to us</h3>
       <p>
-        <strong>In Short:</strong> <em>We collect personal information that you provide to us.</em>
+        <strong>In Short:</strong> <em>We collect personal information that you provide to us.</em>
       </p>
       <p>
         We collect personal information that you voluntarily provide to us when you register on the
-        Services,  express an interest in obtaining information about us or our products and
+        Services, express an interest in obtaining information about us or our products and
         Services, when you participate in activities on the Services, or otherwise when you contact
         us.
       </p>
@@ -213,7 +213,7 @@ export const PrivacyPolicy = () => {
         <a href="https://stripe.com/gb/privacy">https://stripe.com/gb/privacy</a> .
       </p>
       <p>
-        <strong>Social Media Login Data.</strong> We may provide you with the option to register
+        <strong>Social Media Login Data.</strong> We may provide you with the option to register
         with us using your existing social media account details, like your Facebook, X, or other
         social media account. If you choose to register in this way, we will collect certain profile
         information about you from the social media provider, as described in the section called
@@ -225,11 +225,11 @@ export const PrivacyPolicy = () => {
       </p>
       <h3 id="google-api">Google API</h3>
       <p>
-        Our use of information received from Google APIs will adhere to 
+        Our use of information received from Google APIs will adhere to
         <a href="https://developers.google.com/terms/api-services-user-data-policy">
           Google API Services User Data Policy
         </a>
-        , including the 
+        , including the
         <a href="https://developers.google.com/terms/api-services-user-data-policy#limited-use">
           Limited Use requirements
         </a>
@@ -237,7 +237,7 @@ export const PrivacyPolicy = () => {
       </p>
       <h2 id="infouse">2. HOW DO WE PROCESS YOUR INFORMATION?</h2>
       <p>
-        <strong>In Short:</strong> 
+        <strong>In Short:</strong>
         <em>
           We process your information to provide, improve, and administer our Services, communicate
           with you, for security and fraud prevention, and to comply with law. We may also process
@@ -256,26 +256,26 @@ export const PrivacyPolicy = () => {
             <strong>
               To facilitate account creation and authentication and otherwise manage user accounts.
             </strong>
-             We may process your information so you can create and log in to your account, as well
-            as keep your account in working order.
+            We may process your information so you can create and log in to your account, as well as
+            keep your account in working order.
           </p>
         </li>
         <li>
           <p>
-            <strong>To deliver and facilitate delivery of services to the user.</strong> We may
+            <strong>To deliver and facilitate delivery of services to the user.</strong> We may
             process your information to provide you with the requested service.
           </p>
         </li>
         <li>
           <p>
-            <strong>To respond to user inquiries/offer support to users.</strong> We may process
+            <strong>To respond to user inquiries/offer support to users.</strong> We may process
             your information to respond to your inquiries and solve any potential issues you might
             have with the requested service.
           </p>
         </li>
         <li>
           <p>
-            <strong>To enable user-to-user communications.</strong> We may process your information
+            <strong>To enable user-to-user communications.</strong> We may process your information
             if you choose to use any of our offerings that allow for communication with another
             user.
           </p>
@@ -288,11 +288,9 @@ export const PrivacyPolicy = () => {
           </p>
         </li>
       </ul>
-      <h2 id="legalbases">
-        3. WHAT LEGAL BASES DO WE RELY ON TO PROCESS YOUR INFORMATION?
-      </h2>
+      <h2 id="legalbases">3. WHAT LEGAL BASES DO WE RELY ON TO PROCESS YOUR INFORMATION?</h2>
       <p>
-        <strong>In Short:</strong> We only process your personal information when we believe it is
+        <strong>In Short:</strong> We only process your personal information when we believe it is
         necessary and we have a valid legal reason (i.e. legal basis) to do so under applicable law,
         like with your consent, to comply with laws, to provide you with services to enter into or
         fulfil our contractual obligations, to protect your rights, or to fulfil our legitimate
@@ -306,9 +304,9 @@ export const PrivacyPolicy = () => {
       <ul>
         <li>
           <p>
-            <strong>Consent.</strong> We may process your information if you have given us
+            <strong>Consent.</strong> We may process your information if you have given us
             permission (i.e. consent) to use your personal information for a specific purpose. You
-            can withdraw your consent at any time. Learn more about 
+            can withdraw your consent at any time. Learn more about
             <a href="#withdrawconsent">withdrawing your consent</a>.
           </p>
         </li>
@@ -347,11 +345,9 @@ export const PrivacyPolicy = () => {
         customers&#39; privacy practices, you should read their privacy policies and direct any
         questions you have to them.
       </p>
-      <h2 id="whoshare">
-        4. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?
-      </h2>
+      <h2 id="whoshare">4. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</h2>
       <p>
-        <strong>In Short:</strong> 
+        <strong>In Short:</strong>
         <em>
           We may share information in specific situations described in this section and/or with the
           following third parties.
@@ -377,7 +373,7 @@ export const PrivacyPolicy = () => {
       </ul>
       <h2 id="sociallogins">5. HOW DO WE HANDLE YOUR SOCIAL LOGINS?</h2>
       <p>
-        <strong>In Short:</strong> 
+        <strong>In Short:</strong>
         <em>
           If you choose to register or log in to our Services using a social media account, we may
           have access to certain information about you.
@@ -401,7 +397,7 @@ export const PrivacyPolicy = () => {
       </p>
       <h2 id="inforetain">6. HOW LONG DO WE KEEP YOUR INFORMATION?</h2>
       <p>
-        <strong>In Short:</strong> 
+        <strong>In Short:</strong>
         <em>
           We keep your information for as long as necessary to fulfil the purposes outlined in this
           Privacy Notice unless otherwise required by law.
@@ -423,7 +419,7 @@ export const PrivacyPolicy = () => {
       </p>
       <h2 id="infosafe">7. HOW DO WE KEEP YOUR INFORMATION SAFE?</h2>
       <p>
-        <strong>In Short:</strong> 
+        <strong>In Short:</strong>
         <em>
           We aim to protect your personal information through a system of organisational and
           technical security measures.
@@ -440,11 +436,9 @@ export const PrivacyPolicy = () => {
         transmission of personal information to and from our Services is at your own risk. You
         should only access the Services within a secure environment.
       </p>
-      <h2 id="infominors">
-        8. DO WE COLLECT INFORMATION FROM MINORS?
-      </h2>
+      <h2 id="infominors">8. DO WE COLLECT INFORMATION FROM MINORS?</h2>
       <p>
-        <strong>In Short:</strong> 
+        <strong>In Short:</strong>
         <em>We do not knowingly collect data from or market to children under 18 years of age .</em>
       </p>
       <p>
@@ -462,11 +456,11 @@ export const PrivacyPolicy = () => {
       </p>
       <h2 id="privacyrights">9. WHAT ARE YOUR PRIVACY RIGHTS?</h2>
       <p>
-        <strong>In Short:</strong> {' '}
+        <strong>In Short:</strong>{' '}
         <em>
           In some regions, such as the European Economic Area (EEA), United Kingdom (UK), and
           Switzerland , you have rights that allow you greater access to and control over your
-          personal information.  You may review, change, or terminate your account at any time,
+          personal information. You may review, change, or terminate your account at any time,
           depending on your country, province, or state of residence.
         </em>
       </p>
@@ -491,7 +485,7 @@ export const PrivacyPolicy = () => {
         <a href="https://ec.europa.eu/justice/data-protection/bodies/authorities/index_en.htm">
           Member State data protection authority
         </a>{' '}
-        or 
+        or
         <a href="https://ico.org.uk/make-a-complaint/data-protection-complaints/data-protection-complaints/">
           UK data protection authority
         </a>
@@ -505,11 +499,12 @@ export const PrivacyPolicy = () => {
         .
       </p>
       <p>
-        <strong id="withdrawconsent">Withdrawing your consent:</strong> If we are relying on your consent to process your
-        personal information, you have the right to withdraw your consent at any time. You can
-        withdraw your consent at any time by contacting us by using the contact details provided in
-        the section &#39; <a href="#contact">HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</a> &#39;
-        below or updating your preferences .
+        <strong id="withdrawconsent">Withdrawing your consent:</strong> If we are relying on your
+        consent to process your personal information, you have the right to withdraw your consent at
+        any time. You can withdraw your consent at any time by contacting us by using the contact
+        details provided in the section &#39;{' '}
+        <a href="#contact">HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</a> &#39; below or updating
+        your preferences .
       </p>
       <p>
         However, please note that this will not affect the lawfulness of the processing before its
@@ -550,7 +545,7 @@ export const PrivacyPolicy = () => {
       </p>
       <h2 id="policyupdates">11. DO WE MAKE UPDATES TO THIS NOTICE?</h2>
       <p>
-        <strong>In Short:</strong> Yes, we will update this notice as necessary to stay compliant
+        <strong>In Short:</strong> Yes, we will update this notice as necessary to stay compliant
         with relevant laws._
       </p>
       <p>
@@ -560,12 +555,10 @@ export const PrivacyPolicy = () => {
         such changes or by directly sending you a notification. We encourage you to review this
         Privacy Notice frequently to be informed of how we are protecting your information.
       </p>
-      <h2 id="contact">
-        12. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?
-      </h2>
+      <h2 id="contact">12. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</h2>
       <p>
         If you have questions or comments about this notice, you may contact our Data Protection
-        Officer (DPO) by email at {' '}
+        Officer (DPO) by email at{' '}
         <a href="mailto:&#x6b;&#105;&#101;&#x72;&#97;&#x6e;&#64;&#102;&#101;&#x72;&#110;&#108;&#97;&#x62;&#x6f;&#x75;&#114;&#46;&#x63;&#111;&#x6d;">
           &#x6b;&#105;&#101;&#x72;&#97;&#x6e;&#64;&#102;&#101;&#x72;&#110;&#108;&#97;&#x62;&#x6f;&#x75;&#114;&#46;&#x63;&#111;&#x6d;
         </a>
@@ -581,9 +574,7 @@ export const PrivacyPolicy = () => {
         or by visiting{' '}
         <a href="http://www.fernlabour.com/contact">http://www.fernlabour.com/contact</a>
       </p>
-      <h2 id="request">
-        13. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?
-      </h2>
+      <h2 id="request">13. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</h2>
       <p>
         Based on the applicable laws of your country , you may have the right to request access to
         the personal information we collect from you, details about how we have processed it,

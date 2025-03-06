@@ -218,7 +218,7 @@ export const TermsOfService = () => {
           When you post Contributions, you grant us a licence (including use of your name,
           trademarks, and logos):
         </strong>
-         By posting any Contributions, you grant us an unrestricted, unlimited, irrevocable,
+        By posting any Contributions, you grant us an unrestricted, unlimited, irrevocable,
         perpetual, non-exclusive, transferable, royalty-free, fully-paid, worldwide right, and
         licence to: use, copy, reproduce, distribute, sell, resell, publish, broadcast, retitle,
         store, publicly perform, publicly display, reformat, translate, excerpt (in whole or in
@@ -279,8 +279,8 @@ export const TermsOfService = () => {
       <p>
         By using the Services, you represent and warrant that: (1) all registration information you
         submit will be true, accurate, current, and complete; (2) you will maintain the accuracy of
-        such information and promptly update such registration information as necessary;   (3) you
-        have the legal capacity and you agree to comply with these Legal Terms;   (4) you are not a
+        such information and promptly update such registration information as necessary; (3) you
+        have the legal capacity and you agree to comply with these Legal Terms; (4) you are not a
         minor in the jurisdiction in which you reside ; ( 5) you will not access the Services
         through automated or non-human means, whether through a bot, script or otherwise; (6) you
         will not use the Services for any illegal or unauthorised purpose; and (7) your use of the
@@ -300,14 +300,14 @@ export const TermsOfService = () => {
       </p>
       <h2 id="purchases">5. PURCHASES AND PAYMENT</h2>
       <p>We accept the following forms of payment:</p>
-      <p>-  Stripe</p>
+      <p>- Stripe</p>
       <p>
         You agree to provide current, complete, and accurate purchase and account information for
         all purchases made via the Services. You further agree to promptly update account and
         payment information, including email address, payment method, and payment card expiration
         date, so that we can complete your transactions and contact you as needed. Sales tax will be
         added to the price of purchases as deemed required by us. We may change prices at any time.
-        All payments shall be in British Pounds.
+        All payments shall be in British Pounds.
       </p>
       <p>
         You agree to pay all charges at the prices then in effect for your purchases and any
@@ -483,10 +483,10 @@ export const TermsOfService = () => {
       </p>
       <h2 id="license">8. CONTRIBUTION LICENCE</h2>
       <p>
-        By posting your Contributions to any part of the Services  or making Contributions
-        accessible to the Services by linking your account from the Services to any of your social
-        networking accounts , you automatically grant, and you represent and warrant that you have
-        the right to grant, to us an unrestricted, unlimited, irrevocable, perpetual, non-exclusive,
+        By posting your Contributions to any part of the Services or making Contributions accessible
+        to the Services by linking your account from the Services to any of your social networking
+        accounts , you automatically grant, and you represent and warrant that you have the right to
+        grant, to us an unrestricted, unlimited, irrevocable, perpetual, non-exclusive,
         transferable, royalty-free, fully-paid, worldwide right, and licence to host, use, copy,
         reproduce, disclose, sell, resell, publish, broadcast, retitle, archive, store, cache,
         publicly perform, publicly display, reformat, translate, transmit, excerpt (in whole or in
@@ -573,7 +573,7 @@ export const TermsOfService = () => {
       </p>
       <h2 id="ppyes">11. PRIVACY POLICY</h2>
       <p>
-        We care about data privacy and security. Please review our Privacy Policy: {' '}
+        We care about data privacy and security. Please review our Privacy Policy:{' '}
         <strong>
           <a href="https://fernlabour.com/privacy">https://fernlabour.com/privacy</a>
         </strong>{' '}
@@ -593,7 +593,7 @@ export const TermsOfService = () => {
         (INCLUDING BLOCKING CERTAIN IP ADDRESSES), TO ANY PERSON FOR ANY REASON OR FOR NO REASON,
         INCLUDING WITHOUT LIMITATION FOR BREACH OF ANY REPRESENTATION, WARRANTY, OR COVENANT
         CONTAINED IN THESE LEGAL TERMS OR OF ANY APPLICABLE LAW OR REGULATION. WE MAY TERMINATE YOUR
-        USE OR PARTICIPATION IN THE SERVICES OR DELETE YOUR ACCOUNT AND  ANY CONTENT OR INFORMATION
+        USE OR PARTICIPATION IN THE SERVICES OR DELETE YOUR ACCOUNT AND ANY CONTENT OR INFORMATION
         THAT YOU POSTED AT ANY TIME, WITHOUT WARNING, IN OUR SOLE DISCRETION.
       </p>
       <p>
@@ -634,7 +634,7 @@ export const TermsOfService = () => {
       </p>
       <h2 id="disputes">15. DISPUTE RESOLUTION</h2>
       <p>
-        The European Commission provides an 
+        The European Commission provides an
         <a href="https://ec.europa.eu/consumers/odr">online dispute resolution platform</a>, which
         you can access. If you would like to bring this subject to our attention, please contact us.
       </p>
@@ -678,17 +678,17 @@ export const TermsOfService = () => {
         YOUR USE OF THE SERVICES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
         NOTWITHSTANDING ANYTHING TO THE CONTRARY CONTAINED HEREIN, OUR LIABILITY TO YOU FOR ANY
         CAUSE WHATSOEVER AND REGARDLESS OF THE FORM OF THE ACTION, WILL AT ALL TIMES BE LIMITED TO
-        THE AMOUNT PAID, IF ANY, BY YOU TO US .   CERTAIN US STATE LAWS AND INTERNATIONAL LAWS DO
-        NOT ALLOW LIMITATIONS ON IMPLIED WARRANTIES OR THE EXCLUSION OR LIMITATION OF CERTAIN
-        DAMAGES. IF THESE LAWS APPLY TO YOU, SOME OR ALL OF THE ABOVE DISCLAIMERS OR LIMITATIONS MAY
-        NOT APPLY TO YOU, AND YOU MAY HAVE ADDITIONAL RIGHTS.
+        THE AMOUNT PAID, IF ANY, BY YOU TO US . CERTAIN US STATE LAWS AND INTERNATIONAL LAWS DO NOT
+        ALLOW LIMITATIONS ON IMPLIED WARRANTIES OR THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES.
+        IF THESE LAWS APPLY TO YOU, SOME OR ALL OF THE ABOVE DISCLAIMERS OR LIMITATIONS MAY NOT
+        APPLY TO YOU, AND YOU MAY HAVE ADDITIONAL RIGHTS.
       </p>
       <h2 id="indemnification">19. INDEMNIFICATION</h2>
       <p>
         You agree to defend, indemnify, and hold us harmless, including our subsidiaries,
         affiliates, and all of our respective officers, agents, partners, and employees, from and
         against any loss, damage, liability, claim, or demand, including reasonable attorneys’ fees
-        and expenses, made by any third party due to or arising out of: (1) your Contributions;  (2)
+        and expenses, made by any third party due to or arising out of: (1) your Contributions; (2)
         use of the Services; (3) breach of these Legal Terms; (4) any breach of your representations
         and warranties set forth in these Legal Terms; (5) your violation of the rights of a third
         party, including but not limited to intellectual property rights; or (6) any overt harmful
