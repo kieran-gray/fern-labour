@@ -22,9 +22,9 @@ function ContactIcon({ icon: Icon, title, description, link, ...others }: Contac
             className={classes.social}
             variant="transparent"
           >
-            <Icon size={24} color="var(--mantine-color-white)" />
+            <Icon size={24} color="var(--mantine-color-gray-8)" />
           </ActionIcon>
-        )) || <Icon size={24} color="var(--mantine-color-white)" />}
+        )) || <Icon size={24} color="var(--mantine-color-gray-8)" />}
       </Box>
 
       <div>
