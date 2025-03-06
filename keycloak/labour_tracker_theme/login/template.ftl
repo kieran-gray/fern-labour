@@ -170,6 +170,7 @@
                         <span class="${properties.kcInputHelperTextItemTextClass!}">
                           <span class="${properties.kcInputRequiredClass!}">*</span> ${msg("requiredFields")}
                         </span>
+                         
                     </div>
                     <div class="${properties.kcFormClass} ${properties.kcContentWrapperClass}">
                         <#nested "show-username">
@@ -199,6 +200,12 @@
         </#if>
 
         <#nested "form">
+
+        <#if displayRequiredFields && !isAppInitiatedAction??>
+          By signing up, I agree to <a href='https://fernlabour.com'>fernlabour.com</a>'s
+          <a href='https://fernlabour.com/terms-of-service'>Terms of Service</a> and 
+          <a href='https://fernlabour.com/privacy'>Privacy Policy</a>
+        </#if>
 
         <#if auth?has_content && auth.showTryAnotherWayLink()>
           <form id="kc-select-try-another-way-form" action="${url.loginAction}" method="post" novalidate="novalidate">

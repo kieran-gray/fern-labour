@@ -5,6 +5,7 @@ import classes from './Footer.module.css';
 const links = [
   { link: '/contact', label: 'Contact' },
   { link: '/privacy', label: 'Privacy' },
+  { link: '/terms-of-service', label: 'Terms of Service' },
 ];
 
 export function FooterSimple() {

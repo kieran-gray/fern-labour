@@ -10,8 +10,11 @@
     "export": "next build && next export",
     "typecheck": "tsc --noEmit",
     "lint": "npm run eslint && npm run stylelint",
+    "lint:fix": "npm run stylelint:fix && npm run prettier:write && npm run eslint:fix",
     "eslint": "next lint",
+    "eslint:fix": "eslint . --fix",
     "stylelint": "stylelint '**/*.css' --cache",
+    "stylelint:fix": "stylelint '**/*.css' --fix",
     "prettier:check": "prettier --check \"**/*.{ts,tsx}\"",
     "prettier:write": "prettier --write \"**/*.{ts,tsx}\"",
     "test": "npm run prettier:check && npm run lint && npm run typecheck"
