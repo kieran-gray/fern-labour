@@ -34,8 +34,8 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
   }, [auth, hasTriedSignin]);
 
   if (auth.error) {
-    if (auth.error?.message.includes("No matching state")) {
-      window.location.href = "/";
+    if (auth.error?.message.includes('No matching state')) {
+      window.location.href = '/';
       return <PageLoading />;
     }
     return <ErrorContainer message={auth.error?.message} />;
