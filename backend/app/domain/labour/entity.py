@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 from app.domain.base.aggregate_root import AggregateRoot
 from app.domain.contraction.entity import Contraction
 from app.domain.contraction.events import ContractionEnded, ContractionStarted
-from app.domain.labour.enums import LabourPhase
+from app.domain.labour.enums import LabourPaymentPlan, LabourPhase
 from app.domain.labour.events import (
     LabourBegun,
     LabourCompleted,
@@ -34,6 +34,7 @@ class Labour(AggregateRoot[LabourId]):
     due_date: datetime
     contractions: list[Contraction] = field(default_factory=list)
     labour_updates: list[LabourUpdate] = field(default_factory=list)
+    payment_plan: LabourPaymentPlan | None = None
     start_time: datetime | None = None
     end_time: datetime | None = None
     labour_name: str | None = None
@@ -71,6 +72,9 @@ class Labour(AggregateRoot[LabourId]):
         self.first_labour = first_labour
         self.due_date = due_date
         self.labour_name = labour_name
+
+    def update_payment_plan(self, payment_plan: LabourPaymentPlan) -> None:
+        self.payment_plan = payment_plan
 
     def begin(self, start_time: datetime | None = None) -> None:
         self.start_time = start_time or datetime.now(UTC)

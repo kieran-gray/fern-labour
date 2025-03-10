@@ -7,8 +7,8 @@
         padding: calc(var(--mantine-spacing-md));
     }
 
-    @media (max-width: $mantine-breakpoint-xs) {
-        padding: 0;
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: calc(var(--mantine-spacing-xs));
     }
 }
   

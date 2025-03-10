@@ -5,7 +5,7 @@ import NextLink from 'next/link';
 import {
   IconAmbulance,
   IconChartHistogram,
-  IconDeviceMobile,
+  IconDots,
   IconMessage,
   IconSignLeft,
   IconSpeakerphone,
@@ -296,11 +296,11 @@ export const Pricing01 = () => {
               ),
             },
             {
-              title: 'Allocate Birth Partner',
-              description: 'So they can track for you from their device',
+              title: 'Coming soon',
+              description: 'More features in progress',
               icon: (
                 <Icon>
-                  <IconDeviceMobile size={21} />
+                  <IconDots size={21} />
                 </Icon>
               ),
             },

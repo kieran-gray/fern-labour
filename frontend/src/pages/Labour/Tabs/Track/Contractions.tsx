@@ -2,7 +2,6 @@ import { useRef } from 'react';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { Space, Stack, Text, Title } from '@mantine/core';
 import { ContractionDTO, LabourDTO } from '../../../../client/index.ts';
-import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader.tsx';
 import { sortContractions } from '../../../../shared-components/utils.tsx';
 import { ActiveContractionControls } from './ActiveContractionControls.tsx';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
@@ -27,7 +26,6 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
 
   return (
     <div className={baseClasses.root}>
-      <ContainerHeader title="Contractions" />
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>

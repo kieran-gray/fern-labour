@@ -1,11 +1,10 @@
-import { IconInfoCircle } from '@tabler/icons-react';
 import { Image, Space, Text, Title } from '@mantine/core';
 import { ContractionDTO, LabourDTO } from '../../../../client';
-import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
+import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { formatTimeSeconds } from '../../../../shared-components/utils';
-import image from './image.svg';
 import { LabourStatisticsTabs } from './LabourStatisticsTabs';
 import { LabourStatisticsTable } from './LabourStatsticsTable';
+import image from './statistics.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourStatistics.module.css';
 
@@ -155,13 +154,7 @@ export const LabourStatistics = ({
       </div>
       <Space h="sm" />
       {!completed && !labourStatistics.total && (
-        <Text className={baseClasses.importantText}>
-          <IconInfoCircle
-            size={20}
-            style={{ alignSelf: 'center', marginRight: '10px', flexShrink: 0 }}
-          />
-          Not enough data yet, keep tracking.
-        </Text>
+        <ImportantText message="Not enough data yet, keep tracking." />
       )}
       {!completed && labourStatistics.total && (
         <LabourStatisticsTabs contractions={labour.contractions} statistics={labourStatistics} />
@@ -174,7 +167,6 @@ export const LabourStatistics = ({
   if (inContainer) {
     return (
       <div className={baseClasses.root}>
-        <ContainerHeader title="Statistics" />
         <div className={baseClasses.body}>
           <div className={classes.inner}>
             <div className={classes.content}>
@@ -184,6 +176,9 @@ export const LabourStatistics = ({
                 information to have when discussing your labour progress with your midwife or
                 healthcare provider.
               </Text>
+              <div className={baseClasses.imageFlexRow}>
+                <Image src={image} className={baseClasses.smallImage} />
+              </div>
             </div>
             <div className={baseClasses.flexColumn}>
               <Image src={image} className={classes.image} />

@@ -4,7 +4,8 @@ import classes from './Footer.module.css';
 
 const links = [
   { link: '/contact', label: 'Contact' },
-  { link: '/privacy', label: 'Privacy' },
+  { link: 'https://fernlabour.com/privacy', label: 'Privacy Policy' },
+  { link: 'https://fernlabour.com/terms-of-service', label: 'Terms of Service' },
 ];
 
 export function FooterSimple() {
@@ -15,7 +16,11 @@ export function FooterSimple() {
       href={link.link}
       onClick={(event) => {
         event.preventDefault();
-        navigate(link.link);
+        if (link.link.startsWith('https://')) {
+          window.open(link.link, '_blank')?.focus();
+        } else {
+          navigate(link.link);
+        }
       }}
       size="sm"
     >

@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { ApiError, OpenAPI, SubscribeToRequest, SubscriptionService } from '../../../client';
-import image from './image.svg';
+import { OpenAPI, SubscribeToRequest, SubscriptionService } from '../../../client';
+import image from './protected.svg';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './Form.module.css';
 
@@ -55,19 +55,10 @@ export default function SubscribeForm({
       );
       navigate('/');
     },
-    onError: (error) => {
-      let message = 'Unknown error occurred';
-      if (error instanceof ApiError) {
-        try {
-          const body = error.body as { description: string };
-          message = body.description;
-        } catch {
-          // Do nothing
-        }
-      }
+    onError: () => {
       notifications.show({
         title: 'Error',
-        message,
+        message: 'Token or Labour ID is incorrect.',
         radius: 'lg',
         color: 'var(--mantine-color-pink-7)',
       });
@@ -76,45 +67,48 @@ export default function SubscribeForm({
       setMutationInProgress(false);
     },
   });
+
   return (
     <div className={baseClasses.root}>
-      <div className={baseClasses.header}>
-        <div className={baseClasses.title}>Subscribe</div>
-      </div>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
             <Title className={classes.title}>
               Congratulations! <br /> Someone wants to share their labour journey with you!
             </Title>
+            <div className={baseClasses.imageFlexRow}>
+              <Image src={image} className={baseClasses.smallImage} />
+            </div>
             <Text c="var(--mantine-color-gray-7)" mt="md">
               If the code isn't already filled in, check the share message that was sent to you, or
               ask the person who shared the link with you for the code.
             </Text>
             <Group mt={30}>
-              <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
-                <div className={classes.flexRowEnd} style={{ alignItems: 'end' }}>
+              <form
+                onSubmit={form.onSubmit((values) => mutation.mutate(values))}
+                className={classes.form}
+              >
+                <div className={baseClasses.flexRowEnd}>
                   <PinInput
                     fw={600}
                     size="lg"
                     length={SUBSCRIBER_TOKEN_LENGTH}
                     radius="md"
+                    style={{ justifyContent: 'center' }}
                     key={form.key('token')}
                     {...form.getInputProps('token')}
                   />
                   <Space w="xl" h="xl" />
-                  <div className={baseClasses.flexRowEnd}>
-                    <Button
-                      color="var(--mantine-color-pink-4)"
-                      size="lg"
-                      radius="lg"
-                      variant="filled"
-                      type="submit"
-                      loading={mutationInProgress}
-                    >
-                      Submit
-                    </Button>
-                  </div>
+                  <Button
+                    color="var(--mantine-color-pink-4)"
+                    size="lg"
+                    radius="lg"
+                    variant="filled"
+                    type="submit"
+                    loading={mutationInProgress}
+                  >
+                    Submit
+                  </Button>
                 </div>
               </form>
             </Group>

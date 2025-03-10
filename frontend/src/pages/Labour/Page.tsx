@@ -7,17 +7,15 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
+import { useNavigate } from 'react-router-dom';
 import { Space, Tabs, Text } from '@mantine/core';
 import { ApiError, LabourService, OpenAPI } from '../../client';
 import { NotFoundError } from '../../Errors';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
-import { LabourHistory } from '../LabourHistory/Components/LabourHistory/LabourHistory.tsx';
-import { LabourHistoryPage } from '../LabourHistory/Page.tsx';
 import { useLabour } from './LabourContext.tsx';
-import { InviteContainer } from './Tabs/Invites/InviteContainer/InviteContainer.tsx';
-import { ShareContainer } from './Tabs/Invites/ShareContainer/ShareContainer.tsx';
+import { Share } from './Tabs/Invites/Share.tsx';
 import { LabourControls } from './Tabs/Manage/LabourControls.tsx';
 import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubscribers.tsx';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
@@ -27,6 +25,7 @@ import baseClasses from '../../shared-components/shared-styles.module.css';
 
 export const LabourPage = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
   const { setLabourId } = useLabour();
 
   OpenAPI.TOKEN = async () => {
@@ -60,11 +59,7 @@ export const LabourPage = () => {
 
   if (isError) {
     if (error instanceof NotFoundError) {
-      return (
-        <AppShell>
-          <LabourHistoryPage />
-        </AppShell>
-      );
+      navigate('/onboarding?step=plan');
     }
     return (
       <AppShell>
@@ -74,6 +69,9 @@ export const LabourPage = () => {
   }
 
   const labour = data;
+  if (labour.payment_plan === null) {
+    navigate('/onboarding?step=pay');
+  }
   return (
     <AppShell>
       <Tabs
@@ -108,8 +106,6 @@ export const LabourPage = () => {
             <LabourControls labour={labour} />
             <Space h="xl" />
             <SubscribersContainer />
-            <Space h="xl" />
-            <LabourHistory />
           </Tabs.Panel>
           <Tabs.Panel value="track">
             <Contractions labour={labour} />
@@ -121,10 +117,7 @@ export const LabourPage = () => {
             <LabourUpdates labour={labour} />
           </Tabs.Panel>
           <Tabs.Panel value="invite">
-            <InviteContainer />
-            <Space h="xl" />
-            <ShareContainer />
-            <Space h="xl" />
+            <Share />
           </Tabs.Panel>
         </div>
       </Tabs>

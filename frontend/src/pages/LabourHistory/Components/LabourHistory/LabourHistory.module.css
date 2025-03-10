@@ -7,8 +7,8 @@
         padding: calc(var(--mantine-spacing-md));
     }
 
-    @media (max-width: $mantine-breakpoint-xs) {
-        padding: 0;
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: calc(var(--mantine-spacing-xs));
     }
 }
   
@@ -24,7 +24,7 @@
 
   .image {
     width: 376px;
-    height: 356px;
+    height: 250px;
   
     @media (max-width: $mantine-breakpoint-md) {
       display: none;

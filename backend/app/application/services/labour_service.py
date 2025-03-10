@@ -8,9 +8,11 @@ from app.application.services.user_service import UserService
 from app.domain.contraction.exceptions import ContractionIdInvalid
 from app.domain.contraction.vo_contraction_id import ContractionId
 from app.domain.labour.entity import Labour
+from app.domain.labour.enums import LabourPaymentPlan
 from app.domain.labour.exceptions import (
     CannotDeleteActiveLabour,
     InvalidLabourId,
+    InvalidLabourPaymentPlan,
     InvalidLabourUpdateId,
     LabourNotFoundById,
     UnauthorizedLabourRequest,
@@ -25,6 +27,7 @@ from app.domain.services.end_contraction import EndContractionService
 from app.domain.services.post_labour_update import PostLabourUpdateService
 from app.domain.services.start_contraction import StartContractionService
 from app.domain.services.update_contraction_service import UpdateContractionService
+from app.domain.services.update_labour_payment_plan import UpdateLabourPaymentPlanService
 from app.domain.user.exceptions import UserDoesNotHaveActiveLabour, UserHasActiveLabour
 from app.domain.user.vo_user_id import UserId
 
@@ -84,6 +87,32 @@ class LabourService:
             raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
 
         labour.update_plan(first_labour=first_labour, due_date=due_date, labour_name=labour_name)
+
+        await self._labour_repository.save(labour)
+
+        await self._event_producer.publish_batch(labour.clear_domain_events())
+
+        return LabourDTO.from_domain(labour)
+
+    async def update_labour_payment_plan(
+        self,
+        birthing_person_id: str,
+        payment_plan: str,
+    ) -> LabourDTO:
+        domain_id = UserId(birthing_person_id)
+        _ = await self._user_service.get(birthing_person_id)
+        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
+        if not labour:
+            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+
+        try:
+            payment_plan_enum = LabourPaymentPlan(payment_plan)
+        except ValueError:
+            raise InvalidLabourPaymentPlan()
+
+        labour = UpdateLabourPaymentPlanService().update_payment_plan(
+            labour=labour, payment_plan=payment_plan_enum
+        )
 
         await self._labour_repository.save(labour)
 

@@ -8,8 +8,8 @@
     padding: calc(var(--mantine-spacing-md));
   }
 
-  @media (max-width: $mantine-breakpoint-xs) {
-      padding: 0;
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: calc(var(--mantine-spacing-xs));
   }
 }
 
@@ -24,7 +24,7 @@
 }
 
 .statusUpdatePanel{
-  background-color: var(--mantine-color-pink-1);
+  background-color: var(--mantine-color-pink-0);
   padding: 10px 20px;
   width: 100%;
   border-radius: var(--mantine-radius-lg);

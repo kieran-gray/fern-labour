@@ -3,7 +3,6 @@ import { IconInfoCircle } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Text, Title } from '@mantine/core';
-import { ContainerHeader } from '../../shared-components/ContainerHeader/ContainerHeader';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 import classes from './SelectAppMode.module.css';
 
@@ -49,7 +48,6 @@ export function SelectAppMode() {
   return (
     <div className={baseClasses.flexPageColumn}>
       <div className={baseClasses.root}>
-        <ContainerHeader title="Welcome" />
         <div className={baseClasses.body}>
           <div className={baseClasses.inner}>
             <div className={classes.content}>

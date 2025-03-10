@@ -2,8 +2,8 @@ import { IconQrcode } from '@tabler/icons-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button, Modal, Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import classes from '../../../../../shared-components/Modal.module.css';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
-import classes from './Modal.module.css';
 
 export default function QRButton({ url }: { url: string }) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -13,7 +13,7 @@ export default function QRButton({ url }: { url: string }) {
       <Modal
         overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
         classNames={{
-          content: classes.root,
+          content: classes.modalRoot,
           header: classes.modalHeader,
           title: classes.modalTitle,
           body: classes.modalBody,
@@ -24,11 +24,11 @@ export default function QRButton({ url }: { url: string }) {
         title="Your share QR code"
       >
         <Space h="lg" />
-        <div className={baseClasses.flexRow}>
+        <div className={baseClasses.flexRow} style={{ width: '100%' }}>
           <QRCodeSVG
             value={url}
-            className={classes.qrCode}
-            bgColor="var(--mantine-color-pink-0)"
+            style={{ width: '70%', height: '70%', margin: 'auto' }}
+            bgColor="var(--mantine-color-white)"
             fgColor="var(--mantine-color-pink-9)"
           />
         </div>
@@ -41,6 +41,18 @@ export default function QRButton({ url }: { url: string }) {
         variant="outline"
         onClick={open}
         mt="var(--mantine-spacing-lg)"
+        visibleFrom="sm"
+      >
+        QR Code
+      </Button>
+      <Button
+        leftSection={icon}
+        radius="xl"
+        size="md"
+        variant="outline"
+        onClick={open}
+        mt="var(--mantine-spacing-lg)"
+        hiddenFrom="sm"
       >
         QR Code
       </Button>

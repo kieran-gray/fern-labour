@@ -1,0 +1,22 @@
+.root {
+  background-color: var(--mantine-color-white);
+}
+
+.cta {
+  background-color: var(--mantine-color-pink-6);
+  color: var(--mantine-color-white);
+}
+
+.slide {
+  display: flex;
+  justify-content: center;
+}
+
+.control {
+  color: var(--mantine-color-pink-6);
+
+  &[data-inactive] {
+    opacity: 0;
+    cursor: default;
+  }
+}

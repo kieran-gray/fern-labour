@@ -53,11 +53,11 @@ export function LabourHistoryTable() {
         </Table.Td>
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Text fz="sm" fw={500} className={classes.cropText}>
-              <Badge variant="light" className={classes.labourBadge} size="lg">
+            <Badge variant="light" className={classes.labourBadge} size="lg">
+              <Text fz="sm" fw={700} className={classes.cropText}>
                 {labour.current_phase}
-              </Badge>
-            </Text>
+              </Text>
+            </Badge>
           </Group>
         </Table.Td>
         <Table.Td>

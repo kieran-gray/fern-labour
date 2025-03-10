@@ -1,6 +1,8 @@
 import { forwardRef } from 'react';
 import {
+  IconArrowLeft,
   IconChevronRight,
+  IconHistory,
   IconLogout,
   IconPassword,
   IconSettings,
@@ -38,6 +40,7 @@ export function UserMenu() {
   const auth = useAuth();
   const navigate = useNavigate();
   const { mode, setMode } = useMode();
+  const pathname = window.location.pathname;
   const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
 
   return (
@@ -62,6 +65,22 @@ export function UserMenu() {
               >
                 Switch to {switchToMode} mode
               </Menu.Item>
+              {mode === AppMode.Birth && pathname === '/history' && (
+                <Menu.Item
+                  leftSection={<IconArrowLeft size={16} stroke={1.5} />}
+                  onClick={() => navigate('/')}
+                >
+                  Go to your labour
+                </Menu.Item>
+              )}
+              {mode === AppMode.Birth && pathname === '/' && (
+                <Menu.Item
+                  leftSection={<IconHistory size={16} stroke={1.5} />}
+                  onClick={() => navigate('/history')}
+                >
+                  Your Labour History
+                </Menu.Item>
+              )}
             </>
           )}
           <Menu.Label>Settings</Menu.Label>
@@ -111,6 +130,7 @@ export function UserMenu() {
 export function MobileUserMenu() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const pathname = window.location.pathname;
   const { mode, setMode } = useMode();
   const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
 
@@ -129,6 +149,20 @@ export function MobileUserMenu() {
           >
             Switch to {switchToMode} Mode
           </Anchor>
+          {mode === AppMode.Birth && pathname === '/history' && (
+            <Anchor<'a'> key="history" onClick={() => navigate('/')} className={classes.mainLink}>
+              Go to your labour
+            </Anchor>
+          )}
+          {mode === AppMode.Birth && pathname === '/' && (
+            <Anchor<'a'>
+              key="labour"
+              onClick={() => navigate('/history')}
+              className={classes.mainLink}
+            >
+              Your Labour History
+            </Anchor>
+          )}
         </>
       )}
       <Text className={classes.drawerLabel}>Settings</Text>

@@ -169,6 +169,19 @@ class EventSettings(BaseModel):
     kafka: KafkaSettings
 
 
+class StripeSettings(BaseModel):
+    api_key: str = Field(alias="STRIPE_API_KEY", default="")
+    webhook_endpoint_secret: str = Field(alias="STRIPE_WEBHOOK_ENDPOINT_SECRET", default="")
+
+    @property
+    def stripe_enabled(self) -> bool:
+        return bool(self.api_key and self.webhook_endpoint_secret)
+
+
+class PaymentSettings(BaseModel):
+    stripe: StripeSettings
+
+
 class Settings(BaseModel):
     base: BaseSettings
     security: SecuritySettings
@@ -177,6 +190,7 @@ class Settings(BaseModel):
     notifications: NotificationSettings
     events: EventSettings
     db: DbSettings
+    payments: PaymentSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"
 
