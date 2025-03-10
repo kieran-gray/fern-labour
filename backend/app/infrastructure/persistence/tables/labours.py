@@ -16,6 +16,7 @@ labours_table = Table(
     Column("first_labour", Boolean, nullable=False),
     Column("due_date", DateTime(timezone=True), nullable=False),
     Column("labour_name", String, nullable=True),
+    Column("payment_plan", String, nullable=True),
     Column("start_time", DateTime(timezone=True), nullable=True),
     Column("end_time", DateTime(timezone=True), nullable=True),
     Column("current_phase", Enum(LabourPhase, name="labour_phase"), nullable=False),

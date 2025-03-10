@@ -14,7 +14,6 @@
   
   .content {
     max-width: 480px;
-    margin-right: calc(var(--mantine-spacing-xl) * 3);
   
     @media (max-width: $mantine-breakpoint-md) {
       max-width: 100%;
@@ -68,4 +67,10 @@
     @media (max-width: $mantine-breakpoint-xs) {
         flex-direction: column;
     }
+}
+
+.form {
+  @media (max-width: $mantine-breakpoint-sm) {
+    width: 100%;
+  }
 }

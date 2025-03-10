@@ -17,7 +17,6 @@ import {
 import { useForm } from '@mantine/form';
 import { ContactUsService } from '../../../client/sdk.gen.ts';
 import { ContactUsRequest } from '../../../client/types.gen.ts';
-import { ContainerHeader } from '../../../shared-components/ContainerHeader/ContainerHeader.tsx';
 import { ContactIconsList } from './ContactIcons.tsx';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './ContactUs.module.css';
@@ -75,7 +74,6 @@ export function ContactUs() {
 
   return (
     <div className={baseClasses.root}>
-      <ContainerHeader title="Contact Us" />
       <div className={baseClasses.body}>
         <div className={baseClasses.inner}>
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={50}>

@@ -1,6 +1,5 @@
 import { Image, Text, Title } from '@mantine/core';
-import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
-import image from './image.svg';
+import image from '../../../../Subscribe/Components/protected.svg';
 import { SubscribersTable } from './SubscribersTable/SubscribersTable';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './ManageSubscribers.module.css';
@@ -8,7 +7,6 @@ import classes from './ManageSubscribers.module.css';
 export function SubscribersContainer() {
   return (
     <div className={baseClasses.root}>
-      <ContainerHeader title="Your Subscribers" />
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>

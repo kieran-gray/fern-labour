@@ -1505,6 +1505,92 @@
                 ]
             }
         },
+        "/api/v1/labour/payment-plan": {
+            "put": {
+                "tags": [
+                    "Labour"
+                ],
+                "summary": "Update Labour Payment Plan",
+                "operationId": "update_labour_payment_plan_api_v1_labour_payment_plan_put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PaymentPlanLabourRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/v1/labour/begin": {
             "post": {
                 "tags": [
@@ -2460,6 +2546,102 @@
                 ]
             }
         },
+        "/api/v1/payments/create-checkout-session": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Create Checkout Session",
+                "operationId": "create_checkout_session_api_v1_payments_create_checkout_session_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCheckoutRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CheckoutResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/v1/health": {
             "get": {
                 "tags": [
@@ -2518,6 +2700,24 @@
                     "password"
                 ],
                 "title": "Body_login_api_v1_auth_login_post"
+            },
+            "CheckoutResponse": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "url": {
+                        "type": "string",
+                        "title": "Url"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "url"
+                ],
+                "title": "CheckoutResponse"
             },
             "CompleteLabourRequest": {
                 "properties": {
@@ -2651,6 +2851,34 @@
                 ],
                 "title": "ContractionDTO"
             },
+            "CreateCheckoutRequest": {
+                "properties": {
+                    "upgrade": {
+                        "type": "string",
+                        "title": "Upgrade"
+                    },
+                    "labour_id": {
+                        "type": "string",
+                        "title": "Labour Id"
+                    },
+                    "success_url": {
+                        "type": "string",
+                        "title": "Success Url"
+                    },
+                    "cancel_url": {
+                        "type": "string",
+                        "title": "Cancel Url"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "upgrade",
+                    "labour_id",
+                    "success_url",
+                    "cancel_url"
+                ],
+                "title": "CreateCheckoutRequest"
+            },
             "DeleteLabourUpdateRequest": {
                 "properties": {
                     "labour_update_id": {
@@ -2760,6 +2988,17 @@
                         ],
                         "title": "Labour Name"
                     },
+                    "payment_plan": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Payment Plan"
+                    },
                     "start_time": {
                         "anyOf": [
                             {
@@ -2832,6 +3071,7 @@
                     "due_date",
                     "first_labour",
                     "labour_name",
+                    "payment_plan",
                     "start_time",
                     "end_time",
                     "notes",
@@ -3023,6 +3263,19 @@
                 ],
                 "title": "LabourUpdateType",
                 "description": "Represents the different types of labour update"
+            },
+            "PaymentPlanLabourRequest": {
+                "properties": {
+                    "payment_plan": {
+                        "type": "string",
+                        "title": "Payment Plan"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "payment_plan"
+                ],
+                "title": "PaymentPlanLabourRequest"
             },
             "PlanLabourRequest": {
                 "properties": {

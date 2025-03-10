@@ -6,7 +6,6 @@ import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/co
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { OpenAPI } from '../../../../client';
-import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
 import image from './invite.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './InviteContainer.module.css';
@@ -59,15 +58,18 @@ export function InviteContainer() {
 
   return (
     <div className={baseClasses.root}>
-      <ContainerHeader title="Invite" />
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
-          <div className={classes.content}>
+        <div className={baseClasses.inner}>
+          <Image src={image} className={classes.image} />
+          <div className={baseClasses.content}>
             <Title order={3}>Know an expecting mum? Invite her to join!</Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Introduce her to a simple way to keep family and friends informed throughout her
               labour experience.
             </Text>
+            <div className={classes.imageFlexRow}>
+              <Image src={image} className={classes.smallImage} />
+            </div>
             <Group className={classes.group}>
               <form
                 onSubmit={form.onSubmit((values) => mutation.mutate(values))}
@@ -106,7 +108,6 @@ export function InviteContainer() {
               </form>
             </Group>
           </div>
-          <Image src={image} className={classes.image} />
         </div>
       </div>
     </div>

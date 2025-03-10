@@ -9,6 +9,7 @@ class ComponentEnum(StrEnum):
     USER = "user"
     NOTIFICATIONS = "notifications"
     SUBSCRIPTIONS = "subscriptions"
+    PAYMENTS = "payments"
 
     def __repr__(self) -> str:
         return self.value

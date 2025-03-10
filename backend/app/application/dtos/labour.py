@@ -34,6 +34,7 @@ class LabourDTO:
     due_date: datetime
     first_labour: bool
     labour_name: str | None
+    payment_plan: str | None
     start_time: datetime | None
     end_time: datetime | None
     notes: str | None
@@ -56,6 +57,7 @@ class LabourDTO:
             due_date=labour.due_date,
             first_labour=labour.first_labour,
             labour_name=labour.labour_name,
+            payment_plan=labour.payment_plan,
             start_time=labour.start_time,
             end_time=labour.end_time,
             notes=labour.notes,
@@ -74,6 +76,7 @@ class LabourDTO:
             "due_date": self.due_date.isoformat(),
             "first_labour": self.first_labour,
             "labour_name": self.labour_name,
+            "payment_plan": self.payment_plan,
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "end_time": self.end_time.isoformat() if self.end_time else None,
             "notes": self.notes,

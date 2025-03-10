@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { IconArrowLeft, IconPencil } from '@tabler/icons-react';
-import { Button, Image, Text, Textarea, Title } from '@mantine/core';
-import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
+import { Button, Image, Mark, Text, Textarea, Title } from '@mantine/core';
+import image from './celebrate.svg';
 import CompleteLabourButton from './CompleteLabourButton';
-import image from './image.svg';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './Complete.module.css';
 
@@ -17,25 +16,32 @@ export default function Complete({
   const [labourNotes, setLabourNotes] = useState('');
   return (
     <div className={baseClasses.root}>
-      <ContainerHeader title="Complete" />
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
             <Title className={classes.title}>Complete your labour</Title>
             <div className={baseClasses.flexRow} style={{ flexWrap: 'nowrap' }}>
-              <Text c="var(--mantine-color-gray-7)" mt="md" mb="md" size="md">
-                You did it! Bringing new life into the world is an incredible journey, and we are so
-                proud of you. Take a deep breath, soak in this beautiful moment, and know that you
-                are amazing.
-                <br />
-                <br />
-                If you want to, you can add a note below before completing your labour which will be
-                shared with all of your subscribers.
-                <br />
-                <br />
-                You could use it to introduce the new addition to your family, or just to let
-                everyone know you are OK.
-              </Text>
+              <div className={baseClasses.flexColumn}>
+                <Text c="var(--mantine-color-gray-7)" mt="md" size="md">
+                  <Mark color="transparent" fw={700} fz="lg">
+                    You did it!
+                  </Mark>{' '}
+                  Bringing new life into the world is an incredible journey, and we are so proud of
+                  you. Take a deep breath, soak in this beautiful moment, and know that you are
+                  amazing.
+                </Text>
+                <div className={classes.imageFlexRow}>
+                  <Image src={image} className={classes.smallImage} />
+                </div>
+                <Text c="var(--mantine-color-gray-7)" mt="sm" size="md">
+                  If you want to, you can add a note below before completing your labour which will
+                  be shared with all of your subscribers.
+                  <br />
+                  <br />
+                  You could use it to introduce the new addition to your family, or just to let
+                  everyone know you are OK.
+                </Text>
+              </div>
               <Image src={image} className={classes.image} style={{ flexGrow: 1 }} />
             </div>
             <div className={baseClasses.flexColumn}>

@@ -1,10 +1,10 @@
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
+import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Text, Title } from '@mantine/core';
 import { ApiError, LabourService, OpenAPI } from '../../../../../client';
 import { NotFoundError } from '../../../../../Errors';
-import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { dueDateToGestationalAge } from '../../../../../shared-components/utils';
 import { useLabour } from '../../../LabourContext';
@@ -13,6 +13,7 @@ import classes from './LabourDetails.module.css';
 
 export default function LabourDetails({ setActiveTab }: { setActiveTab: Function }) {
   const auth = useAuth();
+  const navigate = useNavigate();
   const { labourId } = useLabour();
 
   OpenAPI.TOKEN = async () => {
@@ -73,6 +74,9 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
           <Badge variant="filled" className={classes.labourBadge} size="lg">
             {!data.first_labour ? 'Not ' : ''}first time mother
           </Badge>
+          <Badge variant="filled" className={classes.labourBadge} size="lg">
+            Plan: {data.payment_plan}
+          </Badge>
         </div>
         <div className={baseClasses.flexRow} style={{ marginTop: '20px' }}>
           <Button
@@ -83,7 +87,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
             size="md"
             h={48}
             className={classes.backButton}
-            onClick={() => setActiveTab('plan')}
+            onClick={() => navigate('/onboarding?step=plan')}
             type="submit"
           >
             Go back to planning
@@ -107,7 +111,6 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
 
   return (
     <div className={baseClasses.root}>
-      <ContainerHeader title="Details" />
       <div className={baseClasses.body}>
         <div className={classes.inner}>{content}</div>
       </div>

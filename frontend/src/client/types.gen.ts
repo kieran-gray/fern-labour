@@ -9,6 +9,11 @@ export type Body_login_api_v1_auth_login_post = {
   password: string;
 };
 
+export type CheckoutResponse = {
+  id: string;
+  url: string;
+};
+
 export type CompleteLabourRequest = {
   end_time?: string | null;
   notes?: string | null;
@@ -31,6 +36,13 @@ export type ContractionDTO = {
   intensity: number | null;
   notes: string | null;
   is_active: boolean;
+};
+
+export type CreateCheckoutRequest = {
+  upgrade: string;
+  labour_id: string;
+  success_url: string;
+  cancel_url: string;
 };
 
 export type DeleteLabourUpdateRequest = {
@@ -58,6 +70,7 @@ export type LabourDTO = {
   due_date: string;
   first_labour: boolean;
   labour_name: string | null;
+  payment_plan: string | null;
   start_time: string | null;
   end_time: string | null;
   notes: string | null;
@@ -116,6 +129,10 @@ export type LabourUpdateRequest = {
  * Represents the different types of labour update
  */
 export type LabourUpdateType = 'announcement' | 'status_update';
+
+export type PaymentPlanLabourRequest = {
+  payment_plan: string;
+};
 
 export type PlanLabourRequest = {
   first_labour: boolean;
@@ -267,6 +284,12 @@ export type PlanLabourApiV1LabourPlanPostData = {
 
 export type PlanLabourApiV1LabourPlanPostResponse = LabourResponse;
 
+export type UpdateLabourPaymentPlanApiV1LabourPaymentPlanPutData = {
+  requestBody: PaymentPlanLabourRequest;
+};
+
+export type UpdateLabourPaymentPlanApiV1LabourPaymentPlanPutResponse = LabourResponse;
+
 export type BeginLabourApiV1LabourBeginPostResponse = LabourResponse;
 
 export type StartContractionApiV1LabourContractionStartPostData = {
@@ -323,6 +346,12 @@ export type SendInviteApiV1LabourSendInvitePostData = {
 };
 
 export type SendInviteApiV1LabourSendInvitePostResponse = void;
+
+export type CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostData = {
+  requestBody: CreateCheckoutRequest;
+};
+
+export type CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostResponse = CheckoutResponse;
 
 export type SubscribeToApiV1SubscriptionSubscribeLabourIdPostData = {
   labourId: string;

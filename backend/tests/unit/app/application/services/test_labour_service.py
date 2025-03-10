@@ -10,11 +10,13 @@ from app.application.events.producer import EventProducer
 from app.application.services.labour_service import LabourService
 from app.application.services.user_service import UserService
 from app.domain.contraction.exceptions import ContractionIdInvalid
-from app.domain.labour.enums import LabourPhase
+from app.domain.labour.enums import LabourPaymentPlan, LabourPhase
 from app.domain.labour.exceptions import (
     CannotDeleteActiveLabour,
     InvalidLabourId,
+    InvalidLabourPaymentPlan,
     InvalidLabourUpdateId,
+    LabourAlreadyCompleted,
     LabourNotFoundById,
     LabourUpdateNotFoundById,
     UnauthorizedLabourRequest,
@@ -286,3 +288,36 @@ async def test_cannot_delete_labour_does_not_exist(labour_service: LabourService
 async def test_cannot_delete_labour_invalid_id(labour_service: LabourService):
     with pytest.raises(InvalidLabourId):
         await labour_service.delete_labour(OTHER_USER, labour_id="test123")
+
+
+async def test_can_update_labour_payment_plan(labour_service: LabourService):
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    labour = await labour_service.update_labour_payment_plan(
+        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.SOLO.value
+    )
+    assert labour.payment_plan == LabourPaymentPlan.SOLO.value
+
+
+async def test_cannot_update_labour_payment_plan_of_completed_labour(labour_service: LabourService):
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.complete_labour(BIRTHING_PERSON)
+    with pytest.raises(LabourAlreadyCompleted):
+        await labour_service.update_labour_payment_plan(
+            birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.SOLO.value
+        )
+
+
+async def test_cannot_update_labour_payment_plan_non_existent_labour(labour_service: LabourService):
+    with pytest.raises(UserDoesNotHaveActiveLabour):
+        await labour_service.update_labour_payment_plan(
+            birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.SOLO.value
+        )
+
+
+async def test_cannot_update_labour_payment_plan_invalid_id(labour_service: LabourService):
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    with pytest.raises(InvalidLabourPaymentPlan):
+        await labour_service.update_labour_payment_plan(
+            birthing_person_id=BIRTHING_PERSON, payment_plan="test"
+        )

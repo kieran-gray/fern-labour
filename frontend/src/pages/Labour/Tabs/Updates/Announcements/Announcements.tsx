@@ -33,11 +33,6 @@ export function Announcements({
 
   return (
     <div className={baseClasses.root}>
-      <div className={baseClasses.header}>
-        <Title fz="xl" className={baseClasses.title}>
-          Updates
-        </Title>
-      </div>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>

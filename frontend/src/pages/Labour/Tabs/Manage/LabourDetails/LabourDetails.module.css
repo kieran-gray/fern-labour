@@ -8,8 +8,8 @@
     padding: calc(var(--mantine-spacing-md));
   }
 
-  @media (max-width: $mantine-breakpoint-xs) {
-      padding: 0;
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: calc(var(--mantine-spacing-xs));
   }
 }
 
@@ -71,7 +71,7 @@
 .infoRow {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: start;
   align-content: stretch;
   width: 100%;
   flex-wrap: wrap;
@@ -79,11 +79,8 @@
   column-gap: 10px;
   padding: 20px;
   border-radius: var(--mantine-radius-lg);
-  background-color: var(--mantine-color-pink-1);
+  background-color: var(--mantine-color-pink-0);
 
-  @media (max-width: $mantine-breakpoint-sm) {
-      flex-direction: column;
-  }
 }
 
 .labourBadge{

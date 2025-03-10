@@ -6,10 +6,8 @@ import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/co
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { LabourService, OpenAPI, SendInviteRequest } from '../../../../../client';
-import { ContainerHeader } from '../../../../../shared-components/ContainerHeader/ContainerHeader';
 import { useLabour } from '../../../LabourContext';
 import image from './invite.svg';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './InviteContainer.module.css';
 
 export function InviteContainer() {
@@ -62,56 +60,70 @@ export function InviteContainer() {
   });
 
   return (
-    <div className={baseClasses.root}>
-      <ContainerHeader title="Invite" />
-      <div className={baseClasses.body}>
-        <div className={classes.inner}>
-          <div className={classes.content}>
-            <Title order={3}>Invite friends and family by email</Title>
-            <Text c="var(--mantine-color-gray-7)" mt="md">
-              Invite your friends and family to keep them in the loop and let them track your labour
-              in real time. They’ll be able to support you every step of the way!
-            </Text>
-            <Group className={classes.group}>
-              <form
-                onSubmit={form.onSubmit((values) => mutation.mutate(values))}
-                style={{ width: '100%' }}
-              >
-                <div className={classes.flexRowEnd}>
-                  <TextInput
-                    withAsterisk
-                    radius="lg"
-                    mt="md"
-                    rightSectionPointerEvents="none"
-                    rightSection={<IconAt size={16} />}
-                    label="Email"
-                    placeholder="friend@email.com"
-                    key={form.key('email')}
-                    size="lg"
-                    {...form.getInputProps('email')}
-                  />
-                  <Space w="md" />
-                  <Button
-                    color="var(--mantine-color-pink-4)"
-                    variant="filled"
-                    rightSection={<IconSend size={20} stroke={1.5} />}
-                    radius="xl"
-                    size="md"
-                    pr={14}
-                    h={48}
-                    mt="var(--mantine-spacing-lg)"
-                    loading={mutationInProgress}
-                    styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
-                    type="submit"
-                  >
-                    Send invite
-                  </Button>
-                </div>
-              </form>
-            </Group>
-          </div>
-          <Image src={image} className={classes.image} />
+    <div className={classes.inner}>
+      <Image src={image} className={classes.image} />
+      <div className={classes.content}>
+        <Title order={3}>Invite friends and family by email</Title>
+        <Text c="var(--mantine-color-gray-7)" mt="md">
+          Invite your friends and family, we'll give them instructions on how to sign up and what to
+          expect.
+        </Text>
+        <div className={classes.imageFlexRow}>
+          <Image src={image} className={classes.smallImage} />
         </div>
+        <Group className={classes.group}>
+          <form
+            onSubmit={form.onSubmit((values) => mutation.mutate(values))}
+            style={{ width: '100%' }}
+          >
+            <div className={classes.flexRowEnd}>
+              <TextInput
+                withAsterisk
+                radius="lg"
+                mt="md"
+                rightSectionPointerEvents="none"
+                rightSection={<IconAt size={16} />}
+                label="Email"
+                placeholder="friend@email.com"
+                key={form.key('email')}
+                size="lg"
+                {...form.getInputProps('email')}
+              />
+              <Space w="md" />
+              <Button
+                color="var(--mantine-color-pink-4)"
+                variant="filled"
+                rightSection={<IconSend size={20} stroke={1.5} />}
+                radius="xl"
+                size="lg"
+                pr={14}
+                mt="var(--mantine-spacing-lg)"
+                loading={mutationInProgress}
+                styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
+                type="submit"
+                visibleFrom="sm"
+              >
+                Send invite
+              </Button>
+              <Button
+                color="var(--mantine-color-pink-4)"
+                variant="filled"
+                rightSection={<IconSend size={20} stroke={1.5} />}
+                radius="xl"
+                size="md"
+                pr={14}
+                h={48}
+                mt="var(--mantine-spacing-lg)"
+                loading={mutationInProgress}
+                styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
+                type="submit"
+                hiddenFrom="sm"
+              >
+                Send invite
+              </Button>
+            </div>
+          </form>
+        </Group>
       </div>
     </div>
   );

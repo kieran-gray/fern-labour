@@ -1,0 +1,37 @@
+.stepperSteps {
+    flex-wrap: unset;
+}
+
+.stepperStepIcon {
+    background-color: var(--mantine-color-pink-0);
+    color: var(--mantine-color-pink-4);
+    border-color: var(--mantine-color-pink-4);
+
+    &[data-completed] {
+        background-color: var(--mantine-color-pink-4);
+    }
+}
+
+.stepperStep {
+    transition: transform 150ms ease;
+  
+    &[data-progress] {
+      transform: scale(1.05);
+    }
+  }
+
+.stepperContent {
+    margin-top: 10px;
+}
+
+.stepperStepLabel {
+    @media (max-width: $mantine-breakpoint-md) {
+        display: none;
+    }
+}
+
+.stepperStepDescription {
+    @media (max-width: $mantine-breakpoint-md) {
+        display: none;
+    }
+}
