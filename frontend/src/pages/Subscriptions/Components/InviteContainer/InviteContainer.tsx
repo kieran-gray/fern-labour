@@ -6,9 +6,9 @@ import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/co
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { OpenAPI } from '../../../../client';
-import image from './invite.svg';
+import image from '../../../Labour/Tabs/Invites/InviteContainer/invite.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from './InviteContainer.module.css';
+import classes from '../../../Labour/Tabs/Invites/InviteContainer/InviteContainer.module.css';
 
 export function InviteContainer() {
   const [mutationInProgress, setMutationInProgress] = useState(false);

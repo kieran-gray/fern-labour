@@ -12,9 +12,7 @@ import {
   UpdateContactMethodsRequest,
   UserService,
 } from '../../../../client';
-import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './ContactMethodsForm.module.css';
 
 export default function ContactMethodsForm({ subscription }: { subscription: SubscriptionDTO }) {
@@ -108,71 +106,64 @@ export default function ContactMethodsForm({ subscription }: { subscription: Sub
   });
 
   return (
-    <div className={baseClasses.root}>
-      <ContainerHeader title="Contact Methods" />
-      <div className={baseClasses.body}>
-        <div className={classes.inner}>
-          <div className={classes.content}>
-            {subscription.contact_methods.length === 0 && (
-              <div style={{ marginBottom: '20px' }}>
-                <ImportantText message=" You will only receive live notifications if you add your preferred methods below" />
-              </div>
-            )}
-            {contactMethodsWarning != null && (
-              <div style={{ marginBottom: '20px' }}>
-                <ImportantText message={contactMethodsWarning} />
-              </div>
-            )}
-
-            <form
-              onSubmit={form.onSubmit((values) =>
-                mutation.mutate({ values, subscriptionId: subscription.id })
-              )}
-            >
-              <div className={classes.submitRow}>
-                <MultiSelect
-                  rightSection={<IconSelector size={18} stroke={1.5} />}
-                  key={form.key('contactMethods')}
-                  placeholder="Pick value"
-                  label="Update your contact methods"
-                  description="How would you like to be notified about updates to this labour?"
-                  data={[
-                    { value: 'sms', label: 'Text' },
-                    { value: 'email', label: 'Email' },
-                  ]}
-                  size="md"
-                  radius="xl"
-                  {...form.getInputProps('contactMethods')}
-                  classNames={{
-                    wrapper: classes.input,
-                    pill: classes.pill,
-                    description: classes.description,
-                  }}
-                  comboboxProps={{
-                    transitionProps: { transition: 'pop', duration: 200 },
-                    shadow: 'md',
-                  }}
-                  clearable
-                />
-                <Button
-                  color="var(--mantine-color-pink-4)"
-                  leftSection={icon}
-                  variant="outline"
-                  radius="xl"
-                  size="md"
-                  h={48}
-                  className={classes.submitButton}
-                  styles={{ section: { marginRight: 22 } }}
-                  type="submit"
-                  loading={mutationInProgress}
-                >
-                  Update Contact Methods
-                </Button>
-              </div>
-            </form>
-          </div>
+    <div className={classes.content}>
+      {subscription.contact_methods.length === 0 && (
+        <div style={{ marginBottom: '20px' }}>
+          <ImportantText message=" You will only receive live notifications if you add your preferred methods below" />
         </div>
-      </div>
+      )}
+      {contactMethodsWarning != null && (
+        <div style={{ marginBottom: '20px' }}>
+          <ImportantText message={contactMethodsWarning} />
+        </div>
+      )}
+
+      <form
+        onSubmit={form.onSubmit((values) =>
+          mutation.mutate({ values, subscriptionId: subscription.id })
+        )}
+      >
+        <div className={classes.submitRow}>
+          <MultiSelect
+            rightSection={<IconSelector size={18} stroke={1.5} />}
+            key={form.key('contactMethods')}
+            placeholder="Pick value"
+            label="Update your contact methods"
+            description="How would you like to be notified about updates to this labour?"
+            data={[
+              { value: 'sms', label: 'Text' },
+              { value: 'email', label: 'Email' },
+            ]}
+            size="md"
+            radius="xl"
+            {...form.getInputProps('contactMethods')}
+            classNames={{
+              wrapper: classes.input,
+              pill: classes.pill,
+              description: classes.description,
+            }}
+            comboboxProps={{
+              transitionProps: { transition: 'pop', duration: 200 },
+              shadow: 'md',
+            }}
+            clearable
+          />
+          <Button
+            color="var(--mantine-color-pink-4)"
+            leftSection={icon}
+            variant="outline"
+            radius="xl"
+            size="md"
+            h={48}
+            className={classes.submitButton}
+            styles={{ section: { marginRight: 22 } }}
+            type="submit"
+            loading={mutationInProgress}
+          >
+            Update Contact Methods
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

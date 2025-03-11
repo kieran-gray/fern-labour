@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { Avatar, Group, ScrollArea, Text, Title } from '@mantine/core';
 import { LabourDTO, UserSummaryDTO } from '../../../../client';
-import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
+import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { pluraliseName } from '../../../../shared-components/utils';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from './StatusUpdates.module.css';
+import classes from '../../../Labour/Tabs/Updates/StatusUpdates/StatusUpdates.module.css';
 
 export function StatusUpdates({
   labour,
@@ -46,8 +46,7 @@ export function StatusUpdates({
   }, [statusUpdates]);
 
   return (
-    <div className={baseClasses.root}>
-      <ContainerHeader title="Status Updates" />
+    <div className={baseClasses.root} style={{height: '70%'}}>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
@@ -57,9 +56,15 @@ export function StatusUpdates({
               here, giving you a glimpse into her progress. These updates won’t send alerts, so
               check in regularly to stay informed without needing to reach out directly.
             </Text>
-            <ScrollArea.Autosize mah={400} viewportRef={viewport}>
-              <div className={classes.statusUpdateContainer}>{statusUpdateDisplay}</div>
-            </ScrollArea.Autosize>
+            {(statusUpdateDisplay.length > 0 && (
+              <ScrollArea.Autosize mah={400} viewportRef={viewport}>
+                <div className={classes.statusUpdateContainer}>{statusUpdateDisplay}</div>
+              </ScrollArea.Autosize>
+            )) || (
+              <ImportantText
+                message={`${birthingPerson.first_name} hasn't posted any status updates yet.`}
+              />
+            )}
           </div>
         </div>
       </div>
