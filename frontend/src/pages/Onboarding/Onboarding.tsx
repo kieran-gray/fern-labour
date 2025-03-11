@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import {
-  IconArrowLeft,
-  IconArrowRight,
-  IconCurrencyPound,
-  IconPencil,
-} from '@tabler/icons-react';
+import { IconArrowLeft, IconArrowRight, IconCurrencyPound, IconPencil } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';

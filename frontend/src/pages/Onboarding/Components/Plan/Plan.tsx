@@ -93,7 +93,7 @@ export default function Plan({
         mutation.mutate({ values, existing: labour !== undefined })
       )}
     >
-      <div className={classes.inner} style={{padding: 0, marginBottom: '25px'}}>
+      <div className={classes.inner} style={{ padding: 0, marginBottom: '25px' }}>
         <div className={classes.content}>
           <Title order={2}>Plan your upcoming labour</Title>
           <Text c="var(--mantine-color-gray-7)" mt="md">
