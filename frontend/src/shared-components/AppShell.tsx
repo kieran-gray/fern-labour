@@ -4,11 +4,16 @@ import { Header } from './Header/Header';
 
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div style={{ height: '100svh', display: 'flex', flexDirection: 'column' }}>
+    <div
+      style={{
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: 'var(--mantine-color-pink-0)',
+      }}
+    >
       <Header />
-      <Center flex="shrink" style={{ overflow: 'visible' }}>
-        {children}
-      </Center>
+      <Center flex="shrink">{children}</Center>
       <Space h="xl" />
       <div style={{ flexGrow: 1 }} />
       <FooterSimple />

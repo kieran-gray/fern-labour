@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   IconChartHistogram,
   IconMessage,
@@ -8,6 +9,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
+import { useSwipeable } from 'react-swipeable';
 import { Space, Tabs, Text } from '@mantine/core';
 import { ApiError, LabourService, OpenAPI } from '../../client';
 import { NotFoundError } from '../../Errors';
@@ -23,10 +25,36 @@ import { Contractions } from './Tabs/Track/Contractions.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 
+const tabOrder = ['details', 'updates', 'track', 'stats', 'invite'];
+
 export const LabourPage = () => {
   const auth = useAuth();
   const navigate = useNavigate();
   const { setLabourId } = useLabour();
+  const [activeTab, setActiveTab] = useState<string | null>('track');
+
+  const swipeHandlers = useSwipeable({
+    onSwipedRight: () => {
+      if (activeTab) {
+        const tabIndex = tabOrder.indexOf(activeTab);
+        if (tabIndex > 0) {
+          setActiveTab(tabOrder[tabIndex - 1]);
+        }
+      }
+    },
+    onSwipedLeft: () => {
+      if (activeTab) {
+        const tabIndex = tabOrder.indexOf(activeTab);
+        if (tabIndex < tabOrder.length - 1) {
+          setActiveTab(tabOrder[tabIndex + 1]);
+        }
+      }
+    },
+    delta: 10,
+    trackMouse: true,
+    trackTouch: true,
+    preventScrollOnSwipe: true,
+  });
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -73,54 +101,58 @@ export const LabourPage = () => {
     navigate('/onboarding?step=pay');
   }
   return (
-    <AppShell>
-      <Tabs
-        w="100%"
-        defaultValue="track"
-        radius="lg"
-        classNames={{
-          list: baseClasses.navTabs,
-          tab: baseClasses.navTab,
-          tabSection: baseClasses.navTabSection,
-        }}
-      >
-        <Tabs.List grow>
-          <Tabs.Tab value="details" leftSection={<IconSettings />}>
-            <Text className={baseClasses.navTabText}>Manage</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="updates" leftSection={<IconMessage />}>
-            <Text className={baseClasses.navTabText}>Updates</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="track" leftSection={<IconStopwatch />}>
-            <Text className={baseClasses.navTabText}>Track</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="stats" leftSection={<IconChartHistogram />}>
-            <Text className={baseClasses.navTabText}>Stats</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="invite" leftSection={<IconSend />}>
-            <Text className={baseClasses.navTabText}>Invite</Text>
-          </Tabs.Tab>
-        </Tabs.List>
-        <div className={baseClasses.flexPageColumn}>
-          <Tabs.Panel value="details">
-            <LabourControls labour={labour} />
-            <Space h="xl" />
-            <SubscribersContainer />
-          </Tabs.Panel>
-          <Tabs.Panel value="track">
-            <Contractions labour={labour} />
-          </Tabs.Panel>
-          <Tabs.Panel value="stats">
-            <LabourStatistics labour={labour} completed={false} />
-          </Tabs.Panel>
-          <Tabs.Panel value="updates">
-            <LabourUpdates labour={labour} />
-          </Tabs.Panel>
-          <Tabs.Panel value="invite">
-            <Share />
-          </Tabs.Panel>
-        </div>
-      </Tabs>
-    </AppShell>
+    <div {...swipeHandlers}>
+      <AppShell>
+        <Tabs
+          w="100%"
+          defaultValue="track"
+          radius="lg"
+          classNames={{
+            list: baseClasses.navTabs,
+            tab: baseClasses.navTab,
+            tabSection: baseClasses.navTabSection,
+          }}
+          value={activeTab}
+          onChange={setActiveTab}
+        >
+          <Tabs.List grow>
+            <Tabs.Tab value="details" leftSection={<IconSettings />}>
+              <Text className={baseClasses.navTabText}>Manage</Text>
+            </Tabs.Tab>
+            <Tabs.Tab value="updates" leftSection={<IconMessage />}>
+              <Text className={baseClasses.navTabText}>Updates</Text>
+            </Tabs.Tab>
+            <Tabs.Tab value="track" leftSection={<IconStopwatch />}>
+              <Text className={baseClasses.navTabText}>Track</Text>
+            </Tabs.Tab>
+            <Tabs.Tab value="stats" leftSection={<IconChartHistogram />}>
+              <Text className={baseClasses.navTabText}>Stats</Text>
+            </Tabs.Tab>
+            <Tabs.Tab value="invite" leftSection={<IconSend />}>
+              <Text className={baseClasses.navTabText}>Invite</Text>
+            </Tabs.Tab>
+          </Tabs.List>
+          <div className={baseClasses.flexPageColumn}>
+            <Tabs.Panel value="details">
+              <LabourControls labour={labour} />
+              <Space h="xl" />
+              <SubscribersContainer />
+            </Tabs.Panel>
+            <Tabs.Panel value="track">
+              <Contractions labour={labour} />
+            </Tabs.Panel>
+            <Tabs.Panel value="stats">
+              <LabourStatistics labour={labour} completed={false} />
+            </Tabs.Panel>
+            <Tabs.Panel value="updates">
+              <LabourUpdates labour={labour} />
+            </Tabs.Panel>
+            <Tabs.Panel value="invite">
+              <Share />
+            </Tabs.Panel>
+          </div>
+        </Tabs>
+      </AppShell>
+    </div>
   );
 };
