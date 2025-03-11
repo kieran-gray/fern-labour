@@ -51,6 +51,7 @@
     @media (max-width: $mantine-breakpoint-sm) {
         &[data-active] {
             color: var(--mantine-color-gray-9);
+            background-color: var(--mantine-color-pink-1);
         }
         
     }

@@ -51,6 +51,7 @@ export const LabourPage = () => {
       }
     },
     delta: 10,
+    swipeDuration: 250,
     trackMouse: true,
     trackTouch: true,
     preventScrollOnSwipe: true,
