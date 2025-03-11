@@ -46,7 +46,7 @@ export function StatusUpdates({
   }, [statusUpdates]);
 
   return (
-    <div className={baseClasses.root} style={{height: '70%'}}>
+    <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
@@ -57,7 +57,7 @@ export function StatusUpdates({
               check in regularly to stay informed without needing to reach out directly.
             </Text>
             {(statusUpdateDisplay.length > 0 && (
-              <ScrollArea.Autosize mah={400} viewportRef={viewport}>
+              <ScrollArea.Autosize mah={500} viewportRef={viewport}>
                 <div className={classes.statusUpdateContainer}>{statusUpdateDisplay}</div>
               </ScrollArea.Autosize>
             )) || (

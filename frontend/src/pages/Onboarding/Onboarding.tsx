@@ -4,12 +4,11 @@ import {
   IconArrowRight,
   IconCurrencyPound,
   IconPencil,
-  IconSend,
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { useNavigate } from 'react-router-dom';
-import { Button, Group, Space, Stepper } from '@mantine/core';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Button, Stepper } from '@mantine/core';
 import { ApiError, OpenAPI } from '../../client/index.ts';
 import { LabourService } from '../../client/sdk.gen.ts';
 import { LabourDTO } from '../../client/types.gen.ts';
@@ -18,19 +17,21 @@ import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
 import { useLabour } from '../Labour/LabourContext.tsx';
-import { InviteContainer } from '../Labour/Tabs/Invites/InviteContainer/InviteContainer.tsx';
-import { ShareContainer } from '../Labour/Tabs/Invites/ShareContainer/ShareContainer.tsx';
 import Plan from './Components/Plan/Plan.tsx';
 import { Pricing01 } from './Components/Pricing/Pricing.tsx';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 import classes from './Onboarding.module.css';
+
+const stepOrder = ['plan', 'pay'];
 
 export const OnboardingPage = () => {
   const auth = useAuth();
   const navigate = useNavigate();
   const { labourId } = useLabour();
   let labour: LabourDTO | undefined = undefined;
-  const [active, setActive] = useState(0);
+  const [searchParams] = useSearchParams();
+  const step = searchParams.get('step');
+  const [active, setActive] = useState(step ? stepOrder.indexOf(step) : 0);
   const [highestStepVisited, setHighestStepVisited] = useState(active);
 
   OpenAPI.TOKEN = async () => {
@@ -38,11 +39,11 @@ export const OnboardingPage = () => {
   };
 
   const handleStepChange = (nextStep: number) => {
-    const isOutOfBounds = nextStep > 3 || nextStep < 0;
+    const isOutOfBounds = nextStep > 2 || nextStep < 0;
     if (isOutOfBounds) {
       return;
     }
-    if (nextStep === 3) {
+    if (nextStep === 2) {
       navigate('/');
     }
     setActive(nextStep);
@@ -83,9 +84,6 @@ export const OnboardingPage = () => {
   const shouldAllowSelectStep = (step: number) => {
     const visited = highestStepVisited >= step && active !== step;
     if (step === 1 && labourId != null && labourId !== '') {
-      return true;
-    }
-    if (step === 2 && labour?.payment_plan != null) {
       return true;
     }
     return visited;
@@ -132,62 +130,32 @@ export const OnboardingPage = () => {
                       <Pricing01 labour={labour} />
                     </div>
                   </Stepper.Step>
-                  <Stepper.Step
-                    icon={<IconSend size={18} />}
-                    label="Step 3"
-                    description="Invite Loved Ones"
-                    allowStepSelect={shouldAllowSelectStep(2)}
-                  >
-                    <InviteContainer />
-                    <Space h="xl" />
-                    <ShareContainer />
-                  </Stepper.Step>
                 </Stepper>
                 {active !== 0 && (
-                  <Group justify="space-between" mt="xl">
+                  <div className={classes.submitRow}>
                     <Button
                       variant="light"
                       radius="xl"
-                      size="lg"
+                      size="md"
+                      h={48}
                       leftSection={<IconArrowLeft size={18} />}
                       onClick={() => handleStepChange(active - 1)}
-                      visibleFrom="sm"
                     >
-                      {active === 1 ? 'Back to planning' : 'Back to payment'}
-                    </Button>
-                    <Button
-                      variant="light"
-                      radius="lg"
-                      size="sm"
-                      leftSection={<IconArrowLeft size={18} />}
-                      onClick={() => handleStepChange(active - 1)}
-                      hiddenFrom="sm"
-                    >
-                      {active === 1 ? 'Back to planning' : 'Back to payment'}
+                      Back to planning
                     </Button>
                     <Button
                       radius="xl"
-                      size="lg"
+                      size="md"
+                      h={48}
                       color="var(--mantine-color-pink-4)"
                       rightSection={<IconArrowRight size={18} />}
                       onClick={() => handleStepChange(active + 1)}
-                      visibleFrom="sm"
                       disabled={!nextStepEnabled}
+                      className={classes.backButton}
                     >
-                      {active === 2 ? 'Go to app' : 'Next step'}
+                      Go to app
                     </Button>
-                    <Button
-                      radius="lg"
-                      size="sm"
-                      color="var(--mantine-color-pink-4)"
-                      rightSection={<IconArrowRight size={18} />}
-                      onClick={() => handleStepChange(active + 1)}
-                      hiddenFrom="sm"
-                      disabled={!nextStepEnabled}
-                    >
-                      {active === 2 ? 'Go to app' : 'Next step'}
-                    </Button>
-                  </Group>
+                  </div>
                 )}
               </div>
             </div>

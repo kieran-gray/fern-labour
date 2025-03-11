@@ -28,6 +28,8 @@ const pinkTheme: MantineColorsTuple = [
   '#b20600',
 ];
 
+// Marketing Hightlights: #24968b
+
 export const theme = createTheme({
   fontFamily: 'Quicksand, sans-serif',
   headings: { fontFamily: 'Quicksand' },

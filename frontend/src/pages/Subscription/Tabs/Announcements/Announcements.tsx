@@ -45,7 +45,7 @@ export function Announcements({
             {(messageBubbles.length > 0 && (
               <ScrollArea.Autosize
                 className={classes.scrollArea}
-                mah={400}
+                mah={500}
                 viewportRef={viewport}
                 p={10}
               >

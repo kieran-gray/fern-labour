@@ -82,8 +82,8 @@ export const LabourStatistics = ({
               {birthingPersonName} labour progress with your midwife or healthcare provider.
             </Text>
             <div className={baseClasses.imageFlexRow}>
-                <Image src={image} className={baseClasses.smallImage} />
-              </div>
+              <Image src={image} className={baseClasses.smallImage} />
+            </div>
           </div>
           <div className={baseClasses.flexColumn}>
             <Image src={image} className={classes.image} />
