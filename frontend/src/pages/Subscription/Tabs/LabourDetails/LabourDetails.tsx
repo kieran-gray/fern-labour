@@ -1,26 +1,26 @@
 import { Badge, Space, Text, Title } from '@mantine/core';
-import { LabourDTO } from '../../../../client';
-import { ContainerHeader } from '../../../../shared-components/ContainerHeader/ContainerHeader';
+import { LabourDTO, SubscriptionDTO } from '../../../../client';
 import { dueDateToGestationalAge } from '../../../../shared-components/utils';
+import ContactMethodsForm from './ContactMethodsForm';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from './LabourDetails.module.css';
+import classes from '../../../Labour/Tabs/Manage/LabourDetails/LabourDetails.module.css';
 
 export default function LabourDetails({
   labour,
   birthingPersonName,
+  subscription,
 }: {
   labour: LabourDTO;
   birthingPersonName: string;
+  subscription: SubscriptionDTO;
 }) {
-  const title = `${birthingPersonName} Labour Details`;
   return (
     <div className={baseClasses.root}>
-      <ContainerHeader title={title} />
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={classes.inner} style={{ paddingBottom: 0 }}>
           <div className={classes.content}>
             <Title className={classes.title}>
-              {labour.labour_name ? labour.labour_name : 'Your Labour'}
+              {labour.labour_name ? labour.labour_name : `${birthingPersonName} Labour`}
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
               You’re here to support someone on an incredible journey, and that means giving them
@@ -44,8 +44,11 @@ export default function LabourDetails({
                 {!labour.first_labour ? 'Not ' : ''}first time mother
               </Badge>
             </div>
-            <Space h="xl" />
           </div>
+        </div>
+        <Space h="xl" />
+        <div className={classes.inner} style={{ paddingTop: 0 }}>
+          <ContactMethodsForm subscription={subscription} />
         </div>
       </div>
     </div>

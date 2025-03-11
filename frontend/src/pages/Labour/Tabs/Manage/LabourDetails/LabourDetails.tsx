@@ -63,7 +63,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
         </Text>
         <div className={classes.infoRow}>
           <Badge variant="filled" className={classes.labourBadge} size="lg">
-            Not in labour
+            {data.current_phase === 'planned' ? 'Not in labour' : `In ${data.current_phase} labour`}
           </Badge>
           <Badge variant="filled" className={classes.labourBadge} size="lg">
             Due: {new Date(data.due_date).toLocaleDateString()}

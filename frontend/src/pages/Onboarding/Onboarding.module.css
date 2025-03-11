@@ -35,3 +35,22 @@
         display: none;
     }
 }
+
+.submitRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: stretch;
+    width: 100%;
+    margin-top: 25px;
+  
+    @media (max-width: $mantine-breakpoint-sm) {
+      flex-direction: column;
+    }
+  }
+
+  .backButton {
+    @media (max-width: $mantine-breakpoint-sm) {
+      margin-top: 10px
+    }
+  }

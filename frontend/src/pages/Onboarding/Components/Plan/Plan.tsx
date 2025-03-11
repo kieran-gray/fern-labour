@@ -93,9 +93,9 @@ export default function Plan({
         mutation.mutate({ values, existing: labour !== undefined })
       )}
     >
-      <div className={classes.inner}>
+      <div className={classes.inner} style={{ padding: 0, marginBottom: '25px' }}>
         <div className={classes.content}>
-          <Title className={classes.title}>Plan your upcoming labour</Title>
+          <Title order={2}>Plan your upcoming labour</Title>
           <Text c="var(--mantine-color-gray-7)" mt="md">
             Add some basic details about your upcoming labour to help us provide you with the best
             service.
@@ -176,7 +176,7 @@ export default function Plan({
           <Button
             color="var(--mantine-color-pink-4)"
             leftSection={icon}
-            variant="outline"
+            variant="light"
             radius="xl"
             size="md"
             h={48}

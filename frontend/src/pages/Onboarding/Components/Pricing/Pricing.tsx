@@ -15,7 +15,7 @@ import {
 } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Carousel } from '@mantine/carousel';
 import {
   Badge,
@@ -27,6 +27,9 @@ import {
   Divider,
   Flex,
   Group,
+  Image,
+  LoadingOverlay,
+  Space,
   Stack,
   Text,
   Title,
@@ -41,6 +44,8 @@ import {
   PaymentsService,
 } from '../../../../client';
 import { useLabour } from '../../../Labour/LabourContext';
+import image from './thanks.svg';
+import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './Pricing.module.css';
 
 const Icon = ({ children }: { children: ReactNode }) => (
@@ -149,12 +154,26 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
   const auth = useAuth();
   const navigate = useNavigate();
   const { labourId } = useLabour();
+  const [searchParams] = useSearchParams();
+  const cancelled = searchParams.get('cancelled');
+  const success = searchParams.get('success');
   const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
   };
   const queryClient = useQueryClient();
+
+  const setInitialStep = (): number => {
+    let initialSlide = 0;
+    if (labour?.payment_plan === null) {
+      initialSlide = 1;
+    }
+    if (cancelled) {
+      initialSlide = 0;
+    }
+    return initialSlide;
+  };
 
   const mutation = useMutation({
     mutationFn: async ({ selectedPlan }: { selectedPlan: string }) => {
@@ -295,6 +314,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
           size="lg"
           bg="var(--mantine-color-pink-5)"
           fullWidth
+          variant={labour?.payment_plan === 'inner_circle' ? 'light' : 'filled'}
           disabled={labour?.payment_plan === 'inner_circle'}
           onClick={() => stripeCheckout.mutate()}
         >
@@ -354,7 +374,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
           radius="xl"
           size="lg"
           fullWidth
-          bg="var(--mantine-color-pink-5)"
+          variant={labour?.payment_plan === 'community' ? 'light' : 'filled'}
           onClick={() => stripeCheckout.mutate()}
           disabled={labour?.payment_plan === 'community'}
         >
@@ -400,20 +420,64 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
     />
   );
 
+  if (success) {
+    return (
+      <div className={baseClasses.flexColumn} style={{ width: '100%', position: 'relative' }}>
+        <div className={baseClasses.inner} style={{ padding: 0 }}>
+          <div className={baseClasses.content}>
+            <Title order={2}>Your Journey Begins!</Title>
+            <Text c="var(--mantine-color-gray-7)" mt="md">
+              Payment confirmed. Thank you for choosing fernlabour.com.
+              <br />
+              <br />
+              Your birth story deserves to be shared with those who matter most. We're honoured to
+              help you connect with your loved ones during this special time.
+              <br />
+              <br />
+              Need help? Our support team is ready to assist at support@fernlabour.com.
+            </Text>
+            <div className={baseClasses.imageFlexRow}>
+              <Image src={image} className={classes.smallImage} />
+            </div>
+          </div>
+          <div className={baseClasses.flexColumn}>
+            <Image src={image} className={classes.image} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <Carousel
-      height="100%"
-      slideSize={{ base: '100%', '750px': '50%' }}
-      slideGap={{ base: 0, '300px': 'md', '500px': 'lg' }}
-      classNames={{ slide: classes.slide, control: classes.control }}
-      type="container"
-      align="start"
-      style={{ flexGrow: 1 }}
-      initialSlide={labour?.payment_plan === null ? 1 : 0}
-    >
-      {labour?.payment_plan === null && <Carousel.Slide>{soloCard}</Carousel.Slide>}
-      {labour?.payment_plan !== 'community' && <Carousel.Slide>{innerCircleCard}</Carousel.Slide>}
-      <Carousel.Slide>{communityCard}</Carousel.Slide>
-    </Carousel>
+    <div className={baseClasses.flexColumn} style={{ width: '100%', position: 'relative' }}>
+      <LoadingOverlay
+        visible={mutationInProgress}
+        zIndex={1001}
+        overlayProps={{ radius: 'sm', blur: 3 }}
+      />
+      <Title order={2}>Choose Your Birth Support Plan</Title>
+      <Text c="var(--mantine-color-gray-7)" mt="md">
+        Select how you'd like to share your birth experience with family and friends.
+        <br />
+        Choose between our affordable Inner-Circle option or our comprehensive Community plan to
+        keep loved ones updated throughout your journey. Or track your contractions for free with
+        the Solo plan.
+      </Text>
+      <Space h="lg" />
+      <Carousel
+        height="100%"
+        slideSize={{ base: '100%', '750px': '50%' }}
+        slideGap={{ base: 0, '300px': 'md', '500px': 'lg' }}
+        classNames={{ slide: classes.slide, control: classes.control }}
+        type="container"
+        align="start"
+        style={{ flexGrow: 1 }}
+        initialSlide={setInitialStep()}
+      >
+        {labour?.payment_plan === null && <Carousel.Slide>{soloCard}</Carousel.Slide>}
+        {labour?.payment_plan !== 'community' && <Carousel.Slide>{innerCircleCard}</Carousel.Slide>}
+        <Carousel.Slide>{communityCard}</Carousel.Slide>
+      </Carousel>
+    </div>
   );
 };
