@@ -57,12 +57,16 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
       </div>
     );
   } else {
+    const title = data.labour_name ? data.labour_name : 'Your Labour';
     content = (
       <>
         <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
           <div className={classes.content}>
-            <Title className={classes.title}>
-              {data.labour_name ? data.labour_name : 'Your Labour'}
+            <Title order={1} visibleFrom="sm">
+              {title}
+            </Title>
+            <Title order={2} hiddenFrom="sm">
+              {title}
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
               Take a deep breath—you’ve got this! Here, you can check your labour details. Use the
@@ -94,7 +98,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                 {!data.first_labour ? 'Not ' : ''}first time mother
               </Badge>
               <Badge variant="filled" className={classes.labourBadge} size="lg">
-                Plan: {data.payment_plan}
+                Plan: {data.payment_plan?.replace('_', ' ')}
               </Badge>
             </div>
             <div className={baseClasses.flexRow} style={{ marginTop: '20px' }}>

@@ -39,7 +39,10 @@ export function LabourHistoryTable() {
     return <ImportantText message={error.message} />;
   }
 
-  const rows = data.map((labour) => {
+  const sortedLabours = data.sort((a, b) =>
+    a.due_date < b.due_date ? -1 : a.due_date > b.due_date ? 1 : 0
+  );
+  const rows = sortedLabours.map((labour) => {
     const date =
       labour.end_time != null
         ? new Date(labour.end_time).toDateString()

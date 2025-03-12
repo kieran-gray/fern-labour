@@ -14,13 +14,17 @@ export default function LabourDetails({
   birthingPersonName: string;
   subscription: SubscriptionDTO;
 }) {
+  const title = labour.labour_name ? labour.labour_name : `${birthingPersonName} Labour`;
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        <div className={classes.inner} style={{ paddingBottom: 0 }}>
-          <div className={classes.content}>
-            <Title className={classes.title}>
-              {labour.labour_name ? labour.labour_name : `${birthingPersonName} Labour`}
+        <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
+          <div className={classes.content} style={{ marginRight: 0 }}>
+            <Title order={1} visibleFrom="sm">
+              {title}
+            </Title>
+            <Title order={2} hiddenFrom="sm">
+              {title}
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
               You’re here to support someone on an incredible journey, and that means giving them
@@ -44,7 +48,7 @@ export default function LabourDetails({
           </div>
         </div>
         <Space h="xl" />
-        <div className={classes.inner} style={{ paddingTop: 0 }}>
+        <div className={baseClasses.inner} style={{ paddingTop: 0 }}>
           <ContactMethodsForm subscription={subscription} />
         </div>
       </div>

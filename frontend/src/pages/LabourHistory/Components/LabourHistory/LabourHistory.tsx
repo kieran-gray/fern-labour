@@ -9,7 +9,12 @@ export function LabourHistory() {
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>Your Labour History</Title>
+            <Title order={2} visibleFrom="sm">
+              Your Labour History
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              Your Labour History
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Here, you can view all of your past and present labours. Soon you will be able to
               revisit a labour after you have completed it.

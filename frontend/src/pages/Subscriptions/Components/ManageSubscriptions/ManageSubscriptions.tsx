@@ -10,7 +10,12 @@ export function SubscriptionsContainer() {
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>Manage your subscriptions</Title>
+            <Title order={2} visibleFrom="sm">
+              Manage your subscriptions
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              Manage your subscriptions
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Here, you can view and manage the labours that you are subscribed to. Update your
               contact methods for each individually.

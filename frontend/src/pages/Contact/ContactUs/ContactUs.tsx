@@ -78,7 +78,12 @@ export function ContactUs() {
         <div className={baseClasses.inner}>
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={50}>
             <div>
-              <Title order={3}>Send us a message</Title>
+              <Title order={2} visibleFrom="sm">
+                Send us a message
+              </Title>
+              <Title order={3} hiddenFrom="sm">
+                Send us a message
+              </Title>
               <Text mt="sm" mb={30}>
                 Leave your email and we will get back to you within 24 hours
               </Text>

@@ -29,7 +29,12 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>Track your contractions</Title>
+            <Title order={2} visibleFrom="sm">
+              Track your contractions
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              Track your contractions
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Track your contractions here. Simply press the button below to start a new
               contraction. Click on a completed contraction to edit it.

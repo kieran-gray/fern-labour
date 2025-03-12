@@ -37,7 +37,12 @@ export function Announcements({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>{birthingPersonName} announcements</Title>
+            <Title order={2} visibleFrom="sm">
+              {birthingPersonName} announcements
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              {birthingPersonName} announcements
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
               Stay updated! Labour announcements will appear here, and notifications will be sent
               based on the contact methods you have set in the details tab.

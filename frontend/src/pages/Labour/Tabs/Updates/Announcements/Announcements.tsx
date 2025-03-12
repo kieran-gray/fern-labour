@@ -36,7 +36,12 @@ export function Announcements({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>Make an announcement</Title>
+            <Title order={2} visibleFrom="sm">
+              Make an announcement
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              Make an announcement
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
               Make an announcement to all your subscribers—they’ll be notified through their
               preferred methods. Use this to share important updates.

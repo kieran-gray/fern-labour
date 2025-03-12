@@ -63,7 +63,12 @@ export function InviteContainer() {
     <div className={classes.inner}>
       <Image src={image} className={classes.image} />
       <div className={classes.content}>
-        <Title order={3}>Invite friends and family by email</Title>
+        <Title order={2} visibleFrom="sm">
+          Invite friends and family by email
+        </Title>
+        <Title order={3} hiddenFrom="sm">
+          Invite friends and family by email
+        </Title>
         <Text c="var(--mantine-color-gray-7)" mt="md">
           Invite your friends and family, we'll give them instructions on how to sign up and what to
           expect.
