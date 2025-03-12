@@ -6,6 +6,7 @@ import { OpenAPI, SubscriptionService } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { useSubscription } from '../../../../Subscription/SubscriptionContext';
+import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './SubscriptionsTable.module.css';
 
@@ -85,6 +86,9 @@ export function SubscriptionsTable() {
             {subscriptionId === subscription.id ? 'Exit Labour' : 'View Labour'}
           </Button>
         </Table.Td>
+        <Table.Td>
+          <ManageSubscriptionMenu labour_id={subscription.labour_id} />
+        </Table.Td>
       </Table.Tr>
     );
   });
@@ -97,6 +101,7 @@ export function SubscriptionsTable() {
             <Table.Tr>
               <Table.Th>Mother</Table.Th>
               <Table.Th>Labour</Table.Th>
+              <Table.Th>Manage</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{rows}</Table.Tbody>

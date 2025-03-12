@@ -50,7 +50,12 @@ export function StatusUpdates({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>{pluralisedBirthingPersonName} status updates</Title>
+            <Title order={2} visibleFrom="sm">
+              {pluralisedBirthingPersonName} status updates
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              {pluralisedBirthingPersonName} status updates
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
               Curious about how things are going? {birthingPerson.first_name} can update her status
               here, giving you a glimpse into her progress. These updates won’t send alerts, so

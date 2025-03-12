@@ -75,7 +75,12 @@ export const LabourStatistics = ({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>{birthingPersonName} labour statistics</Title>
+            <Title order={2} visibleFrom="sm">
+              {birthingPersonName} labour statistics
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              {birthingPersonName} labour statistics
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Here, you can view all of the statistics about {birthingPersonName} contractions. This
               is useful information to have if you are a birth partner and need to discuss{' '}

@@ -54,7 +54,12 @@ export function StatusUpdates({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={3}>Post a status update</Title>
+            <Title order={2} visibleFrom="sm">
+              Post a status update
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              Post a status update
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
               Update your status here to let your subscribers know how you are getting on. They
               won't be notified about these updates, but they will be able to see them in the app.

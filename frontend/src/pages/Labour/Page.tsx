@@ -16,6 +16,7 @@ import { NotFoundError } from '../../Errors';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
+import { PayWall } from '../../shared-components/Paywall/PayWall.tsx';
 import { useLabour } from './LabourContext.tsx';
 import { Share } from './Tabs/Invites/Share.tsx';
 import { LabourControls } from './Tabs/Manage/LabourControls.tsx';
@@ -98,6 +99,7 @@ export const LabourPage = () => {
   }
 
   const labour = data;
+  const paidFeaturesEnabled = labour.payment_plan !== 'solo' && labour.payment_plan !== null;
   if (labour.payment_plan === null) {
     navigate('/onboarding?step=pay');
   }
@@ -136,8 +138,12 @@ export const LabourPage = () => {
           <div className={baseClasses.flexPageColumn}>
             <Tabs.Panel value="details">
               <LabourControls labour={labour} />
-              <Space h="xl" />
-              <SubscribersContainer />
+              {paidFeaturesEnabled && (
+                <>
+                  <Space h="xl" />
+                  <SubscribersContainer />
+                </>
+              )}
             </Tabs.Panel>
             <Tabs.Panel value="track">
               <Contractions labour={labour} />
@@ -146,10 +152,10 @@ export const LabourPage = () => {
               <LabourStatistics labour={labour} completed={false} />
             </Tabs.Panel>
             <Tabs.Panel value="updates">
-              <LabourUpdates labour={labour} />
+              {(paidFeaturesEnabled && <LabourUpdates labour={labour} />) || <PayWall />}
             </Tabs.Panel>
             <Tabs.Panel value="invite">
-              <Share />
+              {(paidFeaturesEnabled && <Share />) || <PayWall />}
             </Tabs.Panel>
           </div>
         </Tabs>

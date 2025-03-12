@@ -62,7 +62,12 @@ export function InviteContainer() {
         <div className={baseClasses.inner}>
           <Image src={image} className={classes.image} />
           <div className={baseClasses.content}>
-            <Title order={3}>Know an expecting mum? Invite her to join!</Title>
+            <Title order={2} visibleFrom="sm">
+              Know an expecting mum? Invite her to join!
+            </Title>
+            <Title order={3} hiddenFrom="sm">
+              Know an expecting mum? Invite her to join!
+            </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Introduce her to a simple way to keep family and friends informed throughout her
               labour experience.
