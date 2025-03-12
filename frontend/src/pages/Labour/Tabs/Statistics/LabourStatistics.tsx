@@ -170,7 +170,12 @@ export const LabourStatistics = ({
         <div className={baseClasses.body}>
           <div className={classes.inner}>
             <div className={classes.content}>
-              <Title order={2}>Your labour statistics</Title>
+              <Title order={2} visibleFrom="sm">
+                Your labour statistics
+              </Title>
+              <Title order={3} hiddenFrom="sm">
+                Your labour statistics
+              </Title>
               <Text c="var(--mantine-color-gray-7)" mt="md">
                 Here, you can view all of the statistics about your contractions. This is useful
                 information to have when discussing your labour progress with your midwife or
