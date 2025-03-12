@@ -12,8 +12,8 @@ export function SubscribersContainer() {
           <div className={classes.content}>
             <Title order={3}>Manage your subscribers</Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              Here, you can view and manage your subscribers.
-              Stay in control of who can view your labour by removing or blocking unwanted subscribers.
+              Here, you can view and manage your subscribers. Stay in control of who can view your
+              labour by removing or blocking unwanted subscribers.
             </Text>
           </div>
           <div className={baseClasses.flexColumn}>

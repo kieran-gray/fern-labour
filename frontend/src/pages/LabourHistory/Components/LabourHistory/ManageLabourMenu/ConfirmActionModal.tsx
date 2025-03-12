@@ -1,7 +1,7 @@
 import { Button, Modal, Space, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from '../../../../../shared-components/Modal.module.css';
+import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 
 export default function ConfirmActionModal({
   setGetConfirmation,
