@@ -204,18 +204,20 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
   });
 
   const stripeCheckout = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (selectedPlan: string) => {
       setMutationInProgress(true);
-      const currentUrl = window.location.href;
+      const baseUrl = window.location.href.split('?')[0];
+      const returnURL = new URL(baseUrl);
+      returnURL.searchParams.set('step', 'pay');
 
-      const successUrl = new URL(currentUrl);
+      const successUrl = new URL(returnURL);
       successUrl.searchParams.set('success', 'true');
 
-      const cancelUrl = new URL(currentUrl);
+      const cancelUrl = new URL(returnURL);
       cancelUrl.searchParams.set('cancelled', 'true');
 
       const requestBody: CreateCheckoutRequest = {
-        upgrade: 'inner_circle',
+        upgrade: selectedPlan,
         labour_id: labourId!,
         success_url: successUrl.toString(),
         cancel_url: cancelUrl.toString(),
@@ -309,14 +311,12 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
       description=""
       cta={
         <Button
-          className={classes.cta}
           radius="xl"
           size="lg"
-          bg="var(--mantine-color-pink-5)"
           fullWidth
           variant={labour?.payment_plan === 'inner_circle' ? 'light' : 'filled'}
           disabled={labour?.payment_plan === 'inner_circle'}
-          onClick={() => stripeCheckout.mutate()}
+          onClick={() => stripeCheckout.mutate('inner_circle')}
         >
           {labour?.payment_plan === 'inner_circle' ? 'Your current plan' : 'Go To Payment'}
         </Button>
@@ -326,8 +326,9 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
           <IconUsers size={21} />
         </Icon>
       }
-      price="£10"
+      price={labour?.payment_plan === 'inner_circle' ? 'Your plan' : '£10'}
       pricingPeriod=""
+      strikethroughPrice={labour?.payment_plan === 'inner_circle' ? '£10' : undefined}
       items={[
         {
           title: 'Status Updates',
@@ -375,7 +376,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
           size="lg"
           fullWidth
           variant={labour?.payment_plan === 'community' ? 'light' : 'filled'}
-          onClick={() => stripeCheckout.mutate()}
+          onClick={() => stripeCheckout.mutate('community')}
           disabled={labour?.payment_plan === 'community'}
         >
           {labour?.payment_plan === 'community' ? 'Your current plan' : 'Go To Payment'}
@@ -386,8 +387,9 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
           <IconUsersGroup size={21} />
         </Icon>
       }
-      price="£15"
+      price={labour?.payment_plan === 'inner_circle' ? 'Upgrade for £10' : '£15'}
       pricingPeriod=""
+      strikethroughPrice={labour?.payment_plan === 'inner_circle' ? '£15' : undefined}
       items={[
         {
           title: 'All of the previous',
@@ -452,7 +454,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
     <div className={baseClasses.flexColumn} style={{ width: '100%', position: 'relative' }}>
       <LoadingOverlay
         visible={mutationInProgress}
-        zIndex={1001}
+        zIndex={99}
         overlayProps={{ radius: 'sm', blur: 3 }}
       />
       <Title order={2}>Choose Your Birth Support Plan</Title>

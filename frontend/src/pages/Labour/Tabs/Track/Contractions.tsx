@@ -1,7 +1,7 @@
 import { useRef } from 'react';
-import { IconInfoCircle } from '@tabler/icons-react';
 import { Space, Stack, Text, Title } from '@mantine/core';
 import { ContractionDTO, LabourDTO } from '../../../../client/index.ts';
+import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText.tsx';
 import { sortContractions } from '../../../../shared-components/utils.tsx';
 import { ActiveContractionControls } from './ActiveContractionControls.tsx';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
@@ -38,19 +38,9 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
               {(sortedContractions.length > 0 && (
                 <ContractionTimeline contractions={sortedContractions} />
               )) || (
-                <Text
-                  className={baseClasses.importantText}
-                  c="var(--mantine-color-gray-9)"
-                  fw={500}
-                  mb={30}
-                >
-                  <IconInfoCircle
-                    size={20}
-                    style={{ alignSelf: 'center', marginRight: '10px', flexShrink: 0 }}
-                  />
-                  When you start your first contraction, we will let your subscribers know that your
-                  labour is starting.
-                </Text>
+                <div style={{ width: '100%', marginBottom: '30px' }}>
+                  <ImportantText message="When you start your first contraction, we will let your subscribers know that your labour is starting." />
+                </div>
               )}
             </Stack>
             <div className={baseClasses.flexColumnEnd}>

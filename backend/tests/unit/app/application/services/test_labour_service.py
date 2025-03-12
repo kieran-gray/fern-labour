@@ -91,7 +91,7 @@ async def test_cannot_plan_labour_for_non_existent_user(labour_service: LabourSe
 async def test_cannot_update_labour_plan_for_non_existent_user(
     labour_service: LabourService,
 ) -> None:
-    with pytest.raises(UserNotFoundById):
+    with pytest.raises(UserDoesNotHaveActiveLabour):
         await labour_service.update_labour_plan("TEST123456", True, datetime.now(UTC))
 
 

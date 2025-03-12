@@ -39,7 +39,7 @@ export function ShareContainer() {
   return (
     <div className={classes.inner}>
       <div className={classes.content}>
-        <Title order={3}>Or use this share link</Title>
+        <Title order={3}>Or share this link</Title>
         <Text c="var(--mantine-color-gray-7)" mt="md">
           Share this link with your friends and family, make sure to include the code at the bottom
           of the message.

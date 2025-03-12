@@ -95,8 +95,9 @@ export default function StartContractionButton({
       leftSection={icon}
       radius="xl"
       size="xl"
-      variant="outline"
+      variant="filled"
       loading={mutationInProgress}
+      color="var(--mantine-color-pink-4)"
       onClick={() => mutation.mutate(createNewContraction())}
     >
       Start Contraction
