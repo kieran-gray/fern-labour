@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Stepper } from '@mantine/core';
+import { useWindowScroll } from '@mantine/hooks';
 import { ApiError, OpenAPI } from '../../client/index.ts';
 import { LabourService } from '../../client/sdk.gen.ts';
 import { LabourDTO } from '../../client/types.gen.ts';
@@ -28,6 +29,7 @@ export const OnboardingPage = () => {
   const step = searchParams.get('step');
   const [active, setActive] = useState(step ? stepOrder.indexOf(step) : 0);
   const [highestStepVisited, setHighestStepVisited] = useState(active);
+  const [_, scrollTo] = useWindowScroll();
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -42,6 +44,7 @@ export const OnboardingPage = () => {
       navigate('/');
     }
     setActive(nextStep);
+    scrollTo({ y: 0 });
     setHighestStepVisited((hSC) => Math.max(hSC, nextStep));
   };
 
@@ -55,7 +58,7 @@ export const OnboardingPage = () => {
         if (err instanceof ApiError && err.status === 404) {
           throw new NotFoundError();
         }
-        throw new Error('Failed to load labour. Please try again later.');
+        throw new Error('Something went wrong');
       }
     },
     retry: 0,

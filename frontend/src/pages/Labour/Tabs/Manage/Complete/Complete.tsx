@@ -17,8 +17,8 @@ export default function Complete({
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
-          <div className={classes.content}>
+        <div className={baseClasses.inner}>
+          <div className={baseClasses.content}>
             <Title className={classes.title}>Complete your labour</Title>
             <div className={baseClasses.flexRow} style={{ flexWrap: 'nowrap' }}>
               <div className={baseClasses.flexColumn}>
@@ -60,7 +60,7 @@ export default function Complete({
                 <Button
                   color="var(--mantine-color-pink-4)"
                   leftSection={<IconArrowLeft size={18} stroke={1.5} />}
-                  variant="outline"
+                  variant="light"
                   radius="xl"
                   size="md"
                   h={48}

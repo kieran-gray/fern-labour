@@ -79,7 +79,7 @@ export default function CompleteLabourButton({
         <Button
           data-disabled
           leftSection={icon}
-          size="xl"
+          size="lg"
           color="var(--mantine-color-pink-4)"
           radius="xl"
           variant="filled"
@@ -94,7 +94,7 @@ export default function CompleteLabourButton({
   return (
     <Button
       leftSection={icon}
-      size="xl"
+      size="lg"
       color="var(--mantine-color-pink-4)"
       radius="xl"
       variant="filled"

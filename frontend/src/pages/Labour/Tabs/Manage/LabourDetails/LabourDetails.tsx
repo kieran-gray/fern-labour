@@ -82,7 +82,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
           <Button
             color="var(--mantine-color-pink-4)"
             leftSection={<IconArrowLeft size={18} stroke={1.5} />}
-            variant="outline"
+            variant="light"
             radius="xl"
             size="md"
             h={48}

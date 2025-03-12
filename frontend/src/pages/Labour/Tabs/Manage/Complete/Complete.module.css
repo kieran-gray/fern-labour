@@ -16,25 +16,6 @@
     }
   }
 
-  .inner {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-    padding: calc(var(--mantine-spacing-xl));
-  
-    @media (max-width: $mantine-breakpoint-md) {
-      padding: calc(var(--mantine-spacing-md));
-    }
-  
-    @media (max-width: $mantine-breakpoint-xs) {
-        padding: 0;
-    }
-  }
-  
-  .content {
-    width: 100%;
-  }
-  
   .title {
     color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
     font-family:

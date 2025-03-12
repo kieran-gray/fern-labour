@@ -81,7 +81,6 @@ class LabourService:
         labour_name: str | None = None,
     ) -> LabourDTO:
         domain_id = UserId(birthing_person_id)
-        _ = await self._user_service.get(birthing_person_id)
         labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
         if not labour:
             raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
@@ -100,7 +99,6 @@ class LabourService:
         payment_plan: str,
     ) -> LabourDTO:
         domain_id = UserId(birthing_person_id)
-        _ = await self._user_service.get(birthing_person_id)
         labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
         if not labour:
             raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)

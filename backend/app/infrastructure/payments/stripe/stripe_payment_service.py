@@ -11,6 +11,7 @@ from app.infrastructure.payments.stripe.exceptions import (
     WebhookHasInvalidSignature,
     WebhookMissingSignatureHeader,
 )
+from app.infrastructure.payments.stripe.product_mapping import STRIPE_PRODUCT_TO_PRICE
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class StripePaymentService:
         checkout_session = stripe.checkout.Session.create(
             line_items=[
                 {
-                    "price": "price_1R0nsPJgYMUrJ4V8CoWZnONg",
+                    "price": STRIPE_PRODUCT_TO_PRICE[item],
                     "quantity": 1,
                 },
             ],
@@ -60,5 +61,6 @@ class StripePaymentService:
             success_url=success_url,
             cancel_url=cancel_url,
             automatic_tax={"enabled": True},
+            allow_promotion_codes=True,
         )
         return checkout_session
