@@ -24,7 +24,7 @@
     height: 100%;
     z-index: -1;
     overflow: hidden;
-    background-color: #fff
+    background-color: #ffeae6;
 }
 
 .bubble {
@@ -98,12 +98,13 @@ div.kc-logo-text span {
     background-color: #FF8C7A;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     color: #555;
-    border-radius: 20px;
+    border-radius: 25px;
     border: 5px solid #FF8C7A;
 }
 
 .pf-v5-c-login__main-header {
     padding: 10px;
+    border-radius: 10px;
     text-transform: uppercase;
     background-color: #FF8C7A;
     color: white;
@@ -131,7 +132,7 @@ div.kc-logo-text span {
     padding-inline-start: var(--pf-v5-c-login__main-body--PaddingLeft);
     padding-top: 40px;
     border: 5px solid #FF8C7A;
-    border-radius: 15px;
+    border-radius: 20px;
     background-color: white;
 }
 

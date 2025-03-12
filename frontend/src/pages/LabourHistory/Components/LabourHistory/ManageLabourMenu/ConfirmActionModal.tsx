@@ -1,7 +1,7 @@
 import { Button, Modal, Space, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
-import classes from './ConfirmActionModal.module.css';
+import classes from '../../../../../shared-components/Modal.module.css';
 
 export default function ConfirmActionModal({
   setGetConfirmation,
@@ -14,14 +14,14 @@ export default function ConfirmActionModal({
   const title = `Delete Labour?`;
   return (
     <Modal
-      overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+      overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
       classNames={{
-        content: classes.root,
+        content: classes.modalRoot,
         header: classes.modalHeader,
         title: classes.modalTitle,
         body: classes.modalBody,
-        close: classes.closeButton,
       }}
+      withCloseButton={false}
       opened
       onClose={close}
       title={title}

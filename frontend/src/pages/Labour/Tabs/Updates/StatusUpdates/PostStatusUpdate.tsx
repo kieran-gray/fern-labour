@@ -58,8 +58,7 @@ export function PostStatusUpdateButton({
       rightSection={<IconSend size={18} stroke={1.5} />}
       variant="filled"
       radius="xl"
-      size="md"
-      h={48}
+      size="lg"
       style={{ minWidth: '200px' }}
       type="submit"
       disabled={!message}

@@ -25,7 +25,7 @@ class LabourHasActiveContraction(DomainError):
 
 class CannotCompleteLabourWithActiveContraction(DomainError):
     def __init__(self) -> None:
-        super().__init__("Cannot complete labor with active contraction")
+        super().__init__("Cannot complete labour with active contraction")
 
 
 class LabourHasNoActiveContraction(DomainError):

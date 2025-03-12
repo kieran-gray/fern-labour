@@ -1,20 +1,10 @@
-.inner {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  padding: calc(var(--mantine-spacing-xl));
-
-  @media (max-width: $mantine-breakpoint-md) {
-    padding: calc(var(--mantine-spacing-md));
-  }
-
-  @media (max-width: $mantine-breakpoint-sm) {
-    padding: calc(var(--mantine-spacing-xs));
-  }
-}
-
 .content {
   width: 100%;
+  margin-right: 30px;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    margin-right: 0;
+  }
 }
 
 .title {
@@ -117,4 +107,19 @@
   padding: 10px 20px;
   width: 100%;
   border-radius: var(--mantine-radius-lg);
+}
+
+.smallImage {
+  display: none;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    display: block;
+    width: 350px;
+    height: 250px;
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    width: 280px;
+    height: 180px;
+  }
 }

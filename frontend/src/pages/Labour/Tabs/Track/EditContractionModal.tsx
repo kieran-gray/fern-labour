@@ -107,7 +107,7 @@ export const EditContractionModal = ({
       onClose={close}
       title="Update Contraction"
       centered
-      overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+      overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
       classNames={{
         content: modalClasses.modalRoot,
         header: modalClasses.modalHeader,

@@ -186,7 +186,7 @@ export const Header01 = ({
         <Drawer
           size="xs"
           classNames={{ content: classes.drawer, header: classes.drawer }}
-          overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+          overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
           position="right"
           opened={opened}
           onClose={toggle}

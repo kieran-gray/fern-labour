@@ -40,9 +40,6 @@ export default function LabourDetails({
               <Badge variant="filled" className={classes.labourBadge} size="lg">
                 Gestational age: {dueDateToGestationalAge(new Date(labour.due_date))}
               </Badge>
-              <Badge variant="filled" className={classes.labourBadge} size="lg">
-                {!labour.first_labour ? 'Not ' : ''}first time mother
-              </Badge>
             </div>
           </div>
         </div>

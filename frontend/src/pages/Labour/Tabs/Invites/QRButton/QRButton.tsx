@@ -11,7 +11,7 @@ export default function QRButton({ url }: { url: string }) {
   return (
     <>
       <Modal
-        overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+        overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
         classNames={{
           content: classes.modalRoot,
           header: classes.modalHeader,
