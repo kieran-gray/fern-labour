@@ -14,9 +14,7 @@ from app.domain.labour.vo_labour_id import LabourId
 @dataclass(eq=False, kw_only=True)
 class Contraction(Entity[ContractionId]):
     """
-    Domain entity representing a single contraction during labor.
-    Unlike Duration which is just a value object, Contraction has identity
-    and carries additional domain-relevant information.
+    Domain entity representing a single contraction during labour.
     """
 
     duration: Duration

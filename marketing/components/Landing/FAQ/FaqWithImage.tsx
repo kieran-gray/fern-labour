@@ -55,20 +55,20 @@ export function FaqWithImage() {
                 </Accordion.Panel>
               </Accordion.Item>
 
-              <Accordion.Item className={classes.item} value="birth-partner">
+              {/* <Accordion.Item className={classes.item} value="birth-partner">
                 <Accordion.Control>
-                  Can my birth partner help manage updates during labor?
+                  Can my birth partner help manage updates during labour?
                 </Accordion.Control>
                 <Accordion.Panel>
                   Yes! With an Advanced plan (see above), you can designate a trusted support person
-                  to manage updates through the app while you focus on your labor.
+                  to manage updates through the app while you focus on your labour.
                   <br />
                   They can track contractions and send updates to your subscribers using their own
                   device.
                   <br />
                   You maintain full control and can revoke access at any time.
                 </Accordion.Panel>
-              </Accordion.Item>
+              </Accordion.Item> */}
 
               <Accordion.Item className={classes.item} value="subscribers">
                 <Accordion.Control>

@@ -81,7 +81,7 @@ export default function MakeAnnouncementButton({
 
   const button = (
     <Button
-      rightSection={<IconSpeakerphone size={22} stroke={1.5} />}
+      rightSection={<IconSpeakerphone size={18} stroke={1.5} />}
       radius="xl"
       size="lg"
       color="var(--mantine-color-pink-4)"
