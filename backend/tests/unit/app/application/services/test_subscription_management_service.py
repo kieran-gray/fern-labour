@@ -10,6 +10,7 @@ from app.application.services.labour_service import LabourService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
+from app.domain.labour.enums import LabourPaymentPlan
 from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from app.domain.subscription.exceptions import (
     SubscriberRoleInvalid,
@@ -53,6 +54,9 @@ async def subscription(
     )
     labour = await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
+    )
+    await labour_service.update_labour_payment_plan(
+        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY.value
     )
     token = token_generator.generate(labour.id)
     return await subscription_service.subscribe_to(
