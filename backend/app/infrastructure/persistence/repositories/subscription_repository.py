@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.subscription.entity import Subscription
+from app.domain.subscription.enums import SubscriptionStatus
 from app.domain.subscription.repository import SubscriptionRepository
 from app.domain.subscription.vo_subscription_id import SubscriptionId
 from app.domain.user.vo_user_id import UserId
@@ -120,5 +121,22 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             subscriptions_table.c.id.in_([s.value for s in subscription_ids])
         )
 
+        result = await self._session.execute(stmt)
+        return list(result.scalars())
+
+    async def get_active_subscriptions_for_labour(self, labour_id: LabourId) -> list[Subscription]:
+        """
+        Retrieve a list of active subscriptions by IDs.
+
+        Args:
+            labour_id: The Labour ID to fetch the subscriptions for
+
+        Returns:
+            A list of subscriptions
+        """
+        stmt = select(Subscription).where(
+            (subscriptions_table.c.labour_id == labour_id.value)
+            & (subscriptions_table.c.status == SubscriptionStatus.SUBSCRIBED.value)
+        )
         result = await self._session.execute(stmt)
         return list(result.scalars())

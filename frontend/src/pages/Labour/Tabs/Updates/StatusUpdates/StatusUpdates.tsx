@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { IconPencil, IconSwitchHorizontal } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
-import { Avatar, Button, Group, ScrollArea, Text, TextInput, Title } from '@mantine/core';
+import { Avatar, Button, Group, Image, ScrollArea, Text, TextInput, Title } from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
+import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
+import image from '../image.svg';
 import { ManageStatusUpdateMenu } from './ManageStatusUpdateMenu';
 import { PostStatusUpdateButton } from './PostStatusUpdate';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
@@ -64,10 +66,18 @@ export function StatusUpdates({
               Update your status here to let your subscribers know how you are getting on. They
               won't be notified about these updates, but they will be able to see them in the app.
             </Text>
-            <ScrollArea.Autosize mah={400} viewportRef={viewport}>
-              <div className={classes.statusUpdateContainer}>{statusUpdateDisplay}</div>
-            </ScrollArea.Autosize>
-
+            {(statusUpdateDisplay.length > 0 && (
+              <ScrollArea.Autosize mah={400} viewportRef={viewport}>
+                <div className={classes.statusUpdateContainer}>{statusUpdateDisplay}</div>
+              </ScrollArea.Autosize>
+            )) || (
+              <>
+                <div className={classes.imageFlexRow}>
+                  <Image src={image} className={classes.image} />
+                </div>
+                <ImportantText message="You haven't posted any status updates yet." />
+              </>
+            )}
             <TextInput
               mt={20}
               rightSection={<IconPencil size={18} stroke={1.5} />}

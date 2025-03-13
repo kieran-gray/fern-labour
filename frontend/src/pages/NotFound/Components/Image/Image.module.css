@@ -4,32 +4,29 @@
     border-radius: var(--mantine-radius-xl);
   }
   
-  .title {
-    font-weight: 900;
-    font-size: 34px;
-    margin-bottom: var(--mantine-spacing-md);
-    font-family:
-      "Greycliff CF",
-      var(--mantine-font-family);
-  
-    @media (max-width: $mantine-breakpoint-sm) {
-      font-size: 32px;
-    }
-  }
-  
   .control {
     @media (max-width: $mantine-breakpoint-sm) {
       width: 100%;
     }
   }
+
+  .imageFlexRow {
+    display: flex;
+    justify-content: center;
+  }
   
   .mobileImage {
+    width: 250px;
+    height: 250px;
+
     @media (min-width: 48em) {
       display: none;
     }
   }
   
   .desktopImage {
+    width: 350px;
+
     @media (max-width: 47.99em) {
       display: none;
     }

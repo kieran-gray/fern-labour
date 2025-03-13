@@ -66,3 +66,8 @@ class CannotDeleteActiveLabour(DomainError):
 class CannotDowngradeLabourPlan(DomainError):
     def __init__(self) -> None:
         super().__init__("Cannot downgrade labour payment plan. Contact support.")
+
+
+class InsufficientLabourPaymentPlan(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Requested action is not supported with current payment plan.")

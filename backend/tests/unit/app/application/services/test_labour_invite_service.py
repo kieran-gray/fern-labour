@@ -13,6 +13,7 @@ from app.application.services.labour_invite_service import (
 from app.application.services.labour_service import LabourService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
+from app.domain.labour.enums import LabourPaymentPlan
 from app.domain.labour.exceptions import LabourNotFoundById
 from app.domain.subscription.exceptions import SubscriberAlreadySubscribed
 from app.domain.user.entity import User
@@ -103,7 +104,11 @@ async def test_cannnot_send_invite_for_email_already_subscribed(
     labour = await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
     )
+    await labour_service.update_labour_payment_plan(
+        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.INNER_CIRCLE.value
+    )
     token = labour_invite_service._token_generator.generate(labour.id)
+
     await labour_invite_service._subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )

@@ -20,6 +20,9 @@ export function SubscriptionsContainer() {
               Here, you can view and manage the labours that you are subscribed to. Update your
               contact methods for each individually.
             </Text>
+            <div className={classes.imageFlexRow}>
+              <Image src={image} className={classes.smallImage} />
+            </div>
           </div>
           <div className={baseClasses.flexColumn}>
             <Image src={image} className={classes.image} />

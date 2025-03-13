@@ -6,12 +6,15 @@ from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
 from app.application.services.get_labour_service import GetLabourService
 from app.application.services.user_service import UserService
-from app.domain.labour.exceptions import UnauthorizedLabourRequest
+from app.domain.labour.enums import LabourPaymentPlan
+from app.domain.labour.exceptions import InsufficientLabourPaymentPlan, UnauthorizedLabourRequest
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.services.subscribe_to import SubscribeToService
 from app.domain.services.unsubscribe_from import UnsubscribeFromService
+from app.domain.subscription.constants import INNER_CIRCLE_MAX_SUBSCRIBERS
 from app.domain.subscription.enums import SubscriptionStatus
 from app.domain.subscription.exceptions import (
+    MaximumNumberOfSubscribersReached,
     SubscriberNotSubscribed,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
@@ -93,6 +96,18 @@ class SubscriptionService:
         labour_domain_id = LabourId(UUID(labour.id))
         birthing_person_domain_id = UserId(labour.birthing_person_id)
         subscriber_domain_id = UserId(subscriber.id)
+
+        if not labour.payment_plan or labour.payment_plan == LabourPaymentPlan.SOLO.value:
+            raise InsufficientLabourPaymentPlan()
+
+        if labour.payment_plan == LabourPaymentPlan.INNER_CIRCLE.value:
+            active_subscriptions = (
+                await self._subscription_repository.get_active_subscriptions_for_labour(
+                    labour_id=labour_domain_id
+                )
+            )
+            if len(active_subscriptions) >= INNER_CIRCLE_MAX_SUBSCRIBERS:
+                raise MaximumNumberOfSubscribersReached()
 
         subscription = await self._subscription_repository.filter_one_or_none(
             subscriber_id=subscriber_domain_id, labour_id=labour_domain_id

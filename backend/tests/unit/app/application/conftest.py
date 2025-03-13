@@ -22,6 +22,7 @@ from app.domain.labour.entity import Labour
 from app.domain.labour.repository import LabourRepository
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.subscription.entity import Subscription
+from app.domain.subscription.enums import SubscriptionStatus
 from app.domain.subscription.repository import SubscriptionRepository
 from app.domain.subscription.vo_subscription_id import SubscriptionId
 from app.domain.user.entity import User
@@ -133,6 +134,16 @@ class MockSubscriptionRepository(SubscriptionRepository):
                 raise ValueError("Multiple results found")
             found_subscription = subscription
         return found_subscription
+
+    async def get_active_subscriptions_for_labour(self, labour_id: LabourId) -> list[Subscription]:
+        subscriptions = []
+        for subscription in self._data.values():
+            if (
+                subscription.labour_id == labour_id
+                and subscription.status is SubscriptionStatus.SUBSCRIBED
+            ):
+                subscriptions.append(subscription)
+        return subscriptions
 
 
 @pytest_asyncio.fixture

@@ -15,6 +15,7 @@ from app.application.services.subscription_management_service import Subscriptio
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
 from app.domain.base.event import DomainEvent
+from app.domain.labour.enums import LabourPaymentPlan
 from app.domain.subscription.enums import ContactMethod
 from app.domain.user.entity import User
 from app.domain.user.exceptions import UserNotFoundById
@@ -80,8 +81,11 @@ async def labour_completed_event_handler(
 
 @pytest_asyncio.fixture
 async def labour(labour_service: LabourService) -> LabourDTO:
-    return await labour_service.plan_labour(
+    await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
+    )
+    return await labour_service.update_labour_payment_plan(
+        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY.value
     )
 
 

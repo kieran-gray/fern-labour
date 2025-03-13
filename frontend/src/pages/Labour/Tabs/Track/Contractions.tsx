@@ -1,5 +1,6 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Space, Stack, Text, Title } from '@mantine/core';
+import { useScrollIntoView } from '@mantine/hooks';
 import { ContractionDTO, LabourDTO } from '../../../../client/index.ts';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText.tsx';
 import { sortContractions } from '../../../../shared-components/utils.tsx';
@@ -15,6 +16,10 @@ import classes from './Contractions.module.css';
 
 export function Contractions({ labour }: { labour: LabourDTO }) {
   const stopwatchRef = useRef<StopwatchHandle>(null);
+  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
+    duration: 200,
+    offset: 50,
+  });
 
   const sortedContractions = sortContractions(labour.contractions);
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
@@ -23,6 +28,10 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
     return contractions.some((contraction) => contraction.id === 'placeholder');
   };
   const containsPlaceholderContractions = anyPlaceholderContractions(labour.contractions);
+
+  useEffect(() => {
+    scrollIntoView({ alignment: 'end' });
+  }, [labour]);
 
   return (
     <div className={baseClasses.root}>
@@ -62,6 +71,7 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
                   />
                 )}
                 {!activeContraction && <StartContractionButton stopwatchRef={stopwatchRef} />}
+                <div ref={targetRef} />
               </Stack>
             </div>
           </div>

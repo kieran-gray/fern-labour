@@ -49,6 +49,7 @@ export default function QRButton({ url }: { url: string }) {
         leftSection={icon}
         radius="xl"
         size="md"
+        h={48}
         variant="outline"
         onClick={open}
         mt="var(--mantine-spacing-lg)"

@@ -5,7 +5,7 @@ import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { OpenAPI } from '../../../../client';
+import { OpenAPI, SendSubscriberInviteRequest, SubscriberService } from '../../../../client';
 import image from '../../../Labour/Tabs/Invites/InviteContainer/invite.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Invites/InviteContainer/InviteContainer.module.css';
@@ -31,8 +31,8 @@ export function InviteContainer() {
   const mutation = useMutation({
     mutationFn: async (values: typeof form.values) => {
       setMutationInProgress(true);
-      // TODO subscriber invite
-      console.log(values);
+      const requestBody: SendSubscriberInviteRequest = { invite_email: values.email };
+      await SubscriberService.sendInviteApiV1SubscriberSendInvitePost({ requestBody });
     },
     onSuccess: () => {
       notifications.show({

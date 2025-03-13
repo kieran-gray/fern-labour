@@ -13,6 +13,7 @@ from app.domain.contraction.exceptions import ContractionIdInvalid
 from app.domain.labour.enums import LabourPaymentPlan, LabourPhase
 from app.domain.labour.exceptions import (
     CannotDeleteActiveLabour,
+    InsufficientLabourPaymentPlan,
     InvalidLabourId,
     InvalidLabourPaymentPlan,
     InvalidLabourUpdateId,
@@ -196,8 +197,23 @@ async def test_cannot_end_contraction_for_non_existent_user(labour_service: Labo
         await labour_service.end_contraction("TEST123456", intensity=5)
 
 
+async def test_cannot_post_labour_update_incorrect_payment_plan(
+    labour_service: LabourService,
+) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await labour_service.start_contraction(BIRTHING_PERSON)
+    with pytest.raises(InsufficientLabourPaymentPlan):
+        await labour_service.post_labour_update(
+            BIRTHING_PERSON, labour_update_type="announcement", message="Test message"
+        )
+
+
 async def test_can_post_labour_update(labour_service: LabourService) -> None:
     await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.update_labour_payment_plan(
+        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY
+    )
     await labour_service.begin_labour(BIRTHING_PERSON)
     await labour_service.start_contraction(BIRTHING_PERSON)
     await labour_service.post_labour_update(
@@ -216,6 +232,9 @@ async def test_cannot_post_labour_update_for_non_existent_user(
 
 async def test_can_delete_labour_update(labour_service: LabourService) -> None:
     await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.update_labour_payment_plan(
+        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY
+    )
     await labour_service.begin_labour(BIRTHING_PERSON)
     labour = await labour_service.post_labour_update(
         BIRTHING_PERSON, labour_update_type="announcement", message="Test message"
@@ -235,6 +254,9 @@ async def test_cannot_delete_labour_update_with_invalid_id(
     labour_service: LabourService,
 ) -> None:
     await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.update_labour_payment_plan(
+        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY
+    )
     await labour_service.begin_labour(BIRTHING_PERSON)
     await labour_service.post_labour_update(
         BIRTHING_PERSON, labour_update_type="announcement", message="Test message"
@@ -247,6 +269,9 @@ async def test_cannot_delete_labour_update_not_found(
     labour_service: LabourService,
 ) -> None:
     await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.update_labour_payment_plan(
+        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY
+    )
     await labour_service.begin_labour(BIRTHING_PERSON)
     await labour_service.post_labour_update(
         BIRTHING_PERSON, labour_update_type="announcement", message="Test message"

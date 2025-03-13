@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { IconPencil, IconSwitchHorizontal } from '@tabler/icons-react';
-import { Button, ScrollArea, Text, TextInput, Title } from '@mantine/core';
+import { Button, Image, ScrollArea, Text, TextInput, Title } from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
+import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
+import image from '../image.svg';
 import MakeAnnouncementButton from './MakeAnnouncement';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './Announcements.module.css';
@@ -46,13 +48,24 @@ export function Announcements({
               Make an announcement to all your subscribers—they’ll be notified through their
               preferred methods. Use this to share important updates.
             </Text>
-            <ScrollArea.Autosize mah={400} viewportRef={viewport} p={10}>
-              {messageBubbles}
-            </ScrollArea.Autosize>
+            {(messageBubbles.length > 0 && (
+              <ScrollArea.Autosize mah={400} viewportRef={viewport} p={10}>
+                {messageBubbles}
+              </ScrollArea.Autosize>
+            )) || (
+              <>
+                <div className={classes.imageFlexRow}>
+                  <Image src={image} className={classes.image} />
+                </div>
+                <ImportantText message="You haven't made any announcements yet." />
+              </>
+            )}
+
             <TextInput
               rightSection={<IconPencil size={18} stroke={1.5} />}
               radius="lg"
               size="md"
+              mt={20}
               placeholder="Your announcement"
               onChange={(event) => setAnnouncement(event.currentTarget.value)}
               value={announcement}
