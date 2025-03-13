@@ -11,7 +11,7 @@ export type Body_login_api_v1_auth_login_post = {
 
 export type CheckoutResponse = {
   id: string;
-  url: string;
+  url: string | null;
 };
 
 export type CompleteLabourRequest = {
@@ -147,6 +147,10 @@ export type RemoveSubscriberRequest = {
 export type SendInviteRequest = {
   invite_email: string;
   labour_id: string;
+};
+
+export type SendSubscriberInviteRequest = {
+  invite_email: string;
 };
 
 export type StartContractionRequest = {
@@ -347,11 +351,19 @@ export type SendInviteApiV1LabourSendInvitePostData = {
 
 export type SendInviteApiV1LabourSendInvitePostResponse = void;
 
+export type MyWebhookViewApiV1PaymentsWebhookPostResponse = unknown;
+
 export type CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostData = {
   requestBody: CreateCheckoutRequest;
 };
 
 export type CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostResponse = CheckoutResponse;
+
+export type SendInviteApiV1SubscriberSendInvitePostData = {
+  requestBody: SendSubscriberInviteRequest;
+};
+
+export type SendInviteApiV1SubscriberSendInvitePostResponse = void;
 
 export type SubscribeToApiV1SubscriptionSubscribeLabourIdPostData = {
   labourId: string;

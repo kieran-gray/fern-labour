@@ -37,6 +37,7 @@ import type {
   HealthcheckApiV1HealthGetResponse,
   LoginApiV1AuthLoginPostData,
   LoginApiV1AuthLoginPostResponse,
+  MyWebhookViewApiV1PaymentsWebhookPostResponse,
   PlanLabourApiV1LabourPlanPostData,
   PlanLabourApiV1LabourPlanPostResponse,
   PostLabourUpdateApiV1LabourLabourUpdatePostData,
@@ -46,6 +47,8 @@ import type {
   RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutResponse,
   SendInviteApiV1LabourSendInvitePostData,
   SendInviteApiV1LabourSendInvitePostResponse,
+  SendInviteApiV1SubscriberSendInvitePostData,
+  SendInviteApiV1SubscriberSendInvitePostResponse,
   StartContractionApiV1LabourContractionStartPostData,
   StartContractionApiV1LabourContractionStartPostResponse,
   SubscribeToApiV1SubscriptionSubscribeLabourIdPostData,
@@ -569,6 +572,22 @@ export class LabourService {
 
 export class PaymentsService {
   /**
+   * My Webhook View
+   * @returns unknown Successful Response
+   * @throws ApiError
+   */
+  public static myWebhookViewApiV1PaymentsWebhookPost(): CancelablePromise<MyWebhookViewApiV1PaymentsWebhookPostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/payments/webhook',
+      errors: {
+        400: 'Bad Request',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
    * Create Checkout Session
    * @param data The data for the request.
    * @param data.requestBody
@@ -581,6 +600,33 @@ export class PaymentsService {
     return __request(OpenAPI, {
       method: 'POST',
       url: '/api/v1/payments/create-checkout-session',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+}
+
+export class SubscriberService {
+  /**
+   * Send Invite
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns void Successful Response
+   * @throws ApiError
+   */
+  public static sendInviteApiV1SubscriberSendInvitePost(
+    data: SendInviteApiV1SubscriberSendInvitePostData
+  ): CancelablePromise<SendInviteApiV1SubscriberSendInvitePostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/subscriber/send_invite',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {
