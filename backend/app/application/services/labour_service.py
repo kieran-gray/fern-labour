@@ -11,6 +11,7 @@ from app.domain.labour.entity import Labour
 from app.domain.labour.enums import LabourPaymentPlan
 from app.domain.labour.exceptions import (
     CannotDeleteActiveLabour,
+    InsufficientLabourPaymentPlan,
     InvalidLabourId,
     InvalidLabourPaymentPlan,
     InvalidLabourUpdateId,
@@ -236,6 +237,9 @@ class LabourService:
         labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
         if not labour:
             raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+
+        if not labour.payment_plan or labour.payment_plan == LabourPaymentPlan.SOLO.value:
+            raise InsufficientLabourPaymentPlan()
 
         labour_update_type_enum = LabourUpdateType(labour_update_type)
         labour = PostLabourUpdateService().post_labour_update(

@@ -82,3 +82,14 @@ class SubscriptionRepository(Protocol):
         Returns:
             A list of subscriptions
         """
+
+    async def get_active_subscriptions_for_labour(self, labour_id: LabourId) -> list[Subscription]:
+        """
+        Retrieve a list of active subscriptions by IDs.
+
+        Args:
+            labour_id: The Labour ID to fetch the subscriptions for
+
+        Returns:
+            A list of subscriptions
+        """

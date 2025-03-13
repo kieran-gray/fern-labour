@@ -21,6 +21,7 @@ from app.domain.contraction.exceptions import (
 from app.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
     CannotDeleteActiveLabour,
+    InsufficientLabourPaymentPlan,
     InvalidLabourId,
     InvalidLabourUpdateId,
     LabourAlreadyBegun,
@@ -33,6 +34,7 @@ from app.domain.labour.exceptions import (
 )
 from app.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
 from app.domain.subscription.exceptions import (
+    MaximumNumberOfSubscribersReached,
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
     SubscriberNotSubscribed,
@@ -113,6 +115,8 @@ class ExceptionMapper:
             UnauthorizedLabourRequest: status.HTTP_403_FORBIDDEN,
             CannotDeleteActiveLabour: status.HTTP_400_BAD_REQUEST,
             LabourNotFoundById: status.HTTP_404_NOT_FOUND,
+            InsufficientLabourPaymentPlan: status.HTTP_400_BAD_REQUEST,
+            MaximumNumberOfSubscribersReached: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:
