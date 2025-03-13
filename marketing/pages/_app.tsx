@@ -23,6 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
           content="Fern Labour: Plan your labour, Track your Contractions, and keep friends and family up-to-date in one app"
         />
         <link rel="shortcut icon" href="/logo/logo.svg" />
+        <script defer data-domain="fernlabour.com" src="https://plausible.io/js/script.js" />
       </Head>
       <ResponsiveParticles />
       <main className={quicksand.className}>
