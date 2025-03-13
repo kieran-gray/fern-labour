@@ -135,10 +135,8 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             A list of subscriptions
         """
         stmt = select(Subscription).where(
-            (
-                subscriptions_table.c.labour_id == labour_id.value,
-                subscriptions_table.c.status == SubscriptionStatus.SUBSCRIBED.value,
-            )
+            (subscriptions_table.c.labour_id == labour_id.value)
+            & (subscriptions_table.c.status == SubscriptionStatus.SUBSCRIBED.value)
         )
         result = await self._session.execute(stmt)
         return list(result.scalars())

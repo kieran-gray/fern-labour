@@ -103,7 +103,7 @@ class SubscriptionService:
         if labour.payment_plan == LabourPaymentPlan.INNER_CIRCLE.value:
             active_subscriptions = (
                 await self._subscription_repository.get_active_subscriptions_for_labour(
-                    labour_id=labour_id
+                    labour_id=labour_domain_id
                 )
             )
             if len(active_subscriptions) >= INNER_CIRCLE_MAX_SUBSCRIBERS:

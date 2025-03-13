@@ -227,7 +227,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
       });
     },
     onSuccess: async (data) => {
-      window.location.href = data.url;
+      window.location.href = data.url!;
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
       setMutationInProgress(false);
     },
