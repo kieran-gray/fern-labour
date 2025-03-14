@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { IconPencil, IconSwitchHorizontal } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
-import { Avatar, Button, Group, Image, LoadingOverlay, ScrollArea, Text, TextInput, Title } from '@mantine/core';
+import {
+  Avatar,
+  Button,
+  Group,
+  Image,
+  LoadingOverlay,
+  ScrollArea,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import image from '../image.svg';

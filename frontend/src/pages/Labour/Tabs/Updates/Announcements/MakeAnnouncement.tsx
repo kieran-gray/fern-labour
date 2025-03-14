@@ -1,14 +1,21 @@
 import { useState } from 'react';
 import { IconSpeakerphone } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
 import { useAuth } from 'react-oidc-context';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ApiError, LabourDTO, LabourService, LabourUpdateDTO, LabourUpdateRequest, OpenAPI } from '../../../../../client';
-import ConfirmAnnouncementModal from './ConfirmAnnouncement';
-import { useLabour } from '../../../LabourContext';
+import {
+  ApiError,
+  LabourDTO,
+  LabourService,
+  LabourUpdateDTO,
+  LabourUpdateRequest,
+  OpenAPI,
+} from '../../../../../client';
 import { sleep } from '../../../../../utils';
-import _ from 'lodash';
+import { useLabour } from '../../../LabourContext';
+import ConfirmAnnouncementModal from './ConfirmAnnouncement';
 
 export default function MakeAnnouncementButton({
   message,
@@ -20,7 +27,7 @@ export default function MakeAnnouncementButton({
   const [getConfimation, setGetConfimation] = useState(false);
   const [mutationInProgress, setMutationInProgress] = useState(false);
   const [confirmedMakeAnnouncement, setConfirmedMakeAnnouncement] = useState(false);
-  const {labourId} = useLabour();
+  const { labourId } = useLabour();
 
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
@@ -31,14 +38,14 @@ export default function MakeAnnouncementButton({
 
   const createLabourUpdate = (message: string) => {
     const labourUpdate: LabourUpdateDTO = {
-      id: "placeholder",
-      labour_update_type: "announcement",
+      id: 'placeholder',
+      labour_update_type: 'announcement',
       message,
-      labour_id: labourId || "",
+      labour_id: labourId || '',
       sent_time: new Date().toISOString(),
-    }
-    return labourUpdate
-  }
+    };
+    return labourUpdate;
+  };
 
   const mutation = useMutation({
     mutationFn: async (labourUpdate: LabourUpdateDTO) => {

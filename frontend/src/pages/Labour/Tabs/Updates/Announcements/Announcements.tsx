@@ -24,7 +24,7 @@ export function Announcements({
         {new Date(message.sent_time).toLocaleString().slice(0, 17).replace(',', ' at')}
       </div>
       <div className={classes.messageBubble}>
-        <LoadingOverlay visible={message.id === "placeholder"} />
+        <LoadingOverlay visible={message.id === 'placeholder'} />
         {message.message}
       </div>
     </div>

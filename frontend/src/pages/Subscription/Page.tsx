@@ -77,12 +77,12 @@ export const SubscriptionPage = () => {
       } catch (err) {
         if (err instanceof ApiError && err.status === 403) {
           // User has been blocked or removed
-          setSubscriptionId("")
+          setSubscriptionId('');
         }
         throw new Error('Failed to load subscription. Please try again later.');
       }
     },
-    refetchInterval: 30000
+    refetchInterval: 30000,
   });
 
   if (isPending) {

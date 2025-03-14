@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { IconSend } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
 import { useAuth } from 'react-oidc-context';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { LabourService, LabourUpdateRequest, OpenAPI, LabourUpdateDTO, LabourDTO } from '../../../../../client';
+import {
+  LabourDTO,
+  LabourService,
+  LabourUpdateDTO,
+  LabourUpdateRequest,
+  OpenAPI,
+} from '../../../../../client';
 import { useLabour } from '../../../LabourContext';
-import _ from 'lodash';
 
 export function PostStatusUpdateButton({
   message,
@@ -17,7 +23,7 @@ export function PostStatusUpdateButton({
 }) {
   const [mutationInProgress, setMutationInProgress] = useState(false);
   const auth = useAuth();
-  const {labourId} = useLabour();
+  const { labourId } = useLabour();
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -27,20 +33,20 @@ export function PostStatusUpdateButton({
 
   const createLabourUpdate = (message: string) => {
     const labourUpdate: LabourUpdateDTO = {
-      id: "placeholder",
-      labour_update_type: "status_update",
+      id: 'placeholder',
+      labour_update_type: 'status_update',
       message,
-      labour_id: labourId || "",
+      labour_id: labourId || '',
       sent_time: new Date().toISOString(),
-    }
-    return labourUpdate
-  }
+    };
+    return labourUpdate;
+  };
 
   const mutation = useMutation({
     mutationFn: async (labourUpdate: LabourUpdateDTO) => {
       setMutationInProgress(true);
       const requestBody: LabourUpdateRequest = {
-        labour_update_type: "status_update",
+        labour_update_type: 'status_update',
         sent_time: labourUpdate.sent_time,
         message: labourUpdate.message,
       };
