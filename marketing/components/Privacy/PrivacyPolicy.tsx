@@ -50,13 +50,13 @@ export const PrivacyPolicy = () => {
             using our
           </em>
         </strong>
-
+        {' '}
         <a href="#toc">
           <strong>
             <em>table of contents</em>
           </strong>
         </a>
-
+        {' '}
         <strong>
           <em>below to find the section you are looking for.</em>
         </strong>
@@ -65,7 +65,7 @@ export const PrivacyPolicy = () => {
         <strong>What personal information do we process?</strong> When you visit, use, or navigate
         our Services, we may process personal information depending on how you interact with us and
         the Services, the choices you make, and the products and features you use. Learn more about
-        <a href="#personalinfo">personal information you disclose to us</a>.
+        {' '}<a href="#personalinfo">personal information you disclose to us</a>.
       </p>
       <p>
         <strong>Do we process any sensitive personal information?</strong> Some of the information
@@ -73,7 +73,7 @@ export const PrivacyPolicy = () => {
         example your racial or ethnic origins, sexual orientation, and religious beliefs. We may
         process sensitive personal information when necessary with your consent or as otherwise
         permitted by applicable law. Learn more about
-        <a href="#sensitiveinfo">sensitive information we process</a>.
+        {' '}<a href="#sensitiveinfo">sensitive information we process</a>.
       </p>
       <p>
         <strong>Do we collect any information from third parties?</strong> We do not collect any
@@ -98,7 +98,7 @@ export const PrivacyPolicy = () => {
         guaranteed to be 100% secure, so we cannot promise or guarantee that hackers,
         cybercriminals, or other unauthorised third parties will not be able to defeat our security
         and improperly collect, access, steal, or modify your information. Learn more about
-        <a href="#infosafe">how we keep your information safe</a>.
+        {' '}<a href="#infosafe">how we keep your information safe</a>.
       </p>
       <p>
         <strong>What are your rights?</strong> Depending on where you are located geographically,
@@ -112,7 +112,7 @@ export const PrivacyPolicy = () => {
       </p>
       <p>
         Want to learn more about what we do with any information we collect?
-        <a href="#toc">Review the Privacy Notice in full</a>.
+        {' '}<a href="#toc">Review the Privacy Notice in full</a>.
       </p>
       <h2 id="toc">TABLE OF CONTENTS</h2>
       <p>
@@ -226,10 +226,13 @@ export const PrivacyPolicy = () => {
       <h3 id="google-api">Google API</h3>
       <p>
         Our use of information received from Google APIs will adhere to
+        {' '}
         <a href="https://developers.google.com/terms/api-services-user-data-policy">
           Google API Services User Data Policy
         </a>
+        {' '}
         , including the
+        {' '}
         <a href="https://developers.google.com/terms/api-services-user-data-policy#limited-use">
           Limited Use requirements
         </a>
@@ -307,7 +310,7 @@ export const PrivacyPolicy = () => {
             <strong>Consent.</strong> We may process your information if you have given us
             permission (i.e. consent) to use your personal information for a specific purpose. You
             can withdraw your consent at any time. Learn more about
-            <a href="#withdrawconsent">withdrawing your consent</a>.
+            {' '}<a href="#withdrawconsent">withdrawing your consent</a>.
           </p>
         </li>
         <li>
@@ -486,6 +489,7 @@ export const PrivacyPolicy = () => {
           Member State data protection authority
         </a>{' '}
         or
+        {' '}
         <a href="https://ico.org.uk/make-a-complaint/data-protection-complaints/data-protection-complaints/">
           UK data protection authority
         </a>

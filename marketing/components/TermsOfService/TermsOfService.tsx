@@ -634,7 +634,7 @@ export const TermsOfService = () => {
       </p>
       <h2 id="disputes">15. DISPUTE RESOLUTION</h2>
       <p>
-        The European Commission provides an
+        The European Commission provides an{' '}
         <a href="https://ec.europa.eu/consumers/odr">online dispute resolution platform</a>, which
         you can access. If you would like to bring this subject to our attention, please contact us.
       </p>
