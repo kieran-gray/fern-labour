@@ -7,6 +7,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     <div
       style={{
         minHeight: '100dvh',
+        transition: 'min-height 10ms',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'var(--mantine-color-pink-0)',
