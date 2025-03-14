@@ -37,6 +37,7 @@
         </#list>
     </#if>
     <title>${msg("loginTitle",(realm.displayName!''))}</title>
+    <script defer data-domain="fernlabour.com" src="https://plausible.io/js/script.js"></script>
     <link rel="icon" href="${url.resourcesPath}/img/favicon.ico" />
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;1000" rel="stylesheet">
     <#if properties.stylesCommon?has_content>
