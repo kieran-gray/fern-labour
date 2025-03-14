@@ -82,6 +82,45 @@
     @media (max-width: $mantine-breakpoint-sm) {
       padding: calc(var(--mantine-spacing-xs));
     }
+  }
+
+  .statsTextContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: stretch;
+    width: 100%;
+    flex-wrap: wrap;
+    padding: calc(var(--mantine-spacing-xl));
+    padding-bottom: 0px;
+
+    @media (max-width: $mantine-breakpoint-md) {
+      padding: calc(var(--mantine-spacing-md));
+      padding-bottom: 0px;
+    }
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: calc(var(--mantine-spacing-xs));
+      padding-bottom: 0px;
+      flex-direction: column;
+    }
+  }
+
+  .statsInner {
+    display: flex;
+    justify-content: space-between;
+    padding: calc(var(--mantine-spacing-xl));
+    padding-top: 0px;
+    margin-top: 10px 0px;
+    width: 100%;
+
+    @media (max-width: $mantine-breakpoint-md) {
+      padding: calc(var(--mantine-spacing-md));
+    }
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: 0px;
+    }
   } 
 
   .content {
