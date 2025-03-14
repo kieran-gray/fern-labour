@@ -20,7 +20,7 @@ export const LabourStatistics = ({
   const labourStatistics = createLabourStatistics(labour.contractions);
   const statistics = (
     <>
-      <div className={baseClasses.flexRow}>
+      <div className={classes.statsTextContainer}>
         {labour.start_time && (
           <Text className={classes.labourStatsText} mr={10}>
             <strong>Start Time:</strong> {new Date(labour.start_time).toString().slice(0, 21)}
@@ -94,10 +94,7 @@ export const LabourStatistics = ({
             <Image src={image} className={classes.image} />
           </div>
         </div>
-        <div
-          className={classes.inner}
-          style={{ paddingTop: '0', marginTop: '10px', marginBottom: '10px', width: '100%' }}
-        >
+        <div className={classes.statsInner}>
           <div className={baseClasses.flexColumn} style={{ width: '100%' }}>
             {statistics}
           </div>
