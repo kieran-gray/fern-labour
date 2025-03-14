@@ -41,6 +41,7 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
+        subscription_status: SubscriptionStatus | None = None,
     ) -> list[Subscription]:
         """
         Filter subscriptions based on inputs.
@@ -49,6 +50,7 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             labour_id: An optional Labour ID
             subscriber_id: An optional Subscriber ID
             birthing_person_id: An optional Birthing Person ID
+            subscription_status: An optional subscription status
 
         Returns:
             A list of subscriptions
@@ -60,6 +62,8 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             stmt = stmt.where(subscriptions_table.c.subscriber_id == subscriber_id.value)
         if birthing_person_id:
             stmt = stmt.where(subscriptions_table.c.birthing_person_id == birthing_person_id.value)
+        if subscription_status:
+            stmt = stmt.where(subscriptions_table.c.status == subscription_status.value)
 
         result = await self._session.execute(stmt)
         return list(result.scalars())
@@ -69,6 +73,7 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
+        subscription_status: SubscriptionStatus | None = None,
     ) -> Subscription | None:
         """
         Filter subscriptions based on inputs.
@@ -77,6 +82,7 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             labour_id: An optional Labour ID
             subscriber_id: An optional Subscriber ID
             birthing_person_id: An optional Birthing Person ID
+            subscription_status: An optional subscription status
 
         Returns:
             A subscription if found, else returns None
@@ -88,6 +94,8 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             stmt = stmt.where(subscriptions_table.c.subscriber_id == subscriber_id.value)
         if birthing_person_id:
             stmt = stmt.where(subscriptions_table.c.birthing_person_id == birthing_person_id.value)
+        if subscription_status:
+            stmt = stmt.where(subscriptions_table.c.status == subscription_status.value)
 
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
@@ -121,22 +129,5 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             subscriptions_table.c.id.in_([s.value for s in subscription_ids])
         )
 
-        result = await self._session.execute(stmt)
-        return list(result.scalars())
-
-    async def get_active_subscriptions_for_labour(self, labour_id: LabourId) -> list[Subscription]:
-        """
-        Retrieve a list of active subscriptions by IDs.
-
-        Args:
-            labour_id: The Labour ID to fetch the subscriptions for
-
-        Returns:
-            A list of subscriptions
-        """
-        stmt = select(Subscription).where(
-            (subscriptions_table.c.labour_id == labour_id.value)
-            & (subscriptions_table.c.status == SubscriptionStatus.SUBSCRIBED.value)
-        )
         result = await self._session.execute(stmt)
         return list(result.scalars())
