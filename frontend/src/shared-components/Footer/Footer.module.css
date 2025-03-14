@@ -1,7 +1,11 @@
 .footer {
-    margin-top: 4vh;
     background-color: var(--mantine-color-pink-1);
     z-index: 100;
+    margin-top: 2vh;
+  
+    @media (max-width: $mantine-breakpoint-md) {
+        margin-top: 1vh;
+    }
   }
   
   .inner {
