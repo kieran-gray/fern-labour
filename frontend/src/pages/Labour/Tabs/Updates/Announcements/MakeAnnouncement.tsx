@@ -13,7 +13,6 @@ import {
   LabourUpdateRequest,
   OpenAPI,
 } from '../../../../../client';
-import { sleep } from '../../../../../utils';
 import { useLabour } from '../../../LabourContext';
 import ConfirmAnnouncementModal from './ConfirmAnnouncement';
 
@@ -55,7 +54,6 @@ export default function MakeAnnouncementButton({
         sent_time: labourUpdate.sent_time,
         message: labourUpdate.message,
       };
-      await sleep(5000);
       const response = await LabourService.postLabourUpdateApiV1LabourLabourUpdatePost({
         requestBody,
       });
