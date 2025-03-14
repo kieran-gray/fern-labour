@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { IconPencil, IconSwitchHorizontal } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
-import { Avatar, Button, Group, Image, ScrollArea, Text, TextInput, Title } from '@mantine/core';
+import {
+  Avatar,
+  Button,
+  Group,
+  Image,
+  LoadingOverlay,
+  ScrollArea,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import image from '../image.svg';
@@ -25,6 +35,7 @@ export function StatusUpdates({
   const statusUpdateDisplay = statusUpdates.map((data) => {
     return (
       <div className={classes.statusUpdatePanel} id={data.id}>
+        <LoadingOverlay visible={data.id === 'placeholder'} />
         <Group>
           <Avatar alt={userName} radius="xl" color="var(--mantine-color-pink-5)" />
           <div>

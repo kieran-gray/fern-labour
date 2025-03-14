@@ -2,6 +2,7 @@ from typing import Protocol
 
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.subscription.entity import Subscription
+from app.domain.subscription.enums import SubscriptionStatus
 from app.domain.subscription.vo_subscription_id import SubscriptionId
 from app.domain.user.vo_user_id import UserId
 
@@ -30,6 +31,7 @@ class SubscriptionRepository(Protocol):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
+        subscription_status: SubscriptionStatus | None = None,
     ) -> list[Subscription]:
         """
         Filter subscriptions based on inputs.
@@ -38,6 +40,7 @@ class SubscriptionRepository(Protocol):
             labour_id: An optional Labour ID
             subscriber_id: An optional Subscriber ID
             birthing_person_id: An optional Birthing Person ID
+            subscription_status: An optional subscription status
 
         Returns:
             A list of subscriptions
@@ -48,6 +51,7 @@ class SubscriptionRepository(Protocol):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
+        status: SubscriptionStatus | None = None,
     ) -> Subscription | None:
         """
         Filter subscriptions based on inputs.
@@ -56,6 +60,7 @@ class SubscriptionRepository(Protocol):
             labour_id: An optional Labour ID
             subscriber_id: An optional Subscriber ID
             birthing_person_id: An optional Birthing Person ID
+            subscription_status: An optional subscription status
 
         Returns:
             A subscription if found, else returns None
@@ -78,17 +83,6 @@ class SubscriptionRepository(Protocol):
 
         Args:
             subscription_ids: The IDs of the subscriptions to retrieve
-
-        Returns:
-            A list of subscriptions
-        """
-
-    async def get_active_subscriptions_for_labour(self, labour_id: LabourId) -> list[Subscription]:
-        """
-        Retrieve a list of active subscriptions by IDs.
-
-        Args:
-            labour_id: The Labour ID to fetch the subscriptions for
 
         Returns:
             A list of subscriptions

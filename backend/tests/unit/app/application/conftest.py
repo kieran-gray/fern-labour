@@ -104,6 +104,7 @@ class MockSubscriptionRepository(SubscriptionRepository):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
+        subscription_status: SubscriptionStatus | None = None,
     ) -> list[Subscription]:
         subscriptions = []
         for subscription in self._data.values():
@@ -113,6 +114,8 @@ class MockSubscriptionRepository(SubscriptionRepository):
                 continue
             if birthing_person_id and subscription.birthing_person_id != birthing_person_id:
                 continue
+            if subscription_status and subscription.status is not subscription_status:
+                continue
             subscriptions.append(subscription)
         return subscriptions
 
@@ -121,6 +124,7 @@ class MockSubscriptionRepository(SubscriptionRepository):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
+        subscription_status: SubscriptionStatus | None = None,
     ) -> Subscription | None:
         found_subscription = None
         for subscription in self._data.values():
@@ -130,20 +134,12 @@ class MockSubscriptionRepository(SubscriptionRepository):
                 continue
             if birthing_person_id and subscription.birthing_person_id != birthing_person_id:
                 continue
+            if subscription_status and subscription.status is not subscription_status:
+                continue
             if found_subscription:
                 raise ValueError("Multiple results found")
             found_subscription = subscription
         return found_subscription
-
-    async def get_active_subscriptions_for_labour(self, labour_id: LabourId) -> list[Subscription]:
-        subscriptions = []
-        for subscription in self._data.values():
-            if (
-                subscription.labour_id == labour_id
-                and subscription.status is SubscriptionStatus.SUBSCRIBED
-            ):
-                subscriptions.append(subscription)
-        return subscriptions
 
 
 @pytest_asyncio.fixture

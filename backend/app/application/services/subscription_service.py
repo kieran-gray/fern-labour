@@ -62,12 +62,18 @@ class SubscriptionService:
         ):
             raise UnauthorizedSubscriptionRequest()
 
+        if (
+            subscription.subscriber_id.value == requester_id
+            and subscription.status is not SubscriptionStatus.SUBSCRIBED
+        ):
+            raise UnauthorizedSubscriptionRequest()
+
         return SubscriptionDTO.from_domain(subscription)
 
     async def get_subscriber_subscriptions(self, subscriber_id: str) -> list[SubscriptionDTO]:
         subscriber = await self._user_service.get(user_id=subscriber_id)
         subscriptions = await self._subscription_repository.filter(
-            subscriber_id=UserId(subscriber.id)
+            subscriber_id=UserId(subscriber.id), subscription_status=SubscriptionStatus.SUBSCRIBED
         )
         return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
 
@@ -101,10 +107,8 @@ class SubscriptionService:
             raise InsufficientLabourPaymentPlan()
 
         if labour.payment_plan == LabourPaymentPlan.INNER_CIRCLE.value:
-            active_subscriptions = (
-                await self._subscription_repository.get_active_subscriptions_for_labour(
-                    labour_id=labour_domain_id
-                )
+            active_subscriptions = await self._subscription_repository.filter(
+                labour_id=labour_domain_id, subscription_status=SubscriptionStatus.SUBSCRIBED
             )
             if len(active_subscriptions) >= INNER_CIRCLE_MAX_SUBSCRIBERS:
                 raise MaximumNumberOfSubscribersReached()

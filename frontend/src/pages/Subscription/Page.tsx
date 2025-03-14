@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useSwipeable } from 'react-swipeable';
 import { Space, Tabs, Text } from '@mantine/core';
-import { OpenAPI, SubscriptionService } from '../../client/index.ts';
+import { ApiError, OpenAPI, SubscriptionService } from '../../client/index.ts';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
@@ -28,7 +28,7 @@ const tabOrder = ['subscriptions', 'details', 'updates', 'announcements', 'stats
 
 export const SubscriptionPage = () => {
   const auth = useAuth();
-  const { subscriptionId } = useSubscription();
+  const { subscriptionId, setSubscriptionId } = useSubscription();
   const [activeTab, setActiveTab] = useState<string | null>('details');
 
   if (!subscriptionId) {
@@ -75,9 +75,14 @@ export const SubscriptionPage = () => {
           );
         return response;
       } catch (err) {
+        if (err instanceof ApiError && err.status === 403) {
+          // User has been blocked or removed
+          setSubscriptionId('');
+        }
         throw new Error('Failed to load subscription. Please try again later.');
       }
     },
+    refetchInterval: 30000,
   });
 
   if (isPending) {
