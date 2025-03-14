@@ -4,8 +4,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ApiError, LabourService, LabourUpdateRequest, OpenAPI } from '../../../../../client';
+import { ApiError, LabourDTO, LabourService, LabourUpdateDTO, LabourUpdateRequest, OpenAPI } from '../../../../../client';
 import ConfirmAnnouncementModal from './ConfirmAnnouncement';
+import { useLabour } from '../../../LabourContext';
+import { sleep } from '../../../../../utils';
+import _ from 'lodash';
 
 export default function MakeAnnouncementButton({
   message,
@@ -17,6 +20,8 @@ export default function MakeAnnouncementButton({
   const [getConfimation, setGetConfimation] = useState(false);
   const [mutationInProgress, setMutationInProgress] = useState(false);
   const [confirmedMakeAnnouncement, setConfirmedMakeAnnouncement] = useState(false);
+  const {labourId} = useLabour();
+
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -24,24 +29,52 @@ export default function MakeAnnouncementButton({
 
   const queryClient = useQueryClient();
 
+  const createLabourUpdate = (message: string) => {
+    const labourUpdate: LabourUpdateDTO = {
+      id: "placeholder",
+      labour_update_type: "announcement",
+      message,
+      labour_id: labourId || "",
+      sent_time: new Date().toISOString(),
+    }
+    return labourUpdate
+  }
+
   const mutation = useMutation({
-    mutationFn: async (message: string) => {
+    mutationFn: async (labourUpdate: LabourUpdateDTO) => {
       setMutationInProgress(true);
       const requestBody: LabourUpdateRequest = {
         labour_update_type: 'announcement',
-        sent_time: new Date().toISOString(),
-        message,
+        sent_time: labourUpdate.sent_time,
+        message: labourUpdate.message,
       };
+      await sleep(5000);
       const response = await LabourService.postLabourUpdateApiV1LabourLabourUpdatePost({
         requestBody,
       });
       return response.labour;
     },
+    onMutate: async (labourUpdate: LabourUpdateDTO) => {
+      await queryClient.cancelQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      const previousLabourState: LabourDTO | undefined = queryClient.getQueryData([
+        'labour',
+        auth.user?.profile.sub,
+      ]);
+      if (previousLabourState != null) {
+        const newLabourState = _.cloneDeep(previousLabourState);
+        newLabourState.announcements.push(labourUpdate);
+        queryClient.setQueryData(['labour', auth.user?.profile.sub], newLabourState);
+      }
+      return { previousLabourState };
+    },
     onSuccess: (labour) => {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
       setAnnouncement('');
     },
-    onError: (error) => {
+    onError: (error, _, context) => {
+      if (context != null) {
+        queryClient.setQueryData(['labour', auth.user?.profile.sub], context.previousLabourState);
+      }
       if (error instanceof ApiError) {
         notifications.show({
           title: 'Error',
@@ -59,6 +92,7 @@ export default function MakeAnnouncementButton({
       }
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
       setMutationInProgress(false);
     },
   });
@@ -67,7 +101,7 @@ export default function MakeAnnouncementButton({
     if (confirmedMakeAnnouncement) {
       setGetConfimation(false);
       setConfirmedMakeAnnouncement(false);
-      mutation.mutate(message);
+      mutation.mutate(createLabourUpdate(message));
     } else {
       return (
         <ConfirmAnnouncementModal

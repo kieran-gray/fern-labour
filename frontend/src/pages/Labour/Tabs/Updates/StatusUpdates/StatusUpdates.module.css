@@ -28,6 +28,7 @@
   padding: 10px 20px;
   width: 100%;
   border-radius: var(--mantine-radius-lg);
+  position: relative;
 }
 
 

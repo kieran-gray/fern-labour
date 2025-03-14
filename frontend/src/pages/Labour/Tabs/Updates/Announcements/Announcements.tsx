@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { IconPencil, IconSwitchHorizontal } from '@tabler/icons-react';
-import { Button, Image, ScrollArea, Text, TextInput, Title } from '@mantine/core';
+import { Button, Image, LoadingOverlay, ScrollArea, Text, TextInput, Title } from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import image from '../image.svg';
@@ -23,7 +23,10 @@ export function Announcements({
       <div className={classes.messageLabel}>
         {new Date(message.sent_time).toLocaleString().slice(0, 17).replace(',', ' at')}
       </div>
-      <div className={classes.messageBubble}>{message.message}</div>
+      <div className={classes.messageBubble}>
+        <LoadingOverlay visible={message.id === "placeholder"} />
+        {message.message}
+      </div>
     </div>
   ));
 
