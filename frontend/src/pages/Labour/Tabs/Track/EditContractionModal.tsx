@@ -29,7 +29,8 @@ export const EditContractionModal = ({
   close: CloseFunctionType;
 }) => {
   const auth = useAuth();
-  const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
+  const [updateMutationInProgress, setUpdateMutationInProgress] = useState<boolean>(false);
+  const [deleteMutationInProgress, setDeleteMutationInProgress] = useState<boolean>(false);
   const [getConfirmation, setGetConfirmation] = useState<boolean>(false);
   const [confirmed, setConfirmed] = useState<boolean>(false);
   const queryClient = useQueryClient();
@@ -55,7 +56,7 @@ export const EditContractionModal = ({
 
   const deleteContractionMutation = useMutation({
     mutationFn: async ({ contractionId }: { contractionId: string }) => {
-      setMutationInProgress(true);
+      setDeleteMutationInProgress(true);
       const requestBody: DeleteContractionRequest = { contraction_id: contractionId };
       const response = await LabourService.deleteContractionApiV1LabourContractionDeleteDelete({
         requestBody,
@@ -64,7 +65,7 @@ export const EditContractionModal = ({
     },
     onSuccess: async (labour) => {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-      setMutationInProgress(false);
+      setDeleteMutationInProgress(false);
       notifications.show({
         title: 'Success',
         message: `Contraction Deleted`,
@@ -74,7 +75,7 @@ export const EditContractionModal = ({
       close();
     },
     onError: async (_) => {
-      setMutationInProgress(false);
+      setDeleteMutationInProgress(false);
       notifications.show({
         title: 'Error Deleting Contraction',
         message: 'Something went wrong. Please try again.',
@@ -92,7 +93,7 @@ export const EditContractionModal = ({
       values: typeof form.values;
       contractionId: string;
     }) => {
-      setMutationInProgress(true);
+      setUpdateMutationInProgress(true);
       const startTime =
         values.startTime !== ''
           ? updateTime(contractionData!.startTime, values.startTime)
@@ -115,7 +116,7 @@ export const EditContractionModal = ({
     },
     onSuccess: async (labour) => {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-      setMutationInProgress(false);
+      setUpdateMutationInProgress(false);
       notifications.show({
         title: 'Success',
         message: `Contraction Updated`,
@@ -125,7 +126,7 @@ export const EditContractionModal = ({
       close();
     },
     onError: async (_) => {
-      setMutationInProgress(false);
+      setUpdateMutationInProgress(false);
       notifications.show({
         title: 'Error Updating Contraction',
         message: 'Something went wrong. Please try again.',
@@ -230,7 +231,7 @@ export const EditContractionModal = ({
             styles={{ section: { marginLeft: 20 } }}
             style={{ flexShrink: 1, marginRight: '5px' }}
             onClick={() => setGetConfirmation(true)}
-            loading={mutationInProgress}
+            loading={deleteMutationInProgress}
           />
           <Button
             color="var(--mantine-color-pink-4)"
@@ -242,7 +243,7 @@ export const EditContractionModal = ({
             styles={{ section: { marginRight: 22 } }}
             style={{ width: '100%' }}
             type="submit"
-            loading={mutationInProgress}
+            loading={updateMutationInProgress}
           >
             Update Contraction
           </Button>
