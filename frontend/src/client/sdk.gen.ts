@@ -13,6 +13,8 @@ import type {
   ContactUsSendMessageApiV1ContactUsPostResponse,
   CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostData,
   CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostResponse,
+  DeleteContractionApiV1LabourContractionDeleteDeleteData,
+  DeleteContractionApiV1LabourContractionDeleteDeleteResponse,
   DeleteLabourApiV1LabourDeleteLabourIdDeleteData,
   DeleteLabourApiV1LabourDeleteLabourIdDeleteResponse,
   DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData,
@@ -375,6 +377,31 @@ export class LabourService {
     return __request(OpenAPI, {
       method: 'PUT',
       url: '/api/v1/labour/contraction/update',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Delete Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static deleteContractionApiV1LabourContractionDeleteDelete(
+    data: DeleteContractionApiV1LabourContractionDeleteDeleteData
+  ): CancelablePromise<DeleteContractionApiV1LabourContractionDeleteDeleteResponse> {
+    return __request(OpenAPI, {
+      method: 'DELETE',
+      url: '/api/v1/labour/contraction/delete',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {

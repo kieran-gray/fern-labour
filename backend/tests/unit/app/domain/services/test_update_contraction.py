@@ -18,7 +18,7 @@ from app.domain.services.begin_labour import BeginLabourService
 from app.domain.services.complete_labour import CompleteLabourService
 from app.domain.services.end_contraction import EndContractionService
 from app.domain.services.start_contraction import StartContractionService
-from app.domain.services.update_contraction_service import UpdateContractionService
+from app.domain.services.update_contraction import UpdateContractionService
 
 
 def test_can_update_contraction_notes(sample_labour: Labour):

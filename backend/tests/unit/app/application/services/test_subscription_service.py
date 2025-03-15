@@ -209,9 +209,7 @@ async def test_cannot_get_subscription_by_id_as_subscriber_when_not_subscribed(
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
-    await subscription_service.unsubscribe_from(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id
-    )
+    await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
     with pytest.raises(UnauthorizedSubscriptionRequest):
         await subscription_service.get_by_id(
             requester_id=SUBSCRIBER, subscription_id=subscription.id
@@ -226,7 +224,9 @@ async def test_can_get_subscription_by_id_as_birthing_person_when_not_subscribed
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
-    subscription = await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
+    subscription = await subscription_service.unsubscribe_from(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id
+    )
     subscription_by_id = await subscription_service.get_by_id(
         requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )

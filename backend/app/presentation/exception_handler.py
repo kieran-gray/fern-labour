@@ -12,6 +12,7 @@ from pydantic_core import ErrorDetails
 from app.application.base.exceptions import ApplicationError
 from app.domain.base.exceptions import DomainError
 from app.domain.contraction.exceptions import (
+    CannotDeleteActiveContraction,
     CannotUpdateActiveContraction,
     ContractionIdInvalid,
     ContractionNotFoundById,
@@ -117,6 +118,7 @@ class ExceptionMapper:
             LabourNotFoundById: status.HTTP_404_NOT_FOUND,
             InsufficientLabourPaymentPlan: status.HTTP_400_BAD_REQUEST,
             MaximumNumberOfSubscribersReached: status.HTTP_400_BAD_REQUEST,
+            CannotDeleteActiveContraction: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

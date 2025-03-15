@@ -21,3 +21,7 @@ class UpdateContractionRequest(BaseModel):
     end_time: datetime | None = None
     intensity: int | None = None
     notes: str | None = None
+
+
+class DeleteContractionRequest(BaseModel):
+    contraction_id: str

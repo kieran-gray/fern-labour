@@ -45,6 +45,10 @@ export type CreateCheckoutRequest = {
   cancel_url: string;
 };
 
+export type DeleteContractionRequest = {
+  contraction_id: string;
+};
+
 export type DeleteLabourUpdateRequest = {
   labour_update_id: string;
 };
@@ -313,6 +317,12 @@ export type UpdateContractionApiV1LabourContractionUpdatePutData = {
 };
 
 export type UpdateContractionApiV1LabourContractionUpdatePutResponse = LabourResponse;
+
+export type DeleteContractionApiV1LabourContractionDeleteDeleteData = {
+  requestBody: DeleteContractionRequest;
+};
+
+export type DeleteContractionApiV1LabourContractionDeleteDeleteResponse = LabourResponse;
 
 export type CompleteLabourApiV1LabourCompletePutData = {
   requestBody: CompleteLabourRequest;

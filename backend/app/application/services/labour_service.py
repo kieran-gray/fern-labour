@@ -24,10 +24,11 @@ from app.domain.labour_update.enums import LabourUpdateType
 from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 from app.domain.services.begin_labour import BeginLabourService
 from app.domain.services.complete_labour import CompleteLabourService
+from app.domain.services.delete_contraction import DeleteContractionService
 from app.domain.services.end_contraction import EndContractionService
 from app.domain.services.post_labour_update import PostLabourUpdateService
 from app.domain.services.start_contraction import StartContractionService
-from app.domain.services.update_contraction_service import UpdateContractionService
+from app.domain.services.update_contraction import UpdateContractionService
 from app.domain.services.update_labour_payment_plan import UpdateLabourPaymentPlanService
 from app.domain.user.exceptions import UserDoesNotHaveActiveLabour, UserHasActiveLabour
 from app.domain.user.vo_user_id import UserId
@@ -218,6 +219,28 @@ class LabourService:
             end_time=end_time,
             intensity=intensity,
             notes=notes,
+        )
+
+        await self._labour_repository.save(labour)
+
+        await self._event_producer.publish_batch(labour.clear_domain_events())
+
+        return LabourDTO.from_domain(labour)
+
+    async def delete_contraction(self, birthing_person_id: str, contraction_id: str) -> LabourDTO:
+        domain_id = UserId(birthing_person_id)
+        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
+        if not labour:
+            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+
+        try:
+            contraction_domain_id = ContractionId(UUID(contraction_id))
+        except ValueError:
+            raise ContractionIdInvalid(contraction_id=contraction_id)
+
+        labour = DeleteContractionService().delete_contraction(
+            labour=labour,
+            contraction_id=contraction_domain_id,
         )
 
         await self._labour_repository.save(labour)
