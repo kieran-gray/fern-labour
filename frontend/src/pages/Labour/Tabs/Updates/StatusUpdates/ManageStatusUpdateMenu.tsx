@@ -4,11 +4,9 @@ import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { DeleteLabourUpdateRequest, LabourService, OpenAPI } from '../../../../../client';
-import { useLabour } from '../../../LabourContext';
 
 export function ManageStatusUpdateMenu({ statusUpdateId }: { statusUpdateId: string }) {
   const auth = useAuth();
-  const { labourId } = useLabour();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
   };
@@ -22,7 +20,7 @@ export function ManageStatusUpdateMenu({ statusUpdateId }: { statusUpdateId: str
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub, labourId] });
+      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
       notifications.show({
         title: 'Success',
         message: `Status update deleted`,
