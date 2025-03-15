@@ -1915,6 +1915,92 @@
                 ]
             }
         },
+        "/api/v1/labour/contraction/delete": {
+            "delete": {
+                "tags": [
+                    "Labour"
+                ],
+                "summary": "Delete Contraction",
+                "operationId": "delete_contraction_api_v1_labour_contraction_delete_delete",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeleteContractionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LabourResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
         "/api/v1/labour/complete": {
             "put": {
                 "tags": [
@@ -3003,6 +3089,19 @@
                     "cancel_url"
                 ],
                 "title": "CreateCheckoutRequest"
+            },
+            "DeleteContractionRequest": {
+                "properties": {
+                    "contraction_id": {
+                        "type": "string",
+                        "title": "Contraction Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "contraction_id"
+                ],
+                "title": "DeleteContractionRequest"
             },
             "DeleteLabourUpdateRequest": {
                 "properties": {

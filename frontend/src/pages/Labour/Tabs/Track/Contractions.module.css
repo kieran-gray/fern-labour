@@ -76,3 +76,9 @@
     font-weight: 1000;
     font-size: var(--mantine-font-size-xl);
 }
+
+.flexRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}

@@ -34,3 +34,8 @@ class ContractionNotFoundById(DomainError):
 class CannotUpdateActiveContraction(DomainError):
     def __init__(self) -> None:
         super().__init__("Cannot edit active contraction. Complete the contraction first.")
+
+
+class CannotDeleteActiveContraction(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Cannot delete active contraction. Complete the contraction first.")

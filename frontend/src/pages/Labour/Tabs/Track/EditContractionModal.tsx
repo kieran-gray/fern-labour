@@ -1,12 +1,18 @@
 import { useState } from 'react';
-import { IconClock, IconUpload } from '@tabler/icons-react';
+import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { LabourService, OpenAPI, UpdateContractionRequest } from '../../../../client';
+import {
+  DeleteContractionRequest,
+  LabourService,
+  OpenAPI,
+  UpdateContractionRequest,
+} from '../../../../client';
+import ConfirmActionModal from './ConfirmActionModal';
 import { ContractionData } from './ContractionTimeline';
 import modalClasses from '../../../../shared-components/Modal.module.css';
 import classes from './Contractions.module.css';
@@ -24,6 +30,8 @@ export const EditContractionModal = ({
 }) => {
   const auth = useAuth();
   const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
+  const [getConfirmation, setGetConfirmation] = useState<boolean>(false);
+  const [confirmed, setConfirmed] = useState<boolean>(false);
   const queryClient = useQueryClient();
 
   const form = useForm({
@@ -45,6 +53,37 @@ export const EditContractionModal = ({
     return split.join('T');
   };
 
+  const deleteContractionMutation = useMutation({
+    mutationFn: async ({ contractionId }: { contractionId: string }) => {
+      setMutationInProgress(true);
+      const requestBody: DeleteContractionRequest = { contraction_id: contractionId };
+      const response = await LabourService.deleteContractionApiV1LabourContractionDeleteDelete({
+        requestBody,
+      });
+      return response.labour;
+    },
+    onSuccess: async (labour) => {
+      queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
+      setMutationInProgress(false);
+      notifications.show({
+        title: 'Success',
+        message: `Contraction Deleted`,
+        radius: 'lg',
+        color: 'var(--mantine-color-green-3)',
+      });
+      close();
+    },
+    onError: async (_) => {
+      setMutationInProgress(false);
+      notifications.show({
+        title: 'Error Deleting Contraction',
+        message: 'Something went wrong. Please try again.',
+        radius: 'lg',
+        color: 'var(--mantine-color-pink-7)',
+      });
+    },
+  });
+
   const updateContractionMutation = useMutation({
     mutationFn: async ({
       values,
@@ -54,8 +93,6 @@ export const EditContractionModal = ({
       contractionId: string;
     }) => {
       setMutationInProgress(true);
-      console.log(values);
-      console.log(contractionData);
       const startTime =
         values.startTime !== ''
           ? updateTime(contractionData!.startTime, values.startTime)
@@ -100,6 +137,18 @@ export const EditContractionModal = ({
       form.reset();
     },
   });
+
+  if (getConfirmation) {
+    if (confirmed) {
+      deleteContractionMutation.mutate({ contractionId: contractionData!.contractionId });
+      setGetConfirmation(false);
+      setConfirmed(false);
+    } else {
+      return (
+        <ConfirmActionModal setGetConfirmation={setGetConfirmation} setConfirmed={setConfirmed} />
+      );
+    }
+  }
 
   return (
     <Modal
@@ -170,20 +219,34 @@ export const EditContractionModal = ({
           ]}
         />
         <Space h="xl" />
-        <Button
-          color="var(--mantine-color-pink-4)"
-          leftSection={<IconUpload />}
-          variant="outline"
-          radius="xl"
-          size="md"
-          h={48}
-          styles={{ section: { marginRight: 22 } }}
-          style={{ width: '100%' }}
-          type="submit"
-          loading={mutationInProgress}
-        >
-          Update Contraction
-        </Button>
+        <div className={classes.flexRow}>
+          <Button
+            color="var(--mantine-color-pink-5)"
+            leftSection={<IconTrash />}
+            variant="filled"
+            radius="xl"
+            size="md"
+            h={48}
+            styles={{ section: { marginLeft: 20 } }}
+            style={{ flexShrink: 1, marginRight: '5px' }}
+            onClick={() => setGetConfirmation(true)}
+            loading={mutationInProgress}
+          />
+          <Button
+            color="var(--mantine-color-pink-4)"
+            leftSection={<IconUpload />}
+            variant="light"
+            radius="xl"
+            size="md"
+            h={48}
+            styles={{ section: { marginRight: 22 } }}
+            style={{ width: '100%' }}
+            type="submit"
+            loading={mutationInProgress}
+          >
+            Update Contraction
+          </Button>
+        </div>
       </form>
     </Modal>
   );
