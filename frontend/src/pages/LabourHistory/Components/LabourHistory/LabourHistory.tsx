@@ -1,4 +1,5 @@
-import { Text, Title } from '@mantine/core';
+import { Image, Text, Title } from '@mantine/core';
+import image from '../../../Subscriptions/Components/ManageSubscriptions/image.svg';
 import { LabourHistoryTable } from './LabourHistoryTable/LabourHistoryTable';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourHistory.module.css';
@@ -19,8 +20,13 @@ export function LabourHistory() {
               Here, you can view all of your past and present labours. Soon you will be able to
               revisit a labour after you have completed it.
             </Text>
+            <div className={classes.imageFlexRow}>
+              <Image src={image} className={classes.smallImage} />
+            </div>
           </div>
+          <Image src={image} className={classes.image} />
         </div>
+
         <div className={classes.inner} style={{ paddingTop: '0' }}>
           <LabourHistoryTable />
         </div>

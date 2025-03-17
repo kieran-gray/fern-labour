@@ -40,7 +40,7 @@ export default function CompleteLabourButton({
       queryClient.invalidateQueries({ queryKey: ['birthingPerson', auth.user?.profile.sub] });
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
       setLabourId(null);
-      navigate('/');
+      navigate('/completed');
     },
     onError: (error) => {
       console.error('Error completing labour', error);

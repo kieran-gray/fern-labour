@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { IconArrowLeft, IconPencil } from '@tabler/icons-react';
-import { Button, Image, Mark, Text, Textarea, Title, Tooltip } from '@mantine/core';
+import { Button, Image, Text, Textarea, Title, Tooltip } from '@mantine/core';
 import image from './celebrate.svg';
 import CompleteLabourButton from './CompleteLabourButton';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
@@ -29,17 +29,6 @@ export default function Complete({
             </Title>
             <div className={baseClasses.flexRow} style={{ flexWrap: 'nowrap' }}>
               <div className={baseClasses.flexColumn}>
-                <Text c="var(--mantine-color-gray-7)" mt="md" size="md">
-                  <Mark color="transparent" fw={700} fz="lg">
-                    You did it!
-                  </Mark>{' '}
-                  Bringing new life into the world is an incredible journey, and we are so proud of
-                  you. Take a deep breath, soak in this beautiful moment, and know that you are
-                  amazing.
-                </Text>
-                <div className={classes.imageFlexRow}>
-                  <Image src={image} className={classes.smallImage} />
-                </div>
                 <Text c="var(--mantine-color-gray-7)" mt="sm" mb="sm" size="md">
                   If you want to, you can add a note below before completing your labour which will
                   be shared with all of your subscribers.
@@ -48,6 +37,9 @@ export default function Complete({
                   You could use it to introduce the new addition to your family, or just to let
                   everyone know you are OK.
                 </Text>
+                <div className={classes.imageFlexRow}>
+                  <Image src={image} className={classes.smallImage} />
+                </div>
               </div>
               <Image src={image} className={classes.image} style={{ flexGrow: 1 }} />
             </div>

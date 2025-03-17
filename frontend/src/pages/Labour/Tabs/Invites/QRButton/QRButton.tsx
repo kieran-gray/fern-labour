@@ -19,6 +19,7 @@ export default function QRButton({ url }: { url: string }) {
           body: classes.modalBody,
           close: classes.closeButton,
         }}
+        centered
         opened={opened}
         onClose={close}
         title="Your share QR code"

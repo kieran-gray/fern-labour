@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IconDotsVertical, IconTrash } from '@tabler/icons-react';
+import { IconArrowRight, IconDotsVertical, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
@@ -63,6 +63,13 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Label>Manage Labour</Menu.Label>
+        <Menu.Item
+          rightSection={<IconArrowRight size={20} stroke={1.5} />}
+          color="var(--mantine-color-gray-8)"
+        >
+          View Labour
+        </Menu.Item>
+        <Menu.Divider />
         <Menu.Item
           color="red"
           leftSection={<IconTrash size={20} stroke={1.5} />}
