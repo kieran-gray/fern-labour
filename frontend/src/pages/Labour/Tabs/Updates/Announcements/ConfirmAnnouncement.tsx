@@ -25,6 +25,7 @@ export default function ConfirmAnnouncementModal({
         close: classes.closeButton,
       }}
       opened
+      centered
       onClose={close}
       title="Make Announcement?"
     >

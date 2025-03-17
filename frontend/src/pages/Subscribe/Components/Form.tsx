@@ -6,6 +6,7 @@ import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/cor
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { OpenAPI, SubscribeToRequest, SubscriptionService } from '../../../client';
+import { AppMode, useMode } from '../../Home/SelectAppMode';
 import image from './protected.svg';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './Form.module.css';
@@ -22,6 +23,7 @@ export default function SubscribeForm({
   const [mutationInProgress, setMutationInProgress] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
+  const { setMode } = useMode();
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -53,6 +55,7 @@ export default function SubscribeForm({
         ['subscription', subscription.id, auth.user?.profile.sub],
         subscription
       );
+      setMode(AppMode.Subscriber);
       navigate('/');
     },
     onError: () => {

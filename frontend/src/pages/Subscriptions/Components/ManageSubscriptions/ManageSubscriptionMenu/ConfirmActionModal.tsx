@@ -23,6 +23,7 @@ export default function ConfirmActionModal({
         close: classes.closeButton,
       }}
       opened
+      centered
       onClose={close}
       title={title}
     >

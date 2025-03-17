@@ -23,6 +23,7 @@ export default function ConfirmActionModal({
       }}
       withCloseButton={false}
       opened
+      centered
       onClose={close}
       title={title}
     >

@@ -73,7 +73,7 @@ export function UserMenu() {
                   Go to your labour
                 </Menu.Item>
               )}
-              {mode === AppMode.Birth && pathname === '/' && (
+              {mode === AppMode.Birth && pathname !== '/history' && (
                 <Menu.Item
                   leftSection={<IconHistory size={16} stroke={1.5} />}
                   onClick={() => navigate('/history')}
@@ -83,7 +83,7 @@ export function UserMenu() {
               )}
             </>
           )}
-          <Menu.Label>Settings</Menu.Label>
+          <Menu.Label>Account Settings</Menu.Label>
           <Menu.Item
             leftSection={<IconSettings size={16} stroke={1.5} />}
             onClick={() => {
@@ -154,7 +154,7 @@ export function MobileUserMenu() {
               Go to your labour
             </Anchor>
           )}
-          {mode === AppMode.Birth && pathname === '/' && (
+          {mode === AppMode.Birth && pathname !== '/history' && (
             <Anchor<'a'>
               key="labour"
               onClick={() => navigate('/history')}
@@ -163,9 +163,10 @@ export function MobileUserMenu() {
               Your Labour History
             </Anchor>
           )}
+          <Space h="xl" />
         </>
       )}
-      <Text className={classes.drawerLabel}>Settings</Text>
+      <Text className={classes.drawerLabel}>Account Settings</Text>
       <Anchor<'a'>
         key="update"
         className={classes.mainLink}

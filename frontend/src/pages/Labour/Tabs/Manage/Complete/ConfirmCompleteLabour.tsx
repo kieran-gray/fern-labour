@@ -23,6 +23,7 @@ export default function ConfirmCompleteLabourModal({
         close: classes.modalCloseButton,
       }}
       opened
+      centered
       onClose={close}
       title="Complete your labour?"
     >
