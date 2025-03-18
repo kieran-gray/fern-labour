@@ -134,10 +134,11 @@ class TwilioSettings(BaseModel):
     account_sid: str | None = Field(alias="TWILIO_ACCOUNT_SID", default=None)
     auth_token: str | None = Field(alias="TWILIO_AUTH_TOKEN", default=None)
     sms_from_number: str | None = Field(alias="SMS_FROM_NUMBER", default=None)
+    messaging_service_sid: str | None = Field(alias="MESSAGING_SERVICE_SID", default=None)
 
     @property
     def twilio_enabled(self) -> bool:
-        return bool(self.account_sid and self.auth_token and self.sms_from_number)
+        return bool(self.account_sid and self.auth_token)
 
 
 class NotificationSettings(BaseModel):
