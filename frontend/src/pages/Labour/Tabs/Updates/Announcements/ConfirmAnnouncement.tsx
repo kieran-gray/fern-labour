@@ -26,7 +26,11 @@ export default function ConfirmAnnouncementModal({
       }}
       opened
       centered
-      onClose={close}
+      closeOnClickOutside
+      onClose={() => {
+        setGetConfirmation(false);
+        close;
+      }}
       title="Make Announcement?"
     >
       <Space h="lg" />
