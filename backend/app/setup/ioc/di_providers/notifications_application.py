@@ -24,7 +24,7 @@ from app.infrastructure.notifications.sms.twilio_sms_notification_gateway import
     TwilioSMSNotificationGateway,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum
-from app.setup.settings import Settings
+from app.setup.settings import EmailSettings, Settings, TwilioSettings
 
 
 class NotificationsApplicationProvider(Provider):
@@ -32,38 +32,46 @@ class NotificationsApplicationProvider(Provider):
     scope = Scope.REQUEST
 
     @provide(scope=Scope.APP)
-    def get_email_notification_gateway(
+    def get_email_settings(
         self, settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)]
-    ) -> EmailNotificationGateway:
-        if settings.notifications.email.emails_enabled:
-            assert settings.notifications.email.smtp_host
-            assert settings.notifications.email.emails_from_email
-            assert settings.notifications.email.smtp_port
+    ) -> EmailSettings:
+        return settings.notifications.email
+
+    @provide(scope=Scope.APP)
+    def get_twilio_settings(
+        self, settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)]
+    ) -> TwilioSettings:
+        return settings.notifications.twilio
+
+    @provide(scope=Scope.APP)
+    def get_email_notification_gateway(self, settings: EmailSettings) -> EmailNotificationGateway:
+        if settings.emails_enabled:
+            assert settings.smtp_host
+            assert settings.emails_from_email
+            assert settings.smtp_port
             return SMTPEmailNotificationGateway(
-                smtp_host=settings.notifications.email.smtp_host,
-                smtp_user=settings.notifications.email.smtp_user,
-                smtp_password=settings.notifications.email.smtp_password,
-                emails_from_email=settings.notifications.email.emails_from_email,
-                emails_from_name=settings.notifications.email.emails_from_name,
-                smtp_tls=settings.notifications.email.smtp_tls,
-                smtp_ssl=settings.notifications.email.smtp_ssl,
-                smtp_port=settings.notifications.email.smtp_port,
+                smtp_host=settings.smtp_host,
+                smtp_user=settings.smtp_user,
+                smtp_password=settings.smtp_password,
+                emails_from_email=settings.emails_from_email,
+                emails_from_name=settings.emails_from_name,
+                smtp_tls=settings.smtp_tls,
+                smtp_ssl=settings.smtp_ssl,
+                smtp_port=settings.smtp_port,
             )
         else:
             return LoggerEmailNotificationGateway()
 
     @provide(scope=Scope.APP)
-    def get_sms_notification_gateway(
-        self, settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)]
-    ) -> SMSNotificationGateway:
-        if settings.notifications.twilio.twilio_enabled:
-            assert settings.notifications.twilio.account_sid
-            assert settings.notifications.twilio.auth_token
-            assert settings.notifications.twilio.sms_from_number
+    def get_sms_notification_gateway(self, settings: TwilioSettings) -> SMSNotificationGateway:
+        if settings.twilio_enabled:
+            assert settings.account_sid
+            assert settings.auth_token
             return TwilioSMSNotificationGateway(
-                account_sid=settings.notifications.twilio.account_sid,
-                auth_token=settings.notifications.twilio.auth_token,
-                sms_from_number=settings.notifications.twilio.sms_from_number,
+                account_sid=settings.account_sid,
+                auth_token=settings.auth_token,
+                sms_from_number=settings.sms_from_number,
+                messaging_service_sid=settings.messaging_service_sid,
             )
         else:
             return LoggerSMSNotificationGateway()
