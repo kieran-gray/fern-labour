@@ -27,7 +27,11 @@ export default function ConfirmActionModal({
       }}
       opened
       centered
-      onClose={close}
+      closeOnClickOutside
+      onClose={() => {
+        setGetConfirmation(false);
+        close;
+      }}
       title={title}
     >
       <Space h="lg" />
