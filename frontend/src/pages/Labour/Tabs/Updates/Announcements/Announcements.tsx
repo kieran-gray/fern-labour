@@ -11,9 +11,11 @@ import classes from './Announcements.module.css';
 export function Announcements({
   announcements,
   setActiveTab,
+  completed,
 }: {
   announcements: LabourUpdateDTO[];
   setActiveTab: Function;
+  completed: boolean;
 }) {
   const [announcement, setAnnouncement] = useState('');
   const viewport = useRef<HTMLDivElement>(null);
@@ -36,6 +38,11 @@ export function Announcements({
     }
   }, [announcements]);
 
+  const completedDescription =
+    'View the announcements you shared during your labour journey. These messages were sent to your subscribers through their preferred notification methods.';
+  const activeDescription =
+    'Make an announcement to all your subscribers—they’ll be notified through their preferred methods. Use this to share important updates.';
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
@@ -48,14 +55,14 @@ export function Announcements({
               Make an announcement
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
-              Make an announcement to all your subscribers—they’ll be notified through their
-              preferred methods. Use this to share important updates.
+              {completed ? completedDescription : activeDescription}
             </Text>
-            {(messageBubbles.length > 0 && (
+            {messageBubbles.length > 0 && (
               <ScrollArea.Autosize mah={400} viewportRef={viewport} p={10}>
                 {messageBubbles}
               </ScrollArea.Autosize>
-            )) || (
+            )}
+            {messageBubbles.length === 0 && !completed && (
               <>
                 <div className={classes.imageFlexRow}>
                   <Image src={image} className={classes.image} />
@@ -63,16 +70,17 @@ export function Announcements({
                 <ImportantText message="You haven't made any announcements yet." />
               </>
             )}
-
-            <TextInput
-              rightSection={<IconPencil size={18} stroke={1.5} />}
-              radius="lg"
-              size="md"
-              mt={20}
-              placeholder="Your announcement"
-              onChange={(event) => setAnnouncement(event.currentTarget.value)}
-              value={announcement}
-            />
+            {!completed && (
+              <TextInput
+                rightSection={<IconPencil size={18} stroke={1.5} />}
+                radius="lg"
+                size="md"
+                mt={20}
+                placeholder="Your announcement"
+                onChange={(event) => setAnnouncement(event.currentTarget.value)}
+                value={announcement}
+              />
+            )}
             <div className={classes.flexRow} style={{ marginTop: '10px' }}>
               <Button
                 color="var(--mantine-color-pink-4)"
@@ -87,7 +95,9 @@ export function Announcements({
               >
                 Switch to Status Updates
               </Button>
-              <MakeAnnouncementButton message={announcement} setAnnouncement={setAnnouncement} />
+              {!completed && (
+                <MakeAnnouncementButton message={announcement} setAnnouncement={setAnnouncement} />
+              )}
             </div>
           </div>
         </div>

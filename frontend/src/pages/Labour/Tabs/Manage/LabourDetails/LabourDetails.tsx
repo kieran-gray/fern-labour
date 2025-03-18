@@ -58,6 +58,16 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
     );
   } else {
     const title = data.labour_name ? data.labour_name : 'Your Labour';
+    const completed = data.end_time !== null;
+    const activeDescription =
+      'Take a deep breath—you’ve got this! Here, you can check your labour details. Use the tabs above to navigate through the app.';
+    const completedDescription =
+      'Welcome back! You’re viewing your completed labour journey. All details are preserved for your reference, though editing is no longer available. Browse through the tabs above to revisit each part of your experience.';
+    const currentPhase = completed
+      ? 'Completed'
+      : data.current_phase === 'planned'
+        ? 'Not in labour'
+        : `In ${data.current_phase} labour`;
     content = (
       <>
         <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
@@ -69,8 +79,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
               {title}
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
-              Take a deep breath—you’ve got this! Here, you can check your labour details. Use the
-              tabs above to navigate through the app.
+              {completed ? completedDescription : activeDescription}
             </Text>
             <div className={baseClasses.imageFlexRow}>
               <Image src={image} className={classes.smallImage} />
@@ -84,16 +93,22 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
           <div className={baseClasses.content}>
             <div className={classes.infoRow}>
               <Badge variant="filled" className={classes.labourBadge} size="lg">
-                {data.current_phase === 'planned'
-                  ? 'Not in labour'
-                  : `In ${data.current_phase} labour`}
+                {currentPhase}
               </Badge>
               <Badge variant="filled" className={classes.labourBadge} size="lg">
                 Due: {new Date(data.due_date).toLocaleDateString()}
               </Badge>
-              <Badge variant="filled" className={classes.labourBadge} size="lg">
-                Gestational age: {dueDateToGestationalAge(new Date(data.due_date))}
-              </Badge>
+              {!completed && (
+                <Badge variant="filled" className={classes.labourBadge} size="lg">
+                  Gestational age: {dueDateToGestationalAge(new Date(data.due_date))}
+                </Badge>
+              )}
+              {completed && (
+                <Badge variant="filled" className={classes.labourBadge} size="lg">
+                  Arrived: {new Date(data.end_time!).toLocaleDateString()}
+                </Badge>
+              )}
+
               <Badge variant="filled" className={classes.labourBadge} size="lg">
                 {!data.first_labour ? 'Not ' : ''}first time mother
               </Badge>
@@ -112,6 +127,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                 className={classes.backButton}
                 onClick={() => navigate('/onboarding?step=plan')}
                 type="submit"
+                disabled={completed}
               >
                 Go back to planning
               </Button>
@@ -124,6 +140,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                 h={48}
                 onClick={() => setActiveTab('complete')}
                 type="submit"
+                disabled={completed}
               >
                 Complete your labour
               </Button>

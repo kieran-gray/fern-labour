@@ -1,9 +1,9 @@
-import { Image, Space, Text, Title } from '@mantine/core';
+import { Image, Space, Text } from '@mantine/core';
 import { ContractionDTO, LabourDTO } from '../../../../client';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { formatTimeSeconds } from '../../../../shared-components/utils';
 import { LabourStatisticsTabs } from './LabourStatisticsTabs';
-import { LabourStatisticsTable } from './LabourStatsticsTable';
 import image from './statistics.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourStatistics.module.css';
@@ -78,13 +78,12 @@ function generateStatisticsData(contractions: ContractionDTO[]): LabourStatistic
     avgFrequency = sumFrequencies / contractionFrequencies.length;
   }
 
-  const statistics: LabourStatisticsData = {
+  return {
     contraction_count: contractions.length,
     average_duration: avgDuration,
     average_intensity: avgIntensity,
     average_frequency: avgFrequency,
   };
-  return statistics;
 }
 
 export function createLabourStatistics(contractions: ContractionDTO[]): LabourStatistics {
@@ -108,50 +107,52 @@ export function createLabourStatistics(contractions: ContractionDTO[]): LabourSt
   return statistics;
 }
 
-export const LabourStatistics = ({
-  labour,
-  completed,
-  inContainer = true,
-}: {
+interface LabourStatisticsProps {
   labour: LabourDTO;
-  completed: boolean;
   inContainer?: boolean;
-}) => {
-  const labourStatistics = createLabourStatistics(labour.contractions);
-  const statistics = (
-    <>
-      <div className={classes.statsTextContainer}>
-        {labour.start_time && (
-          <Text className={classes.labourStatsText} mr={10}>
-            <strong>Start Time:</strong> {new Date(labour.start_time).toString().slice(0, 21)}
-          </Text>
-        )}
+}
 
-        {labour.start_time && labour.end_time && (
-          <>
-            <Text className={classes.labourStatsText}>
-              <strong>End Time:</strong> {new Date(labour.end_time).toString().slice(0, 21)}
-            </Text>
-            <Text className={classes.labourStatsText}>
-              <strong>Duration: </strong>
-              {formatTimeSeconds(
-                (new Date(labour.end_time).getTime() - new Date(labour.start_time).getTime()) /
-                  1000,
-                true
-              )}
-            </Text>
-          </>
-        )}
-        {labour.start_time && labour.end_time == null && (
+export const LabourStatistics = ({ labour, inContainer = true }: LabourStatisticsProps) => {
+  const labourStatistics = createLabourStatistics(labour.contractions);
+  const completed = labour.end_time !== null;
+
+  const renderTimingInfo = () => (
+    <div className={classes.statsTextContainer}>
+      {labour.start_time && (
+        <Text className={classes.labourStatsText} mr={10}>
+          <strong>Start Time:</strong> {new Date(labour.start_time).toString().slice(0, 21)}
+        </Text>
+      )}
+
+      {labour.start_time && labour.end_time && (
+        <>
           <Text className={classes.labourStatsText}>
-            <strong>Elapsed Time: </strong>
+            <strong>End Time:</strong> {new Date(labour.end_time).toString().slice(0, 21)}
+          </Text>
+          <Text className={classes.labourStatsText}>
+            <strong>Duration: </strong>
             {formatTimeSeconds(
-              (new Date().getTime() - new Date(labour.start_time).getTime()) / 1000,
+              (new Date(labour.end_time).getTime() - new Date(labour.start_time).getTime()) / 1000,
               true
             )}
           </Text>
-        )}
-      </div>
+        </>
+      )}
+      {labour.start_time && labour.end_time == null && (
+        <Text className={classes.labourStatsText}>
+          <strong>Elapsed Time: </strong>
+          {formatTimeSeconds(
+            (new Date().getTime() - new Date(labour.start_time).getTime()) / 1000,
+            true
+          )}
+        </Text>
+      )}
+    </div>
+  );
+
+  const renderStatisticsContent = () => (
+    <>
+      {renderTimingInfo()}
       <Space h="sm" />
       {!completed && !labourStatistics.total && (
         <ImportantText message="Not enough data yet, keep tracking." />
@@ -160,43 +161,42 @@ export const LabourStatistics = ({
         <LabourStatisticsTabs contractions={labour.contractions} statistics={labourStatistics} />
       )}
       {completed && labourStatistics.total && (
-        <LabourStatisticsTable data={labourStatistics.total} />
+        <LabourStatisticsTabs contractions={labour.contractions} statistics={labourStatistics} />
       )}
     </>
   );
-  if (inContainer) {
-    return (
-      <div className={baseClasses.root}>
-        <div className={baseClasses.body}>
-          <div className={classes.inner}>
-            <div className={classes.content}>
-              <Title order={2} visibleFrom="sm">
-                Your labour statistics
-              </Title>
-              <Title order={3} hiddenFrom="sm">
-                Your labour statistics
-              </Title>
-              <Text c="var(--mantine-color-gray-7)" mt="md">
-                Here, you can view all of the statistics about your contractions. This is useful
-                information to have when discussing your labour progress with your midwife or
-                healthcare provider.
-              </Text>
-              <div className={baseClasses.imageFlexRow}>
-                <Image src={image} className={baseClasses.smallImage} />
-              </div>
-            </div>
-            <div className={baseClasses.flexColumn}>
-              <Image src={image} className={classes.image} />
+
+  if (!inContainer) {
+    return renderStatisticsContent();
+  }
+
+  const completedDescription =
+    "Here, you can see all the statistics about your contractions during your labour journey. This historical data shows the progression that led to your baby's arrival and can be helpful to reference during future pregnancies or discussions with your midwife or healthcare provider.";
+  const activeDescription =
+    'Here, you can view all of the statistics about your contractions. This is useful information to have when discussing labour progress with a midwife or healthcare provider.';
+  return (
+    <div className={baseClasses.root}>
+      <div className={baseClasses.body}>
+        <div className={classes.inner}>
+          <div className={classes.content}>
+            <ResponsiveTitle title="Your labour statistics" />
+            <Text c="var(--mantine-color-gray-7)" mt="md">
+              {completed ? completedDescription : activeDescription}
+            </Text>
+            <div className={baseClasses.imageFlexRow}>
+              <Image src={image} className={baseClasses.smallImage} />
             </div>
           </div>
-          <div className={classes.statsInner}>
-            <div className={baseClasses.flexColumn} style={{ width: '100%' }}>
-              {statistics}
-            </div>
+          <div className={baseClasses.flexColumn}>
+            <Image src={image} className={classes.image} />
+          </div>
+        </div>
+        <div className={classes.statsInner}>
+          <div className={baseClasses.flexColumn} style={{ width: '100%' }}>
+            {renderStatisticsContent()}
           </div>
         </div>
       </div>
-    );
-  }
-  return statistics;
+    </div>
+  );
 };

@@ -1,5 +1,6 @@
-import { Badge, Space, Text, Title } from '@mantine/core';
+import { Badge, Space, Text } from '@mantine/core';
 import { LabourDTO, SubscriptionDTO } from '../../../../client';
+import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '../../../../shared-components/utils';
 import ContactMethodsForm from './ContactMethodsForm';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
@@ -20,12 +21,7 @@ export default function LabourDetails({
       <div className={baseClasses.body}>
         <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
           <div className={classes.content} style={{ marginRight: 0 }}>
-            <Title order={1} visibleFrom="sm">
-              {title}
-            </Title>
-            <Title order={2} hiddenFrom="sm">
-              {title}
-            </Title>
+            <ResponsiveTitle title={title} />
             <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
               You’re here to support someone on an incredible journey, and that means giving them
               the space they need during labour. Instead of reaching out directly, check the app for

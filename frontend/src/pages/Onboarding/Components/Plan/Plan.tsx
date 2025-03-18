@@ -13,10 +13,10 @@ import classes from './Plan.module.css';
 
 export default function Plan({
   labour,
-  setActiveTab,
+  gotoNextStep,
 }: {
   labour: LabourDTO | undefined;
-  setActiveTab: Function;
+  gotoNextStep: Function;
 }) {
   const auth = useAuth();
   const { setLabourId } = useLabour();
@@ -68,7 +68,7 @@ export default function Plan({
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
       setLabourId(labour.id);
       setMutationInProgress(false);
-      setActiveTab('details');
+      gotoNextStep();
       await new Promise((r) => setTimeout(r, 1000));
     },
     onError: async (error) => {
@@ -196,7 +196,7 @@ export default function Plan({
             h={48}
             className={classes.backButton}
             styles={{ section: { marginLeft: 22 } }}
-            onClick={() => setActiveTab('details')}
+            onClick={() => gotoNextStep()}
           >
             Next step
           </Button>

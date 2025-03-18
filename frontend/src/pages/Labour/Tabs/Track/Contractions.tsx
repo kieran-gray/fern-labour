@@ -33,6 +33,12 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
     scrollIntoView({ alignment: 'end' });
   }, [labour]);
 
+  const completed = labour.end_time !== null;
+  const activeDescription =
+    'Track your contractions here. Simply press the button below to start a new contraction. Click on a completed contraction to edit it.';
+  const completedDescription =
+    "Here's a record of your contractions during labour. You can review the timing and patterns that led to your baby's arrival. All contraction data is preserved for your reference.";
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
@@ -45,13 +51,13 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
               Track your contractions
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              Track your contractions here. Simply press the button below to start a new
-              contraction. Click on a completed contraction to edit it.
+              {completed ? completedDescription : activeDescription}
             </Text>
             <Stack align="stretch" justify="flex-end" mt="20px" style={{ alignItems: 'center' }}>
-              {(sortedContractions.length > 0 && (
+              {sortedContractions.length > 0 && (
                 <ContractionTimeline contractions={sortedContractions} />
-              )) || (
+              )}
+              {sortedContractions.length === 0 && !completed && (
                 <div style={{ width: '100%', marginBottom: '30px' }}>
                   <ImportantText message="When you start your first contraction, we will let your subscribers know that your labour is starting." />
                 </div>
@@ -70,7 +76,9 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
                     disabled={containsPlaceholderContractions}
                   />
                 )}
-                {!activeContraction && <StartContractionButton stopwatchRef={stopwatchRef} />}
+                {!activeContraction && !completed && (
+                  <StartContractionButton stopwatchRef={stopwatchRef} />
+                )}
                 <div ref={targetRef} />
               </Stack>
             </div>

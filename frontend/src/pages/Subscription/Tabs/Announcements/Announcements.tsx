@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { ScrollArea, Text, Title } from '@mantine/core';
+import { ScrollArea, Text } from '@mantine/core';
 import { LabourDTO, UserSummaryDTO } from '../../../../client';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Updates/Announcements/Announcements.module.css';
 
@@ -37,12 +38,7 @@ export function Announcements({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={2} visibleFrom="sm">
-              {birthingPersonName} announcements
-            </Title>
-            <Title order={3} hiddenFrom="sm">
-              {birthingPersonName} announcements
-            </Title>
+            <ResponsiveTitle title={`${birthingPersonName} announcements`} />
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
               Stay updated! Labour announcements will appear here, and notifications will be sent
               based on the contact methods you have set in the details tab.

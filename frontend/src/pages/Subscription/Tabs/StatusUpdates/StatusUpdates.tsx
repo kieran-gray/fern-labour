@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { Avatar, Group, ScrollArea, Text, Title } from '@mantine/core';
+import { Avatar, Group, ScrollArea, Text } from '@mantine/core';
 import { LabourDTO, UserSummaryDTO } from '../../../../client';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '../../../../shared-components/utils';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Updates/StatusUpdates/StatusUpdates.module.css';
@@ -50,12 +51,7 @@ export function StatusUpdates({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={2} visibleFrom="sm">
-              {pluralisedBirthingPersonName} status updates
-            </Title>
-            <Title order={3} hiddenFrom="sm">
-              {pluralisedBirthingPersonName} status updates
-            </Title>
+            <ResponsiveTitle title={`${pluralisedBirthingPersonName} status updates`} />
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
               Curious about how things are going? {birthingPerson.first_name} can update her status
               here, giving you a glimpse into her progress. These updates won’t send alerts, so

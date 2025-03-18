@@ -22,29 +22,29 @@ const ResponsiveParticles = () => {
     // Responsive configuration
     const config = {
       particles: {
-        number: { value: 80 }, // Default value
+        number: { value: 15 }, // Default value
         size: { value: 50 }, // Default value
       },
     };
 
     // For mobile devices
     if (width < 768) {
-      config.particles.number.value = 30;
+      config.particles.number.value = 20;
       config.particles.size.value = 40;
     }
     // For tablets
     else if (width >= 768 && width < 1024) {
-      config.particles.number.value = 30;
+      config.particles.number.value = 15;
       config.particles.size.value = 50;
     }
     // For desktops
     else if (width >= 1024 && width < 1440) {
-      config.particles.number.value = 30;
+      config.particles.number.value = 10;
       config.particles.size.value = 75;
     }
     // For large screens
     else {
-      config.particles.number.value = 30;
+      config.particles.number.value = 10;
       config.particles.size.value = 100;
     }
 

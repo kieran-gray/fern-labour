@@ -1,6 +1,7 @@
 import { IconInfoCircle } from '@tabler/icons-react';
-import { Image, Space, Text, Title } from '@mantine/core';
+import { Image, Space, Text } from '@mantine/core';
 import { LabourDTO } from '../../../../client';
+import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { formatTimeSeconds } from '../../../../shared-components/utils';
 import { createLabourStatistics } from '../../../Labour/Tabs/Statistics/LabourStatistics';
 import { LabourStatisticsTabs } from '../../../Labour/Tabs/Statistics/LabourStatisticsTabs';
@@ -75,12 +76,7 @@ export const LabourStatistics = ({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={2} visibleFrom="sm">
-              {birthingPersonName} labour statistics
-            </Title>
-            <Title order={3} hiddenFrom="sm">
-              {birthingPersonName} labour statistics
-            </Title>
+            <ResponsiveTitle title={`${birthingPersonName} labour statistics`} />
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Here, you can view all of the statistics about {birthingPersonName} contractions. This
               is useful information to have if you are a birth partner and need to discuss{' '}

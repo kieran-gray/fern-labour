@@ -8,6 +8,7 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
+import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space, Tabs, Text } from '@mantine/core';
 import { ApiError, OpenAPI, SubscriptionService } from '../../client/index.ts';
@@ -24,21 +25,31 @@ import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
 import { StatusUpdates } from './Tabs/StatusUpdates/StatusUpdates.tsx';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 
-const tabOrder = ['subscriptions', 'details', 'updates', 'announcements', 'stats'];
+const TABS = [
+  { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
+  { id: 'details', label: 'Details', icon: IconPencil },
+  { id: 'updates', label: 'Updates', icon: IconMessage },
+  { id: 'announcements', label: 'Announcements', icon: IconSpeakerphone },
+  { id: 'stats', label: 'Stats', icon: IconChartHistogram },
+] as const;
+
+const tabOrder = TABS.map((tab) => tab.id);
 
 export const SubscriptionPage = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
   const { subscriptionId, setSubscriptionId } = useSubscription();
   const [activeTab, setActiveTab] = useState<string | null>('details');
 
   if (!subscriptionId) {
-    throw new Error('subscriptionId is required');
+    navigate('/subscriptions');
+    return null;
   }
 
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
       if (activeTab) {
-        const tabIndex = tabOrder.indexOf(activeTab);
+        const tabIndex = tabOrder.indexOf(activeTab as (typeof tabOrder)[number]);
         if (tabIndex > 0) {
           setActiveTab(tabOrder[tabIndex - 1]);
         }
@@ -46,7 +57,7 @@ export const SubscriptionPage = () => {
     },
     onSwipedLeft: () => {
       if (activeTab) {
-        const tabIndex = tabOrder.indexOf(activeTab);
+        const tabIndex = tabOrder.indexOf(activeTab as (typeof tabOrder)[number]);
         if (tabIndex < tabOrder.length - 1) {
           setActiveTab(tabOrder[tabIndex + 1]);
         }
@@ -59,9 +70,7 @@ export const SubscriptionPage = () => {
     preventScrollOnSwipe: true,
   });
 
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
+  OpenAPI.TOKEN = async () => auth.user?.access_token || '';
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['subscription_data', subscriptionId, auth.user?.profile.sub],
@@ -78,6 +87,7 @@ export const SubscriptionPage = () => {
         if (err instanceof ApiError && err.status === 403) {
           // User has been blocked or removed
           setSubscriptionId('');
+          navigate('/subscriptions');
         }
         throw new Error('Failed to load subscription. Please try again later.');
       }
@@ -103,6 +113,46 @@ export const SubscriptionPage = () => {
 
   const pluralisedBirthingPersonName = pluraliseName(data.birthing_person.first_name);
 
+  const renderTabPanel = (tabId: string) => {
+    switch (tabId) {
+      case 'subscriptions':
+        return (
+          <>
+            <SubscriptionsContainer />
+            <Space h="xl" />
+            <InviteContainer />
+          </>
+        );
+      case 'details':
+        return (
+          <LabourDetails
+            labour={data.labour}
+            birthingPersonName={pluralisedBirthingPersonName}
+            subscription={data.subscription}
+          />
+        );
+      case 'stats':
+        return (
+          <LabourStatistics
+            labour={data.labour}
+            birthingPersonName={pluralisedBirthingPersonName}
+          />
+        );
+      case 'updates':
+        return <StatusUpdates labour={data.labour} birthingPerson={data.birthing_person} />;
+      case 'announcements':
+        return (
+          <Announcements
+            labour={data.labour}
+            birthingPersonName={pluralisedBirthingPersonName}
+            birthingPerson={data.birthing_person}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div {...swipeHandlers}>
       <AppShell>
@@ -119,51 +169,18 @@ export const SubscriptionPage = () => {
           onChange={setActiveTab}
         >
           <Tabs.List grow>
-            <Tabs.Tab value="subscriptions" leftSection={<IconUsers />}>
-              <Text className={baseClasses.navTabText}>Subscriptions</Text>
-            </Tabs.Tab>
-            <Tabs.Tab value="details" leftSection={<IconPencil />}>
-              <Text className={baseClasses.navTabText}>Details</Text>
-            </Tabs.Tab>
-            <Tabs.Tab value="updates" leftSection={<IconMessage />}>
-              <Text className={baseClasses.navTabText}>Updates</Text>
-            </Tabs.Tab>
-            <Tabs.Tab value="announcements" leftSection={<IconSpeakerphone />}>
-              <Text className={baseClasses.navTabText}>Announcements</Text>
-            </Tabs.Tab>
-            <Tabs.Tab value="stats" leftSection={<IconChartHistogram />}>
-              <Text className={baseClasses.navTabText}>Stats</Text>
-            </Tabs.Tab>
+            {TABS.map((tab) => (
+              <Tabs.Tab key={tab.id} value={tab.id} leftSection={<tab.icon />}>
+                <Text className={baseClasses.navTabText}>{tab.label}</Text>
+              </Tabs.Tab>
+            ))}
           </Tabs.List>
           <div className={baseClasses.flexPageColumn}>
-            <Tabs.Panel value="subscriptions">
-              <SubscriptionsContainer />
-              <Space h="xl" />
-              <InviteContainer />
-            </Tabs.Panel>
-            <Tabs.Panel value="details">
-              <LabourDetails
-                labour={data.labour}
-                birthingPersonName={pluralisedBirthingPersonName}
-                subscription={data.subscription}
-              />
-            </Tabs.Panel>
-            <Tabs.Panel value="stats" keepMounted={false}>
-              <LabourStatistics
-                labour={data.labour}
-                birthingPersonName={pluralisedBirthingPersonName}
-              />
-            </Tabs.Panel>
-            <Tabs.Panel value="updates">
-              <StatusUpdates labour={data.labour} birthingPerson={data.birthing_person} />
-            </Tabs.Panel>
-            <Tabs.Panel value="announcements">
-              <Announcements
-                labour={data.labour}
-                birthingPersonName={pluralisedBirthingPersonName}
-                birthingPerson={data.birthing_person}
-              />
-            </Tabs.Panel>
+            {TABS.map((tab) => (
+              <Tabs.Panel key={tab.id} value={tab.id} keepMounted={tab.id !== 'stats'}>
+                {renderTabPanel(tab.id)}
+              </Tabs.Panel>
+            ))}
           </div>
         </Tabs>
       </AppShell>

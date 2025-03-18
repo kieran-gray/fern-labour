@@ -20,28 +20,3 @@
     cursor: default;
   }
 }
-
-.image {
-  width: 400px;
-  height: 356px;
-
-  @media (max-width: $mantine-breakpoint-md) {
-    display: none;
-  }
-}
-
-
-.smallImage {
-  display: none;
-
-  @media (max-width: $mantine-breakpoint-md) {
-    display: block;
-    width: 360px;
-    height: 250px;
-  }
-
-  @media (max-width: $mantine-breakpoint-xs) {
-    width: 300px;
-    height: 200px;
-  }
-}

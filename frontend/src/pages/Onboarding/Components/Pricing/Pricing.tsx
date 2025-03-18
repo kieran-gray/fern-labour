@@ -27,7 +27,6 @@ import {
   Divider,
   Flex,
   Group,
-  Image,
   LoadingOverlay,
   Space,
   Stack,
@@ -44,7 +43,6 @@ import {
   PaymentsService,
 } from '../../../../client';
 import { useLabour } from '../../../Labour/LabourContext';
-import image from './thanks.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './Pricing.module.css';
 
@@ -152,11 +150,10 @@ const PricingCard = ({
 
 export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
   const auth = useAuth();
-  const navigate = useNavigate();
   const { labourId } = useLabour();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const cancelled = searchParams.get('cancelled');
-  const success = searchParams.get('success');
   const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
 
   OpenAPI.TOKEN = async () => {
@@ -211,7 +208,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
       returnURL.searchParams.set('step', 'pay');
 
       const successUrl = new URL(returnURL);
-      successUrl.searchParams.set('success', 'true');
+      successUrl.searchParams.set('step', 'receipt');
 
       const cancelUrl = new URL(returnURL);
       cancelUrl.searchParams.set('cancelled', 'true');
@@ -421,34 +418,6 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
       ]}
     />
   );
-
-  if (success) {
-    return (
-      <div className={baseClasses.flexColumn} style={{ width: '100%', position: 'relative' }}>
-        <div className={baseClasses.inner} style={{ padding: 0 }}>
-          <div className={baseClasses.content}>
-            <Title order={2}>Your Journey Begins!</Title>
-            <Text c="var(--mantine-color-gray-7)" mt="md">
-              Payment confirmed. Thank you for choosing fernlabour.com.
-              <br />
-              <br />
-              Your birth story deserves to be shared with those who matter most. We're honoured to
-              help you connect with your loved ones during this special time.
-              <br />
-              <br />
-              Need help? Our support team is ready to assist at support@fernlabour.com.
-            </Text>
-            <div className={baseClasses.imageFlexRow}>
-              <Image src={image} className={classes.smallImage} />
-            </div>
-          </div>
-          <div className={baseClasses.flexColumn}>
-            <Image src={image} className={classes.image} />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={baseClasses.flexColumn} style={{ width: '100%', position: 'relative' }}>
