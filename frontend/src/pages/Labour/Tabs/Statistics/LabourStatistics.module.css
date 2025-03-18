@@ -93,6 +93,7 @@
     flex-wrap: wrap;
     padding: calc(var(--mantine-spacing-xl));
     padding-bottom: 0px;
+    column-gap: 20px;
 
     @media (max-width: $mantine-breakpoint-md) {
       padding: calc(var(--mantine-spacing-md));

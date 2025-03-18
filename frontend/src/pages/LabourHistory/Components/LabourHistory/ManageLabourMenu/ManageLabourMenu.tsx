@@ -6,11 +6,13 @@ import { useNavigate } from 'react-router-dom';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ApiError, LabourService, OpenAPI } from '../../../../../client';
+import { useLabour } from '../../../../Labour/LabourContext';
 import ConfirmActionModal from './ConfirmActionModal';
 
 export function ManageLabourMenu({ labourId }: { labourId: string }) {
   const [getConfirmation, setGetConfirmation] = useState<boolean>(false);
   const [confirmed, setConfirmed] = useState<boolean>(false);
+  const { setLabourId } = useLabour();
   const auth = useAuth();
   const navigate = useNavigate();
   OpenAPI.TOKEN = async () => {
@@ -18,7 +20,7 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
   };
   const queryClient = useQueryClient();
 
-  const blockSubscriberMutation = useMutation({
+  const deleteLabourMutation = useMutation({
     mutationFn: async () => {
       await LabourService.deleteLabourApiV1LabourDeleteLabourIdDelete({ labourId });
     },
@@ -46,7 +48,7 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
 
   if (getConfirmation) {
     if (confirmed) {
-      blockSubscriberMutation.mutate();
+      deleteLabourMutation.mutate();
       setGetConfirmation(false);
       setConfirmed(false);
     } else {
@@ -70,6 +72,7 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
           color="var(--mantine-color-gray-8)"
           onClick={() => {
             queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+            setLabourId(labourId);
             navigate(`/?labourId=${labourId}`);
           }}
         >
