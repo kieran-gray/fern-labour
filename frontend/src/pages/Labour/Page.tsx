@@ -8,7 +8,7 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space, Tabs, Text } from '@mantine/core';
 import { ApiError, LabourService, OpenAPI } from '../../client';
@@ -17,6 +17,7 @@ import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
 import { PayWall } from '../../shared-components/Paywall/PayWall.tsx';
+import { CompletedLabourContainer } from '../CompletedLabour/Page.tsx';
 import { useLabour } from './LabourContext.tsx';
 import { Share } from './Tabs/Invites/Share.tsx';
 import { LabourControls } from './Tabs/Manage/LabourControls.tsx';
@@ -26,18 +27,34 @@ import { Contractions } from './Tabs/Track/Contractions.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 
-const tabOrder = ['details', 'updates', 'track', 'stats', 'invite'];
+// Define tab configuration to make it more maintainable
+const TABS = [
+  { id: 'details', label: 'Manage', icon: IconSettings },
+  { id: 'updates', label: 'Updates', icon: IconMessage, requiresPaid: true },
+  { id: 'track', label: 'Track', icon: IconStopwatch },
+  { id: 'stats', label: 'Stats', icon: IconChartHistogram },
+  { id: 'invite', label: 'Invite', icon: IconSend, requiresPaid: true },
+] as const;
+
+const tabOrder = TABS.map((tab) => tab.id);
 
 export const LabourPage = () => {
   const auth = useAuth();
   const navigate = useNavigate();
-  const { setLabourId } = useLabour();
+  const { labourId, setLabourId } = useLabour();
+  const [searchParams] = useSearchParams();
+  const labourIdParam = searchParams.get('labourId');
+  console.log(labourIdParam);
   const [activeTab, setActiveTab] = useState<string | null>('track');
+
+  if (labourIdParam !== null) {
+    setLabourId(labourIdParam);
+  }
 
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
       if (activeTab) {
-        const tabIndex = tabOrder.indexOf(activeTab);
+        const tabIndex = tabOrder.indexOf(activeTab as (typeof tabOrder)[number]);
         if (tabIndex > 0) {
           setActiveTab(tabOrder[tabIndex - 1]);
         }
@@ -45,7 +62,7 @@ export const LabourPage = () => {
     },
     onSwipedLeft: () => {
       if (activeTab) {
-        const tabIndex = tabOrder.indexOf(activeTab);
+        const tabIndex = tabOrder.indexOf(activeTab as (typeof tabOrder)[number]);
         if (tabIndex < tabOrder.length - 1) {
           setActiveTab(tabOrder[tabIndex + 1]);
         }
@@ -58,16 +75,24 @@ export const LabourPage = () => {
     preventScrollOnSwipe: true,
   });
 
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
+  OpenAPI.TOKEN = async () => auth.user?.access_token || '';
 
-  const { isPending, isError, data, error } = useQuery({
+  const {
+    isPending,
+    isError,
+    data: labour,
+    error,
+  } = useQuery({
     queryKey: ['labour', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await LabourService.getActiveLabourApiV1LabourActiveGet();
-        setLabourId(response.labour.id);
+        let response;
+        if (labourId !== null) {
+          response = await LabourService.getLabourByIdApiV1LabourGetLabourIdGet({ labourId });
+        } else {
+          response = await LabourService.getActiveLabourApiV1LabourActiveGet();
+          setLabourId(response.labour.id);
+        }
         return response.labour;
       } catch (err) {
         if (err instanceof ApiError && err.status === 404) {
@@ -90,6 +115,7 @@ export const LabourPage = () => {
   if (isError) {
     if (error instanceof NotFoundError) {
       navigate('/onboarding?step=plan');
+      return null;
     }
     return (
       <AppShell>
@@ -98,11 +124,47 @@ export const LabourPage = () => {
     );
   }
 
-  const labour = data;
-  const paidFeaturesEnabled = labour.payment_plan !== 'solo' && labour.payment_plan !== null;
   if (labour.payment_plan === null) {
     navigate('/onboarding?step=pay');
+    return null;
   }
+
+  const paidFeaturesEnabled = labour.payment_plan !== 'solo';
+  const completed = labour.end_time !== null;
+
+  const renderTabPanel = (tabId: string) => {
+    switch (tabId) {
+      case 'details':
+        return (
+          <>
+            <LabourControls labour={labour} />
+            {paidFeaturesEnabled && (
+              <>
+                <Space h="xl" />
+                <SubscribersContainer />
+              </>
+            )}
+          </>
+        );
+      case 'track':
+        return <Contractions labour={labour} />;
+      case 'stats':
+        return <LabourStatistics labour={labour} />;
+      case 'updates':
+        return paidFeaturesEnabled ? <LabourUpdates labour={labour} /> : <PayWall />;
+      case 'invite':
+        return completed ? (
+          <CompletedLabourContainer />
+        ) : paidFeaturesEnabled ? (
+          <Share />
+        ) : (
+          <PayWall />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div {...swipeHandlers}>
       <AppShell>
@@ -119,44 +181,18 @@ export const LabourPage = () => {
           onChange={setActiveTab}
         >
           <Tabs.List grow>
-            <Tabs.Tab value="details" leftSection={<IconSettings />}>
-              <Text className={baseClasses.navTabText}>Manage</Text>
-            </Tabs.Tab>
-            <Tabs.Tab value="updates" leftSection={<IconMessage />}>
-              <Text className={baseClasses.navTabText}>Updates</Text>
-            </Tabs.Tab>
-            <Tabs.Tab value="track" leftSection={<IconStopwatch />}>
-              <Text className={baseClasses.navTabText}>Track</Text>
-            </Tabs.Tab>
-            <Tabs.Tab value="stats" leftSection={<IconChartHistogram />}>
-              <Text className={baseClasses.navTabText}>Stats</Text>
-            </Tabs.Tab>
-            <Tabs.Tab value="invite" leftSection={<IconSend />}>
-              <Text className={baseClasses.navTabText}>Invite</Text>
-            </Tabs.Tab>
+            {TABS.map(({ id, label, icon: Icon }) => (
+              <Tabs.Tab key={id} value={id} leftSection={<Icon />}>
+                <Text className={baseClasses.navTabText}>{label}</Text>
+              </Tabs.Tab>
+            ))}
           </Tabs.List>
           <div className={baseClasses.flexPageColumn}>
-            <Tabs.Panel value="details">
-              <LabourControls labour={labour} />
-              {paidFeaturesEnabled && (
-                <>
-                  <Space h="xl" />
-                  <SubscribersContainer />
-                </>
-              )}
-            </Tabs.Panel>
-            <Tabs.Panel value="track">
-              <Contractions labour={labour} />
-            </Tabs.Panel>
-            <Tabs.Panel value="stats">
-              <LabourStatistics labour={labour} completed={false} />
-            </Tabs.Panel>
-            <Tabs.Panel value="updates">
-              {(paidFeaturesEnabled && <LabourUpdates labour={labour} />) || <PayWall />}
-            </Tabs.Panel>
-            <Tabs.Panel value="invite">
-              {(paidFeaturesEnabled && <Share />) || <PayWall />}
-            </Tabs.Panel>
+            {TABS.map(({ id }) => (
+              <Tabs.Panel key={id} value={id}>
+                {renderTabPanel(id)}
+              </Tabs.Panel>
+            ))}
           </div>
         </Tabs>
       </AppShell>

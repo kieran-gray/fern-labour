@@ -23,9 +23,11 @@ import classes from './StatusUpdates.module.css';
 export function StatusUpdates({
   statusUpdates,
   setActiveTab,
+  completed,
 }: {
   statusUpdates: LabourUpdateDTO[];
   setActiveTab: Function;
+  completed: boolean;
 }) {
   const [update, setUpdate] = useState('');
   const viewport = useRef<HTMLDivElement>(null);
@@ -62,6 +64,11 @@ export function StatusUpdates({
     }
   }, [statusUpdates]);
 
+  const completedDescription =
+    'Here you can see the status updates from your labour experience. These entries kept your subscribers informed within the app without sending notifications.';
+  const activeDescription =
+    "Update your status here to let your subscribers know how you are getting on. They won't be notified about these updates, but they will be able to see them in the app.";
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
@@ -74,14 +81,14 @@ export function StatusUpdates({
               Post a status update
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
-              Update your status here to let your subscribers know how you are getting on. They
-              won't be notified about these updates, but they will be able to see them in the app.
+              {completed ? completedDescription : activeDescription}
             </Text>
-            {(statusUpdateDisplay.length > 0 && (
+            {statusUpdateDisplay.length > 0 && (
               <ScrollArea.Autosize mah={400} viewportRef={viewport}>
                 <div className={classes.statusUpdateContainer}>{statusUpdateDisplay}</div>
               </ScrollArea.Autosize>
-            )) || (
+            )}
+            {statusUpdateDisplay.length === 0 && !completed && (
               <>
                 <div className={classes.imageFlexRow}>
                   <Image src={image} className={classes.image} />
@@ -89,15 +96,17 @@ export function StatusUpdates({
                 <ImportantText message="You haven't posted any status updates yet." />
               </>
             )}
-            <TextInput
-              mt={20}
-              rightSection={<IconPencil size={18} stroke={1.5} />}
-              radius="lg"
-              size="md"
-              placeholder="Your status update"
-              onChange={(event) => setUpdate(event.currentTarget.value)}
-              value={update}
-            />
+            {!completed && (
+              <TextInput
+                mt={20}
+                rightSection={<IconPencil size={18} stroke={1.5} />}
+                radius="lg"
+                size="md"
+                placeholder="Your status update"
+                onChange={(event) => setUpdate(event.currentTarget.value)}
+                value={update}
+              />
+            )}
             <div className={classes.flexRow} style={{ marginTop: '10px' }}>
               <Button
                 color="var(--mantine-color-pink-4)"
@@ -112,7 +121,7 @@ export function StatusUpdates({
               >
                 Switch to Announcements
               </Button>
-              <PostStatusUpdateButton message={update} setUpdate={setUpdate} />
+              {!completed && <PostStatusUpdateButton message={update} setUpdate={setUpdate} />}
             </div>
           </div>
         </div>

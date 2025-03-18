@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
+import { Button, Group, Image, Space, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { OpenAPI, SendSubscriberInviteRequest, SubscriberService } from '../../../../client';
+import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from '../../../Labour/Tabs/Invites/InviteContainer/invite.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Invites/InviteContainer/InviteContainer.module.css';
@@ -62,12 +63,7 @@ export function InviteContainer() {
         <div className={baseClasses.inner}>
           <Image src={image} className={classes.image} />
           <div className={baseClasses.content}>
-            <Title order={2} visibleFrom="sm">
-              Know an expecting mum? Invite her to join!
-            </Title>
-            <Title order={3} hiddenFrom="sm">
-              Know an expecting mum? Invite her to join!
-            </Title>
+            <ResponsiveTitle title="Know an expecting mum? Invite her to join!" />
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Introduce her to a simple way to keep family and friends informed throughout her
               labour experience.

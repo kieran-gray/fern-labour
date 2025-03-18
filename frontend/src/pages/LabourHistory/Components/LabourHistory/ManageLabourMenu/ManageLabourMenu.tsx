@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IconArrowRight, IconDotsVertical, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
+import { useNavigate } from 'react-router-dom';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ApiError, LabourService, OpenAPI } from '../../../../../client';
@@ -11,6 +12,7 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
   const [getConfirmation, setGetConfirmation] = useState<boolean>(false);
   const [confirmed, setConfirmed] = useState<boolean>(false);
   const auth = useAuth();
+  const navigate = useNavigate();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
   };
@@ -66,6 +68,10 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
         <Menu.Item
           rightSection={<IconArrowRight size={20} stroke={1.5} />}
           color="var(--mantine-color-gray-8)"
+          onClick={() => {
+            queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+            navigate(`/?labourId=${labourId}`);
+          }}
         >
           View Labour
         </Menu.Item>
