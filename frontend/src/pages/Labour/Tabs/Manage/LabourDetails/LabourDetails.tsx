@@ -2,10 +2,11 @@ import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Image, Text, Title } from '@mantine/core';
+import { Badge, Button, Image, Text } from '@mantine/core';
 import { ApiError, LabourService, OpenAPI } from '../../../../../client';
 import { NotFoundError } from '../../../../../Errors';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '../../../../../shared-components/utils';
 import { useLabour } from '../../../LabourContext';
 import image from './Meditate.svg';
@@ -73,12 +74,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
       <>
         <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
           <div className={classes.content}>
-            <Title order={1} visibleFrom="sm">
-              {title}
-            </Title>
-            <Title order={2} hiddenFrom="sm">
-              {title}
-            </Title>
+            <ResponsiveTitle title={title} />
             <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
               {completed ? completedDescription : activeDescription}
             </Text>
@@ -117,35 +113,43 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                 Plan: {data.payment_plan?.replace('_', ' ')}
               </Badge>
             </div>
-            <div className={baseClasses.flexRow} style={{ marginTop: '20px' }}>
-              <Button
-                color="var(--mantine-color-pink-4)"
-                leftSection={<IconArrowLeft size={18} stroke={1.5} />}
-                variant="light"
-                radius="xl"
-                size="md"
-                h={48}
-                className={classes.backButton}
-                onClick={() => navigate('/onboarding?step=plan')}
-                type="submit"
-                disabled={completed}
-              >
-                Go back to planning
-              </Button>
-              <Button
-                color="var(--mantine-color-pink-4)"
-                rightSection={<IconArrowRight size={18} stroke={1.5} />}
-                variant="filled"
-                radius="xl"
-                size="md"
-                h={48}
-                onClick={() => setActiveTab('complete')}
-                type="submit"
-                disabled={completed}
-              >
-                Complete your labour
-              </Button>
-            </div>
+            {data.notes && (
+              <>
+                <Text mt={15} mb={15}>
+                  Your closing Note:
+                </Text>
+                <div className={classes.infoRow}>{data.notes}</div>
+              </>
+            )}
+            {!completed && (
+              <div className={baseClasses.flexRow} style={{ marginTop: '20px' }}>
+                <Button
+                  color="var(--mantine-color-pink-4)"
+                  leftSection={<IconArrowLeft size={18} stroke={1.5} />}
+                  variant="light"
+                  radius="xl"
+                  size="md"
+                  h={48}
+                  className={classes.backButton}
+                  onClick={() => navigate('/onboarding?step=plan')}
+                  type="submit"
+                >
+                  Go back to planning
+                </Button>
+                <Button
+                  color="var(--mantine-color-pink-4)"
+                  rightSection={<IconArrowRight size={18} stroke={1.5} />}
+                  variant="filled"
+                  radius="xl"
+                  size="md"
+                  h={48}
+                  onClick={() => setActiveTab('complete')}
+                  type="submit"
+                >
+                  Complete your labour
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </>

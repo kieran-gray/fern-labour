@@ -51,6 +51,7 @@ from app.domain.user.exceptions import (
     UserNotFoundById,
 )
 from app.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
+from app.infrastructure.payments.stripe.exceptions import StripeProductNotFound
 from app.infrastructure.security.interfaces.exceptions import (
     InvalidVerificationTokenException,
     RequestVerificationError,
@@ -119,6 +120,7 @@ class ExceptionMapper:
             InsufficientLabourPaymentPlan: status.HTTP_400_BAD_REQUEST,
             MaximumNumberOfSubscribersReached: status.HTTP_400_BAD_REQUEST,
             CannotDeleteActiveContraction: status.HTTP_400_BAD_REQUEST,
+            StripeProductNotFound: status.HTTP_404_NOT_FOUND,
         }
 
     def get_status_code(self, exc: Exception) -> int:

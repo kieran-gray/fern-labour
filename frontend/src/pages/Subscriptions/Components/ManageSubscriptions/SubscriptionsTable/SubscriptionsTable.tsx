@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -47,9 +48,13 @@ export function SubscriptionsTable() {
   const birthingPersonById = Object.fromEntries(
     birthingPersons.map((birthingPerson) => [birthingPerson.id, birthingPerson])
   );
-  const rows = data.subscriptions.map((subscription) => {
+  const rows: ReactElement[] = [];
+  data.subscriptions.forEach((subscription) => {
     const birthing_person = birthingPersonById[subscription.birthing_person_id];
-    return (
+    if (!birthing_person) {
+      return;
+    }
+    rows.push(
       <Table.Tr key={subscription.id} bd="none">
         <Table.Td>
           <Group gap="sm" wrap="nowrap">

@@ -46,6 +46,10 @@ export function StatusUpdates({
     }
   }, [statusUpdates]);
 
+  const completed = labour.end_time !== null;
+  const activeDescription = `Curious about how things are going? ${birthingPerson.first_name} can update her status here, giving you a glimpse into her progress. These updates won’t send alerts, so check in regularly to stay informed without needing to reach out directly.`;
+  const completedDescription = `Here's where Jess kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`;
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
@@ -53,9 +57,7 @@ export function StatusUpdates({
           <div className={classes.content}>
             <ResponsiveTitle title={`${pluralisedBirthingPersonName} status updates`} />
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
-              Curious about how things are going? {birthingPerson.first_name} can update her status
-              here, giving you a glimpse into her progress. These updates won’t send alerts, so
-              check in regularly to stay informed without needing to reach out directly.
+              {completed ? completedDescription : activeDescription}
             </Text>
             {(statusUpdateDisplay.length > 0 && (
               <ScrollArea.Autosize mah={500} viewportRef={viewport}>

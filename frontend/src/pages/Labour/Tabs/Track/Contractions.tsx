@@ -37,7 +37,7 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
   const activeDescription =
     'Track your contractions here. Simply press the button below to start a new contraction. Click on a completed contraction to edit it.';
   const completedDescription =
-    "Here's a record of your contractions during labour. You can review the timing and patterns that led to your baby's arrival. All contraction data is preserved for your reference.";
+    "Here's a record of your contractions during labour. All contraction data is preserved for your reference.";
 
   return (
     <div className={baseClasses.root}>

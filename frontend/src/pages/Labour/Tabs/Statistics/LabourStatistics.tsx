@@ -157,11 +157,11 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
       {!completed && !labourStatistics.total && (
         <ImportantText message="Not enough data yet, keep tracking." />
       )}
-      {!completed && labourStatistics.total && (
-        <LabourStatisticsTabs contractions={labour.contractions} statistics={labourStatistics} />
+      {completed && !labourStatistics.total && (
+        <ImportantText message="You didn't track enough contractions to see statistics." />
       )}
-      {completed && labourStatistics.total && (
-        <LabourStatisticsTabs contractions={labour.contractions} statistics={labourStatistics} />
+      {labourStatistics.total && (
+        <LabourStatisticsTabs labour={labour} statistics={labourStatistics} />
       )}
     </>
   );
@@ -171,7 +171,7 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
   }
 
   const completedDescription =
-    "Here, you can see all the statistics about your contractions during your labour journey. This historical data shows the progression that led to your baby's arrival and can be helpful to reference during future pregnancies or discussions with your midwife or healthcare provider.";
+    'Here, you can see all the statistics about your contractions during your labour journey.';
   const activeDescription =
     'Here, you can view all of the statistics about your contractions. This is useful information to have when discussing labour progress with a midwife or healthcare provider.';
   return (

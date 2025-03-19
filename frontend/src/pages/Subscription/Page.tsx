@@ -84,10 +84,11 @@ export const SubscriptionPage = () => {
           );
         return response;
       } catch (err) {
-        if (err instanceof ApiError && err.status === 403) {
+        if (err instanceof ApiError && [403, 404].includes(err.status)) {
           // User has been blocked or removed
+          // Or Birthing Person has been deleted
           setSubscriptionId('');
-          navigate('/subscriptions');
+          navigate('/');
         }
         throw new Error('Failed to load subscription. Please try again later.');
       }

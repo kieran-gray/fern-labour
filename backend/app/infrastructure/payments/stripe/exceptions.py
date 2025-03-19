@@ -16,3 +16,8 @@ class WebhookHasInvalidPayload(RequestVerificationError):
 class WebhookHasInvalidSignature(RequestVerificationError):
     def __init__(self) -> None:
         super().__init__("Webhook has invalid signature.")
+
+
+class StripeProductNotFound(RequestVerificationError):
+    def __init__(self) -> None:
+        super().__init__("Requested product does not exist in Stripe.")

@@ -1,6 +1,6 @@
 from typing import Any
 
-from keycloak import KeycloakAdmin
+from keycloak import KeycloakAdmin, KeycloakGetError
 
 from app.domain.user.entity import User
 from app.domain.user.repository import UserRepository
@@ -44,9 +44,12 @@ class KeycloakUserRepository(UserRepository):
         raise NotImplementedError("user delete not implemented")
 
     async def get_by_id(self, user_id: UserId) -> User | None:
-        user = await self._keycloak_admin.a_get_user(
-            user_id=user_id.value, user_profile_metadata=True
-        )
+        try:
+            user = await self._keycloak_admin.a_get_user(
+                user_id=user_id.value, user_profile_metadata=True
+            )
+        except KeycloakGetError:
+            return None
         return keycloak_query_to_user(user)
 
     async def get_by_ids(self, user_ids: list[UserId]) -> list[User]:
@@ -55,6 +58,6 @@ class KeycloakUserRepository(UserRepository):
             try:
                 user = await self._keycloak_admin.a_get_user(user_id.value)
                 users.append(keycloak_query_to_user(user))
-            except Exception as e:
+            except KeycloakGetError as e:
                 print(f"Error fetching user with ID {user_id}: {e}")
         return users

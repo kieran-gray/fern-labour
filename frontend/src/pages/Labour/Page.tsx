@@ -150,7 +150,13 @@ export const LabourPage = () => {
       case 'stats':
         return <LabourStatistics labour={labour} />;
       case 'updates':
-        return paidFeaturesEnabled ? <LabourUpdates labour={labour} /> : <PayWall />;
+        return paidFeaturesEnabled ? (
+          <LabourUpdates labour={labour} />
+        ) : completed ? (
+          <CompletedLabourContainer />
+        ) : (
+          <PayWall />
+        );
       case 'invite':
         return completed ? (
           <CompletedLabourContainer />

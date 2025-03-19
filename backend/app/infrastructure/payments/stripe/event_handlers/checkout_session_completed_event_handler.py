@@ -6,7 +6,10 @@ import stripe
 from app.application.events.event_handler import EventHandler
 from app.application.services.labour_service import LabourService
 from app.domain.labour.enums import LabourPaymentPlan
-from app.infrastructure.payments.stripe.product_mapping import STRIPE_PRICE_TO_PAYMENT_PLAN
+from app.infrastructure.payments.stripe.product_mapping import (
+    STRIPE_PRODUCT_TO_PAYMENT_PLAN,
+    Product,
+)
 
 log = logging.getLogger(__name__)
 
@@ -27,6 +30,7 @@ class CheckoutSessionCompletedEventHandler(EventHandler):
             if not checkout_session.line_items:
                 log.error(f"No line items found for checkout {session_id}")
                 return
+
             if len(checkout_session.line_items) > 1:
                 log.error(f"Multiple line items found for checkout {session_id}")
 
@@ -35,11 +39,22 @@ class CheckoutSessionCompletedEventHandler(EventHandler):
                 log.error(f"No price ID found for item in checkout {session_id}")
                 return
 
-            price_id = purchased_item.price.id
-            new_payment_plan = STRIPE_PRICE_TO_PAYMENT_PLAN.get(price_id, None)
+            # Casting to str for typing, it will be a str unless expanded.
+            stripe_product = await stripe.Product.retrieve_async(
+                id=str(purchased_item.price.product)
+            )
 
+            product = stripe_product.metadata.get("product")
+            if not product:
+                log.error(
+                    f"No product metadata for price {stripe_product.id} in checkout {session_id}"
+                )
+                log.info(f"Defaulting to Community plan for checkout {session_id}")
+                product = Product.UPGRADE_TO_COMMUNITY.value
+
+            new_payment_plan = STRIPE_PRODUCT_TO_PAYMENT_PLAN.get(product)
             if not new_payment_plan:
-                log.error(f"No payment plan found for price {price_id} in checkout {session_id}")
+                log.error(f"No payment plan found for {product} in checkout {session_id}")
                 log.info(f"Defaulting to Community plan for checkout {session_id}")
                 new_payment_plan = LabourPaymentPlan.COMMUNITY.value
 
