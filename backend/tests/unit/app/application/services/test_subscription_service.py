@@ -16,6 +16,7 @@ from app.application.services.user_service import UserService
 from app.domain.labour.enums import LabourPaymentPlan
 from app.domain.labour.exceptions import (
     InsufficientLabourPaymentPlan,
+    InvalidLabourId,
     LabourNotFoundById,
     UnauthorizedLabourRequest,
 )
@@ -183,6 +184,17 @@ async def test_cannot_subscribe_to_labour_more_than_once(
     with pytest.raises(SubscriberAlreadySubscribed):
         await subscription_service.subscribe_to(
             subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+        )
+
+
+async def test_cannot_subscribe_to_labour_invalid_id(
+    subscription_service: SubscriptionService,
+) -> None:
+    token = subscription_service._token_generator.generate("test")
+
+    with pytest.raises(InvalidLabourId):
+        await subscription_service.subscribe_to(
+            subscriber_id=SUBSCRIBER, labour_id="test", token=token
         )
 
 
@@ -413,6 +425,13 @@ async def test_cannot_unsubscribe_from_labour_twice(
         await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
 
 
+async def test_cannot_unsubscribe_from_labour_invalid_id(
+    subscription_service: SubscriptionService,
+) -> None:
+    with pytest.raises(InvalidLabourId):
+        await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id="test")
+
+
 async def test_cannot_unsubscribed_from_labour_not_subscribed_to(
     subscription_service: SubscriptionService,
     labour: LabourDTO,
@@ -486,6 +505,11 @@ async def test_cannot_access_labour_when_not_subscribed(
         await subscription_service.can_user_access_labour(
             requester_id=SUBSCRIBER, labour_id=labour.id
         )
+
+
+async def test_cannot_access_labour_invalid_id(subscription_service: SubscriptionService) -> None:
+    with pytest.raises(InvalidLabourId):
+        await subscription_service.can_user_access_labour(requester_id=SUBSCRIBER, labour_id="test")
 
 
 async def test_cannot_access_labour_when_subscription_status_unsubscribed(

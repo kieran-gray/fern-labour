@@ -7,7 +7,11 @@ from app.application.security.token_generator import TokenGenerator
 from app.application.services.get_labour_service import GetLabourService
 from app.application.services.user_service import UserService
 from app.domain.labour.enums import LabourPaymentPlan
-from app.domain.labour.exceptions import InsufficientLabourPaymentPlan, UnauthorizedLabourRequest
+from app.domain.labour.exceptions import (
+    InsufficientLabourPaymentPlan,
+    InvalidLabourId,
+    UnauthorizedLabourRequest,
+)
 from app.domain.labour.vo_labour_id import LabourId
 from app.domain.services.subscribe_to import SubscribeToService
 from app.domain.services.unsubscribe_from import UnsubscribeFromService
@@ -84,9 +88,8 @@ class SubscriptionService:
         if requester_id != labour.birthing_person_id:
             raise UnauthorizedSubscriptionRequest()
 
-        subscriptions = await self._subscription_repository.filter(
-            labour_id=LabourId(UUID(labour.id))
-        )
+        labour_domain_id = LabourId(UUID(labour_id))
+        subscriptions = await self._subscription_repository.filter(labour_id=labour_domain_id)
         return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
 
     async def subscribe_to(self, subscriber_id: str, labour_id: str, token: str) -> SubscriptionDTO:
@@ -99,7 +102,7 @@ class SubscriptionService:
         if not self._token_generator.validate(labour.id, token):
             raise SubscriptionTokenIncorrect()
 
-        labour_domain_id = LabourId(UUID(labour.id))
+        labour_domain_id = LabourId(UUID(labour_id))
         birthing_person_domain_id = UserId(labour.birthing_person_id)
         subscriber_domain_id = UserId(subscriber.id)
 
@@ -136,7 +139,11 @@ class SubscriptionService:
     async def unsubscribe_from(self, subscriber_id: str, labour_id: str) -> SubscriptionDTO:
         subscriber = await self._user_service.get(user_id=subscriber_id)
 
-        labour_domain_id = LabourId(UUID(labour_id))
+        try:
+            labour_domain_id = LabourId(UUID(labour_id))
+        except ValueError:
+            raise InvalidLabourId()
+
         subscriber_domain_id = UserId(subscriber.id)
 
         subscription = await self._subscription_repository.filter_one_or_none(
@@ -157,7 +164,11 @@ class SubscriptionService:
     async def can_user_access_labour(self, requester_id: str, labour_id: str) -> bool:
         user = await self._user_service.get(user_id=requester_id)
 
-        labour_domain_id = LabourId(UUID(labour_id))
+        try:
+            labour_domain_id = LabourId(UUID(labour_id))
+        except ValueError:
+            raise InvalidLabourId()
+
         user_domain_id = UserId(user.id)
 
         labour = await self._get_labour_service.get_labour_by_id(labour_id=labour_id)
