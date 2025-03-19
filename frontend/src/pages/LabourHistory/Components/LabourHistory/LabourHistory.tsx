@@ -17,8 +17,9 @@ export function LabourHistory() {
               Your Labour History
             </Title>
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              Here, you can view all of your past and present labours. Soon you will be able to
-              revisit a labour after you have completed it.
+              Here you can explore your complete labour history. Each entry captures the details of
+              your experience, from first contraction to your baby's arrival. Select any record to
+              view the full timeline and statistics.
             </Text>
             <div className={classes.imageFlexRow}>
               <Image src={image} className={classes.smallImage} />

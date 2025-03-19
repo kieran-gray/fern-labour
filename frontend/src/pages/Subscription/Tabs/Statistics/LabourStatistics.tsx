@@ -5,7 +5,6 @@ import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/R
 import { formatTimeSeconds } from '../../../../shared-components/utils';
 import { createLabourStatistics } from '../../../Labour/Tabs/Statistics/LabourStatistics';
 import { LabourStatisticsTabs } from '../../../Labour/Tabs/Statistics/LabourStatisticsTabs';
-import { LabourStatisticsTable } from '../../../Labour/Tabs/Statistics/LabourStatsticsTable';
 import image from '../../../Labour/Tabs/Statistics/statistics.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Statistics/LabourStatistics.module.css';
@@ -63,14 +62,14 @@ export const LabourStatistics = ({
           Not enough data yet.
         </Text>
       )}
-      {!completed && labourStatistics.total && (
-        <LabourStatisticsTabs contractions={labour.contractions} statistics={labourStatistics} />
-      )}
-      {completed && labourStatistics.total && (
-        <LabourStatisticsTable data={labourStatistics.total} />
+      {labourStatistics.total && (
+        <LabourStatisticsTabs labour={labour} statistics={labourStatistics} />
       )}
     </>
   );
+
+  const completedDescription = `All the numbers and patterns from ${birthingPersonName} contractions during labour.`
+  const activeDescription = `Here, you can view all of the statistics about ${birthingPersonName} contractions. This is useful information to have if you are a birth partner and need to discuss ${birthingPersonName} labour progress with your midwife or healthcare provider.`
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
@@ -78,9 +77,7 @@ export const LabourStatistics = ({
           <div className={classes.content}>
             <ResponsiveTitle title={`${birthingPersonName} labour statistics`} />
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              Here, you can view all of the statistics about {birthingPersonName} contractions. This
-              is useful information to have if you are a birth partner and need to discuss{' '}
-              {birthingPersonName} labour progress with your midwife or healthcare provider.
+              {completed ? completedDescription: activeDescription}
             </Text>
             <div className={baseClasses.imageFlexRow}>
               <Image src={image} className={baseClasses.smallImage} />

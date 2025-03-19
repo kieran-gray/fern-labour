@@ -10,7 +10,6 @@ import {
   ScrollArea,
   Text,
   TextInput,
-  Title,
 } from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
@@ -19,6 +18,7 @@ import { ManageStatusUpdateMenu } from './ManageStatusUpdateMenu';
 import { PostStatusUpdateButton } from './PostStatusUpdate';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './StatusUpdates.module.css';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 
 export function StatusUpdates({
   statusUpdates,
@@ -64,8 +64,9 @@ export function StatusUpdates({
     }
   }, [statusUpdates]);
 
+  const title = completed ? "Your status updates" : "Post a status update"
   const completedDescription =
-    'Here you can see the status updates from your labour experience. These entries kept your subscribers informed within the app without sending notifications.';
+    'Here you can see the status updates from your labour experience.';
   const activeDescription =
     "Update your status here to let your subscribers know how you are getting on. They won't be notified about these updates, but they will be able to see them in the app.";
 
@@ -74,12 +75,7 @@ export function StatusUpdates({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={2} visibleFrom="sm">
-              Post a status update
-            </Title>
-            <Title order={3} hiddenFrom="sm">
-              Post a status update
-            </Title>
+            <ResponsiveTitle title={title} />
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
               {completed ? completedDescription : activeDescription}
             </Text>

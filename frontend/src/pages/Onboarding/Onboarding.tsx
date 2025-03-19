@@ -32,6 +32,7 @@ export const OnboardingPage = () => {
   const { labourId, setLabourId } = useLabour();
   const [searchParams] = useSearchParams();
   const step = searchParams.get('step');
+  const success = searchParams.get('success');
   const [active, setActive] = useState(step ? stepOrder.indexOf(step) : 0);
   const [highestStepVisited, setHighestStepVisited] = useState(active);
   const [_, scrollTo] = useWindowScroll();
@@ -40,11 +41,13 @@ export const OnboardingPage = () => {
     return auth.user?.access_token || '';
   };
 
+  const maxStep = success ? 3 : 2;
+
   const handleStepChange = (nextStep: number) => {
-    if (nextStep < 0 || nextStep > 3) {
+    if (nextStep < 0 || nextStep > maxStep) {
       return;
     }
-    if (nextStep === 3) {
+    if (nextStep === maxStep) {
       navigate('/');
       return;
     }

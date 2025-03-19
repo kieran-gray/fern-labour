@@ -18,7 +18,6 @@ import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Carousel } from '@mantine/carousel';
 import {
-  Badge,
   Box,
   Button,
   Card,
@@ -53,7 +52,6 @@ const Icon = ({ children }: { children: ReactNode }) => (
 );
 
 const PricingCard = ({
-  badge,
   cta,
   description,
   icon,
@@ -92,7 +90,6 @@ const PricingCard = ({
   >
     <Group justify="space-between" align="start" mb="md">
       <Box>{icon}</Box>
-      <Box>{badge}</Box>
     </Group>
     <Text fz="xl" fw="bold">
       {title}
@@ -209,6 +206,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
 
       const successUrl = new URL(returnURL);
       successUrl.searchParams.set('step', 'receipt');
+      successUrl.searchParams.set('success', 'true');
 
       const cancelUrl = new URL(returnURL);
       cancelUrl.searchParams.set('cancelled', 'true');
@@ -299,11 +297,6 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
 
   const innerCircleCard = (
     <PricingCard
-      badge={
-        <Badge variant="light" size="lg">
-          Most popular
-        </Badge>
-      }
       title="Inner-Circle"
       description=""
       cta={
@@ -360,11 +353,6 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
 
   const communityCard = (
     <PricingCard
-      badge={
-        <Badge variant="outline" size="lg">
-          Best Value
-        </Badge>
-      }
       title="Community"
       description=""
       cta={

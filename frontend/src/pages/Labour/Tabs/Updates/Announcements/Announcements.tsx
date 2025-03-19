@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { IconPencil, IconSwitchHorizontal } from '@tabler/icons-react';
-import { Button, Image, LoadingOverlay, ScrollArea, Text, TextInput, Title } from '@mantine/core';
+import { Button, Image, LoadingOverlay, ScrollArea, Text, TextInput } from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import image from '../image.svg';
 import MakeAnnouncementButton from './MakeAnnouncement';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './Announcements.module.css';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 
 export function Announcements({
   announcements,
@@ -38,8 +39,9 @@ export function Announcements({
     }
   }, [announcements]);
 
+  const title = completed ? "Your announcements" : "Make an announcement"
   const completedDescription =
-    'View the announcements you shared during your labour journey. These messages were sent to your subscribers through their preferred notification methods.';
+    'View the announcements you shared during your labour journey.';
   const activeDescription =
     'Make an announcement to all your subscribers—they’ll be notified through their preferred methods. Use this to share important updates.';
 
@@ -48,12 +50,7 @@ export function Announcements({
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={2} visibleFrom="sm">
-              Make an announcement
-            </Title>
-            <Title order={3} hiddenFrom="sm">
-              Make an announcement
-            </Title>
+            <ResponsiveTitle title={title} />
             <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
               {completed ? completedDescription : activeDescription}
             </Text>

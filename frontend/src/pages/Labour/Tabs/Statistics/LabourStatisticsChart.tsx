@@ -16,9 +16,11 @@ function getTimestampMinutesAgo(date: Date, minutes: number): number {
 export const LabourStatisticsChart = ({
   contractions,
   minutes,
+  endTime,
 }: {
   contractions: ContractionDTO[];
   minutes?: number;
+  endTime?: Date
 }) => {
   let minStartTime: number | null = null;
   const chartData: ChartData = {
@@ -43,6 +45,7 @@ export const LabourStatisticsChart = ({
     : minStartTime
       ? minStartTime - 100000
       : 0;
+  const endX = endTime ? endTime.getTime() : now.getTime()
   return (
     <ScatterChart
       h={350}
@@ -51,7 +54,7 @@ export const LabourStatisticsChart = ({
       dataKey={{ x: 'time', y: 'duration' }}
       xAxisLabel="Time"
       yAxisLabel="Duration (s)"
-      xAxisProps={{ domain: [startTime, now.getTime()] }}
+      xAxisProps={{ domain: [startTime, endX] }}
       valueFormatter={{
         x: (value) => `${new Date(value).toTimeString().slice(0, 5)}`,
         y: (value) => `${value}s`,
