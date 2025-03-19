@@ -20,7 +20,7 @@ export const LabourStatisticsChart = ({
 }: {
   contractions: ContractionDTO[];
   minutes?: number;
-  endTime?: Date
+  endTime?: Date;
 }) => {
   let minStartTime: number | null = null;
   const chartData: ChartData = {
@@ -45,7 +45,7 @@ export const LabourStatisticsChart = ({
     : minStartTime
       ? minStartTime - 100000
       : 0;
-  const endX = endTime ? endTime.getTime() : now.getTime()
+  const endX = endTime ? endTime.getTime() : now.getTime();
   return (
     <ScatterChart
       h={350}

@@ -6,12 +6,12 @@ import { Badge, Button, Image, Text } from '@mantine/core';
 import { ApiError, LabourService, OpenAPI } from '../../../../../client';
 import { NotFoundError } from '../../../../../Errors';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '../../../../../shared-components/utils';
 import { useLabour } from '../../../LabourContext';
 import image from './Meditate.svg';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './LabourDetails.module.css';
-import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 
 export default function LabourDetails({ setActiveTab }: { setActiveTab: Function }) {
   const auth = useAuth();
@@ -113,13 +113,15 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                 Plan: {data.payment_plan?.replace('_', ' ')}
               </Badge>
             </div>
-            {data.notes &&
+            {data.notes && (
               <>
-                <Text mt={15} mb={15}>Your closing Note:</Text>
+                <Text mt={15} mb={15}>
+                  Your closing Note:
+                </Text>
                 <div className={classes.infoRow}>{data.notes}</div>
               </>
-            }
-            {!completed &&
+            )}
+            {!completed && (
               <div className={baseClasses.flexRow} style={{ marginTop: '20px' }}>
                 <Button
                   color="var(--mantine-color-pink-4)"
@@ -147,7 +149,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                   Complete your labour
                 </Button>
               </div>
-            }
+            )}
           </div>
         </div>
       </>

@@ -30,7 +30,7 @@ class CheckoutSessionCompletedEventHandler(EventHandler):
             if not checkout_session.line_items:
                 log.error(f"No line items found for checkout {session_id}")
                 return
-            
+
             if len(checkout_session.line_items) > 1:
                 log.error(f"Multiple line items found for checkout {session_id}")
 

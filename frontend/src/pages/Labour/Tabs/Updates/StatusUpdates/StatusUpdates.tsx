@@ -13,12 +13,12 @@ import {
 } from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from '../image.svg';
 import { ManageStatusUpdateMenu } from './ManageStatusUpdateMenu';
 import { PostStatusUpdateButton } from './PostStatusUpdate';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './StatusUpdates.module.css';
-import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 
 export function StatusUpdates({
   statusUpdates,
@@ -64,9 +64,8 @@ export function StatusUpdates({
     }
   }, [statusUpdates]);
 
-  const title = completed ? "Your status updates" : "Post a status update"
-  const completedDescription =
-    'Here you can see the status updates from your labour experience.';
+  const title = completed ? 'Your status updates' : 'Post a status update';
+  const completedDescription = 'Here you can see the status updates from your labour experience.';
   const activeDescription =
     "Update your status here to let your subscribers know how you are getting on. They won't be notified about these updates, but they will be able to see them in the app.";
 

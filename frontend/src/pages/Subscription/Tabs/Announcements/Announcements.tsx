@@ -34,8 +34,9 @@ export function Announcements({
   }, [announcements]);
 
   const completed = labour.end_time !== null;
-  const completedDescription = `All the big updates from ${birthingPersonName} labour in one place. These were the messages that pinged your phone when important moments happened. A little time capsule of her labour journey.`
-  const activeDescription = 'Stay updated! Labour announcements will appear here, and notifications will be sent on the contact methods you have set in the details tab.'
+  const completedDescription = `All the big updates from ${birthingPersonName} labour in one place. These were the messages that pinged your phone when important moments happened. A little time capsule of her labour journey.`;
+  const activeDescription =
+    'Stay updated! Labour announcements will appear here, and notifications will be sent on the contact methods you have set in the details tab.';
 
   return (
     <div className={baseClasses.root}>

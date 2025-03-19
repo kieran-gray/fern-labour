@@ -2,10 +2,10 @@ import { Badge, Image, Space, Text } from '@mantine/core';
 import { LabourDTO, SubscriptionDTO } from '../../../../client';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '../../../../shared-components/utils';
+import image from '../../../Labour/Tabs/Manage/LabourDetails/Meditate.svg';
 import ContactMethodsForm from './ContactMethodsForm';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Manage/LabourDetails/LabourDetails.module.css';
-import image from '../../../Labour/Tabs/Manage/LabourDetails/Meditate.svg';
 
 export default function LabourDetails({
   labour,
@@ -17,8 +17,10 @@ export default function LabourDetails({
   subscription: SubscriptionDTO;
 }) {
   const completed = labour.end_time !== null;
-  const activeDescription = "You’re here to support someone on an incredible journey, and that means giving them the space they need during labour. Instead of reaching out directly, check the app for updates or turn on notifications below to stay informed."
-  const completedDescription = "You were part of this incredible journey, providing support during a life-changing moment. This page shows the updates and notifications you received throughout the labour experience."
+  const activeDescription =
+    'You’re here to support someone on an incredible journey, and that means giving them the space they need during labour. Instead of reaching out directly, check the app for updates or turn on notifications below to stay informed.';
+  const completedDescription =
+    'You were part of this incredible journey, providing support during a life-changing moment. This page shows the updates and notifications you received throughout the labour experience.';
   const currentPhase = completed
     ? 'Completed'
     : labour.current_phase === 'planned'
@@ -43,8 +45,8 @@ export default function LabourDetails({
             <Image src={image} className={classes.image} />
           </div>
         </div>
-        <div className={baseClasses.inner} style={{paddingBottom: 0}}>
-          <div className={baseClasses.content}> 
+        <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
+          <div className={baseClasses.content}>
             <div className={classes.infoRow}>
               <Badge variant="filled" className={classes.labourBadge} size="lg">
                 {currentPhase}
@@ -63,23 +65,24 @@ export default function LabourDetails({
                 </Badge>
               )}
             </div>
-            {labour.notes &&
-            <>
-              <Text mt={15} mb={15}>{birthingPersonName} Closing Note:</Text>
-              <div className={classes.infoRow}>{labour.notes}</div>
-            </>
-            }
-
+            {labour.notes && (
+              <>
+                <Text mt={15} mb={15}>
+                  {birthingPersonName} Closing Note:
+                </Text>
+                <div className={classes.infoRow}>{labour.notes}</div>
+              </>
+            )}
           </div>
         </div>
-        {!completed &&
+        {!completed && (
           <>
             <Space h="lg" />
             <div className={baseClasses.inner} style={{ paddingTop: 0 }}>
               <ContactMethodsForm subscription={subscription} />
             </div>
           </>
-        }
+        )}
       </div>
     </div>
   );

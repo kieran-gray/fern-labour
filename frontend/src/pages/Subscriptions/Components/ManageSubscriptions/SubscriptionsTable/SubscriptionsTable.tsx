@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -9,7 +10,6 @@ import { useSubscription } from '../../../../Subscription/SubscriptionContext';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './SubscriptionsTable.module.css';
-import { ReactElement } from 'react';
 
 export function SubscriptionsTable() {
   const auth = useAuth();
@@ -48,7 +48,7 @@ export function SubscriptionsTable() {
   const birthingPersonById = Object.fromEntries(
     birthingPersons.map((birthingPerson) => [birthingPerson.id, birthingPerson])
   );
-  const rows: ReactElement[] = []
+  const rows: ReactElement[] = [];
   data.subscriptions.forEach((subscription) => {
     const birthing_person = birthingPersonById[subscription.birthing_person_id];
     if (!birthing_person) {

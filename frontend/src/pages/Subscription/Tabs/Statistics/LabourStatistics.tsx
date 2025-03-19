@@ -68,8 +68,8 @@ export const LabourStatistics = ({
     </>
   );
 
-  const completedDescription = `All the numbers and patterns from ${birthingPersonName} contractions during labour.`
-  const activeDescription = `Here, you can view all of the statistics about ${birthingPersonName} contractions. This is useful information to have if you are a birth partner and need to discuss ${birthingPersonName} labour progress with your midwife or healthcare provider.`
+  const completedDescription = `All the numbers and patterns from ${birthingPersonName} contractions during labour.`;
+  const activeDescription = `Here, you can view all of the statistics about ${birthingPersonName} contractions. This is useful information to have if you are a birth partner and need to discuss ${birthingPersonName} labour progress with your midwife or healthcare provider.`;
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
@@ -77,7 +77,7 @@ export const LabourStatistics = ({
           <div className={classes.content}>
             <ResponsiveTitle title={`${birthingPersonName} labour statistics`} />
             <Text c="var(--mantine-color-gray-7)" mt="md">
-              {completed ? completedDescription: activeDescription}
+              {completed ? completedDescription : activeDescription}
             </Text>
             <div className={baseClasses.imageFlexRow}>
               <Image src={image} className={baseClasses.smallImage} />

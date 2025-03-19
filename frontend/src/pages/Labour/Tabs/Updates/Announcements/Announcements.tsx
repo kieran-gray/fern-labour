@@ -3,11 +3,11 @@ import { IconPencil, IconSwitchHorizontal } from '@tabler/icons-react';
 import { Button, Image, LoadingOverlay, ScrollArea, Text, TextInput } from '@mantine/core';
 import { LabourUpdateDTO } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from '../image.svg';
 import MakeAnnouncementButton from './MakeAnnouncement';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './Announcements.module.css';
-import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 
 export function Announcements({
   announcements,
@@ -39,9 +39,8 @@ export function Announcements({
     }
   }, [announcements]);
 
-  const title = completed ? "Your announcements" : "Make an announcement"
-  const completedDescription =
-    'View the announcements you shared during your labour journey.';
+  const title = completed ? 'Your announcements' : 'Make an announcement';
+  const completedDescription = 'View the announcements you shared during your labour journey.';
   const activeDescription =
     'Make an announcement to all your subscribers—they’ll be notified through their preferred methods. Use this to share important updates.';
 

@@ -47,8 +47,8 @@ export function StatusUpdates({
   }, [statusUpdates]);
 
   const completed = labour.end_time !== null;
-  const activeDescription = `Curious about how things are going? ${birthingPerson.first_name} can update her status here, giving you a glimpse into her progress. These updates won’t send alerts, so check in regularly to stay informed without needing to reach out directly.`
-  const completedDescription = `Here's where Jess kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`
+  const activeDescription = `Curious about how things are going? ${birthingPerson.first_name} can update her status here, giving you a glimpse into her progress. These updates won’t send alerts, so check in regularly to stay informed without needing to reach out directly.`;
+  const completedDescription = `Here's where Jess kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`;
 
   return (
     <div className={baseClasses.root}>

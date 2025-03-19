@@ -163,7 +163,6 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
       {labourStatistics.total && (
         <LabourStatisticsTabs labour={labour} statistics={labourStatistics} />
       )}
-
     </>
   );
 
@@ -172,7 +171,7 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
   }
 
   const completedDescription =
-    "Here, you can see all the statistics about your contractions during your labour journey.";
+    'Here, you can see all the statistics about your contractions during your labour journey.';
   const activeDescription =
     'Here, you can view all of the statistics about your contractions. This is useful information to have when discussing labour progress with a midwife or healthcare provider.';
   return (
