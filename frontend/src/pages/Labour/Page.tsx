@@ -44,7 +44,6 @@ export const LabourPage = () => {
   const { labourId, setLabourId } = useLabour();
   const [searchParams] = useSearchParams();
   const labourIdParam = searchParams.get('labourId');
-  console.log(labourIdParam);
   const [activeTab, setActiveTab] = useState<string | null>('track');
 
   if (labourIdParam !== null) {
