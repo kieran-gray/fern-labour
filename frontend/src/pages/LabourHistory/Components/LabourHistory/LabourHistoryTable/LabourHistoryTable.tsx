@@ -1,15 +1,15 @@
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
+import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Group, Table, Text } from '@mantine/core';
 import { LabourService, OpenAPI } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
+import { useLabour } from '../../../../Labour/LabourContext';
 import { ManageLabourMenu } from '../ManageLabourMenu/ManageLabourMenu';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './LabourHistoryTable.module.css';
-import { useLabour } from '../../../../Labour/LabourContext';
-import { useNavigate } from 'react-router-dom';
 
 export function LabourHistoryTable() {
   const auth = useAuth();
@@ -49,14 +49,14 @@ export function LabourHistoryTable() {
   );
 
   const setLabour = async (newLabourId: string) => {
-    await queryClient.invalidateQueries()
+    await queryClient.invalidateQueries();
     if (labourId === newLabourId) {
-      setLabourId(null)
+      setLabourId(null);
     } else {
       setLabourId(newLabourId);
       navigate(`/?labourId=${newLabourId}`);
     }
-  }
+  };
 
   const rows = sortedLabours.map((labour) => {
     const date =
