@@ -8,6 +8,9 @@ on:
     types:
       - opened
       - synchronize
+    paths:
+      - 'marketing/**'
+      - '.github/workflows/**'
 
 jobs:
   test-marketing-site:

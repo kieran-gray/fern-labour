@@ -37,6 +37,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
       }
     },
     retry: 0,
+    enabled: !!labourId,
   });
   let content = undefined;
 

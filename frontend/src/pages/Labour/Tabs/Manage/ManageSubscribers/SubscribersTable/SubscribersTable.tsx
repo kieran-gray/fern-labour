@@ -25,6 +25,7 @@ export function SubscribersTable() {
         );
       return response;
     },
+    enabled: !!labourId,
   });
 
   if (isPending) {
