@@ -7,11 +7,11 @@ from stripe.checkout import Session
 from app.application.dtos.user import UserDTO
 from app.application.events.event_handler import EventHandler
 from app.infrastructure.payments.stripe.exceptions import (
+    StripeProductNotFound,
     WebhookHasInvalidPayload,
     WebhookHasInvalidSignature,
     WebhookMissingSignatureHeader,
 )
-from app.infrastructure.payments.stripe.product_mapping import STRIPE_PRODUCT_TO_PRICE
 
 log = logging.getLogger(__name__)
 
@@ -25,6 +25,14 @@ class StripePaymentService:
         self._stripe = stripe
         self._stripe.api_key = self._api_key
         self._event_handlers = event_handlers
+
+    async def generate_line_item(self, item: str) -> Session.CreateParamsLineItem:
+        products = await stripe.Product.list_async(active=True)
+        for product in products.data:
+            if product.metadata.get("product") == item:
+                # Casting to str for typing, it will be a str unless expanded.
+                return {"price": str(product.default_price), "quantity": 1}
+        raise StripeProductNotFound()
 
     async def handle_webhook(self, payload: bytes, signature_header: str | None) -> None:
         if not signature_header:
@@ -48,13 +56,9 @@ class StripePaymentService:
     async def create_checkout_session(
         self, user: UserDTO, success_url: str, cancel_url: str, item: str, labour_id: str
     ) -> Session:
+        line_item = await self.generate_line_item(item=item)
         checkout_session = stripe.checkout.Session.create(
-            line_items=[
-                {
-                    "price": STRIPE_PRODUCT_TO_PRICE[item],
-                    "quantity": 1,
-                },
-            ],
+            line_items=[line_item],
             customer_email=user.email,
             metadata={"user_id": user.id, "labour_id": labour_id},
             mode="payment",
