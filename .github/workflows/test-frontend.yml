@@ -8,6 +8,9 @@ on:
     types:
       - opened
       - synchronize
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/**'
 
 jobs:
   test-frontend-site:
