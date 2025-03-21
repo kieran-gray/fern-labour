@@ -1,8 +1,8 @@
 'use client';
 
+import { Carousel } from '@mantine/carousel';
 import { Container, Image } from '@mantine/core';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
-import { Carousel } from '@mantine/carousel';
 import classes from './FeaturesCarousel.module.css';
 
 export function FeaturesCarousel() {
@@ -10,25 +10,39 @@ export function FeaturesCarousel() {
     <Carousel
       withIndicators
       height="100%"
-      slideSize={{ base: "33.33333%" }}
+      slideSize={{ base: '33.33333%' }}
       slideGap="xs"
-      type='container'
+      type="container"
       loop
       align="start"
-      pos='relative'
+      pos="relative"
     >
-      <Carousel.Slide><Image src="images/features/01.png" className={classes.image} /></Carousel.Slide>
-      <Carousel.Slide><Image src="images/features/02.png" className={classes.image} /></Carousel.Slide>
-      <Carousel.Slide><Image src="images/features/03.png" className={classes.image} /></Carousel.Slide>
-      <Carousel.Slide><Image src="images/features/04.png" className={classes.image} /></Carousel.Slide>
-      <Carousel.Slide><Image src="images/features/05.png" className={classes.image} /></Carousel.Slide>
-      <Carousel.Slide><Image src="images/features/06.png" className={classes.image} /></Carousel.Slide>
-      <Carousel.Slide><Image src="images/features/07.png" className={classes.image} /></Carousel.Slide>
+      <Carousel.Slide>
+        <Image src="images/features/01.png" className={classes.image} />
+      </Carousel.Slide>
+      <Carousel.Slide>
+        <Image src="images/features/02.png" className={classes.image} />
+      </Carousel.Slide>
+      <Carousel.Slide>
+        <Image src="images/features/03.png" className={classes.image} />
+      </Carousel.Slide>
+      <Carousel.Slide>
+        <Image src="images/features/04.png" className={classes.image} />
+      </Carousel.Slide>
+      <Carousel.Slide>
+        <Image src="images/features/05.png" className={classes.image} />
+      </Carousel.Slide>
+      <Carousel.Slide>
+        <Image src="images/features/06.png" className={classes.image} />
+      </Carousel.Slide>
+      <Carousel.Slide>
+        <Image src="images/features/07.png" className={classes.image} />
+      </Carousel.Slide>
     </Carousel>
   );
 }
 
-export const FeaturesDemo= () => (
+export const FeaturesDemo = () => (
   <Container
     bg="var(--mantine-color-body)"
     py={{

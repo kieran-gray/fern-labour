@@ -14,9 +14,9 @@ import {
 } from '@tabler/icons-react';
 import { motion } from 'motion/react';
 import { Box, Card, Container, Flex, Grid, Space, Stack, Text } from '@mantine/core';
+import { FeaturesCarousel } from '../FeaturesCarousel/FeaturesCarousel';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesMotion.module.css';
-import { FeaturesCarousel } from '../FeaturesCarousel/FeaturesCarousel';
 
 type Feature = {
   icon: ReactNode;
