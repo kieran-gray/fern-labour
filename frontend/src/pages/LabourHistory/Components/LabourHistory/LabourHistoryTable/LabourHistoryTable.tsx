@@ -2,7 +2,7 @@ import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Group, Table, Text } from '@mantine/core';
+import { Badge, Button, Table, Text } from '@mantine/core';
 import { LabourService, OpenAPI } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
@@ -58,40 +58,62 @@ export function LabourHistoryTable() {
     }
   };
 
+  const toggleButtonIcon = (clickedLabourId: string) => {
+    return labourId === clickedLabourId ? (
+      <IconX size={18} stroke={1.5} />
+    ) : (
+      <IconArrowRight size={18} stroke={1.5} />
+    )
+  }
+
   const rows = sortedLabours.map((labour) => {
     const date =
       labour.end_time != null
-        ? new Date(labour.end_time).toDateString()
-        : new Date(labour.due_date).toDateString();
+        ? new Date(labour.end_time).toISOString().substring(0, 10)
+        : new Date(labour.due_date).toDateString().substring(0, 10);
     return (
       <Table.Tr key={labour.id} bd="none">
         <Table.Td>
-          <Text fz="sm" fw={500} className={classes.cropText}>
-            {labour.labour_name || date}
-          </Text>
-        </Table.Td>
-        <Table.Td>
-          <Group gap="sm" wrap="nowrap">
-            <Badge variant="light" className={classes.labourBadge} size="sm">
-              <Text fz="sm" fw={700} className={classes.cropText}>
+          <div className={baseClasses.flexRow} style={{ alignItems: 'center', justifyContent:'space-around', rowGap: '5px' }}>
+            <Badge variant="light" size="lg" visibleFrom='xs'>
+              <Text fz="md" fw={700} className={classes.cropText}>
                 {labour.current_phase}
               </Text>
             </Badge>
-          </Group>
+            <Badge variant="light" size="xs" hiddenFrom='xs'>
+              <Text fz="xs" fw={700} className={classes.cropText}>
+                {labour.current_phase}
+              </Text>
+            </Badge>
+            <Text fz='md' fw={500} ta='center' visibleFrom='xs'>
+              {labour.labour_name || date}
+            </Text>
+            <Text fz='xs' fw={500} ta='center' hiddenFrom='xs'>
+              {labour.labour_name || date}
+            </Text>
+          </div>
         </Table.Td>
         <Table.Td>
           <Button
             color="var(--mantine-color-pink-4)"
-            rightSection={
-              labourId === labour.id ? (
-                <IconX size={18} stroke={1.5} />
-              ) : (
-                <IconArrowRight size={18} stroke={1.5} />
-              )
-            }
+            rightSection={toggleButtonIcon(labour.id)}
             variant="light"
             radius="xl"
-            size="sm"
+            size="md"
+            visibleFrom='xs'
+            className={classes.submitButton}
+            onClick={() => setLabour(labour.id)}
+            type="submit"
+          >
+            {labourId === labour.id ? 'Exit' : 'View'}
+          </Button>
+          <Button
+            color="var(--mantine-color-pink-4)"
+            rightSection={toggleButtonIcon(labour.id)}
+            variant="light"
+            radius="xl"
+            size="xs"
+            hiddenFrom='xs'
             className={classes.submitButton}
             onClick={() => setLabour(labour.id)}
             type="submit"
@@ -109,13 +131,12 @@ export function LabourHistoryTable() {
   if (rows.length > 0) {
     return (
       <Table.ScrollContainer minWidth={200} w="100%">
-        <Table verticalSpacing="sm" highlightOnHover>
+        <Table verticalSpacing="sm" highlightOnHover ta="center">
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>Labour</Table.Th>
-              <Table.Th>Status</Table.Th>
-              <Table.Th>View</Table.Th>
-              <Table.Th>Manage</Table.Th>
+              <Table.Th ta="center">Labour</Table.Th>
+              <Table.Th ta="center">View</Table.Th>
+              <Table.Th ta="center">Manage</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{rows}</Table.Tbody>

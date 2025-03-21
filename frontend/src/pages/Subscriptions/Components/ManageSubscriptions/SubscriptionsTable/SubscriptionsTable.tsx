@@ -43,12 +43,24 @@ export function SubscriptionsTable() {
     return <ImportantText message={error.message} />;
   }
 
+  const toggleSubscription = (subId: string) => {
+    subscriptionId === subId ? setSubscriptionId('') : setSubscriptionId(subId);
+  }
+  const toggleButtonIcon = (subId: string) => {
+    return subscriptionId === subId ? (
+      <IconX size={18} stroke={1.5} />
+    ) : (
+      <IconArrowRight size={18} stroke={1.5} />
+    )
+  }
+
   const birthingPersons = data.birthing_persons || [];
 
   const birthingPersonById = Object.fromEntries(
     birthingPersons.map((birthingPerson) => [birthingPerson.id, birthingPerson])
   );
   const rows: ReactElement[] = [];
+
   data.subscriptions.forEach((subscription) => {
     const birthing_person = birthingPersonById[subscription.birthing_person_id];
     if (!birthing_person) {
@@ -58,7 +70,7 @@ export function SubscriptionsTable() {
       <Table.Tr key={subscription.id} bd="none">
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Avatar radius="xl" color="var(--mantine-color-pink-5)" />
+            <Avatar visibleFrom='sm' radius="xl" color="var(--mantine-color-pink-5)" />
             <div>
               <Text fz="sm" fw={500} className={classes.cropText}>
                 {birthing_person.first_name} {birthing_person.last_name}
@@ -69,26 +81,30 @@ export function SubscriptionsTable() {
         <Table.Td>
           <Button
             color="var(--mantine-color-pink-4)"
-            rightSection={
-              subscriptionId === subscription.id ? (
-                <IconX size={18} stroke={1.5} />
-              ) : (
-                <IconArrowRight size={18} stroke={1.5} />
-              )
-            }
+            rightSection={toggleButtonIcon(subscription.id)}
             variant="light"
             radius="xl"
-            size="sm"
-            h={48}
+            size="md"
+            visibleFrom='sm'
             className={classes.submitButton}
-            onClick={() => {
-              subscriptionId === subscription.id
-                ? setSubscriptionId('')
-                : setSubscriptionId(subscription.id);
-            }}
+            onClick={() => toggleSubscription(subscription.id)}
             type="submit"
           >
-            {subscriptionId === subscription.id ? 'Exit Labour' : 'View Labour'}
+            {subscriptionId === subscription.id ? 'Exit' : 'View'}
+          </Button>
+          <Button
+            color="var(--mantine-color-pink-4)"
+            rightSection={toggleButtonIcon(subscription.id)}
+            variant="light"
+            radius="xl"
+            size="xs"
+            h={40}
+            hiddenFrom='sm'
+            className={classes.submitButton}
+            onClick={() => toggleSubscription(subscription.id)}
+            type="submit"
+          >
+            {subscriptionId === subscription.id ? 'Exit' : 'View'}
           </Button>
         </Table.Td>
         <Table.Td>

@@ -34,6 +34,7 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
+  ApiError,
   CreateCheckoutRequest,
   LabourDTO,
   LabourService,
@@ -226,11 +227,20 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
       setMutationInProgress(false);
     },
-    onError: async () => {
+    onError: async (error) => {
+      let message = 'Unknown error occurred';
+      if (error instanceof ApiError) {
+        try {
+          const body = error.body as { description: string };
+          message = body.description;
+        } catch {
+          // Do nothing
+        }
+      }
       setMutationInProgress(false);
       notifications.show({
         title: 'Error',
-        message: 'Something went wrong. Please try again.',
+        message,
         radius: 'lg',
         color: 'var(--mantine-color-pink-7)',
       });
