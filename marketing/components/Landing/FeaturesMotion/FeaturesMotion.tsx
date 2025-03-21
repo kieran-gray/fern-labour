@@ -13,7 +13,8 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import { motion } from 'motion/react';
-import { Box, Card, Container, Flex, Grid, Stack, Text } from '@mantine/core';
+import { Box, Card, Container, Flex, Grid, Space, Stack, Text } from '@mantine/core';
+import { FeaturesCarousel } from '../FeaturesCarousel/FeaturesCarousel';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesMotion.module.css';
 
@@ -87,7 +88,7 @@ const FeatureCell = ({
   <motion.div
     initial={{ opacity: 0.0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.2 * index, ease: 'easeInOut' }}
+    transition={{ duration: 0.5, delay: 0.1 * index, ease: 'easeInOut' }}
     viewport={{ once: true }}
     style={{ height: '100%' }}
   >
@@ -144,6 +145,8 @@ export const Feature02 = ({
       </JumboTitle>
     </Container>
     <Container size="lg" p={0} mt="xl">
+      <FeaturesCarousel />
+      <Space h="xl" />
       <Grid gutter="xl">
         {features.map((feature, index) => (
           <Grid.Col key={feature.title} span={{ base: 12, xs: 6, md: 4 }} mih="100%">

@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css';
+import '@mantine/carousel/styles.css';
 
 import type { AppProps } from 'next/app';
 import { Quicksand } from 'next/font/google';

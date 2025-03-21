@@ -132,8 +132,7 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
           <Text className={classes.labourStatsText}>
             <strong>Duration: </strong>
             {formatTimeSeconds(
-              (new Date(labour.end_time).getTime() - new Date(labour.start_time).getTime()) / 1000,
-              true
+              (new Date(labour.end_time).getTime() - new Date(labour.start_time).getTime()) / 1000
             )}
           </Text>
         </>
@@ -141,10 +140,7 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
       {labour.start_time && labour.end_time == null && (
         <Text className={classes.labourStatsText}>
           <strong>Elapsed Time: </strong>
-          {formatTimeSeconds(
-            (new Date().getTime() - new Date(labour.start_time).getTime()) / 1000,
-            true
-          )}
+          {formatTimeSeconds((new Date().getTime() - new Date(labour.start_time).getTime()) / 1000)}
         </Text>
       )}
     </div>

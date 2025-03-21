@@ -40,10 +40,11 @@ class UpdateContractionService:
         if contraction.is_active:
             raise CannotUpdateActiveContraction()
 
-        if start_time:
+        if start_time and end_time:
+            contraction.update_duration(start_time=start_time, end_time=end_time)
+        elif start_time:
             contraction.update_start_time(start_time=start_time)
-
-        if end_time:
+        elif end_time:
             contraction.update_end_time(end_time=end_time)
 
         if start_time or end_time:

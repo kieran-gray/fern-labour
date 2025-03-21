@@ -45,8 +45,7 @@ export default function ContactMethodsForm({ subscription }: { subscription: Sub
       if (data.user.phone_number == null) {
         contactMethodsWarning =
           "You have selected to receive text message alerts but you don't have a phone number set on your profile. Set one by clicking 'Update Profile' in the app menu.";
-      }
-      if (!data.user.phone_number?.startsWith('+44')) {
+      } else if (!data.user.phone_number?.startsWith('+44')) {
         contactMethodsWarning =
           "Your mobile number isn't from the UK (it doesn't start with +44). Unfortunately we can only send text messages to UK numbers at this time.";
       }

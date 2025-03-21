@@ -12,6 +12,6 @@ export default withBundleAnalyzer({
   },
   compress: false,
   experimental: {
-    optimizePackageImports: ['@mantine/core', '@mantine/hooks']
+    optimizePackageImports: ['@mantine/core', '@mantine/hooks', '@mantine/carousel']
   }
 });

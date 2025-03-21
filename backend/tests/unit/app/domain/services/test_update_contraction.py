@@ -103,6 +103,29 @@ def test_can_update_contraction_start_time(sample_labour: Labour):
     assert labour.contractions[0].duration.duration_seconds == 30
 
 
+def test_can_update_contraction_start_time_and_end_time(sample_labour: Labour):
+    labour = BeginLabourService().begin_labour(sample_labour)
+    contraction_start_time = datetime(2020, 1, 1, 1, 0)
+    contraction_end_time = datetime(2020, 1, 1, 1, 1)
+    StartContractionService().start_contraction(
+        labour=sample_labour,
+        start_time=contraction_start_time,
+    )
+    EndContractionService().end_contraction(
+        labour=sample_labour,
+        intensity=CONTRACTION_MAX_INTENSITY,
+        end_time=contraction_end_time,
+    )
+    assert labour.contractions[0].duration.duration_seconds == 60
+    UpdateContractionService().update_contraction(
+        labour=sample_labour,
+        contraction_id=labour.contractions[0].id_,
+        start_time=datetime(2020, 1, 1, 2, 0),
+        end_time=datetime(2020, 1, 1, 2, 1),
+    )
+    assert labour.contractions[0].duration.duration_seconds == 60
+
+
 def test_can_update_contraction_end_time(sample_labour: Labour):
     labour = BeginLabourService().begin_labour(sample_labour)
     contraction_start_time = datetime(2020, 1, 1, 1, 0)

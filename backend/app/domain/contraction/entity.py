@@ -58,6 +58,10 @@ class Contraction(Entity[ContractionId]):
         self.duration = new_duration
         self.update_intensity(intensity)
 
+    def update_duration(self, start_time: datetime, end_time: datetime) -> None:
+        new_duration = Duration.create(start_time=start_time, end_time=end_time)
+        self.duration = new_duration
+
     def update_start_time(self, start_time: datetime) -> None:
         new_duration = Duration.create(start_time=start_time, end_time=self.end_time)
         self.duration = new_duration

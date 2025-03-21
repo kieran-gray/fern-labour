@@ -46,7 +46,7 @@ export function FaqWithImage() {
                 <Accordion.Control>How will my data be stored?</Accordion.Control>
                 <Accordion.Panel>
                   Your privacy and data security are our top priority. All your personal information
-                  is encrypted and stored on secure servers located in Europe.
+                  is encrypted and stored on secure servers located in the United Kingdom.
                   <br />
                   We use industry-standard SSL encryption for all data transmission, and your
                   identifying information is encrypted when stored.
