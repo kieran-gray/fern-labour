@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   IconArrowLeft,
   IconArrowRight,
@@ -30,12 +30,18 @@ export const OnboardingPage = () => {
   const auth = useAuth();
   const navigate = useNavigate();
   const { labourId, setLabourId } = useLabour();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const step = searchParams.get('step');
   const success = searchParams.get('success');
   const [active, setActive] = useState(step ? stepOrder.indexOf(step) : 0);
   const [highestStepVisited, setHighestStepVisited] = useState(active);
   const [_, scrollTo] = useWindowScroll();
+
+  useEffect(() => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('step', stepOrder[active]);
+    setSearchParams(newParams);
+  }, [active]);
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';

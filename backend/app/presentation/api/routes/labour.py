@@ -351,8 +351,7 @@ async def delete_labour(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> None:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    await service.delete_labour(birthing_person_id=user.id, labour_id=labour_id)
-    return
+    return await service.delete_labour(requester_id=user.id, labour_id=labour_id)
 
 
 @labour_router.get(

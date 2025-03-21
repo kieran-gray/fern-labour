@@ -1,44 +1,47 @@
 'use client';
 
+import { motion } from 'motion/react';
 import { Carousel } from '@mantine/carousel';
 import { Container, Image } from '@mantine/core';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesCarousel.module.css';
 
+const images = [
+  'images/features/01.webp',
+  'images/features/02.webp',
+  'images/features/03.webp',
+  'images/features/04.webp',
+  'images/features/05.webp',
+  'images/features/06.webp',
+  'images/features/07.webp',
+];
+
 export function FeaturesCarousel() {
   return (
-    <Carousel
-      withIndicators
-      height="100%"
-      slideSize={{ base: '33.33333%' }}
-      slideGap="xs"
-      type="container"
-      loop
-      align="start"
-      pos="relative"
+    <motion.div
+      initial={{ opacity: 0.0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1, ease: 'easeInOut' }}
+      viewport={{ once: true }}
+      style={{ height: '100%' }}
     >
-      <Carousel.Slide>
-        <Image src="images/features/01.webp" className={classes.image} />
-      </Carousel.Slide>
-      <Carousel.Slide>
-        <Image src="images/features/02.webp" className={classes.image} />
-      </Carousel.Slide>
-      <Carousel.Slide>
-        <Image src="images/features/03.webp" className={classes.image} />
-      </Carousel.Slide>
-      <Carousel.Slide>
-        <Image src="images/features/04.webp" className={classes.image} />
-      </Carousel.Slide>
-      <Carousel.Slide>
-        <Image src="images/features/05.webp" className={classes.image} />
-      </Carousel.Slide>
-      <Carousel.Slide>
-        <Image src="images/features/06.webp" className={classes.image} />
-      </Carousel.Slide>
-      <Carousel.Slide>
-        <Image src="images/features/07.webp" className={classes.image} />
-      </Carousel.Slide>
-    </Carousel>
+      <Carousel
+        withIndicators
+        height="100%"
+        slideSize={{ base: '33.33333%' }}
+        slideGap="xs"
+        type="container"
+        loop
+        align="start"
+        pos="relative"
+      >
+        {images.map((src) => (
+          <Carousel.Slide>
+            <Image src={src} className={classes.image} />
+          </Carousel.Slide>
+        ))}
+      </Carousel>
+    </motion.div>
   );
 }
 
