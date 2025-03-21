@@ -18,25 +18,25 @@ export function FeaturesCarousel() {
       pos="relative"
     >
       <Carousel.Slide>
-        <Image src="images/features/01.png" className={classes.image} />
+        <Image src="images/features/01.webp" className={classes.image} />
       </Carousel.Slide>
       <Carousel.Slide>
-        <Image src="images/features/02.png" className={classes.image} />
+        <Image src="images/features/02.webp" className={classes.image} />
       </Carousel.Slide>
       <Carousel.Slide>
-        <Image src="images/features/03.png" className={classes.image} />
+        <Image src="images/features/03.webp" className={classes.image} />
       </Carousel.Slide>
       <Carousel.Slide>
-        <Image src="images/features/04.png" className={classes.image} />
+        <Image src="images/features/04.webp" className={classes.image} />
       </Carousel.Slide>
       <Carousel.Slide>
-        <Image src="images/features/05.png" className={classes.image} />
+        <Image src="images/features/05.webp" className={classes.image} />
       </Carousel.Slide>
       <Carousel.Slide>
-        <Image src="images/features/06.png" className={classes.image} />
+        <Image src="images/features/06.webp" className={classes.image} />
       </Carousel.Slide>
       <Carousel.Slide>
-        <Image src="images/features/07.png" className={classes.image} />
+        <Image src="images/features/07.webp" className={classes.image} />
       </Carousel.Slide>
     </Carousel>
   );
