@@ -1,20 +1,20 @@
 'use client';
 
+import { motion } from 'motion/react';
 import { Carousel } from '@mantine/carousel';
 import { Container, Image } from '@mantine/core';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesCarousel.module.css';
-import { motion } from 'motion/react';
 
 const images = [
-  "images/features/01.webp",
-  "images/features/02.webp",
-  "images/features/03.webp",
-  "images/features/04.webp",
-  "images/features/05.webp",
-  "images/features/06.webp",
-  "images/features/07.webp"
-]
+  'images/features/01.webp',
+  'images/features/02.webp',
+  'images/features/03.webp',
+  'images/features/04.webp',
+  'images/features/05.webp',
+  'images/features/06.webp',
+  'images/features/07.webp',
+];
 
 export function FeaturesCarousel() {
   return (
@@ -35,11 +35,11 @@ export function FeaturesCarousel() {
         align="start"
         pos="relative"
       >
-        {images.map((src) =>
+        {images.map((src) => (
           <Carousel.Slide>
-              <Image src={src} className={classes.image} />
+            <Image src={src} className={classes.image} />
           </Carousel.Slide>
-        )}
+        ))}
       </Carousel>
     </motion.div>
   );

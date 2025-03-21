@@ -45,14 +45,14 @@ export function SubscriptionsTable() {
 
   const toggleSubscription = (subId: string) => {
     subscriptionId === subId ? setSubscriptionId('') : setSubscriptionId(subId);
-  }
+  };
   const toggleButtonIcon = (subId: string) => {
     return subscriptionId === subId ? (
       <IconX size={18} stroke={1.5} />
     ) : (
       <IconArrowRight size={18} stroke={1.5} />
-    )
-  }
+    );
+  };
 
   const birthingPersons = data.birthing_persons || [];
 
@@ -70,7 +70,7 @@ export function SubscriptionsTable() {
       <Table.Tr key={subscription.id} bd="none">
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Avatar visibleFrom='sm' radius="xl" color="var(--mantine-color-pink-5)" />
+            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />
             <div>
               <Text fz="sm" fw={500} className={classes.cropText}>
                 {birthing_person.first_name} {birthing_person.last_name}
@@ -85,7 +85,7 @@ export function SubscriptionsTable() {
             variant="light"
             radius="xl"
             size="md"
-            visibleFrom='sm'
+            visibleFrom="sm"
             className={classes.submitButton}
             onClick={() => toggleSubscription(subscription.id)}
             type="submit"
@@ -99,7 +99,7 @@ export function SubscriptionsTable() {
             radius="xl"
             size="xs"
             h={40}
-            hiddenFrom='sm'
+            hiddenFrom="sm"
             className={classes.submitButton}
             onClick={() => toggleSubscription(subscription.id)}
             type="submit"

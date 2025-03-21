@@ -63,8 +63,8 @@ export function LabourHistoryTable() {
       <IconX size={18} stroke={1.5} />
     ) : (
       <IconArrowRight size={18} stroke={1.5} />
-    )
-  }
+    );
+  };
 
   const rows = sortedLabours.map((labour) => {
     const date =
@@ -74,21 +74,24 @@ export function LabourHistoryTable() {
     return (
       <Table.Tr key={labour.id} bd="none">
         <Table.Td>
-          <div className={baseClasses.flexRow} style={{ alignItems: 'center', justifyContent:'space-around', rowGap: '5px' }}>
-            <Badge variant="light" size="lg" visibleFrom='xs'>
+          <div
+            className={baseClasses.flexRow}
+            style={{ alignItems: 'center', justifyContent: 'space-around', rowGap: '5px' }}
+          >
+            <Badge variant="light" size="lg" visibleFrom="xs">
               <Text fz="md" fw={700} className={classes.cropText}>
                 {labour.current_phase}
               </Text>
             </Badge>
-            <Badge variant="light" size="xs" hiddenFrom='xs'>
+            <Badge variant="light" size="xs" hiddenFrom="xs">
               <Text fz="xs" fw={700} className={classes.cropText}>
                 {labour.current_phase}
               </Text>
             </Badge>
-            <Text fz='md' fw={500} ta='center' visibleFrom='xs'>
+            <Text fz="md" fw={500} ta="center" visibleFrom="xs">
               {labour.labour_name || date}
             </Text>
-            <Text fz='xs' fw={500} ta='center' hiddenFrom='xs'>
+            <Text fz="xs" fw={500} ta="center" hiddenFrom="xs">
               {labour.labour_name || date}
             </Text>
           </div>
@@ -100,7 +103,7 @@ export function LabourHistoryTable() {
             variant="light"
             radius="xl"
             size="md"
-            visibleFrom='xs'
+            visibleFrom="xs"
             className={classes.submitButton}
             onClick={() => setLabour(labour.id)}
             type="submit"
@@ -113,7 +116,7 @@ export function LabourHistoryTable() {
             variant="light"
             radius="xl"
             size="xs"
-            hiddenFrom='xs'
+            hiddenFrom="xs"
             className={classes.submitButton}
             onClick={() => setLabour(labour.id)}
             type="submit"
