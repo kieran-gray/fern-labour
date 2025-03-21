@@ -37,7 +37,6 @@ export const LabourStatistics = ({
               {formatTimeSeconds(
                 (new Date(labour.end_time).getTime() - new Date(labour.start_time).getTime()) /
                   1000,
-                true
               )}
             </Text>
           </>
@@ -47,7 +46,6 @@ export const LabourStatistics = ({
             <strong>Elapsed Time: </strong>
             {formatTimeSeconds(
               (new Date().getTime() - new Date(labour.start_time).getTime()) / 1000,
-              true
             )}
           </Text>
         )}
