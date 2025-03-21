@@ -372,3 +372,56 @@ async def test_cannot_update_labour_payment_plan_invalid_id(labour_service: Labo
         await labour_service.update_labour_payment_plan(
             birthing_person_id=BIRTHING_PERSON, payment_plan="test"
         )
+
+
+async def test_check_can_update_labour_payment_plan(labour_service: LabourService):
+    labour = await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    labour = await labour_service.can_update_labour_payment_plan(
+        requester_id=BIRTHING_PERSON, labour_id=labour.id, payment_plan=LabourPaymentPlan.SOLO.value
+    )
+    assert labour.payment_plan is None
+
+
+async def test_check_can_update_labour_payment_plan_invalid_labour_id(
+    labour_service: LabourService,
+):
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+
+    with pytest.raises(InvalidLabourId):
+        await labour_service.can_update_labour_payment_plan(
+            requester_id=BIRTHING_PERSON,
+            labour_id="test",
+            payment_plan=LabourPaymentPlan.SOLO.value,
+        )
+
+
+async def test_check_can_update_labour_payment_plan_invalid_payment_plan(
+    labour_service: LabourService,
+):
+    labour = await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+
+    with pytest.raises(InvalidLabourPaymentPlan):
+        await labour_service.can_update_labour_payment_plan(
+            requester_id=BIRTHING_PERSON, labour_id=labour.id, payment_plan="test"
+        )
+
+
+async def test_check_can_update_labour_payment_plan_non_existent_labour(
+    labour_service: LabourService,
+):
+    with pytest.raises(LabourNotFoundById):
+        await labour_service.can_update_labour_payment_plan(
+            requester_id=BIRTHING_PERSON,
+            labour_id=str(uuid4()),
+            payment_plan=LabourPaymentPlan.SOLO.value,
+        )
+
+
+async def test_check_can_update_labour_payment_plan_unauthorised(labour_service: LabourService):
+    labour = await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    with pytest.raises(UnauthorizedLabourRequest):
+        await labour_service.can_update_labour_payment_plan(
+            requester_id="different_id",
+            labour_id=labour.id,
+            payment_plan=LabourPaymentPlan.SOLO.value,
+        )

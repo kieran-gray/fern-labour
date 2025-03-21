@@ -23,6 +23,7 @@ from app.domain.labour.vo_labour_id import LabourId
 from app.domain.labour_update.enums import LabourUpdateType
 from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 from app.domain.services.begin_labour import BeginLabourService
+from app.domain.services.can_update_labour_plan import CanUpdateLabourPlanService
 from app.domain.services.complete_labour import CompleteLabourService
 from app.domain.services.delete_contraction import DeleteContractionService
 from app.domain.services.end_contraction import EndContractionService
@@ -93,6 +94,34 @@ class LabourService:
 
         await self._event_producer.publish_batch(labour.clear_domain_events())
 
+        return LabourDTO.from_domain(labour)
+
+    async def can_update_labour_payment_plan(
+        self,
+        requester_id: str,
+        labour_id: str,
+        payment_plan: str,
+    ) -> LabourDTO:
+        try:
+            labour_domain_id = LabourId(UUID(labour_id))
+        except ValueError:
+            raise InvalidLabourId()
+
+        try:
+            labour_payment_plan = LabourPaymentPlan(payment_plan)
+        except ValueError:
+            raise InvalidLabourPaymentPlan()
+
+        labour = await self._labour_repository.get_by_id(labour_id=labour_domain_id)
+        if not labour:
+            raise LabourNotFoundById(labour_id=labour_id)
+
+        if labour.birthing_person_id.value != requester_id:
+            raise UnauthorizedLabourRequest()
+
+        CanUpdateLabourPlanService().can_update_labour_plan(
+            labour=labour, payment_plan=labour_payment_plan
+        )
         return LabourDTO.from_domain(labour)
 
     async def update_labour_payment_plan(
@@ -302,7 +331,7 @@ class LabourService:
 
     async def delete_labour(
         self,
-        birthing_person_id: str,
+        requester_id: str,
         labour_id: str,
     ) -> None:
         try:
@@ -314,7 +343,7 @@ class LabourService:
         if not labour:
             raise LabourNotFoundById(labour_id=labour_id)
 
-        if labour.birthing_person_id.value != birthing_person_id:
+        if labour.birthing_person_id.value != requester_id:
             raise UnauthorizedLabourRequest()
 
         if labour.is_active:

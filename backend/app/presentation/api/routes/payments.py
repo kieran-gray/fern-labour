@@ -5,7 +5,7 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import HTTPAuthorizationCredentials
 
-from app.application.services.get_labour_service import GetLabourService
+from app.application.services.labour_service import LabourService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.infrastructure.payments.stripe.product_mapping import Product
 from app.infrastructure.payments.stripe.stripe_payment_service import StripePaymentService
@@ -52,13 +52,15 @@ async def my_webhook_view(
 async def create_checkout_session(
     request_data: CreateCheckoutRequest,
     payment_service: Annotated[StripePaymentService, FromComponent(ComponentEnum.PAYMENTS)],
-    get_labour_service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    labour_service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> CheckoutResponse:
-    # TODO check labour payment plan
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await get_labour_service.get_labour_by_id(labour_id=request_data.labour_id)
+    labour = await labour_service.can_update_labour_payment_plan(
+        requester_id=user.id, labour_id=request_data.labour_id, payment_plan=request_data.upgrade
+    )
+
     item = ""
     if request_data.upgrade == "inner_circle":
         item = Product.UPGRADE_TO_INNER_CIRCLE.value
