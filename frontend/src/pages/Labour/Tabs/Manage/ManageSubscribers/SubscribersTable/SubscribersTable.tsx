@@ -45,10 +45,10 @@ export function SubscribersTable() {
   const rows = activeSubscriptions.map((subscription) => {
     const subscriber = subscriberById[subscription.subscriber_id];
     return (
-      <Table.Tr key={subscription.id} bd="none">
+      <Table.Tr key={subscription.id}>
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Avatar radius="xl" color="var(--mantine-color-pink-5)" />
+            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />
             <div>
               <Text fz="sm" fw={500} className={classes.cropText}>
                 {subscriber.first_name} {subscriber.last_name}
