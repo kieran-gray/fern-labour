@@ -67,7 +67,7 @@ export function SubscriptionsTable() {
       return;
     }
     rows.push(
-      <Table.Tr key={subscription.id} bd="none">
+      <Table.Tr key={subscription.id}>
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
             <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />

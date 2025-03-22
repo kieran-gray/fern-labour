@@ -16,7 +16,7 @@ export const dueDateToGestationalAge = (dueDate: Date) => {
   const weeks = Math.floor(totalDays / 7);
   const days = totalDays % 7;
 
-  return `${weeks} week${weeks === 0 || weeks > 1 ? 's' : ''} + ${days} day${days === 0 || days > 1 ? 's' : ''}`;
+  return `${weeks}w + ${days}d`;
 };
 
 export const formatTimeMilliseconds = (milliseconds: number) => {

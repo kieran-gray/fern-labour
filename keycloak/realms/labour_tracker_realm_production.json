@@ -70,9 +70,7 @@
           ],
           "client": {
             "account": [
-              "manage-account",
-              "delete-account",
-              "view-profile"
+              "delete-account"
             ]
           }
         },
@@ -519,10 +517,12 @@
       "id": "7e718c48-10a8-4edb-af0f-ff74419d4715",
       "clientId": "account",
       "name": "${client_account}",
+      "description": "",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/labour_tracker/account/",
+      "adminUrl": "",
+      "baseUrl": "/realms/labour_tracker/account/https://track.fernlabour.com",
       "surrogateAuthRequired": false,
-      "enabled": true,
+      "enabled": false,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
@@ -541,7 +541,12 @@
       "protocol": "openid-connect",
       "attributes": {
         "realm_client": "false",
-        "post.logout.redirect.uris": "+"
+        "oidc.ciba.grant.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "+",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
       },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
@@ -569,7 +574,7 @@
       "rootUrl": "${authBaseUrl}",
       "baseUrl": "/realms/labour_tracker/account/",
       "surrogateAuthRequired": false,
-      "enabled": true,
+      "enabled": false,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
@@ -587,9 +592,26 @@
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
-        "realm_client": "false",
+        "request.object.signature.alg": "any",
+        "request.object.encryption.alg": "any",
+        "client.introspection.response.allow.jwt.claim.enabled": "false",
         "post.logout.redirect.uris": "+",
-        "pkce.code.challenge.method": "S256"
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "use.refresh.tokens": "true",
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "client.use.lightweight.access.token.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "request.object.required": "not required",
+        "client_credentials.use_refresh_token": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "require.pushed.authorization.requests": "false",
+        "acr.loa.map": "{}",
+        "display.on.consent.screen": "false",
+        "request.object.encryption.enc": "any",
+        "pkce.code.challenge.method": "S256",
+        "token.response.type.bearer.lower-case": "false"
       },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
@@ -712,8 +734,8 @@
       "clientId": "labour_tracker_backend",
       "name": "labour Tracker Backend",
       "description": "",
-      "rootUrl": "http://localhost:8000",
-      "adminUrl": "http://localhost:8000",
+      "rootUrl": "https://api.fernlabour.com",
+      "adminUrl": "https://api.fernlabour.com",
       "baseUrl": "/",
       "surrogateAuthRequired": false,
       "enabled": true,
@@ -721,11 +743,11 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "http://localhost:8000/*"
+        "https://api.fernlabour.com/*"
       ],
       "webOrigins": [
-        "http://localhost:8000",
-        "http://localhost:5173"
+        "",
+        "https://track.fernlabour.com"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -743,6 +765,7 @@
         "client.secret.creation.time": "1734959632",
         "backchannel.logout.session.required": "true",
         "post.logout.redirect.uris": "+",
+        "frontchannel.logout.session.required": "true",
         "display.on.consent.screen": "false",
         "oauth2.device.authorization.grant.enabled": "false",
         "use.jwks.url": "false",
@@ -804,6 +827,7 @@
       ],
       "defaultClientScopes": [
         "web-origins",
+        "service_account",
         "acr",
         "profile",
         "roles",

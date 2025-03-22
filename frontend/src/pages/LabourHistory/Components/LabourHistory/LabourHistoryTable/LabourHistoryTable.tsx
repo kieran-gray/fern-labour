@@ -72,7 +72,7 @@ export function LabourHistoryTable() {
         ? new Date(labour.end_time).toISOString().substring(0, 10)
         : new Date(labour.due_date).toDateString().substring(0, 10);
     return (
-      <Table.Tr key={labour.id} bd="none">
+      <Table.Tr key={labour.id}>
         <Table.Td>
           <div
             className={baseClasses.flexRow}
