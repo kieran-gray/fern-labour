@@ -14,6 +14,7 @@
       <mj-section background-color="#ffeae6" padding="40px 20px" border-radius="20px">
         <mj-column vertical-align="middle" width="100%">
           <mj-text align="center" font-size="16px" padding-left="25px" padding-right="25px" font-weight="500" font-family="Quicksand, Helvetica, sans-serif" color="#555"><span>Email: {{ email }}</span></mj-text>
+          <mj-text align="center" font-size="16px" padding-left="25px" padding-right="25px" font-weight="500" font-family="Quicksand, Helvetica, sans-serif" color="#555">User ID: {{ user_id }}</mj-text>
           <mj-text align="center" font-size="16px" padding-left="25px" padding-right="25px" font-weight="500" font-family="Quicksand, Helvetica, sans-serif" color="#555"><span>Name: {{ name }}</span></mj-text>
           <mj-text align="center" font-size="16px" padding-left="25px" padding-right="25px" font-weight="500" font-family="Quicksand, Helvetica, sans-serif" color="#555">Message: {{ message }}</mj-text>
         </mj-column>
