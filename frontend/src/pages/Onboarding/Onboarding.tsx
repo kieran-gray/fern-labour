@@ -32,7 +32,6 @@ export const OnboardingPage = () => {
   const { labourId, setLabourId } = useLabour();
   const [searchParams, setSearchParams] = useSearchParams();
   const step = searchParams.get('step');
-  const success = searchParams.get('success');
   const [active, setActive] = useState(step ? stepOrder.indexOf(step) : 0);
   const [highestStepVisited, setHighestStepVisited] = useState(active);
   const [_, scrollTo] = useWindowScroll();
@@ -45,21 +44,6 @@ export const OnboardingPage = () => {
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
-  };
-
-  const maxStep = success ? 3 : 2;
-
-  const handleStepChange = (nextStep: number) => {
-    if (nextStep < 0 || nextStep > maxStep) {
-      return;
-    }
-    if (nextStep === maxStep) {
-      navigate('/');
-      return;
-    }
-    setActive(nextStep);
-    scrollTo({ y: 0 });
-    setHighestStepVisited((hSC) => Math.max(hSC, nextStep));
   };
 
   const { isPending, isError, data, error } = useQuery({
@@ -94,6 +78,19 @@ export const OnboardingPage = () => {
   const labour = isError && error instanceof NotFoundError ? undefined : data;
   const nextStepEnabled = labour?.payment_plan != null;
 
+  const handleStepChange = (nextStep: number) => {
+    if (nextStep < 0 || nextStep > stepOrder.length) {
+      return;
+    }
+    if (!shouldAllowSelectStep(nextStep)) {
+      navigate('/');
+      return;
+    }
+    setActive(nextStep);
+    scrollTo({ y: 0 });
+    setHighestStepVisited((hSC) => Math.max(hSC, nextStep));
+  };
+
   const shouldAllowSelectStep = (step: number) => {
     const visited = highestStepVisited >= step && active !== step;
     if (step === 1 && labourId != null && labourId !== '') {
@@ -103,6 +100,17 @@ export const OnboardingPage = () => {
       return true;
     }
     return visited;
+  };
+
+  const getNextStepButtonText = (step: number) => {
+    if (stepOrder[step] === 'receipt') {
+      return shouldAllowSelectStep(step)
+        ? 'View Receipt'
+        : labour?.payment_plan === 'solo'
+          ? 'Go to app'
+          : 'Please select a plan';
+    }
+    return 'Go to app';
   };
 
   return (
@@ -175,7 +183,7 @@ export const OnboardingPage = () => {
                       disabled={!nextStepEnabled}
                       className={classes.backButton}
                     >
-                      {nextStepEnabled ? 'Go to app' : 'Please select a plan'}
+                      {getNextStepButtonText(active + 1)}
                     </Button>
                   </div>
                 )}

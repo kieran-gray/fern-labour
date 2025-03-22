@@ -19,9 +19,11 @@ class ContactService:
         self._email_generation_service = email_generation_service
         self._contact_email = contact_email
 
-    def _generate_email(self, email: str, name: str, message: str) -> Notification:
+    def _generate_email(
+        self, email: str, name: str, message: str, user_id: str | None = ""
+    ) -> Notification:
         subject = f"Contact us submission from: {email}"
-        data = {"email": email, "name": name, "message": message}
+        data = {"email": email, "name": name, "message": message, "user_id": user_id}
         message = self._email_generation_service.generate("contact_us_submission.html", data)
         return Notification(
             type=ContactMethod.EMAIL,
@@ -35,5 +37,7 @@ class ContactService:
     ) -> None:
         # TODO store message
         log.info(f"Contact us submission for email = {email} Userid = {user_id}")
-        notification = self._generate_email(email=email, name=name, message=message)
+        notification = self._generate_email(
+            email=email, name=name, message=message, user_id=user_id
+        )
         await self._notification_service.send(notification)
