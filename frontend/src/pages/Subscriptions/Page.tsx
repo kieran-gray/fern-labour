@@ -14,7 +14,7 @@ export const SubscriptionsPage = () => {
 
   if (paramSubscriptionId) {
     setSubscriptionId(paramSubscriptionId);
-    searchParams.delete("subscription");
+    searchParams.delete('subscription');
     setSearchParams(searchParams);
   }
 
