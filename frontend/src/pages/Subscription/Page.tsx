@@ -20,6 +20,7 @@ import { InviteContainer } from '../Subscriptions/Components/InviteContainer/Inv
 import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions.tsx';
 import { useSubscription } from './SubscriptionContext.tsx';
 import { Announcements } from './Tabs/Announcements/Announcements.tsx';
+import ContactMethods from './Tabs/LabourDetails/ContactMethods.tsx';
 import LabourDetails from './Tabs/LabourDetails/LabourDetails.tsx';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
 import { StatusUpdates } from './Tabs/StatusUpdates/StatusUpdates.tsx';
@@ -126,11 +127,15 @@ export const SubscriptionPage = () => {
         );
       case 'details':
         return (
-          <LabourDetails
-            labour={data.labour}
-            birthingPersonName={pluralisedBirthingPersonName}
-            subscription={data.subscription}
-          />
+          <>
+            <LabourDetails labour={data.labour} birthingPersonName={pluralisedBirthingPersonName} />
+            {data.labour.end_time == null && (
+              <>
+                <Space h="xl" />
+                <ContactMethods subscription={data.subscription} />
+              </>
+            )}
+          </>
         );
       case 'stats':
         return (

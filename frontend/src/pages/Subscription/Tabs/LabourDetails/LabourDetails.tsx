@@ -1,20 +1,17 @@
-import { Badge, Image, Space, Text } from '@mantine/core';
-import { LabourDTO, SubscriptionDTO } from '../../../../client';
+import { Badge, Image, Text } from '@mantine/core';
+import { LabourDTO } from '../../../../client';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '../../../../shared-components/utils';
 import image from '../../../Labour/Tabs/Manage/LabourDetails/Meditate.svg';
-import ContactMethodsForm from './ContactMethodsForm';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Manage/LabourDetails/LabourDetails.module.css';
 
 export default function LabourDetails({
   labour,
   birthingPersonName,
-  subscription,
 }: {
   labour: LabourDTO;
   birthingPersonName: string;
-  subscription: SubscriptionDTO;
 }) {
   const completed = labour.end_time !== null;
   const activeDescription =
@@ -45,7 +42,7 @@ export default function LabourDetails({
             <Image src={image} className={classes.image} />
           </div>
         </div>
-        <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
+        <div className={baseClasses.inner}>
           <div className={baseClasses.content}>
             <div className={classes.infoRow}>
               <Badge variant="filled" className={classes.labourBadge} size="lg">
@@ -75,14 +72,6 @@ export default function LabourDetails({
             )}
           </div>
         </div>
-        {!completed && (
-          <>
-            <Space h="lg" />
-            <div className={baseClasses.inner} style={{ paddingTop: 0 }}>
-              <ContactMethodsForm subscription={subscription} />
-            </div>
-          </>
-        )}
       </div>
     </div>
   );
