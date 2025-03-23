@@ -55,7 +55,7 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
             </Text>
             <Stack align="stretch" justify="flex-end" mt="20px" style={{ alignItems: 'center' }}>
               {sortedContractions.length > 0 && (
-                <ContractionTimeline contractions={sortedContractions} />
+                <ContractionTimeline contractions={sortedContractions} completed={completed} />
               )}
               {sortedContractions.length === 0 && !completed && (
                 <div style={{ width: '100%', marginBottom: '30px' }}>

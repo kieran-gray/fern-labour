@@ -49,7 +49,7 @@ export function StatusUpdates({
             </Text>
           </div>
           <div style={{ flexGrow: 1 }} />
-          <ManageStatusUpdateMenu statusUpdateId={data.id} />
+          {!completed && <ManageStatusUpdateMenu statusUpdateId={data.id} />}
         </Group>
         <Text pl={54} pt="sm" size="sm" fw="400">
           {data.message}

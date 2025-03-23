@@ -19,7 +19,13 @@ export interface ContractionData {
   intensity: number | null;
 }
 
-export default function ContractionTimeline({ contractions }: { contractions: ContractionDTO[] }) {
+export default function ContractionTimeline({
+  contractions,
+  completed,
+}: {
+  contractions: ContractionDTO[];
+  completed: boolean;
+}) {
   const [opened, { open, close }] = useDisclosure(false);
   const [contractionData, setContractionData] = useState<ContractionData | null>(null);
 
@@ -56,7 +62,10 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
         }
       }}
       key={contraction.id}
-      style={{ cursor: contraction.start_time !== contraction.end_time ? 'pointer' : 'default' }}
+      style={{
+        cursor:
+          contraction.start_time !== contraction.end_time && !completed ? 'pointer' : 'default',
+      }}
       title=""
       lineVariant={
         contractionFrequencyGaps[contraction.id].next > DOTTED_LINE_FREQUENCY_GAP
@@ -100,7 +109,7 @@ export default function ContractionTimeline({ contractions }: { contractions: Co
 
   return (
     <>
-      {contractionData && (
+      {contractionData && !completed && (
         <EditContractionModal contractionData={contractionData} opened={opened} close={close} />
       )}
       <ScrollArea.Autosize mah={500} viewportRef={viewport}>
