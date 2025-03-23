@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { Space } from '@mantine/core';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { SubscriptionPage } from '../Subscription/Page.tsx';
@@ -7,7 +8,15 @@ import { SubscriptionsContainer } from './Components/ManageSubscriptions/ManageS
 import baseClasses from '../../shared-components/shared-styles.module.css';
 
 export const SubscriptionsPage = () => {
-  const { subscriptionId } = useSubscription();
+  const { subscriptionId, setSubscriptionId } = useSubscription();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramSubscriptionId = searchParams.get('subscription');
+
+  if (paramSubscriptionId) {
+    setSubscriptionId(paramSubscriptionId);
+    searchParams.delete("subscription");
+    setSearchParams(searchParams);
+  }
 
   if (subscriptionId) {
     return <SubscriptionPage />;
