@@ -74,7 +74,6 @@ export default function Plan({
         color: 'var(--mantine-color-pink-7)',
       });
       console.error('Error planning labour', error);
-      await new Promise((r) => setTimeout(r, 1000));
     },
     onSettled: () => {
       setMutationInProgress(false);
