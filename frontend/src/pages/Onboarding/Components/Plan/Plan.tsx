@@ -7,7 +7,6 @@ import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { LabourDTO, LabourService, OpenAPI, PlanLabourRequest } from '../../../../client';
-import { useLabour } from '../../../Labour/LabourContext';
 import image from './plan.svg';
 import classes from './Plan.module.css';
 
@@ -19,7 +18,6 @@ export default function Plan({
   gotoNextStep: Function;
 }) {
   const auth = useAuth();
-  const { setLabourId } = useLabour();
   const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
 
   OpenAPI.TOKEN = async () => {
@@ -66,13 +64,9 @@ export default function Plan({
     },
     onSuccess: async (labour) => {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-      setLabourId(labour.id);
-      setMutationInProgress(false);
       gotoNextStep();
-      await new Promise((r) => setTimeout(r, 1000));
     },
     onError: async (error) => {
-      setMutationInProgress(false);
       notifications.show({
         title: 'Error Planning Labour',
         message: 'Something went wrong. Please try again.',
@@ -80,7 +74,6 @@ export default function Plan({
         color: 'var(--mantine-color-pink-7)',
       });
       console.error('Error planning labour', error);
-      await new Promise((r) => setTimeout(r, 1000));
     },
     onSettled: () => {
       setMutationInProgress(false);
