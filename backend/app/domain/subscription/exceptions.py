@@ -58,3 +58,8 @@ class MaximumNumberOfSubscribersReached(DomainError):
         super().__init__(
             "Maximum number of subscribers reached for plan. Upgrade for more subscribers."
         )
+
+
+class InvalidContactMethod(DomainValidationError):
+    def __init__(self, contact_method: str) -> None:
+        super().__init__(f"Contact method '{contact_method}' is not valid.")

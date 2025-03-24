@@ -1,12 +1,12 @@
 from typing import Protocol
 
-from app.application.notifications.entity import Notification
+from app.application.dtos.notification import NotificationDTO, NotificationSendResult
 
 
 class NotificationGateway(Protocol):
     """Abstract Base Class for notification gateways."""
 
-    async def send(self, notification: Notification) -> None:
+    async def send(self, notification: NotificationDTO) -> NotificationSendResult:
         """
         Send a notification.
 

@@ -8,6 +8,7 @@ from app.application.notifications.notfication_gateway import (
     SMSNotificationGateway,
 )
 from app.application.notifications.notification_service import NotificationService
+from app.domain.notification.repository import NotificationRepository
 from app.infrastructure.notifications.email.jinja2_email_generation_service import (
     Jinja2EmailGenerationService,
 )
@@ -81,10 +82,12 @@ class NotificationsApplicationProvider(Provider):
         self,
         email_notification_gateway: EmailNotificationGateway,
         sms_notification_gateway: SMSNotificationGateway,
+        notification_repository: NotificationRepository,
     ) -> NotificationService:
         return NotificationService(
             email_notification_gateway=email_notification_gateway,
             sms_notification_gateway=sms_notification_gateway,
+            notification_repository=notification_repository,
         )
 
     @provide

@@ -1,13 +1,15 @@
 import logging
 from typing import Any, Protocol
 
+from app.application.dtos.notification import NotificationContent
 from app.application.dtos.user import UserDTO
 from app.application.events.event_handler import EventHandler
 from app.application.notifications.email_generation_service import EmailGenerationService
-from app.application.notifications.entity import Notification
+from app.application.notifications.notification_data import LabourUpdateData
 from app.application.notifications.notification_service import NotificationService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
+from app.domain.base.event import DomainEvent
 from app.domain.subscription.enums import ContactMethod
 from app.domain.user.exceptions import UserNotFoundById
 
@@ -15,13 +17,7 @@ log = logging.getLogger(__name__)
 
 
 class LabourCompletedNotificationGenerator(Protocol):
-    def __call__(
-        self,
-        birthing_person: UserDTO,
-        subscriber: UserDTO,
-        notes: str,
-        destination: str,
-    ) -> Notification: ...
+    def __call__(self, data: LabourUpdateData) -> NotificationContent: ...
 
 
 class LabourCompletedEventHandler(EventHandler):
@@ -38,54 +34,42 @@ class LabourCompletedEventHandler(EventHandler):
         self._notification_service = notification_service
         self._email_generation_service = email_generation_service
         self._tracking_link = tracking_link
+        self._template = "labour_update.html"
 
-    def _generate_email(
+    def _generate_notification_data(
         self,
         birthing_person: UserDTO,
         subscriber: UserDTO,
         notes: str,
-        destination: str,
-    ) -> Notification:
-        subject = f"Labour update from {birthing_person.first_name} {birthing_person.last_name}"
+    ) -> LabourUpdateData:
         update = f"{birthing_person.first_name} has completed labour!"
         if notes:
             update += f"\n\nThey added the following note:\n\n{notes}"
-
-        email_data = {
-            "birthing_person_name": f"{birthing_person.first_name} {birthing_person.last_name}",
-            "subscriber_first_name": subscriber.first_name,
-            "update": update,
-            "link": self._tracking_link,
-        }
-        message = self._email_generation_service.generate("labour_update.html", email_data)
-        return Notification(
-            type=ContactMethod.EMAIL, destination=destination, message=message, subject=subject
+        return LabourUpdateData(
+            birthing_person_name=f"{birthing_person.first_name} {birthing_person.last_name}",
+            subscriber_first_name=subscriber.first_name,
+            update=update,
+            link=self._tracking_link,
+            notes=notes,
         )
 
-    def _generate_sms(
-        self,
-        birthing_person: UserDTO,
-        subscriber: UserDTO,
-        notes: str,
-        destination: str,
-    ) -> Notification:
+    def _generate_email(self, data: LabourUpdateData) -> NotificationContent:
+        subject = f"Labour update from {data.birthing_person_name}"
+        message = self._email_generation_service.generate(self._template, data.to_dict())
+        return NotificationContent(message=message, subject=subject)
+
+    def _generate_sms(self, data: LabourUpdateData) -> NotificationContent:
         message = (
-            f"Hey {subscriber.first_name}, {birthing_person.first_name} {birthing_person.last_name}"
-            " has completed labour!"
+            f"Hey {data.subscriber_first_name}, {data.birthing_person_name} has completed labour!"
         )
-        if notes:
-            message += f"\nThey added the following note:\n{notes}"
+        if data.notes:
+            message += f"\nThey added the following note:\n{data.notes}"
 
-        return Notification(
-            type=ContactMethod.SMS,
-            destination=destination,
-            message=message,
-        )
+        return NotificationContent(message=message)
 
-    def _get_notification_generator(
+    def _get_notification_content_generator(
         self, contact_method: str
     ) -> LabourCompletedNotificationGenerator:
-        # TODO this could be refactored into a notification generation service
         contact_method = ContactMethod(contact_method)
         if contact_method is ContactMethod.EMAIL:
             return self._generate_email
@@ -94,8 +78,9 @@ class LabourCompletedEventHandler(EventHandler):
         raise NotImplementedError(f"Notification generator for {contact_method} not implemented")
 
     async def handle(self, event: dict[str, Any]) -> None:
-        birthing_person_id = event["data"]["birthing_person_id"]
-        labour_id = event["data"]["labour_id"]
+        domain_event = DomainEvent.from_dict(event=event)
+        birthing_person_id = domain_event.data["birthing_person_id"]
+        labour_id = domain_event.data["labour_id"]
 
         birthing_person = await self._user_service.get(user_id=birthing_person_id)
         subscriptions = await self._subscription_service.get_labour_subscriptions(
@@ -110,11 +95,25 @@ class LabourCompletedEventHandler(EventHandler):
                 continue
 
             for method in subscription.contact_methods:
-                if destination := subscriber.destination(method):
-                    notification = self._get_notification_generator(method)(
-                        birthing_person=birthing_person,
-                        subscriber=subscriber,
-                        notes=event["data"]["notes"],
-                        destination=destination,
-                    )
-                    await self._notification_service.send(notification)
+                destination = subscriber.destination(method)
+                if not destination:
+                    continue
+
+                notification_data = self._generate_notification_data(
+                    birthing_person=birthing_person,
+                    subscriber=subscriber,
+                    notes=domain_event.data["notes"],
+                )
+                notification_generator = self._get_notification_content_generator(method)
+                notification_content = notification_generator(data=notification_data)
+                notification = await self._notification_service.create_notification(
+                    type=ContactMethod(method),
+                    destination=destination,
+                    template=self._template,
+                    data=notification_data.to_dict(),
+                    labour_id=labour_id,
+                    birthing_person_id=birthing_person_id,
+                    subscriber_id=subscriber.id,
+                )
+                notification.add_notification_content(content=notification_content)
+                await self._notification_service.send(notification)
