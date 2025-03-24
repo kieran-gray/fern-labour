@@ -38,8 +38,11 @@ export const OnboardingPage = () => {
 
   useEffect(() => {
     const newParams = new URLSearchParams(searchParams);
-    newParams.set('step', stepOrder[active]);
-    setSearchParams(newParams);
+    const step = stepOrder[active];
+    if (step != null) {
+      newParams.set('step', step);
+      setSearchParams(newParams);
+    }
   }, [active]);
 
   OpenAPI.TOKEN = async () => {
