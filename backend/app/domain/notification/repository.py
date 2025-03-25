@@ -60,12 +60,34 @@ class NotificationRepository(Protocol):
             The Notification if found, else returns None
         """
 
+    async def get_by_external_id(self, external_id: str) -> Notification | None:
+        """
+        Retrieve a Notification by external ID.
+
+        Args:
+            external_id: The external ID of the Notification to retrieve
+
+        Returns:
+            The Notification if found, else returns None
+        """
+
     async def get_by_ids(self, notification_ids: list[NotificationId]) -> list[Notification]:
         """
         Retrieve a list of Notifications by IDs.
 
         Args:
             Notification_ids: The IDs of the Notifications to retrieve
+
+        Returns:
+            A list of Notifications
+        """
+
+    async def get_by_external_ids(self, external_ids: list[str]) -> list[Notification]:
+        """
+        Retrieve a list of Notifications by external IDs.
+
+        Args:
+            external_ids: The external IDs of the Notifications to retrieve
 
         Returns:
             A list of Notifications

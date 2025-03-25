@@ -28,7 +28,7 @@ payments_router = APIRouter(prefix="/payments", tags=["Payments"])
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def my_webhook_view(
+async def stripe_webhook(
     request: Request,
     payment_service: Annotated[StripePaymentService, FromComponent(ComponentEnum.PAYMENTS)],
 ) -> None:

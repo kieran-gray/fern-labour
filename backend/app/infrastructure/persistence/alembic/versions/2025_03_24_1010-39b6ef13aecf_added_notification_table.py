@@ -53,6 +53,7 @@ def upgrade() -> None:
         sa.Column("from_user_id", sa.String(), nullable=True),
         sa.Column("to_user_id", sa.String(), nullable=True),
         sa.Column("labour_update_id", sa.UUID(), nullable=True),
+        sa.Column("external_id", sa.String(), nullable=True),
         sa.Column(
             "created_at", sa.TIMESTAMP(timezone=True), server_default=func.now(), nullable=False
         ),

@@ -131,42 +131,56 @@ async def test_cannot_create_notification_invalid_notification_status(
         )
 
 
-async def test_can_update_notification_status(notification_service: NotificationService) -> None:
+async def test_can_update_notification(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
         type=ContactMethod.EMAIL.value,
         destination="test",
         template="template.html",
         data={"test": "test"},
     )
-    notification = await notification_service.update_notification_status(
+    notification = await notification_service.update_notification(
         notification_id=notification.id, status=NotificationStatus.SENT
     )
     assert notification.status == NotificationStatus.SENT.value
 
 
-async def test_cannot_update_notification_status_invalid_notification_id(
+async def test_can_update_notification_with_external_id(
+    notification_service: NotificationService,
+) -> None:
+    notification = await notification_service.create_notification(
+        type=ContactMethod.EMAIL.value,
+        destination="test",
+        template="template.html",
+        data={"test": "test"},
+    )
+    notification = await notification_service.update_notification(
+        notification_id=notification.id, status=NotificationStatus.SENT, external_id="test"
+    )
+    assert notification.status == NotificationStatus.SENT.value
+    assert notification.external_id == "test"
+
+
+async def test_cannot_update_notification_invalid_notification_id(
     notification_service: NotificationService,
 ) -> None:
     with pytest.raises(InvalidNotificationId):
-        await notification_service.update_notification_status(
+        await notification_service.update_notification(
             notification_id="test", status=NotificationStatus.SENT
         )
 
 
-async def test_cannot_update_notification_status_invalid_notification_status(
+async def test_cannot_update_notification_invalid_notification_status(
     notification_service: NotificationService,
 ) -> None:
     with pytest.raises(InvalidNotificationStatus):
-        await notification_service.update_notification_status(
-            notification_id=str(uuid4()), status="fail"
-        )
+        await notification_service.update_notification(notification_id=str(uuid4()), status="fail")
 
 
-async def test_cannot_update_notification_status_notification_not_found(
+async def test_cannot_update_notification_notification_not_found(
     notification_service: NotificationService,
 ) -> None:
     with pytest.raises(NotificationNotFoundById):
-        await notification_service.update_notification_status(
+        await notification_service.update_notification(
             notification_id=str(uuid4()), status=NotificationStatus.SENT
         )
 

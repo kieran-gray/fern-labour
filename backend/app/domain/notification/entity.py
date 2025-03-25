@@ -22,6 +22,7 @@ class Notification(AggregateRoot[NotificationId]):
     from_user_id: UserId | None = None
     to_user_id: UserId | None = None
     labour_update_id: LabourUpdateId | None = None
+    external_id: str | None = None
 
     @classmethod
     def create(
@@ -36,6 +37,7 @@ class Notification(AggregateRoot[NotificationId]):
         from_user_id: UserId | None = None,
         to_user_id: UserId | None = None,
         labour_update_id: LabourUpdateId | None = None,
+        external_id: str | None = None,
         notification_id: UUID | None = None,
     ) -> Self:
         notification_id = notification_id or uuid4()
@@ -50,7 +52,5 @@ class Notification(AggregateRoot[NotificationId]):
             from_user_id=from_user_id,
             to_user_id=to_user_id,
             labour_update_id=labour_update_id,
+            external_id=external_id,
         )
-
-    def update_status(self, status: NotificationStatus) -> None:
-        self.status = status

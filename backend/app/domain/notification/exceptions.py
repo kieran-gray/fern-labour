@@ -14,3 +14,8 @@ class InvalidNotificationId(DomainValidationError):
 class NotificationNotFoundById(DomainError):
     def __init__(self, notification_id: str | None) -> None:
         super().__init__(f"Notification with id '{notification_id}' not found.")
+
+
+class NotificationNotFoundByExternalId(DomainError):
+    def __init__(self, external_id: str | None) -> None:
+        super().__init__(f"Notification with external id '{external_id}' not found.")

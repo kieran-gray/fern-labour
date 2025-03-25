@@ -24,11 +24,13 @@ class TwilioSMSNotificationGateway(SMSNotificationGateway):
         self._messaging_service_sid = messaging_service_sid
 
     async def send(self, notification: NotificationDTO) -> NotificationSendResult:
-        self._client.messages.create(
+        message = self._client.messages.create(
             body=notification.message,
             messaging_service_sid=self._messaging_service_sid,
             to=notification.destination,
         )
         log.info(f"Sent SMS notification id {notification.id}")
 
-        return NotificationSendResult(success=True, status=NotificationStatus.SENT)
+        return NotificationSendResult(
+            success=True, status=NotificationStatus.SENT, external_id=message.sid
+        )

@@ -22,6 +22,7 @@ class JSONEncryptedType(StringEncryptedType):  # type: ignore
             return None
 
         try:
+            self._update_key()
             decrypted_value = self.engine.decrypt(value)
         except Exception as e:
             log.error(f"Decryption error: {e}")
@@ -67,6 +68,7 @@ notifications_table = Table(
     Column("from_user_id", String, nullable=True),
     Column("to_user_id", String, nullable=True),
     Column("labour_update_id", UUID(as_uuid=True), ForeignKey("labour_updates.id"), nullable=True),
+    Column("external_id", String, nullable=True),
     Column("created_at", TIMESTAMP(timezone=True), server_default=func.now(), nullable=False),
     Column(
         "updated_at",

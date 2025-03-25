@@ -25,6 +25,7 @@ mapper_registry.map_imperatively(
         "from_user_id": composite(UserId, notifications_table.c.from_user_id),
         "to_user_id": composite(UserId, notifications_table.c.to_user_id),
         "labour_update_id": composite(LabourUpdateId, notifications_table.c.labour_update_id),
+        "external_id": notifications_table.c.external_id,
     },
     column_prefix="_",
 )

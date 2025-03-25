@@ -9,6 +9,7 @@ from app.domain.notification.enums import NotificationStatus
 class NotificationSendResult:
     success: bool
     status: NotificationStatus
+    external_id: str | None = None
 
 
 @dataclass
@@ -31,6 +32,7 @@ class NotificationDTO:
     from_user_id: str | None = None
     to_user_id: str | None = None
     labour_update_id: str | None = None
+    external_id: str | None = None
     message: str | None = None
     subject: str | None = None
 
@@ -55,6 +57,7 @@ class NotificationDTO:
             labour_update_id=str(notification.labour_update_id)
             if notification.labour_update_id
             else None,
+            external_id=notification.external_id,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -70,4 +73,5 @@ class NotificationDTO:
             "from_user_id": self.from_user_id,
             "to_user_id": self.to_user_id,
             "labour_update_id": self.labour_update_id,
+            "external_id": self.external_id,
         }

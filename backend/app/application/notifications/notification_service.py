@@ -16,6 +16,7 @@ from app.domain.notification.enums import NotificationStatus
 from app.domain.notification.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
+    NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
 from app.domain.notification.repository import NotificationRepository
@@ -97,8 +98,8 @@ class NotificationService:
 
         return NotificationDTO.from_domain(notification)
 
-    async def update_notification_status(
-        self, notification_id: str, status: str
+    async def update_notification(
+        self, notification_id: str, status: str, external_id: str | None = None
     ) -> NotificationDTO:
         try:
             domain_notification_id = NotificationId(UUID(notification_id))
@@ -116,10 +117,27 @@ class NotificationService:
         if not notification:
             raise NotificationNotFoundById(notification_id=notification_id)
 
-        notification.update_status(status=notification_status)
+        notification.status = notification_status
+        if external_id:
+            notification.external_id = external_id
         await self._notification_repository.save(notification=notification)
 
         return NotificationDTO.from_domain(notification=notification)
+
+    async def status_callback(self, external_id: str, status: str) -> None:
+        try:
+            notification_status = NotificationStatus(status)
+        except ValueError:
+            raise InvalidNotificationStatus(notification_status=status)
+
+        notification = await self._notification_repository.get_by_external_id(
+            external_id=external_id
+        )
+        if not notification:
+            raise NotificationNotFoundByExternalId(external_id=external_id)
+
+        notification.status = notification_status
+        await self._notification_repository.save(notification=notification)
 
     async def send(self, notification: NotificationDTO) -> None:
         try:
@@ -129,4 +147,6 @@ class NotificationService:
 
         notification_gateway = self._get_notification_gateway(contact_method)
         result = await notification_gateway.send(notification)
-        await self.update_notification_status(notification_id=notification.id, status=result.status)
+        await self.update_notification(
+            notification_id=notification.id, status=result.status, external_id=result.external_id
+        )
