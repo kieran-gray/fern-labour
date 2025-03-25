@@ -169,8 +169,8 @@ class MockNotificationRepository(NotificationRepository):
     async def filter(
         self,
         labour_id: LabourId | None = None,
-        subscriber_id: UserId | None = None,
-        birthing_person_id: UserId | None = None,
+        from_user_id: UserId | None = None,
+        to_user_id: UserId | None = None,
         notification_type: ContactMethod | None = None,
         notification_status: NotificationStatus | None = None,
     ) -> list[Notification]:
@@ -178,9 +178,9 @@ class MockNotificationRepository(NotificationRepository):
         for notification in self._data.values():
             if labour_id and notification.labour_id != labour_id:
                 continue
-            if subscriber_id and notification.subscriber_id != subscriber_id:
+            if from_user_id and notification.from_user_id != from_user_id:
                 continue
-            if birthing_person_id and notification.birthing_person_id != birthing_person_id:
+            if to_user_id and notification.to_user_id != to_user_id:
                 continue
             if notification_status and notification.status is not notification_status:
                 continue

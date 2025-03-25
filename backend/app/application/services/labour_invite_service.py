@@ -67,7 +67,7 @@ class LabourInviteService:
             template=self._template,
             data=notification_data.to_dict(),
             labour_id=labour_id,
-            birthing_person_id=birthing_person_id,
+            from_user_id=birthing_person_id,
         )
         notification.add_notification_content(content=notification_content)
         await self._notification_service.send(notification)

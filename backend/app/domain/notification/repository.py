@@ -30,8 +30,8 @@ class NotificationRepository(Protocol):
     async def filter(
         self,
         labour_id: LabourId | None = None,
-        birthing_person_id: UserId | None = None,
-        subscriber_id: UserId | None = None,
+        from_user_id: UserId | None = None,
+        to_user_id: UserId | None = None,
         notification_type: ContactMethod | None = None,
         notification_status: NotificationStatus | None = None,
     ) -> list[Notification]:
@@ -40,8 +40,8 @@ class NotificationRepository(Protocol):
 
         Args:
             labour_id: An optional Labour ID
-            birthing_person_id: An optional Birthing Person ID
-            subscriber_id: An optional Subscriber ID
+            from_user_id: An optional User ID, representing the sender of the notification
+            to_user_id: An optional User ID, representing the receiver of the notification
             notification_type: An optional type of notification
             notification_status: An optional Notification status
 

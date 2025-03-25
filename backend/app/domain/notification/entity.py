@@ -19,8 +19,8 @@ class Notification(AggregateRoot[NotificationId]):
     template: str
     data: dict[str, Any]
     labour_id: LabourId | None = None
-    birthing_person_id: UserId | None = None
-    subscriber_id: UserId | None = None
+    from_user_id: UserId | None = None
+    to_user_id: UserId | None = None
     labour_update_id: LabourUpdateId | None = None
 
     @classmethod
@@ -33,8 +33,8 @@ class Notification(AggregateRoot[NotificationId]):
         data: dict[str, Any],
         status: NotificationStatus | None = None,
         labour_id: LabourId | None = None,
-        birthing_person_id: UserId | None = None,
-        subscriber_id: UserId | None = None,
+        from_user_id: UserId | None = None,
+        to_user_id: UserId | None = None,
         labour_update_id: LabourUpdateId | None = None,
         notification_id: UUID | None = None,
     ) -> Self:
@@ -47,8 +47,8 @@ class Notification(AggregateRoot[NotificationId]):
             template=template,
             data=data,
             labour_id=labour_id,
-            birthing_person_id=birthing_person_id,
-            subscriber_id=subscriber_id,
+            from_user_id=from_user_id,
+            to_user_id=to_user_id,
             labour_update_id=labour_update_id,
         )
 

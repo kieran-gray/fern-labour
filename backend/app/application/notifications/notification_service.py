@@ -56,8 +56,8 @@ class NotificationService:
         data: dict[str, Any],
         status: str | None = None,
         labour_id: str | None = None,
-        birthing_person_id: str | None = None,
-        subscriber_id: str | None = None,
+        from_user_id: str | None = None,
+        to_user_id: str | None = None,
         labour_update_id: str | None = None,
     ) -> NotificationDTO:
         try:
@@ -84,8 +84,8 @@ class NotificationService:
 
         notification = Notification.create(
             labour_id=domain_labour_id,
-            birthing_person_id=UserId(birthing_person_id) if birthing_person_id else None,
-            subscriber_id=UserId(subscriber_id) if subscriber_id else None,
+            from_user_id=UserId(from_user_id) if from_user_id else None,
+            to_user_id=UserId(to_user_id) if to_user_id else None,
             type=contact_method,
             destination=destination,
             template=template,

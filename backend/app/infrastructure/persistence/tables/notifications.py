@@ -64,8 +64,8 @@ notifications_table = Table(
         nullable=False,
     ),
     Column("labour_id", UUID(as_uuid=True), ForeignKey("labours.id"), nullable=True),
-    Column("birthing_person_id", String, nullable=True),
-    Column("subscriber_id", String, nullable=True),
+    Column("from_user_id", String, nullable=True),
+    Column("to_user_id", String, nullable=True),
     Column("labour_update_id", UUID(as_uuid=True), ForeignKey("labour_updates.id"), nullable=True),
     Column("created_at", TIMESTAMP(timezone=True), server_default=func.now(), nullable=False),
     Column(

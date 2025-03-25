@@ -44,7 +44,7 @@ class SubscriberInviteService:
             destination=invite_email,
             template=self._template,
             data=notification_data.to_dict(),
-            subscriber_id=subscriber_id,
+            to_user_id=subscriber_id,
         )
         notification.add_notification_content(notification_content)
         await self._notification_service.send(notification)

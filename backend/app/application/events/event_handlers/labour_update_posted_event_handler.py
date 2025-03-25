@@ -113,8 +113,8 @@ class LabourUpdatePostedEventHandler(EventHandler):
                     template=self._template,
                     data=notification_data.to_dict(),
                     labour_id=labour_id,
-                    birthing_person_id=birthing_person_id,
-                    subscriber_id=subscriber.id,
+                    from_user_id=birthing_person_id,
+                    to_user_id=subscriber.id,
                     labour_update_id=labour_update_id,
                 )
                 notification.add_notification_content(content=notification_content)

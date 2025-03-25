@@ -34,6 +34,11 @@ from app.domain.labour.exceptions import (
     UnauthorizedLabourRequest,
 )
 from app.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
+from app.domain.notification.exceptions import (
+    InvalidNotificationId,
+    InvalidNotificationStatus,
+    NotificationNotFoundById,
+)
 from app.domain.subscription.exceptions import (
     MaximumNumberOfSubscribersReached,
     SubscriberAlreadySubscribed,
@@ -121,6 +126,9 @@ class ExceptionMapper:
             MaximumNumberOfSubscribersReached: status.HTTP_400_BAD_REQUEST,
             CannotDeleteActiveContraction: status.HTTP_400_BAD_REQUEST,
             StripeProductNotFound: status.HTTP_404_NOT_FOUND,
+            InvalidNotificationStatus: status.HTTP_400_BAD_REQUEST,
+            InvalidNotificationId: status.HTTP_400_BAD_REQUEST,
+            NotificationNotFoundById: status.HTTP_404_NOT_FOUND,
         }
 
     def get_status_code(self, exc: Exception) -> int:

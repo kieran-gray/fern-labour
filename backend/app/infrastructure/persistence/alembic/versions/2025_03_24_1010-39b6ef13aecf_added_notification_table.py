@@ -50,8 +50,8 @@ def upgrade() -> None:
         sa.Column("template", sa.String(), nullable=False),
         sa.Column("data", sa.String(), nullable=False),
         sa.Column("labour_id", sa.UUID(), nullable=True),
-        sa.Column("birthing_person_id", sa.String(), nullable=True),
-        sa.Column("subscriber_id", sa.String(), nullable=True),
+        sa.Column("from_user_id", sa.String(), nullable=True),
+        sa.Column("to_user_id", sa.String(), nullable=True),
         sa.Column("labour_update_id", sa.UUID(), nullable=True),
         sa.Column(
             "created_at", sa.TIMESTAMP(timezone=True), server_default=func.now(), nullable=False

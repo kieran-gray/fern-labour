@@ -96,8 +96,8 @@ class LabourBegunEventHandler(EventHandler):
                 notification_content = notification_generator(data=notification_data)
                 notification = await self._notification_service.create_notification(
                     labour_id=subscription.labour_id,
-                    birthing_person_id=subscription.birthing_person_id,
-                    subscriber_id=subscriber.id,
+                    from_user_id=subscription.birthing_person_id,
+                    to_user_id=subscriber.id,
                     type=method,
                     destination=destination,
                     template=self._template,

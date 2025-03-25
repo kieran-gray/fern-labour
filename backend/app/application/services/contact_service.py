@@ -44,7 +44,7 @@ class ContactService:
             destination=self._contact_email,
             template=self._template,
             data=notification_data.to_dict(),
-            birthing_person_id=user_id,
+            from_user_id=user_id,
         )
         notification.add_notification_content(content=notification_content)
         await self._notification_service.send(notification)
