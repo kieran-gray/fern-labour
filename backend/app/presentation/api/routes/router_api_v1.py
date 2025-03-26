@@ -8,6 +8,7 @@ from app.presentation.api.routes.payments import payments_router
 from app.presentation.api.routes.subscriber import subscriber_router
 from app.presentation.api.routes.subscription import subscription_router
 from app.presentation.api.routes.subscription_management import subscription_management_router
+from app.presentation.api.routes.twilio import twilio_router
 from app.presentation.api.routes.user import user_router
 
 api_v1_router = APIRouter(
@@ -23,6 +24,7 @@ api_v1_sub_routers = (
     labour_router,
     subscriber_router,
     payments_router,
+    twilio_router,
     healthcheck_router,
 )
 

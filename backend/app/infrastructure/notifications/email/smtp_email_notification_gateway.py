@@ -3,8 +3,9 @@ from typing import Any
 
 import emails
 
-from app.application.notifications.entity import Notification
+from app.application.dtos.notification import NotificationDTO, NotificationSendResult
 from app.application.notifications.notfication_gateway import EmailNotificationGateway
+from app.domain.notification.enums import NotificationStatus
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class SMTPEmailNotificationGateway(EmailNotificationGateway):
         self._smtp_ssl = smtp_ssl
         self._smtp_port = smtp_port
 
-    async def send(self, notification: Notification) -> None:
+    async def send(self, notification: NotificationDTO) -> NotificationSendResult:
         message = emails.Message(
             subject=notification.subject,
             html=notification.message,
@@ -50,7 +51,8 @@ class SMTPEmailNotificationGateway(EmailNotificationGateway):
 
         try:
             message.send(to=notification.destination, smtp=smtp_options)
+            log.info(f"Sent email notification ID {notification.id}")
+            return NotificationSendResult(success=True, status=NotificationStatus.SENT)
         except Exception as e:
             log.critical("Failed to send email notification", exc_info=e)
-
-        log.info("Sent email notification")
+            return NotificationSendResult(success=False, status=NotificationStatus.FAILURE)

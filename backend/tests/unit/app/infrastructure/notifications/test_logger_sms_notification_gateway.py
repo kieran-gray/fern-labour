@@ -1,9 +1,11 @@
 import json
 import logging
+from uuid import uuid4
 
 import pytest  # noqa
 
-from app.application.notifications.entity import Notification
+from app.application.dtos.notification import NotificationDTO
+from app.domain.notification.enums import NotificationStatus
 from app.infrastructure.notifications.sms.logger_sms_notification_gateway import (
     LoggerSMSNotificationGateway,
 )
@@ -14,8 +16,13 @@ async def test_logger_notification_gateway(caplog):
 
     gateway = LoggerSMSNotificationGateway()
 
-    notification = Notification(
-        type="sms", message="message", destination="email@test.com", subject="test email"
+    notification = NotificationDTO(
+        id=str(uuid4()),
+        status=NotificationStatus.CREATED.value,
+        type="sms",
+        template="template.html",
+        data={"test": "test"},
+        destination="+44123123123",
     )
 
     with caplog.at_level(logging.INFO, logger=module):

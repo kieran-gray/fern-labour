@@ -2,8 +2,9 @@ import logging
 
 from twilio.rest import Client
 
-from app.application.notifications.entity import Notification
+from app.application.dtos.notification import NotificationDTO, NotificationSendResult
 from app.application.notifications.notfication_gateway import SMSNotificationGateway
+from app.domain.notification.enums import NotificationStatus
 
 log = logging.getLogger(__name__)
 
@@ -22,11 +23,14 @@ class TwilioSMSNotificationGateway(SMSNotificationGateway):
         self._sms_from_number = sms_from_number
         self._messaging_service_sid = messaging_service_sid
 
-    async def send(self, notification: Notification) -> None:
-        # TODO I could update message delivery status
-        self._client.messages.create(
+    async def send(self, notification: NotificationDTO) -> NotificationSendResult:
+        message = self._client.messages.create(
             body=notification.message,
             messaging_service_sid=self._messaging_service_sid,
             to=notification.destination,
         )
-        log.info("Sent sms notification")
+        log.info(f"Sent SMS notification id {notification.id}")
+
+        return NotificationSendResult(
+            success=True, status=NotificationStatus.SENT, external_id=message.sid
+        )

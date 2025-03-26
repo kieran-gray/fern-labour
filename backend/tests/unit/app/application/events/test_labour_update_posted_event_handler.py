@@ -1,5 +1,6 @@
 import logging
 from datetime import UTC, datetime
+from uuid import uuid4
 
 import pytest
 import pytest_asyncio
@@ -38,6 +39,7 @@ def generate_domain_event(
         data={
             "birthing_person_id": birthing_person_id,
             "labour_id": labour_id,
+            "labour_update_id": str(uuid4()),
             "message": message,
             "labour_update_type": update_type,
         },

@@ -2726,8 +2726,8 @@
                 "tags": [
                     "Payments"
                 ],
-                "summary": "My Webhook View",
-                "operationId": "my_webhook_view_api_v1_payments_webhook_post",
+                "summary": "Stripe Webhook",
+                "operationId": "stripe_webhook_api_v1_payments_webhook_post",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -2846,6 +2846,69 @@
                 ]
             }
         },
+        "/api/v1/twilio/message-status": {
+            "post": {
+                "tags": [
+                    "Twilio"
+                ],
+                "summary": "Twilio Webhook",
+                "operationId": "twilio_webhook_api_v1_twilio_message_status_post",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_twilio_webhook_api_v1_twilio_message_status_post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExceptionSchema"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/health": {
             "get": {
                 "tags": [
@@ -2904,6 +2967,34 @@
                     "password"
                 ],
                 "title": "Body_login_api_v1_auth_login_post"
+            },
+            "Body_twilio_webhook_api_v1_twilio_message_status_post": {
+                "properties": {
+                    "MessageSid": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Messagesid"
+                    },
+                    "MessageStatus": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Messagestatus"
+                    }
+                },
+                "type": "object",
+                "title": "Body_twilio_webhook_api_v1_twilio_message_status_post"
             },
             "CheckoutResponse": {
                 "properties": {

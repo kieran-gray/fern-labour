@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 
+from app.application.dtos.notification import NotificationSendResult
 from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notfication_gateway import (
     EmailNotificationGateway,
@@ -21,8 +22,12 @@ from app.application.services.user_service import UserService
 from app.domain.labour.entity import Labour
 from app.domain.labour.repository import LabourRepository
 from app.domain.labour.vo_labour_id import LabourId
+from app.domain.notification.entity import Notification
+from app.domain.notification.enums import NotificationStatus
+from app.domain.notification.repository import NotificationRepository
+from app.domain.notification.vo_notification_id import NotificationId
 from app.domain.subscription.entity import Subscription
-from app.domain.subscription.enums import SubscriptionStatus
+from app.domain.subscription.enums import ContactMethod, SubscriptionStatus
 from app.domain.subscription.repository import SubscriptionRepository
 from app.domain.subscription.vo_subscription_id import SubscriptionId
 from app.domain.user.entity import User
@@ -142,6 +147,49 @@ class MockSubscriptionRepository(SubscriptionRepository):
         return found_subscription
 
 
+class MockNotificationRepository(NotificationRepository):
+    _data: dict[str, Notification] = {}
+
+    async def save(self, notification: Notification) -> None:
+        self._data[notification.id_.value] = notification
+
+    async def delete(self, notification: Notification) -> None:
+        self._data.pop(notification.id_.value)
+
+    async def get_by_id(self, notification_id: NotificationId) -> Notification | None:
+        return self._data.get(notification_id.value, None)
+
+    async def get_by_ids(self, notification_ids: list[NotificationId]) -> list[Notification]:
+        notifications = []
+        for notification_id in notification_ids:
+            if notification := self._data.get(notification_id.value, None):
+                notifications.append(notification)
+        return notifications
+
+    async def filter(
+        self,
+        labour_id: LabourId | None = None,
+        from_user_id: UserId | None = None,
+        to_user_id: UserId | None = None,
+        notification_type: ContactMethod | None = None,
+        notification_status: NotificationStatus | None = None,
+    ) -> list[Notification]:
+        notifications = []
+        for notification in self._data.values():
+            if labour_id and notification.labour_id != labour_id:
+                continue
+            if from_user_id and notification.from_user_id != from_user_id:
+                continue
+            if to_user_id and notification.to_user_id != to_user_id:
+                continue
+            if notification_status and notification.status is not notification_status:
+                continue
+            if notification_type and notification.type is not notification_type:
+                continue
+            notifications.append(notification)
+        return notifications
+
+
 @pytest_asyncio.fixture
 async def user_repo() -> UserRepository:
     repo = MockUserRepository()
@@ -163,6 +211,13 @@ async def subscription_repo() -> SubscriptionRepository:
     return repo
 
 
+@pytest_asyncio.fixture
+async def notification_repo() -> NotificationRepository:
+    repo = MockNotificationRepository()
+    repo._data = {}
+    return repo
+
+
 class MockTokenGenerator(TokenGenerator):
     def generate(self, input: str) -> str:
         return input
@@ -174,15 +229,17 @@ class MockTokenGenerator(TokenGenerator):
 class MockEmailNotificationGateway(EmailNotificationGateway):
     sent_notifications = []
 
-    async def send(self, data: dict[str, Any]) -> None:
+    async def send(self, data: dict[str, Any]) -> NotificationSendResult:
         self.sent_notifications.append(data)
+        return NotificationSendResult(success=True, status=NotificationStatus.SENT)
 
 
 class MockSMSNotificationGateway(SMSNotificationGateway):
     sent_notifications = []
 
-    async def send(self, data: dict[str, Any]) -> None:
+    async def send(self, data: dict[str, Any]) -> NotificationSendResult:
         self.sent_notifications.append(data)
+        return NotificationSendResult(success=True, status=NotificationStatus.SENT)
 
 
 class MockEmailGenerationService(EmailGenerationService):
@@ -252,11 +309,13 @@ async def subscription_management_service(
 async def notification_service() -> NotificationService:
     email_notification_gateway = MockEmailNotificationGateway()
     sms_notification_gateway = MockSMSNotificationGateway()
+    notification_repository = MockNotificationRepository()
     email_notification_gateway.sent_notifications = []
     sms_notification_gateway.sent_notifications = []
     return NotificationService(
         email_notification_gateway=email_notification_gateway,
         sms_notification_gateway=sms_notification_gateway,
+        notification_repository=notification_repository,
     )
 
 
