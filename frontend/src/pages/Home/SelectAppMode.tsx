@@ -61,7 +61,12 @@ export function SelectAppMode() {
                 </Text>
               </div>
               <div className={classes.selectRow}>
-                <Title order={4}>Choose your experience to get started:</Title>
+                <Title order={4} visibleFrom="sm" ta="center">
+                  Choose your experience to get started:
+                </Title>
+                <Title order={5} hiddenFrom="sm" ta="center">
+                  Choose your experience to get started:
+                </Title>
               </div>
               <div className={classes.selectRow}>
                 <Button
