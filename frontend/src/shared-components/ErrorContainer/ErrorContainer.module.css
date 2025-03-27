@@ -16,7 +16,7 @@
 .messageContainer {
     border-radius: 15px;
     padding: 20px;
-    background-color: var(--mantine-color-pink-1);
+    background-color: #ffd5cd;
     margin-top: 15px;
 }
 
