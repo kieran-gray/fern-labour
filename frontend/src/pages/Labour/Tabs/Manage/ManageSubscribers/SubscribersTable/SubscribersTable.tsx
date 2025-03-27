@@ -3,10 +3,10 @@ import { useAuth } from 'react-oidc-context';
 import { Avatar, Group, Table, Text } from '@mantine/core';
 import { OpenAPI, SubscriptionService } from '../../../../../../client';
 import { ImportantText } from '../../../../../../shared-components/ImportantText/ImportantText';
+import { PageLoadingIcon } from '../../../../../../shared-components/PageLoading/Loading';
 import { useLabour } from '../../../../LabourContext';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import classes from './SubscribersTable.module.css';
-import { PageLoadingIcon } from '../../../../../../shared-components/PageLoading/Loading';
 
 export function SubscribersTable() {
   const auth = useAuth();
@@ -29,18 +29,18 @@ export function SubscribersTable() {
 
   if (isPending) {
     return (
-      <div style={{display:'flex', width:'100%', justifyContent:'center'}}>
+      <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
         <PageLoadingIcon />
       </div>
-    )
+    );
   }
 
   if (isError) {
     return (
-      <div style={{display:'flex', width:'100%', justifyContent:'center'}}>
+      <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
         <Text>Something went wrong... {error ? error.message : ''}</Text>
       </div>
-    )
+    );
   }
 
   const subscriberById = Object.fromEntries(
