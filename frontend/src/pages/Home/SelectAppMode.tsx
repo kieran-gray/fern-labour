@@ -75,7 +75,10 @@ export function SelectAppMode() {
                   }}
                   classNames={{ label: classes.buttonLabel }}
                 >
-                  👶 Birth Mode – Plan and track your labour, log contractions, and share updates.
+                  <div className={baseClasses.flexColumn}>
+                    <Title order={4} mr={15} mb={10}>👶 Birth Mode</Title>
+                    <Text>Plan and track your labour, log contractions, and share updates.</Text>
+                  </div>
                 </Button>
                 <Title order={4} mt={10} mb={10}>
                   Or
@@ -91,7 +94,10 @@ export function SelectAppMode() {
                   }}
                   classNames={{ label: classes.buttonLabel }}
                 >
-                  ❤️ Subscriber Mode – Stay connected and support a loved one through their journey.
+                  <div className={baseClasses.flexColumn}>
+                    <Title order={4} mr={15} mb={10}>❤️ Subscriber Mode</Title>
+                    <Text>Stay connected and support a loved one through their journey.</Text>
+                  </div>
                 </Button>
               </div>
               <div className={classes.selectRow}>

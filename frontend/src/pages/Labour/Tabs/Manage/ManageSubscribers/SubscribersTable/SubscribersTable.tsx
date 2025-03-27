@@ -2,12 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Avatar, Group, Table, Text } from '@mantine/core';
 import { OpenAPI, SubscriptionService } from '../../../../../../client';
-import { ErrorContainer } from '../../../../../../shared-components/ErrorContainer/ErrorContainer';
 import { ImportantText } from '../../../../../../shared-components/ImportantText/ImportantText';
-import { PageLoading } from '../../../../../../shared-components/PageLoading/PageLoading';
 import { useLabour } from '../../../../LabourContext';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import classes from './SubscribersTable.module.css';
+import { PageLoadingIcon } from '../../../../../../shared-components/PageLoading/Loading';
 
 export function SubscribersTable() {
   const auth = useAuth();
@@ -29,11 +28,19 @@ export function SubscribersTable() {
   });
 
   if (isPending) {
-    return <PageLoading />;
+    return (
+      <div style={{display:'flex', width:'100%', justifyContent:'center'}}>
+        <PageLoadingIcon />
+      </div>
+    )
   }
 
   if (isError) {
-    return <ErrorContainer message={error.message} />;
+    return (
+      <div style={{display:'flex', width:'100%', justifyContent:'center'}}>
+        <Text>Something went wrong... {error ? error.message : ''}</Text>
+      </div>
+    )
   }
 
   const subscriberById = Object.fromEntries(

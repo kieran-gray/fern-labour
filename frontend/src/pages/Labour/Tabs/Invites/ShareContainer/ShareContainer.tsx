@@ -2,13 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Group, Image, Space, Text, Title } from '@mantine/core';
 import { LabourService, OpenAPI } from '../../../../../client';
-import { ErrorContainer } from '../../../../../shared-components/ErrorContainer/ErrorContainer';
-import { PageLoading } from '../../../../../shared-components/PageLoading/PageLoading';
 import { useLabour } from '../../../LabourContext';
 import { CopyButton } from '../CopyButton/CopyButton';
 import QRButton from '../QRButton/QRButton';
 import image from './share.svg';
 import classes from './ShareContainer.module.css';
+import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 
 export function ShareContainer() {
   const auth = useAuth();
@@ -26,11 +25,20 @@ export function ShareContainer() {
   });
 
   if (isPending) {
-    return <PageLoading />;
+    return (
+      <div style={{display:'flex', justifyContent:'center'}}>
+        <PageLoadingIcon />
+      </div>
+    );
   }
 
   if (isError) {
-    return <ErrorContainer message={error.message} />;
+    return (
+      <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+        <Title order={3}>Error :(</Title>
+        <Text>{error.message}</Text>
+      </div>
+    )
   }
 
   // TODO environment variable for frontend host
