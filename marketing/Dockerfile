@@ -19,7 +19,7 @@ ENV NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL}
 
 RUN npm run build
 
-# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
+# Stage 1, based on alpine, to have only the compiled app, ready for production with Nginx
 FROM alpine
 
 RUN apk add brotli nginx nginx-mod-http-brotli

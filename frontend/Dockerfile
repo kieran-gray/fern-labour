@@ -17,10 +17,14 @@ ARG VITE_POST_LOGOUT_REDIRECT=${VITE_POST_LOGOUT_REDIRECT}
 
 RUN npm run build
 
-# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:1
+# Stage 1, based on alpine, to have only the compiled app, ready for production with Nginx
+FROM alpine
+
+RUN apk add brotli nginx nginx-mod-http-brotli
 
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
 
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY ./nginx-backend-not-found.conf /etc/nginx/extra-conf.d/backend-not-found.conf
+COPY ./nginx.conf /etc/nginx/http.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
