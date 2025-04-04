@@ -1,4 +1,4 @@
-import { Space } from '@mantine/core';
+import { ContainerProps, Space } from '@mantine/core';
 import { FaqWithImage } from './FAQ/FaqWithImage';
 import { Feature02 } from './FeaturesMotion/FeaturesMotion';
 import { Hero03 } from './HeroMotion/HeroMotion';
@@ -7,7 +7,12 @@ import { Story01 } from './StoryTelling/Story-01';
 import { Story02 } from './StoryTelling/Story-02';
 import { Story03 } from './StoryTelling/Story-03';
 
-export const LandingPage = () => {
+type LandingPageProps = ContainerProps & {
+  /** URL for the call to action button */
+  callToActionUrl?: string;
+};
+
+export const LandingPage = ({ callToActionUrl = '#' }: LandingPageProps) => {
   return (
     <div style={{ padding: '15px' }}>
       <Hero03 />
@@ -19,7 +24,7 @@ export const LandingPage = () => {
         <Story03 />
       </div>
       <Feature02 />
-      <Pricing01 />
+      <Pricing01 callToActionUrl={callToActionUrl} />
       <FaqWithImage />
     </div>
   );

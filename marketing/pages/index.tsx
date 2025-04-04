@@ -12,7 +12,7 @@ export default function HomePage() {
         h="80"
         radius="50px"
       />
-      <LandingPage />
+      <LandingPage callToActionUrl={process.env.NEXT_PUBLIC_FRONTEND_URL} />
       <FooterSimple />
     </>
   );

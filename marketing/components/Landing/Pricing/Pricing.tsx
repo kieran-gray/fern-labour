@@ -22,6 +22,7 @@ import {
   CardProps,
   Center,
   Container,
+  ContainerProps,
   Divider,
   Flex,
   Group,
@@ -124,7 +125,12 @@ const PricingCard = ({
   </Card>
 );
 
-export const Pricing01 = () => {
+type Pricing01Props = ContainerProps & {
+  /** URL for the call to action button */
+  callToActionUrl?: string;
+};
+
+export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
   return (
     <Container
       bg="var(--mantine-color-body)"
@@ -157,7 +163,14 @@ export const Pricing01 = () => {
           title="Solo"
           description=""
           cta={
-            <Button component={NextLink} href="#" size="lg" radius="xl" variant="light" fullWidth>
+            <Button
+              component={NextLink}
+              href={callToActionUrl}
+              size="lg"
+              radius="xl"
+              variant="light"
+              fullWidth
+            >
               Get started
             </Button>
           }
@@ -212,7 +225,7 @@ export const Pricing01 = () => {
               className={classes.cta}
               component={NextLink}
               radius="xl"
-              href="#"
+              href={callToActionUrl}
               size="lg"
               fullWidth
             >
@@ -265,7 +278,14 @@ export const Pricing01 = () => {
           title="Community"
           description=""
           cta={
-            <Button component={NextLink} href="#" radius="xl" size="lg" variant="light" fullWidth>
+            <Button
+              component={NextLink}
+              href={callToActionUrl}
+              radius="xl"
+              size="lg"
+              variant="light"
+              fullWidth
+            >
               Get started
             </Button>
           }
