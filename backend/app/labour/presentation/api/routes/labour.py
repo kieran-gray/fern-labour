@@ -11,13 +11,13 @@ from app.application.services.subscription_service import SubscriptionService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.labour.application.services.get_labour_service import GetLabourService
 from app.labour.application.services.labour_service import LabourService
-from app.labour.interfaces.api.schemas.requests.labour import (
+from app.labour.presentation.api.schemas.requests.labour import (
     CompleteLabourRequest,
     PaymentPlanLabourRequest,
     PlanLabourRequest,
     SendInviteRequest,
 )
-from app.labour.interfaces.api.schemas.responses.labour import (
+from app.labour.presentation.api.schemas.responses.labour import (
     LabourListResponse,
     LabourResponse,
     LabourSubscriptionTokenResponse,

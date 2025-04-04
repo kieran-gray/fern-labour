@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from app.labour.interfaces.api.routes.router import labour_module_router
-from app.labour.interfaces.api.routes.subscription import subscription_router
-from app.labour.interfaces.api.routes.subscription_management import subscription_management_router
+from app.labour.presentation.api.routes.router import labour_module_router
+from app.labour.presentation.api.routes.subscription import subscription_router
+from app.labour.presentation.api.routes.subscription_management import subscription_management_router
 from app.presentation.api.routes.auth import auth_router
 from app.presentation.api.routes.contact import contact_us_router
 from app.presentation.api.routes.healthcheck import healthcheck_router

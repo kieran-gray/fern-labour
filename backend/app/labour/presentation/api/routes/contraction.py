@@ -7,13 +7,13 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.labour.application.services.labour_service import LabourService
-from app.labour.interfaces.api.schemas.requests.contraction import (
+from app.labour.presentation.api.schemas.requests.contraction import (
     DeleteContractionRequest,
     EndContractionRequest,
     StartContractionRequest,
     UpdateContractionRequest,
 )
-from app.labour.interfaces.api.schemas.responses.labour import (
+from app.labour.presentation.api.schemas.responses.labour import (
     LabourResponse,
 )
 from app.presentation.api.dependencies import bearer_scheme
