@@ -22,7 +22,6 @@ import {
   CardProps,
   Center,
   Container,
-  ContainerProps,
   Divider,
   Flex,
   Group,
@@ -125,7 +124,7 @@ const PricingCard = ({
   </Card>
 );
 
-type Pricing01Props = ContainerProps & {
+type Pricing01Props = {
   /** URL for the call to action button */
   callToActionUrl?: string;
 };
