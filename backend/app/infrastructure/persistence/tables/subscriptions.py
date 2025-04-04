@@ -1,8 +1,8 @@
 from sqlalchemy import ARRAY, Column, Enum, ForeignKey, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from app.infrastructure.persistence.orm_registry import mapper_registry
+from app.labour.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 
 subscriptions_table = Table(
     "subscriptions",

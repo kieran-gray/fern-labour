@@ -8,8 +8,8 @@ from app.application.notifications.notification_service import NotificationServi
 from app.application.security.token_generator import TokenGenerator
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
-from app.domain.subscription.enums import ContactMethod
-from app.domain.subscription.exceptions import SubscriberAlreadySubscribed
+from app.labour.domain.subscription.enums import ContactMethod
+from app.labour.domain.subscription.exceptions import SubscriberAlreadySubscribed
 
 log = logging.getLogger(__name__)
 

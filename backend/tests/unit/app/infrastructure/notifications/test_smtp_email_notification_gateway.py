@@ -4,10 +4,10 @@ from uuid import uuid4
 
 from app.application.dtos.notification import NotificationDTO
 from app.domain.notification.enums import NotificationStatus
-from app.domain.subscription.enums import ContactMethod
 from app.infrastructure.notifications.email.smtp_email_notification_gateway import (
     SMTPEmailNotificationGateway,
 )
+from app.labour.domain.subscription.enums import ContactMethod
 
 MODULE = "app.infrastructure.notifications.email.smtp_email_notification_gateway"
 

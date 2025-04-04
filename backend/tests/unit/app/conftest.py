@@ -3,9 +3,9 @@ from uuid import uuid4
 
 import pytest
 
-from app.domain.contraction.entity import Contraction
-from app.domain.contraction.vo_contraction_duration import Duration
-from app.domain.contraction.vo_contraction_id import ContractionId
+from app.labour.domain.contraction.entity import Contraction
+from app.labour.domain.contraction.value_objects.contraction_duration import Duration
+from app.labour.domain.contraction.value_objects.contraction_id import ContractionId
 from app.setup.settings import Settings
 from tests.unit.app.setup.config.conftest import MockConfigReader
 

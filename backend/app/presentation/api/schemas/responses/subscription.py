@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 
-from app.application.dtos.labour import LabourDTO
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.dtos.user_summary import UserSummaryDTO
+from app.labour.application.dtos.labour import LabourDTO
 
 
 class SubscriptionsResponse(BaseModel):

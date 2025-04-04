@@ -3,9 +3,9 @@ import json
 import pytest
 
 from app.application.dtos.user import UserDTO
-from app.domain.subscription.enums import ContactMethod
 from app.domain.user.entity import User
 from app.domain.user.vo_user_id import UserId
+from app.labour.domain.subscription.enums import ContactMethod
 
 
 @pytest.fixture

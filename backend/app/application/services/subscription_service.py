@@ -4,20 +4,20 @@ from uuid import UUID
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.events.producer import EventProducer
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.get_labour_service import GetLabourService
 from app.application.services.user_service import UserService
-from app.domain.labour.enums import LabourPaymentPlan
-from app.domain.labour.exceptions import (
+from app.domain.user.exceptions import UserCannotSubscribeToSelf
+from app.domain.user.vo_user_id import UserId
+from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.labour.domain.labour.exceptions import (
     InsufficientLabourPaymentPlan,
     InvalidLabourId,
     UnauthorizedLabourRequest,
 )
-from app.domain.labour.vo_labour_id import LabourId
-from app.domain.services.subscribe_to import SubscribeToService
-from app.domain.services.unsubscribe_from import UnsubscribeFromService
-from app.domain.subscription.constants import INNER_CIRCLE_MAX_SUBSCRIBERS
-from app.domain.subscription.enums import SubscriptionStatus
-from app.domain.subscription.exceptions import (
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.labour.domain.subscription.constants import INNER_CIRCLE_MAX_SUBSCRIBERS
+from app.labour.domain.subscription.enums import SubscriptionStatus
+from app.labour.domain.subscription.exceptions import (
     MaximumNumberOfSubscribersReached,
     SubscriberNotSubscribed,
     SubscriptionIdInvalid,
@@ -25,10 +25,10 @@ from app.domain.subscription.exceptions import (
     SubscriptionTokenIncorrect,
     UnauthorizedSubscriptionRequest,
 )
-from app.domain.subscription.repository import SubscriptionRepository
-from app.domain.subscription.vo_subscription_id import SubscriptionId
-from app.domain.user.exceptions import UserCannotSubscribeToSelf
-from app.domain.user.vo_user_id import UserId
+from app.labour.domain.subscription.repository import SubscriptionRepository
+from app.labour.domain.subscription.services.subscribe_to import SubscribeToService
+from app.labour.domain.subscription.services.unsubscribe_from import UnsubscribeFromService
+from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
 
 log = logging.getLogger(__name__)
 

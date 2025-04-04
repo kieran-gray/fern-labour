@@ -4,12 +4,12 @@ from typing import Any
 import stripe
 
 from app.application.events.event_handler import EventHandler
-from app.application.services.labour_service import LabourService
-from app.domain.labour.enums import LabourPaymentPlan
 from app.infrastructure.payments.stripe.product_mapping import (
     STRIPE_PRODUCT_TO_PAYMENT_PLAN,
     Product,
 )
+from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.enums import LabourPaymentPlan
 
 log = logging.getLogger(__name__)
 

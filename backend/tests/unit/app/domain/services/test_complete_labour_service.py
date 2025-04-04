@@ -1,14 +1,14 @@
 import pytest
 
-from app.domain.labour.entity import Labour
-from app.domain.labour.enums import LabourPhase
-from app.domain.labour.exceptions import (
+from app.labour.domain.contraction.services.start_contraction import StartContractionService
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.enums import LabourPhase
+from app.labour.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
     LabourAlreadyCompleted,
 )
-from app.domain.services.begin_labour import BeginLabourService
-from app.domain.services.complete_labour import CompleteLabourService
-from app.domain.services.start_contraction import StartContractionService
+from app.labour.domain.labour.services.begin_labour import BeginLabourService
+from app.labour.domain.labour.services.complete_labour import CompleteLabourService
 
 
 def test_can_complete_labour(sample_labour: Labour):

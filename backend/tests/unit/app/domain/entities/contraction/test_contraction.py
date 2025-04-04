@@ -3,15 +3,18 @@ from uuid import UUID
 
 import pytest
 
-from app.domain.contraction.constants import CONTRACTION_MAX_INTENSITY, CONTRACTION_MIN_TIME_SECONDS
-from app.domain.contraction.entity import Contraction
-from app.domain.contraction.exceptions import (
+from app.labour.domain.contraction.constants import (
+    CONTRACTION_MAX_INTENSITY,
+    CONTRACTION_MIN_TIME_SECONDS,
+)
+from app.labour.domain.contraction.entity import Contraction
+from app.labour.domain.contraction.exceptions import (
     ContractionIntensityInvalid,
     ContractionStartTimeAfterEndTime,
 )
-from app.domain.contraction.vo_contraction_duration import Duration
-from app.domain.contraction.vo_contraction_id import ContractionId
-from app.domain.labour.vo_labour_id import LabourId
+from app.labour.domain.contraction.value_objects.contraction_duration import Duration
+from app.labour.domain.contraction.value_objects.contraction_id import ContractionId
+from app.labour.domain.labour.value_objects.labour_id import LabourId
 
 
 def test_contraction_init():

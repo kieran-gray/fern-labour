@@ -1,10 +1,10 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from app.domain.labour.vo_labour_id import LabourId
-from app.domain.labour_update.entity import LabourUpdate
-from app.domain.labour_update.enums import LabourUpdateType
-from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.labour.domain.labour_update.entity import LabourUpdate
+from app.labour.domain.labour_update.enums import LabourUpdateType
+from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
 
 
 def test_labour_update_init():

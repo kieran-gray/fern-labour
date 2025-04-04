@@ -3,15 +3,17 @@ from uuid import UUID
 
 import pytest
 
-from app.domain.labour.constants import (
+from app.domain.user.vo_user_id import UserId
+from app.labour.domain.labour.constants import (
     LENGTH_OF_CONTRACTIONS_MINUTES,
     TIME_BETWEEN_CONTRACTIONS_NULLIPAROUS,
     TIME_BETWEEN_CONTRACTIONS_PAROUS,
 )
-from app.domain.labour.entity import Labour
-from app.domain.services.begin_labour import BeginLabourService
-from app.domain.services.should_prepare_for_hospital import ShouldPrepareForHospitalService
-from app.domain.user.vo_user_id import UserId
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.services.begin_labour import BeginLabourService
+from app.labour.domain.labour.services.should_prepare_for_hospital import (
+    ShouldPrepareForHospitalService,
+)
 from tests.unit.app.conftest import get_contractions
 
 

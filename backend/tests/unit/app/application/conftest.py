@@ -14,25 +14,25 @@ from app.application.notifications.notfication_gateway import (
 )
 from app.application.notifications.notification_service import NotificationService
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.get_labour_service import GetLabourService
-from app.application.services.labour_service import LabourService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
-from app.domain.labour.entity import Labour
-from app.domain.labour.repository import LabourRepository
-from app.domain.labour.vo_labour_id import LabourId
 from app.domain.notification.entity import Notification
 from app.domain.notification.enums import NotificationStatus
 from app.domain.notification.repository import NotificationRepository
 from app.domain.notification.vo_notification_id import NotificationId
-from app.domain.subscription.entity import Subscription
-from app.domain.subscription.enums import ContactMethod, SubscriptionStatus
-from app.domain.subscription.repository import SubscriptionRepository
-from app.domain.subscription.vo_subscription_id import SubscriptionId
 from app.domain.user.entity import User
 from app.domain.user.repository import UserRepository
 from app.domain.user.vo_user_id import UserId
+from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.repository import LabourRepository
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.labour.domain.subscription.entity import Subscription
+from app.labour.domain.subscription.enums import ContactMethod, SubscriptionStatus
+from app.labour.domain.subscription.repository import SubscriptionRepository
+from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
 
 
 class MockUserRepository(UserRepository):

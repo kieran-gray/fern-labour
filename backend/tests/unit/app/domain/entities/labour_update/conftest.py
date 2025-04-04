@@ -3,7 +3,7 @@ from uuid import UUID
 
 import pytest
 
-from app.domain.labour_update.entity import LabourUpdate
+from app.labour.domain.labour_update.entity import LabourUpdate
 
 
 @pytest.fixture

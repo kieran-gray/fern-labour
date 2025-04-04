@@ -4,7 +4,7 @@ from app.application.dtos.notification import NotificationContent
 from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notification_data import ContactUsData
 from app.application.notifications.notification_service import NotificationService
-from app.domain.subscription.enums import ContactMethod
+from app.labour.domain.subscription.enums import ContactMethod
 
 log = logging.getLogger(__name__)
 

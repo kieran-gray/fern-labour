@@ -3,12 +3,12 @@ from typing import Any, Self
 from uuid import UUID, uuid4
 
 from app.domain.base.aggregate_root import AggregateRoot
-from app.domain.labour.vo_labour_id import LabourId
-from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 from app.domain.notification.enums import NotificationStatus
 from app.domain.notification.vo_notification_id import NotificationId
-from app.domain.subscription.enums import ContactMethod
 from app.domain.user.vo_user_id import UserId
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
+from app.labour.domain.subscription.enums import ContactMethod
 
 
 @dataclass(eq=False, kw_only=True)

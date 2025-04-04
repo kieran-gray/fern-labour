@@ -5,11 +5,11 @@ from dishka import FromComponent, Provider, Scope, provide
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.security.token_generator import TokenGenerator
-from app.domain.subscription.repository import SubscriptionRepository
 from app.infrastructure.persistence.repositories.subscription_repository import (
     SQLAlchemySubscriptionRepository,
 )
 from app.infrastructure.security.sha256_token_generator import SHA256TokenGenerator
+from app.labour.domain.subscription.repository import SubscriptionRepository
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
 

@@ -7,7 +7,7 @@ from kafka import KafkaConsumer
 
 from app.application.events.consumer import EventConsumer
 from app.application.events.event_handler import EventHandler
-from app.application.events.event_handlers.mapping import EVENT_HANDLER_MAPPING
+from app.labour.application.event_handlers.mapping import EVENT_HANDLER_MAPPING
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 log = logging.getLogger(__name__)

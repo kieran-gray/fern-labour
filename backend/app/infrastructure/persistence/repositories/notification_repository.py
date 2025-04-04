@@ -1,14 +1,14 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.labour.vo_labour_id import LabourId
 from app.domain.notification.entity import Notification
 from app.domain.notification.enums import NotificationStatus
 from app.domain.notification.repository import NotificationRepository
 from app.domain.notification.vo_notification_id import NotificationId
-from app.domain.subscription.enums import ContactMethod
 from app.domain.user.vo_user_id import UserId
 from app.infrastructure.persistence.tables.notifications import notifications_table
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.labour.domain.subscription.enums import ContactMethod
 
 
 class SQLAlchemyNotificationRepository(NotificationRepository):

@@ -6,21 +6,21 @@ import pytest_asyncio
 
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.labour_service import LabourService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
-from app.domain.labour.enums import LabourPaymentPlan
-from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
-from app.domain.subscription.exceptions import (
+from app.domain.user.entity import User
+from app.domain.user.vo_user_id import UserId
+from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.labour.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from app.labour.domain.subscription.exceptions import (
     SubscriberRoleInvalid,
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
     UnauthorizedSubscriptionUpdateRequest,
 )
-from app.domain.user.entity import User
-from app.domain.user.vo_user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"

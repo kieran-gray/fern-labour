@@ -3,13 +3,15 @@ from uuid import UUID
 
 import pytest
 
-from app.domain.contraction.constants import (
+from app.domain.user.vo_user_id import UserId
+from app.labour.domain.contraction.constants import (
     CONTRACTION_MAX_IN_10_MINS,
     CONTRACTION_MAX_TIME_SECONDS,
 )
-from app.domain.labour.entity import Labour
-from app.domain.services.should_call_midwife_urgently import ShouldCallMidwifeUrgentlyService
-from app.domain.user.vo_user_id import UserId
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.services.should_call_midwife_urgently import (
+    ShouldCallMidwifeUrgentlyService,
+)
 from tests.unit.app.conftest import get_contractions
 
 

@@ -4,10 +4,10 @@ from uuid import uuid4
 import pytest
 
 from app.application.dtos.subscription import SubscriptionDTO
-from app.domain.labour.vo_labour_id import LabourId
-from app.domain.subscription.entity import Subscription
-from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from app.domain.user.vo_user_id import UserId
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.labour.domain.subscription.entity import Subscription
+from app.labour.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 
 
 @pytest.fixture

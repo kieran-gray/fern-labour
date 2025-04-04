@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Any, Self
 
 from app.application.dtos.user_summary import UserSummaryDTO
-from app.domain.subscription.enums import ContactMethod
 from app.domain.user.entity import User
+from app.labour.domain.subscription.enums import ContactMethod
 
 
 @dataclass

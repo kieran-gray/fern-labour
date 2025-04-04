@@ -3,17 +3,17 @@ from uuid import UUID
 
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.events.producer import EventProducer
-from app.domain.subscription.entity import Subscription
-from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
-from app.domain.subscription.exceptions import (
+from app.labour.domain.subscription.entity import Subscription
+from app.labour.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from app.labour.domain.subscription.exceptions import (
     SubscriberRoleInvalid,
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
     UnauthorizedSubscriptionUpdateRequest,
 )
-from app.domain.subscription.repository import SubscriptionRepository
-from app.domain.subscription.vo_subscription_id import SubscriptionId
+from app.labour.domain.subscription.repository import SubscriptionRepository
+from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
 
 log = logging.getLogger(__name__)
 

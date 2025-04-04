@@ -5,10 +5,10 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import HTTPAuthorizationCredentials
 
-from app.application.services.labour_service import LabourService
 from app.infrastructure.auth.interfaces.controller import AuthController
 from app.infrastructure.payments.stripe.product_mapping import Product
 from app.infrastructure.payments.stripe.stripe_payment_service import StripePaymentService
+from app.labour.application.services.labour_service import LabourService
 from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.api.schemas.requests.payments import CreateCheckoutRequest
 from app.presentation.api.schemas.responses.payments import CheckoutResponse

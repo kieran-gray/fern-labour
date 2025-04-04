@@ -10,13 +10,10 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.application.dtos.labour import LabourDTO
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.dtos.user import UserDTO
 from app.application.dtos.user_summary import UserSummaryDTO
 from app.application.services.contact_service import ContactService
-from app.application.services.get_labour_service import GetLabourService
-from app.application.services.labour_service import LabourService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
@@ -28,6 +25,9 @@ from app.infrastructure.payments.stripe.stripe_payment_service import StripePaym
 from app.infrastructure.security.interfaces.request_verification_service import (
     RequestVerificationService,
 )
+from app.labour.application.dtos.labour import LabourDTO
+from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_service import LabourService
 from app.presentation.api.routes.router_root import root_router
 from app.presentation.exception_handler import (
     ExceptionHandler,

@@ -3,12 +3,12 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite
 
-from app.domain.labour.vo_labour_id import LabourId
-from app.domain.subscription.entity import Subscription
-from app.domain.subscription.vo_subscription_id import SubscriptionId
 from app.domain.user.vo_user_id import UserId
 from app.infrastructure.persistence.orm_registry import mapper_registry
 from app.infrastructure.persistence.tables.subscriptions import subscriptions_table
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.labour.domain.subscription.entity import Subscription
+from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
 
 mapper_registry.map_imperatively(
     Subscription,

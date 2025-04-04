@@ -4,8 +4,10 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.labour.repository import LabourRepository
-from app.infrastructure.persistence.repositories.labour_repository import SQLAlchemyLabourRepository
+from app.labour.domain.labour.repository import LabourRepository
+from app.labour.infrastructure.persistence.repositories.labour_repository import (
+    SQLAlchemyLabourRepository,
+)
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 log = logging.getLogger(__name__)

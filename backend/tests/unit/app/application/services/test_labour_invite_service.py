@@ -10,15 +10,15 @@ from app.application.security.token_generator import TokenGenerator
 from app.application.services.labour_invite_service import (
     LabourInviteService,
 )
-from app.application.services.labour_service import LabourService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
-from app.domain.labour.enums import LabourPaymentPlan
-from app.domain.labour.exceptions import LabourNotFoundById
-from app.domain.subscription.exceptions import SubscriberAlreadySubscribed
 from app.domain.user.entity import User
 from app.domain.user.exceptions import UserNotFoundById
 from app.domain.user.vo_user_id import UserId
+from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.labour.domain.labour.exceptions import LabourNotFoundById
+from app.labour.domain.subscription.exceptions import SubscriberAlreadySubscribed
 
 BIRTHING_PERSON = "test_birthing_person"
 SUBSCRIBER = "test_subscriber"

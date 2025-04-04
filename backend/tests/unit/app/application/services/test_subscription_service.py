@@ -5,23 +5,26 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.application.dtos.labour import LabourDTO
 from app.application.dtos.subscription import SubscriptionDTO
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.get_labour_service import GetLabourService
-from app.application.services.labour_service import LabourService
 from app.application.services.subscription_management_service import SubscriptionManagementService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
-from app.domain.labour.enums import LabourPaymentPlan
-from app.domain.labour.exceptions import (
+from app.domain.user.entity import User
+from app.domain.user.exceptions import UserCannotSubscribeToSelf, UserNotFoundById
+from app.domain.user.vo_user_id import UserId
+from app.labour.application.dtos.labour import LabourDTO
+from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.labour.domain.labour.exceptions import (
     InsufficientLabourPaymentPlan,
     InvalidLabourId,
     LabourNotFoundById,
     UnauthorizedLabourRequest,
 )
-from app.domain.subscription.enums import SubscriptionStatus
-from app.domain.subscription.exceptions import (
+from app.labour.domain.subscription.enums import SubscriptionStatus
+from app.labour.domain.subscription.exceptions import (
     MaximumNumberOfSubscribersReached,
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
@@ -31,10 +34,7 @@ from app.domain.subscription.exceptions import (
     SubscriptionTokenIncorrect,
     UnauthorizedSubscriptionRequest,
 )
-from app.domain.subscription.repository import SubscriptionRepository
-from app.domain.user.entity import User
-from app.domain.user.exceptions import UserCannotSubscribeToSelf, UserNotFoundById
-from app.domain.user.vo_user_id import UserId
+from app.labour.domain.subscription.repository import SubscriptionRepository
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"

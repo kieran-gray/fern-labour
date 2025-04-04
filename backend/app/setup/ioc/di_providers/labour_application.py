@@ -6,12 +6,12 @@ from app.application.events.producer import EventProducer
 from app.application.notifications.email_generation_service import EmailGenerationService
 from app.application.notifications.notification_service import NotificationService
 from app.application.security.token_generator import TokenGenerator
-from app.application.services.get_labour_service import GetLabourService
 from app.application.services.labour_invite_service import LabourInviteService
-from app.application.services.labour_service import LabourService
 from app.application.services.subscription_service import SubscriptionService
 from app.application.services.user_service import UserService
-from app.domain.labour.repository import LabourRepository
+from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.repository import LabourRepository
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from fastapi.testclient import TestClient
 
-from app.application.dtos.labour import LabourDTO
+from app.labour.application.dtos.labour import LabourDTO
 
 
 def test_get_all_labours(client: TestClient, mock_labour_dto: LabourDTO) -> None:

@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from app.domain.labour.enums import LabourPaymentPlan
+from app.labour.domain.labour.enums import LabourPaymentPlan
 
 
 class Product(StrEnum):

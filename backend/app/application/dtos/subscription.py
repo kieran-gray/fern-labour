@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Self
 
-from app.domain.subscription.entity import Subscription
+from app.labour.domain.subscription.entity import Subscription
 
 
 @dataclass

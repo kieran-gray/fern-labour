@@ -10,7 +10,6 @@ from app.application.notifications.notfication_gateway import (
     SMSNotificationGateway,
 )
 from app.application.notifications.notification_service import NotificationService
-from app.domain.labour.exceptions import InvalidLabourId, InvalidLabourUpdateId
 from app.domain.notification.enums import NotificationStatus
 from app.domain.notification.exceptions import (
     InvalidNotificationId,
@@ -19,8 +18,9 @@ from app.domain.notification.exceptions import (
 )
 from app.domain.notification.repository import NotificationRepository
 from app.domain.notification.vo_notification_id import NotificationId
-from app.domain.subscription.enums import ContactMethod
-from app.domain.subscription.exceptions import InvalidContactMethod
+from app.labour.domain.labour.exceptions import InvalidLabourId, InvalidLabourUpdateId
+from app.labour.domain.subscription.enums import ContactMethod
+from app.labour.domain.subscription.exceptions import InvalidContactMethod
 
 
 class MockEmailNotificationGateway(EmailNotificationGateway):

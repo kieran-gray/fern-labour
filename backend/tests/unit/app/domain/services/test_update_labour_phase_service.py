@@ -1,10 +1,10 @@
 import pytest
 
-from app.domain.labour.entity import Labour
-from app.domain.labour.enums import LabourPhase
-from app.domain.labour.exceptions import LabourAlreadyCompleted
-from app.domain.services.begin_labour import BeginLabourService
-from app.domain.services.update_labour_phase import UpdateLabourPhaseService
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.enums import LabourPhase
+from app.labour.domain.labour.exceptions import LabourAlreadyCompleted
+from app.labour.domain.labour.services.begin_labour import BeginLabourService
+from app.labour.domain.labour.services.update_labour_phase import UpdateLabourPhaseService
 from tests.unit.app.domain.services.conftest import generate_contractions
 
 

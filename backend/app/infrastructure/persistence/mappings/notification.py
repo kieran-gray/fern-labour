@@ -3,13 +3,13 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite
 
-from app.domain.labour.vo_labour_id import LabourId
-from app.domain.labour_update.vo_labour_update_id import LabourUpdateId
 from app.domain.notification.entity import Notification
 from app.domain.notification.vo_notification_id import NotificationId
 from app.domain.user.vo_user_id import UserId
 from app.infrastructure.persistence.orm_registry import mapper_registry
 from app.infrastructure.persistence.tables.notifications import notifications_table
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
 
 mapper_registry.map_imperatively(
     Notification,
