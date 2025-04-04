@@ -4,21 +4,21 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.application.notifications.email_generation_service import EmailGenerationService
-from app.application.notifications.notification_service import NotificationService
-from app.application.security.token_generator import TokenGenerator
-from app.application.services.labour_invite_service import (
+from app.labour.application.security.token_generator import TokenGenerator
+from app.labour.application.services.labour_invite_service import (
     LabourInviteService,
 )
-from app.application.services.subscription_service import SubscriptionService
-from app.application.services.user_service import UserService
-from app.domain.user.entity import User
-from app.domain.user.exceptions import UserNotFoundById
-from app.domain.user.vo_user_id import UserId
 from app.labour.application.services.labour_service import LabourService
+from app.labour.application.services.subscription_service import SubscriptionService
 from app.labour.domain.labour.enums import LabourPaymentPlan
 from app.labour.domain.labour.exceptions import LabourNotFoundById
 from app.labour.domain.subscription.exceptions import SubscriberAlreadySubscribed
+from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.services.notification_service import NotificationService
+from app.user.application.services.user_service import UserService
+from app.user.domain.entity import User
+from app.user.domain.exceptions import UserNotFoundById
+from app.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person"
 SUBSCRIBER = "test_subscriber"

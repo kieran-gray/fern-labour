@@ -1,8 +1,8 @@
 from typing import Protocol
 
-from app.domain.user.vo_user_id import UserId
 from app.labour.domain.labour.entity import Labour
 from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.user.domain.value_objects.user_id import UserId
 
 
 class LabourRepository(Protocol):

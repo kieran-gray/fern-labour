@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Self
 
-from app.domain.base.value_object import ValueObject
+from app.common.domain.value_object import ValueObject
 from app.labour.domain.contraction.exceptions import ContractionStartTimeAfterEndTime
 
 

@@ -10,19 +10,19 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.infrastructure.auth.interfaces.controller import AuthController
-from app.infrastructure.auth.interfaces.service import AuthService
-from app.infrastructure.auth.keycloak.auth_controller import KeycloakAuthController
-from app.infrastructure.auth.keycloak.auth_service import KeycloakAuthService
-from app.infrastructure.security.cloudflare.turnstile_request_verification_service import (
+from app.common.infrastructure.security.cloudflare.turnstile_request_verification_service import (
     TurnstileRequestVerificationService,
 )
-from app.infrastructure.security.interfaces.request_verification_service import (
+from app.common.infrastructure.security.interfaces.request_verification_service import (
     RequestVerificationService,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.ioc.di_providers.common_settings import PostgresDsn
 from app.setup.settings import Settings, SqlaEngineSettings
+from app.user.infrastructure.auth.interfaces.controller import AuthController
+from app.user.infrastructure.auth.interfaces.service import AuthService
+from app.user.infrastructure.auth.keycloak.auth_controller import KeycloakAuthController
+from app.user.infrastructure.auth.keycloak.auth_service import KeycloakAuthService
 
 log = logging.getLogger(__name__)
 

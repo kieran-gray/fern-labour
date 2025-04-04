@@ -2,10 +2,6 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from app.application.notifications.email_generation_service import EmailGenerationService
-from app.application.notifications.notification_service import NotificationService
-from app.application.services.subscription_service import SubscriptionService
-from app.application.services.user_service import UserService
 from app.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.labour.application.event_handlers.labour_completed_event_handler import (
     LabourCompletedEventHandler,
@@ -13,8 +9,12 @@ from app.labour.application.event_handlers.labour_completed_event_handler import
 from app.labour.application.event_handlers.labour_update_posted_event_handler import (
     LabourUpdatePostedEventHandler,
 )
+from app.labour.application.services.subscription_service import SubscriptionService
+from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.services.notification_service import NotificationService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
+from app.user.application.services.user_service import UserService
 
 
 class EventsApplicationProvider(Provider):

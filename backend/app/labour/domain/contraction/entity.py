@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from typing import Self
 from uuid import UUID, uuid4
 
-from app.domain.base.entity import Entity
+from app.common.domain.entity import Entity
 from app.labour.domain.contraction.constants import (
     CONTRACTION_MAX_INTENSITY,
     CONTRACTION_MIN_INTENSITY,

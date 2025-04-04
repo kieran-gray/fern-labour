@@ -1,14 +1,14 @@
 import logging
 from uuid import UUID
 
-from app.domain.user.exceptions import UserDoesNotHaveActiveLabour
-from app.domain.user.vo_user_id import UserId
 from app.labour.application.dtos.labour import LabourDTO
 from app.labour.application.dtos.labour_summary import LabourSummaryDTO
 from app.labour.domain.labour.entity import Labour
 from app.labour.domain.labour.exceptions import InvalidLabourId, LabourNotFoundById
 from app.labour.domain.labour.repository import LabourRepository
 from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.user.domain.exceptions import UserDoesNotHaveActiveLabour
+from app.user.domain.value_objects.user_id import UserId
 
 log = logging.getLogger(__name__)
 

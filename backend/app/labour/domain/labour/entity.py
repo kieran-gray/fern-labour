@@ -3,8 +3,7 @@ from datetime import UTC, datetime
 from typing import Self
 from uuid import UUID, uuid4
 
-from app.domain.base.aggregate_root import AggregateRoot
-from app.domain.user.vo_user_id import UserId
+from app.common.domain.aggregate_root import AggregateRoot
 from app.labour.domain.contraction.entity import Contraction
 from app.labour.domain.contraction.events import ContractionEnded, ContractionStarted
 from app.labour.domain.labour.enums import LabourPaymentPlan, LabourPhase
@@ -19,6 +18,7 @@ from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.labour.domain.labour_update.entity import LabourUpdate
 from app.labour.domain.labour_update.enums import LabourUpdateType
 from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
+from app.user.domain.value_objects.user_id import UserId
 
 
 @dataclass(eq=False, kw_only=True)

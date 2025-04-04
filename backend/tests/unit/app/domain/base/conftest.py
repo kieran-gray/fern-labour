@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 import pytest
 
-from app.domain.base.aggregate_root import AggregateRoot
-from app.domain.base.entity import Entity
-from app.domain.base.value_object import ValueObject
+from app.common.domain.aggregate_root import AggregateRoot
+from app.common.domain.entity import Entity
+from app.common.domain.value_object import ValueObject
 
 
 @dataclass(frozen=True, slots=True, repr=False)

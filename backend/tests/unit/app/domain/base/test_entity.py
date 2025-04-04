@@ -1,6 +1,6 @@
 import pytest
 
-from app.domain.base.exceptions import DomainError
+from app.common.domain.exceptions import DomainError
 from tests.unit.app.domain.base.conftest import SampleEntity, SingleFieldValueObject
 
 

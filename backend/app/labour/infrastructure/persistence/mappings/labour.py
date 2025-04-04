@@ -3,8 +3,7 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite, relationship
 
-from app.domain.user.vo_user_id import UserId
-from app.infrastructure.persistence.orm_registry import mapper_registry
+from app.common.infrastructure.persistence.orm_registry import mapper_registry
 from app.labour.domain.contraction.entity import Contraction
 from app.labour.domain.contraction.value_objects.contraction_duration import Duration
 from app.labour.domain.contraction.value_objects.contraction_id import ContractionId
@@ -15,6 +14,7 @@ from app.labour.domain.labour_update.value_objects.labour_update_id import Labou
 from app.labour.infrastructure.persistence.tables.contractions import contractions_table
 from app.labour.infrastructure.persistence.tables.labour_updates import labour_updates_table
 from app.labour.infrastructure.persistence.tables.labours import labours_table
+from app.user.domain.value_objects.user_id import UserId
 
 mapper_registry.map_imperatively(
     LabourUpdate,

@@ -3,10 +3,10 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide
 from keycloak import KeycloakAdmin
 
-from app.domain.user.repository import UserRepository
-from app.infrastructure.persistence.repositories.user_repository import KeycloakUserRepository
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
+from app.user.domain.repository import UserRepository
+from app.user.infrastructure.persistence.repositories.user_repository import KeycloakUserRepository
 
 
 class UserInfrastructureProvider(Provider):

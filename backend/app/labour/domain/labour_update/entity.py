@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from typing import Self
 from uuid import UUID, uuid4
 
-from app.domain.base.entity import Entity
+from app.common.domain.entity import Entity
 from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.labour.domain.labour_update.enums import LabourUpdateType
 from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId

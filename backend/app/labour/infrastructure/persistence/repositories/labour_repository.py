@@ -1,12 +1,12 @@
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.user.vo_user_id import UserId
 from app.labour.domain.labour.entity import Labour
 from app.labour.domain.labour.enums import LabourPhase
 from app.labour.domain.labour.repository import LabourRepository
 from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.labour.infrastructure.persistence.tables.labours import labours_table
+from app.user.domain.value_objects.user_id import UserId
 
 
 class SQLAlchemyLabourRepository(LabourRepository):

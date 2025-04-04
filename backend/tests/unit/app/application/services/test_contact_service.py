@@ -1,8 +1,8 @@
 import pytest_asyncio
 
-from app.application.notifications.email_generation_service import EmailGenerationService
-from app.application.notifications.notification_service import NotificationService
-from app.application.services.contact_service import ContactService
+from app.common.application.services.contact_service import ContactService
+from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.services.notification_service import NotificationService
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"

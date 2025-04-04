@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy_utils import StringEncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
-from app.infrastructure.persistence.orm_registry import mapper_registry
+from app.common.infrastructure.persistence.orm_registry import mapper_registry
 from app.labour.domain.labour.enums import LabourPhase
 
 labours_table = Table(

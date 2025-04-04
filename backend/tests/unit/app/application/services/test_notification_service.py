@@ -4,23 +4,23 @@ from uuid import UUID, uuid4
 import pytest
 import pytest_asyncio
 
-from app.application.dtos.notification import NotificationDTO, NotificationSendResult
-from app.application.notifications.notfication_gateway import (
+from app.labour.domain.labour.exceptions import InvalidLabourId, InvalidLabourUpdateId
+from app.labour.domain.subscription.enums import ContactMethod
+from app.labour.domain.subscription.exceptions import InvalidContactMethod
+from app.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
+from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
-    SMSNotificationGateway,
 )
-from app.application.notifications.notification_service import NotificationService
-from app.domain.notification.enums import NotificationStatus
-from app.domain.notification.exceptions import (
+from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from app.notification.application.services.notification_service import NotificationService
+from app.notification.domain.enums import NotificationStatus
+from app.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
     NotificationNotFoundById,
 )
-from app.domain.notification.repository import NotificationRepository
-from app.domain.notification.vo_notification_id import NotificationId
-from app.labour.domain.labour.exceptions import InvalidLabourId, InvalidLabourUpdateId
-from app.labour.domain.subscription.enums import ContactMethod
-from app.labour.domain.subscription.exceptions import InvalidContactMethod
+from app.notification.domain.repository import NotificationRepository
+from app.notification.domain.value_objects.notification_id import NotificationId
 
 
 class MockEmailNotificationGateway(EmailNotificationGateway):

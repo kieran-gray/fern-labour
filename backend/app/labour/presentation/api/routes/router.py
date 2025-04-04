@@ -4,7 +4,9 @@ from app.labour.presentation.api.routes.contraction import contraction_router
 from app.labour.presentation.api.routes.labour import labour_router
 from app.labour.presentation.api.routes.labour_update import labour_update_router
 from app.labour.presentation.api.routes.subscription import subscription_router
-from app.labour.presentation.api.routes.subscription_management import subscription_management_router
+from app.labour.presentation.api.routes.subscription_management import (
+    subscription_management_router,
+)
 
 labour_module_router = APIRouter()
 

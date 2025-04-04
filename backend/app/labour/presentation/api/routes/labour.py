@@ -5,12 +5,13 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials
 
-from app.application.security.token_generator import TokenGenerator
-from app.application.services.labour_invite_service import LabourInviteService
-from app.application.services.subscription_service import SubscriptionService
-from app.infrastructure.auth.interfaces.controller import AuthController
+from app.api.dependencies import bearer_scheme
+from app.api.exception_handler import ExceptionSchema
+from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_invite_service import LabourInviteService
 from app.labour.application.services.labour_service import LabourService
+from app.labour.application.services.subscription_service import SubscriptionService
 from app.labour.presentation.api.schemas.requests.labour import (
     CompleteLabourRequest,
     PaymentPlanLabourRequest,
@@ -23,9 +24,8 @@ from app.labour.presentation.api.schemas.responses.labour import (
     LabourSubscriptionTokenResponse,
     LabourSummaryResponse,
 )
-from app.presentation.api.dependencies import bearer_scheme
-from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.user.infrastructure.auth.interfaces.controller import AuthController
 
 labour_router = APIRouter(prefix="/labour", tags=["Labour"])
 

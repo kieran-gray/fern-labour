@@ -1,10 +1,10 @@
 from typing import Protocol
 
-from app.domain.user.vo_user_id import UserId
 from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.labour.domain.subscription.entity import Subscription
 from app.labour.domain.subscription.enums import SubscriptionStatus
 from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
+from app.user.domain.value_objects.user_id import UserId
 
 
 class SubscriptionRepository(Protocol):

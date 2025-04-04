@@ -1,7 +1,7 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.infrastructure.persistence.orm_registry import mapper_registry
+from app.common.infrastructure.persistence.orm_registry import mapper_registry
 
 contractions_table = Table(
     "contractions",

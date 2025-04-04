@@ -2,10 +2,7 @@ import logging
 from datetime import datetime
 from uuid import UUID
 
-from app.application.events.producer import EventProducer
-from app.application.services.user_service import UserService
-from app.domain.user.exceptions import UserDoesNotHaveActiveLabour, UserHasActiveLabour
-from app.domain.user.vo_user_id import UserId
+from app.common.infrastructure.events.interfaces.producer import EventProducer
 from app.labour.application.dtos.labour import LabourDTO
 from app.labour.domain.contraction.exceptions import ContractionIdInvalid
 from app.labour.domain.contraction.services.delete_contraction import DeleteContractionService
@@ -35,6 +32,9 @@ from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.labour.domain.labour_update.enums import LabourUpdateType
 from app.labour.domain.labour_update.services.post_labour_update import PostLabourUpdateService
 from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
+from app.user.application.services.user_service import UserService
+from app.user.domain.exceptions import UserDoesNotHaveActiveLabour, UserHasActiveLabour
+from app.user.domain.value_objects.user_id import UserId
 
 log = logging.getLogger(__name__)
 

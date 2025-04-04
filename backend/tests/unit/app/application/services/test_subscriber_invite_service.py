@@ -1,11 +1,11 @@
 import pytest_asyncio
 
-from app.application.notifications.email_generation_service import EmailGenerationService
-from app.application.notifications.notification_service import NotificationService
-from app.application.services.subscriber_invite_service import SubscriberInviteService
-from app.application.services.user_service import UserService
-from app.domain.user.entity import User
-from app.domain.user.vo_user_id import UserId
+from app.labour.application.services.subscriber_invite_service import SubscriberInviteService
+from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.services.notification_service import NotificationService
+from app.user.application.services.user_service import UserService
+from app.user.domain.entity import User
+from app.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person"
 SUBSCRIBER = "test_subscriber"

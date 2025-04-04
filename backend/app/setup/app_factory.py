@@ -10,14 +10,14 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
-from app.infrastructure.persistence import initialize_mapping
-from app.presentation.api.routes.router_root import root_router
-from app.presentation.exception_handler import (
+from app.api.exception_handler import (
     ExceptionHandler,
     ExceptionHeaderMapper,
     ExceptionMapper,
     ExceptionMessageProvider,
 )
+from app.api.routes.router_root import root_router
+from app.common.infrastructure.persistence import initialize_mapping
 from app.setup.ioc.ioc_registry import get_providers
 from app.setup.settings import Settings
 

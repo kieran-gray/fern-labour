@@ -2,14 +2,16 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from app.application.events.producer import EventProducer
-from app.application.security.token_generator import TokenGenerator
-from app.application.services.subscription_management_service import SubscriptionManagementService
-from app.application.services.subscription_service import SubscriptionService
-from app.application.services.user_service import UserService
+from app.common.infrastructure.events.interfaces.producer import EventProducer
+from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from app.labour.application.services.subscription_service import SubscriptionService
 from app.labour.domain.subscription.repository import SubscriptionRepository
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.user.application.services.user_service import UserService
 
 
 class SubscriptionsApplicationProvider(Provider):

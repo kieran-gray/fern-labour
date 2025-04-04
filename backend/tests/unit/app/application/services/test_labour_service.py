@@ -5,15 +5,7 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.application.events.producer import EventProducer
-from app.application.services.user_service import UserService
-from app.domain.user.entity import User
-from app.domain.user.exceptions import (
-    UserDoesNotHaveActiveLabour,
-    UserHasActiveLabour,
-    UserNotFoundById,
-)
-from app.domain.user.vo_user_id import UserId
+from app.common.infrastructure.events.interfaces.producer import EventProducer
 from app.labour.application.dtos.labour import LabourDTO
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.contraction.exceptions import ContractionIdInvalid
@@ -31,6 +23,14 @@ from app.labour.domain.labour.exceptions import (
 )
 from app.labour.domain.labour.repository import LabourRepository
 from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.user.application.services.user_service import UserService
+from app.user.domain.entity import User
+from app.user.domain.exceptions import (
+    UserDoesNotHaveActiveLabour,
+    UserHasActiveLabour,
+    UserNotFoundById,
+)
+from app.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 OTHER_USER = "test_id"

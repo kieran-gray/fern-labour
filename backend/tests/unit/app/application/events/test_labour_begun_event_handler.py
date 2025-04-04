@@ -4,20 +4,22 @@ from datetime import UTC, datetime
 import pytest
 import pytest_asyncio
 
-from app.application.notifications.email_generation_service import EmailGenerationService
-from app.application.notifications.notification_service import NotificationService
-from app.application.services.subscription_management_service import SubscriptionManagementService
-from app.application.services.subscription_service import SubscriptionService
-from app.application.services.user_service import UserService
-from app.domain.base.event import DomainEvent
-from app.domain.user.entity import User
-from app.domain.user.exceptions import UserNotFoundById
-from app.domain.user.vo_user_id import UserId
+from app.common.domain.event import DomainEvent
 from app.labour.application.dtos.labour import LabourDTO
 from app.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.labour.application.services.labour_service import LabourService
+from app.labour.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from app.labour.application.services.subscription_service import SubscriptionService
 from app.labour.domain.labour.enums import LabourPaymentPlan
 from app.labour.domain.subscription.enums import ContactMethod
+from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.services.notification_service import NotificationService
+from app.user.application.services.user_service import UserService
+from app.user.domain.entity import User
+from app.user.domain.exceptions import UserNotFoundById
+from app.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"

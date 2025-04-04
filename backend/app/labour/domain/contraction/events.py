@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Self
 
-from app.domain.base.event import DomainEvent
+from app.common.domain.event import DomainEvent
 from app.labour.domain.contraction.entity import Contraction
 
 

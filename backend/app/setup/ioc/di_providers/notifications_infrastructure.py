@@ -4,8 +4,8 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.notification.repository import NotificationRepository
-from app.infrastructure.persistence.repositories.notification_repository import (
+from app.notification.domain.repository import NotificationRepository
+from app.notification.infrastructure.persistence.repositories.notification_repository import (
     SQLAlchemyNotificationRepository,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum

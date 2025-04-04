@@ -5,24 +5,24 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials
 
-from app.application.services.subscription_service import SubscriptionService
-from app.application.services.user_service import UserService
-from app.infrastructure.auth.interfaces.controller import AuthController
+from app.api.dependencies import bearer_scheme
+from app.api.exception_handler import ExceptionSchema
 from app.labour.application.services.get_labour_service import GetLabourService
-from app.presentation.api.dependencies import bearer_scheme
-from app.presentation.api.schemas.requests.subscription import (
+from app.labour.application.services.subscription_service import SubscriptionService
+from app.labour.presentation.api.schemas.requests.subscription import (
     SubscribeToRequest,
     UnsubscribeFromRequest,
 )
-from app.presentation.api.schemas.responses.subscription import (
+from app.labour.presentation.api.schemas.responses.subscription import (
     LabourSubscriptionsResponse,
     SubscriberSubscriptionsResponse,
     SubscriptionDataResponse,
     SubscriptionResponse,
     SubscriptionsResponse,
 )
-from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.user.application.services.user_service import UserService
+from app.user.infrastructure.auth.interfaces.controller import AuthController
 
 subscription_router = APIRouter(prefix="/subscription", tags=["Subscription"])
 

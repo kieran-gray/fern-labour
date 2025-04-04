@@ -10,32 +10,34 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.application.dtos.subscription import SubscriptionDTO
-from app.application.dtos.user import UserDTO
-from app.application.dtos.user_summary import UserSummaryDTO
-from app.application.services.contact_service import ContactService
-from app.application.services.subscription_management_service import SubscriptionManagementService
-from app.application.services.subscription_service import SubscriptionService
-from app.application.services.user_service import UserService
-from app.infrastructure.auth.interfaces.controller import AuthController
-from app.infrastructure.auth.interfaces.exceptions import AuthorizationError
-from app.infrastructure.auth.interfaces.models import AuthorizationCredentials
-from app.infrastructure.auth.interfaces.schemas import TokenResponse
-from app.infrastructure.payments.stripe.stripe_payment_service import StripePaymentService
-from app.infrastructure.security.interfaces.request_verification_service import (
-    RequestVerificationService,
-)
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.services.get_labour_service import GetLabourService
-from app.labour.application.services.labour_service import LabourService
-from app.presentation.api.routes.router_root import root_router
-from app.presentation.exception_handler import (
+from app.api.exception_handler import (
     ExceptionHandler,
     ExceptionHeaderMapper,
     ExceptionMapper,
     ExceptionMessageProvider,
 )
+from app.api.routes.router_root import root_router
+from app.common.application.services.contact_service import ContactService
+from app.common.infrastructure.security.interfaces.request_verification_service import (
+    RequestVerificationService,
+)
+from app.labour.application.dtos.labour import LabourDTO
+from app.labour.application.dtos.subscription import SubscriptionDTO
+from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_service import LabourService
+from app.labour.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from app.labour.application.services.subscription_service import SubscriptionService
+from app.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.user.application.dtos.user import UserDTO
+from app.user.application.dtos.user_summary import UserSummaryDTO
+from app.user.application.services.user_service import UserService
+from app.user.infrastructure.auth.interfaces.controller import AuthController
+from app.user.infrastructure.auth.interfaces.exceptions import AuthorizationError
+from app.user.infrastructure.auth.interfaces.models import AuthorizationCredentials
+from app.user.infrastructure.auth.interfaces.schemas import TokenResponse
 
 
 @pytest.fixture(scope="session")

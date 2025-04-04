@@ -3,7 +3,6 @@ from uuid import UUID
 
 import pytest
 
-from app.domain.user.vo_user_id import UserId
 from app.labour.domain.labour.constants import (
     CONTRACTIONS_REQUIRED_NULLIPAROUS,
     CONTRACTIONS_REQUIRED_PAROUS,
@@ -14,6 +13,7 @@ from app.labour.domain.labour.constants import (
 from app.labour.domain.labour.entity import Labour
 from app.labour.domain.labour.services.begin_labour import BeginLabourService
 from app.labour.domain.labour.services.should_go_to_hospital import ShouldGoToHospitalService
+from app.user.domain.value_objects.user_id import UserId
 from tests.unit.app.conftest import get_contractions
 
 
