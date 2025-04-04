@@ -27,7 +27,7 @@ from app.presentation.api.dependencies import bearer_scheme
 from app.presentation.exception_handler import ExceptionSchema
 from app.setup.ioc.di_component_enum import ComponentEnum
 
-labour_router = APIRouter(tags=["Labour"])
+labour_router = APIRouter(prefix="/labour", tags=["Labour"])
 
 
 @labour_router.get(
