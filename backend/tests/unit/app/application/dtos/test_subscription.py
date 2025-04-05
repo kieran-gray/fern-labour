@@ -3,10 +3,10 @@ from uuid import uuid4
 
 import pytest
 
-from app.labour.application.dtos.subscription import SubscriptionDTO
 from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.labour.domain.subscription.entity import Subscription
-from app.labour.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from app.subscription.application.dtos.subscription import SubscriptionDTO
+from app.subscription.domain.entity import Subscription
+from app.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from app.user.domain.value_objects.user_id import UserId
 
 

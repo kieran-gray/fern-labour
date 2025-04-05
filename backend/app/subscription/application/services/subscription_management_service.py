@@ -2,18 +2,18 @@ import logging
 from uuid import UUID
 
 from app.common.infrastructure.events.interfaces.producer import EventProducer
-from app.labour.application.dtos.subscription import SubscriptionDTO
-from app.labour.domain.subscription.entity import Subscription
-from app.labour.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
-from app.labour.domain.subscription.exceptions import (
+from app.subscription.application.dtos.subscription import SubscriptionDTO
+from app.subscription.domain.entity import Subscription
+from app.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from app.subscription.domain.exceptions import (
     SubscriberRoleInvalid,
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
     UnauthorizedSubscriptionUpdateRequest,
 )
-from app.labour.domain.subscription.repository import SubscriptionRepository
-from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
+from app.subscription.domain.repository import SubscriptionRepository
+from app.subscription.domain.value_objects.subscription_id import SubscriptionId
 
 log = logging.getLogger(__name__)
 

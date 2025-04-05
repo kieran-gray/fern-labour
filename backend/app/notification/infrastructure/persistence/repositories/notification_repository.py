@@ -2,12 +2,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.labour.domain.subscription.enums import ContactMethod
 from app.notification.domain.entity import Notification
 from app.notification.domain.enums import NotificationStatus
 from app.notification.domain.repository import NotificationRepository
 from app.notification.domain.value_objects.notification_id import NotificationId
 from app.notification.infrastructure.persistence.tables.notifications import notifications_table
+from app.subscription.domain.enums import ContactMethod
 from app.user.domain.value_objects.user_id import UserId
 
 

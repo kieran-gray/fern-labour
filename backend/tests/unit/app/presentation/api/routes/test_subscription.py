@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.dtos.subscription import SubscriptionDTO
+from app.subscription.application.dtos.subscription import SubscriptionDTO
 from app.user.application.dtos.user import UserSummaryDTO
 
 

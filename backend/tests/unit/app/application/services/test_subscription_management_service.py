@@ -4,16 +4,16 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.labour.application.dtos.subscription import SubscriptionDTO
 from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.labour_service import LabourService
-from app.labour.application.services.subscription_management_service import (
+from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.subscription.application.dtos.subscription import SubscriptionDTO
+from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
-from app.labour.application.services.subscription_service import SubscriptionService
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.labour.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
-from app.labour.domain.subscription.exceptions import (
+from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from app.subscription.domain.exceptions import (
     SubscriberRoleInvalid,
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,

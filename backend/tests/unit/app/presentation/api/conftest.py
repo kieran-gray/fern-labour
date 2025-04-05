@@ -22,15 +22,15 @@ from app.common.infrastructure.security.interfaces.request_verification_service 
     RequestVerificationService,
 )
 from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.dtos.subscription import SubscriptionDTO
 from app.labour.application.services.get_labour_service import GetLabourService
 from app.labour.application.services.labour_service import LabourService
-from app.labour.application.services.subscription_management_service import (
-    SubscriptionManagementService,
-)
-from app.labour.application.services.subscription_service import SubscriptionService
 from app.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.subscription.application.dtos.subscription import SubscriptionDTO
+from app.subscription.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from app.subscription.application.services.subscription_service import SubscriptionService
 from app.user.application.dtos.user import UserDTO
 from app.user.application.dtos.user_summary import UserSummaryDTO
 from app.user.application.services.user_service import UserService

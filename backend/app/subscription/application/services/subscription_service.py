@@ -2,7 +2,6 @@ import logging
 from uuid import UUID
 
 from app.common.infrastructure.events.interfaces.producer import EventProducer
-from app.labour.application.dtos.subscription import SubscriptionDTO
 from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.get_labour_service import GetLabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
@@ -12,9 +11,10 @@ from app.labour.domain.labour.exceptions import (
     UnauthorizedLabourRequest,
 )
 from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.labour.domain.subscription.constants import INNER_CIRCLE_MAX_SUBSCRIBERS
-from app.labour.domain.subscription.enums import SubscriptionStatus
-from app.labour.domain.subscription.exceptions import (
+from app.subscription.application.dtos.subscription import SubscriptionDTO
+from app.subscription.domain.constants import INNER_CIRCLE_MAX_SUBSCRIBERS
+from app.subscription.domain.enums import SubscriptionStatus
+from app.subscription.domain.exceptions import (
     MaximumNumberOfSubscribersReached,
     SubscriberNotSubscribed,
     SubscriptionIdInvalid,
@@ -22,10 +22,10 @@ from app.labour.domain.subscription.exceptions import (
     SubscriptionTokenIncorrect,
     UnauthorizedSubscriptionRequest,
 )
-from app.labour.domain.subscription.repository import SubscriptionRepository
-from app.labour.domain.subscription.services.subscribe_to import SubscribeToService
-from app.labour.domain.subscription.services.unsubscribe_from import UnsubscribeFromService
-from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
+from app.subscription.domain.repository import SubscriptionRepository
+from app.subscription.domain.services.subscribe_to import SubscribeToService
+from app.subscription.domain.services.unsubscribe_from import UnsubscribeFromService
+from app.subscription.domain.value_objects.subscription_id import SubscriptionId
 from app.user.application.services.user_service import UserService
 from app.user.domain.exceptions import UserCannotSubscribeToSelf
 from app.user.domain.value_objects.user_id import UserId

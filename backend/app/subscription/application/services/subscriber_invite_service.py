@@ -1,10 +1,10 @@
 import logging
 
-from app.labour.domain.subscription.enums import ContactMethod
 from app.notification.application.dtos.notification import NotificationContent
 from app.notification.application.dtos.notification_data import SubscriberInviteData
 from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
+from app.subscription.domain.enums import ContactMethod
 from app.user.application.dtos.user import UserDTO
 from app.user.application.services.user_service import UserService
 

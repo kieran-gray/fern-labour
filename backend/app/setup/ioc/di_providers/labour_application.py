@@ -7,11 +7,11 @@ from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.get_labour_service import GetLabourService
 from app.labour.application.services.labour_invite_service import LabourInviteService
 from app.labour.application.services.labour_service import LabourService
-from app.labour.application.services.subscription_service import SubscriptionService
 from app.labour.domain.labour.repository import LabourRepository
 from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.subscription.application.services.subscription_service import SubscriptionService
 from app.user.application.services.user_service import UserService
 
 

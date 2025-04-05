@@ -1,13 +1,13 @@
 import logging
 
 from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.application.services.subscription_service import SubscriptionService
-from app.labour.domain.subscription.enums import ContactMethod
-from app.labour.domain.subscription.exceptions import SubscriberAlreadySubscribed
 from app.notification.application.dtos.notification import NotificationContent
 from app.notification.application.dtos.notification_data import LabourInviteData
 from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
+from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.domain.enums import ContactMethod
+from app.subscription.domain.exceptions import SubscriberAlreadySubscribed
 from app.user.application.dtos.user import UserDTO
 from app.user.application.services.user_service import UserService
 

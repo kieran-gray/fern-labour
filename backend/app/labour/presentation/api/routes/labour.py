@@ -11,7 +11,6 @@ from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.get_labour_service import GetLabourService
 from app.labour.application.services.labour_invite_service import LabourInviteService
 from app.labour.application.services.labour_service import LabourService
-from app.labour.application.services.subscription_service import SubscriptionService
 from app.labour.presentation.api.schemas.requests.labour import (
     CompleteLabourRequest,
     PaymentPlanLabourRequest,
@@ -25,6 +24,7 @@ from app.labour.presentation.api.schemas.responses.labour import (
     LabourSummaryResponse,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.subscription.application.services.subscription_service import SubscriptionService
 from app.user.infrastructure.auth.interfaces.controller import AuthController
 
 labour_router = APIRouter(prefix="/labour", tags=["Labour"])

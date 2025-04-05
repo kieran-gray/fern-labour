@@ -5,13 +5,13 @@ from dishka import FromComponent, Provider, Scope, provide
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.domain.subscription.repository import SubscriptionRepository
-from app.labour.infrastructure.persistence.repositories.subscription_repository import (
-    SQLAlchemySubscriptionRepository,
-)
 from app.labour.infrastructure.security.sha256_token_generator import SHA256TokenGenerator
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
+from app.subscription.domain.repository import SubscriptionRepository
+from app.subscription.infrastructure.persistence.repositories.subscription_repository import (
+    SQLAlchemySubscriptionRepository,
+)
 
 log = logging.getLogger(__name__)
 

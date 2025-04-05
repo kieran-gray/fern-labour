@@ -1,6 +1,6 @@
-from app.labour.domain.subscription.entity import Subscription
-from app.labour.domain.subscription.enums import SubscriptionStatus
-from app.labour.domain.subscription.exceptions import SubscriberNotSubscribed
+from app.subscription.domain.entity import Subscription
+from app.subscription.domain.enums import SubscriptionStatus
+from app.subscription.domain.exceptions import SubscriberNotSubscribed
 
 
 class UnsubscribeFromService:

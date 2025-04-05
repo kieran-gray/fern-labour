@@ -5,8 +5,6 @@ from uuid import UUID
 from app.labour.domain.labour.exceptions import InvalidLabourId, InvalidLabourUpdateId
 from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
-from app.labour.domain.subscription.enums import ContactMethod
-from app.labour.domain.subscription.exceptions import InvalidContactMethod
 from app.notification.application.dtos.notification import NotificationDTO
 from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
@@ -23,6 +21,8 @@ from app.notification.domain.exceptions import (
 )
 from app.notification.domain.repository import NotificationRepository
 from app.notification.domain.value_objects.notification_id import NotificationId
+from app.subscription.domain.enums import ContactMethod
+from app.subscription.domain.exceptions import InvalidContactMethod
 from app.user.domain.value_objects.user_id import UserId
 
 log = logging.getLogger(__name__)

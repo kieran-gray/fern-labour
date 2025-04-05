@@ -10,8 +10,8 @@ from sqlalchemy_utils import StringEncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
 from app.common.infrastructure.persistence.orm_registry import mapper_registry
-from app.labour.domain.subscription.enums import ContactMethod
 from app.notification.domain.enums import NotificationStatus
+from app.subscription.domain.enums import ContactMethod
 
 log = logging.getLogger(__name__)
 

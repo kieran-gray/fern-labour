@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from app.labour.domain.subscription.enums import ContactMethod
+from app.subscription.domain.enums import ContactMethod
 from app.user.application.dtos.user import UserDTO
 from app.user.domain.entity import User
 from app.user.domain.value_objects.user_id import UserId

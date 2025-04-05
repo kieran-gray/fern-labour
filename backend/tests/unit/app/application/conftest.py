@@ -9,17 +9,9 @@ import pytest_asyncio
 from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.get_labour_service import GetLabourService
 from app.labour.application.services.labour_service import LabourService
-from app.labour.application.services.subscription_management_service import (
-    SubscriptionManagementService,
-)
-from app.labour.application.services.subscription_service import SubscriptionService
 from app.labour.domain.labour.entity import Labour
 from app.labour.domain.labour.repository import LabourRepository
 from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.labour.domain.subscription.entity import Subscription
-from app.labour.domain.subscription.enums import ContactMethod, SubscriptionStatus
-from app.labour.domain.subscription.repository import SubscriptionRepository
-from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
 from app.notification.application.dtos.notification import NotificationSendResult
 from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
@@ -31,6 +23,14 @@ from app.notification.domain.entity import Notification
 from app.notification.domain.enums import NotificationStatus
 from app.notification.domain.repository import NotificationRepository
 from app.notification.domain.value_objects.notification_id import NotificationId
+from app.subscription.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.domain.entity import Subscription
+from app.subscription.domain.enums import ContactMethod, SubscriptionStatus
+from app.subscription.domain.repository import SubscriptionRepository
+from app.subscription.domain.value_objects.subscription_id import SubscriptionId
 from app.user.application.services.user_service import UserService
 from app.user.domain.entity import User
 from app.user.domain.repository import UserRepository

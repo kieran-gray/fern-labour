@@ -4,8 +4,8 @@ from uuid import UUID, uuid4
 
 from app.common.domain.aggregate_root import AggregateRoot
 from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.labour.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
-from app.labour.domain.subscription.value_objects.subscription_id import SubscriptionId
+from app.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from app.subscription.domain.value_objects.subscription_id import SubscriptionId
 from app.user.domain.value_objects.user_id import UserId
 
 

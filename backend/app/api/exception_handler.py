@@ -39,7 +39,14 @@ from app.labour.domain.labour.exceptions import (
     UnauthorizedLabourRequest,
 )
 from app.labour.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
-from app.labour.domain.subscription.exceptions import (
+from app.notification.domain.exceptions import (
+    InvalidNotificationId,
+    InvalidNotificationStatus,
+    NotificationNotFoundByExternalId,
+    NotificationNotFoundById,
+)
+from app.payments.application.exceptions import StripeProductNotFound
+from app.subscription.domain.exceptions import (
     MaximumNumberOfSubscribersReached,
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
@@ -49,13 +56,6 @@ from app.labour.domain.subscription.exceptions import (
     UnauthorizedSubscriptionRequest,
     UnauthorizedSubscriptionUpdateRequest,
 )
-from app.notification.domain.exceptions import (
-    InvalidNotificationId,
-    InvalidNotificationStatus,
-    NotificationNotFoundByExternalId,
-    NotificationNotFoundById,
-)
-from app.payments.application.exceptions import StripeProductNotFound
 from app.user.domain.exceptions import (
     UserCannotSubscribeToSelf,
     UserDoesNotHaveActiveLabour,

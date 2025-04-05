@@ -5,12 +5,12 @@ from dishka import FromComponent, Provider, Scope, provide
 from app.common.infrastructure.events.interfaces.producer import EventProducer
 from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.get_labour_service import GetLabourService
-from app.labour.application.services.subscription_management_service import (
+from app.setup.ioc.di_component_enum import ComponentEnum
+from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
-from app.labour.application.services.subscription_service import SubscriptionService
-from app.labour.domain.subscription.repository import SubscriptionRepository
-from app.setup.ioc.di_component_enum import ComponentEnum
+from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.domain.repository import SubscriptionRepository
 from app.user.application.services.user_service import UserService
 
 

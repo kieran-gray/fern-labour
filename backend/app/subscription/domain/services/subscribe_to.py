@@ -1,7 +1,7 @@
 from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.labour.domain.subscription.entity import Subscription
-from app.labour.domain.subscription.enums import SubscriptionStatus
-from app.labour.domain.subscription.exceptions import (
+from app.subscription.domain.entity import Subscription
+from app.subscription.domain.enums import SubscriptionStatus
+from app.subscription.domain.exceptions import (
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
 )
