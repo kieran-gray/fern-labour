@@ -3,19 +3,19 @@ from uuid import uuid4
 
 import pytest
 
-from app.domain.contraction.constants import CONTRACTION_MAX_INTENSITY
-from app.domain.contraction.exceptions import (
+from app.labour.domain.contraction.constants import CONTRACTION_MAX_INTENSITY
+from app.labour.domain.contraction.exceptions import (
     CannotDeleteActiveContraction,
     ContractionNotFoundById,
 )
-from app.domain.contraction.vo_contraction_id import ContractionId
-from app.domain.labour.entity import Labour
-from app.domain.labour.exceptions import LabourAlreadyCompleted
-from app.domain.services.begin_labour import BeginLabourService
-from app.domain.services.complete_labour import CompleteLabourService
-from app.domain.services.delete_contraction import DeleteContractionService
-from app.domain.services.end_contraction import EndContractionService
-from app.domain.services.start_contraction import StartContractionService
+from app.labour.domain.contraction.services.delete_contraction import DeleteContractionService
+from app.labour.domain.contraction.services.end_contraction import EndContractionService
+from app.labour.domain.contraction.services.start_contraction import StartContractionService
+from app.labour.domain.contraction.value_objects.contraction_id import ContractionId
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.exceptions import LabourAlreadyCompleted
+from app.labour.domain.labour.services.begin_labour import BeginLabourService
+from app.labour.domain.labour.services.complete_labour import CompleteLabourService
 
 
 def test_can_delete_contraction(sample_labour: Labour):

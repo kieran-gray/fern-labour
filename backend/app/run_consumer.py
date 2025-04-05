@@ -8,7 +8,7 @@ from typing import Any
 
 from dishka import AsyncContainer, make_async_container
 
-from app.application.events.consumer import EventConsumer
+from app.common.infrastructure.events.interfaces.consumer import EventConsumer
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.ioc.ioc_registry import get_providers
 from app.setup.settings import Settings
@@ -118,7 +118,7 @@ async def main(container: AsyncContainer) -> None:
 
 
 if __name__ == "__main__":
-    from app.infrastructure.persistence import initialize_mapping  # noqa
+    from app.common.infrastructure.persistence import initialize_mapping  # noqa
 
     async def run() -> None:
         async with setup_container() as container:

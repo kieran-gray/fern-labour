@@ -3,11 +3,11 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from app.application.services.labour_service import LabourService
-from app.infrastructure.payments.stripe.event_handlers.checkout_session_completed_event_handler import (  # noqa: E501
+from app.labour.application.services.labour_service import LabourService
+from app.payments.application.event_handlers.checkout_session_completed_event_handler import (  # noqa: E501
     CheckoutSessionCompletedEventHandler,
 )
-from app.infrastructure.payments.stripe.stripe_payment_service import StripePaymentService
+from app.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
 

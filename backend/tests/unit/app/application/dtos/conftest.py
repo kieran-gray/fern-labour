@@ -2,8 +2,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from app.domain.labour.entity import Labour
-from app.domain.user.vo_user_id import UserId
+from app.labour.domain.labour.entity import Labour
+from app.user.domain.value_objects.user_id import UserId
 
 
 @pytest.fixture

@@ -2,26 +2,26 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from app.application.notifications.email_generation_service import EmailGenerationService
-from app.application.notifications.notfication_gateway import (
+from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
-    SMSNotificationGateway,
 )
-from app.application.notifications.notification_service import NotificationService
-from app.domain.notification.repository import NotificationRepository
-from app.infrastructure.notifications.email.jinja2_email_generation_service import (
+from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.services.notification_service import NotificationService
+from app.notification.domain.repository import NotificationRepository
+from app.notification.infrastructure.notifications.email.jinja2_email_generation_service import (
     Jinja2EmailGenerationService,
 )
-from app.infrastructure.notifications.email.logger_email_notification_gateway import (
+from app.notification.infrastructure.notifications.email.logger_email_notification_gateway import (
     LoggerEmailNotificationGateway,
 )
-from app.infrastructure.notifications.email.smtp_email_notification_gateway import (
+from app.notification.infrastructure.notifications.email.smtp_email_notification_gateway import (
     SMTPEmailNotificationGateway,
 )
-from app.infrastructure.notifications.sms.logger_sms_notification_gateway import (
+from app.notification.infrastructure.notifications.sms.logger_sms_notification_gateway import (
     LoggerSMSNotificationGateway,
 )
-from app.infrastructure.notifications.sms.twilio_sms_notification_gateway import (
+from app.notification.infrastructure.notifications.sms.twilio_sms_notification_gateway import (
     TwilioSMSNotificationGateway,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum

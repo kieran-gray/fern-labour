@@ -4,8 +4,8 @@ from unittest.mock import Mock
 
 import pytest  # noqa
 
-from app.domain.base.event import DomainEvent
-from app.infrastructure.events.kafka_event_producer import KafkaEventProducer
+from app.common.domain.event import DomainEvent
+from app.common.infrastructure.events.kafka.kafka_event_producer import KafkaEventProducer
 
 
 def test_create_kafka_event_producer():

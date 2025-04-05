@@ -5,8 +5,8 @@ import pytest
 from dishka import AsyncContainer
 from kafka import KafkaConsumer
 
-from app.application.events.event_handler import EventHandler
-from app.infrastructure.events.kafka_event_consumer import KafkaEventConsumer
+from app.common.application.event_handler import EventHandler
+from app.common.infrastructure.events.kafka.kafka_event_consumer import KafkaEventConsumer
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 MODULE = "app.infrastructure.events.kafka_event_consumer"

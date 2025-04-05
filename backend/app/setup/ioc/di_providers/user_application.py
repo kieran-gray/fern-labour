@@ -1,8 +1,8 @@
 from dishka import Provider, Scope, provide
 
-from app.application.services.user_service import UserService
-from app.domain.user.repository import UserRepository
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.user.application.services.user_service import UserService
+from app.user.domain.repository import UserRepository
 
 
 class UserApplicationProvider(Provider):

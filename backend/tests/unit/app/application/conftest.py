@@ -6,33 +6,35 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 
-from app.application.dtos.notification import NotificationSendResult
-from app.application.notifications.email_generation_service import EmailGenerationService
-from app.application.notifications.notfication_gateway import (
+from app.labour.application.security.token_generator import TokenGenerator
+from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.repository import LabourRepository
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.notification.application.dtos.notification import NotificationSendResult
+from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
-    SMSNotificationGateway,
 )
-from app.application.notifications.notification_service import NotificationService
-from app.application.security.token_generator import TokenGenerator
-from app.application.services.get_labour_service import GetLabourService
-from app.application.services.labour_service import LabourService
-from app.application.services.subscription_management_service import SubscriptionManagementService
-from app.application.services.subscription_service import SubscriptionService
-from app.application.services.user_service import UserService
-from app.domain.labour.entity import Labour
-from app.domain.labour.repository import LabourRepository
-from app.domain.labour.vo_labour_id import LabourId
-from app.domain.notification.entity import Notification
-from app.domain.notification.enums import NotificationStatus
-from app.domain.notification.repository import NotificationRepository
-from app.domain.notification.vo_notification_id import NotificationId
-from app.domain.subscription.entity import Subscription
-from app.domain.subscription.enums import ContactMethod, SubscriptionStatus
-from app.domain.subscription.repository import SubscriptionRepository
-from app.domain.subscription.vo_subscription_id import SubscriptionId
-from app.domain.user.entity import User
-from app.domain.user.repository import UserRepository
-from app.domain.user.vo_user_id import UserId
+from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.services.notification_service import NotificationService
+from app.notification.domain.entity import Notification
+from app.notification.domain.enums import NotificationStatus
+from app.notification.domain.repository import NotificationRepository
+from app.notification.domain.value_objects.notification_id import NotificationId
+from app.subscription.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.domain.entity import Subscription
+from app.subscription.domain.enums import ContactMethod, SubscriptionStatus
+from app.subscription.domain.repository import SubscriptionRepository
+from app.subscription.domain.value_objects.subscription_id import SubscriptionId
+from app.user.application.services.user_service import UserService
+from app.user.domain.entity import User
+from app.user.domain.repository import UserRepository
+from app.user.domain.value_objects.user_id import UserId
 
 
 class MockUserRepository(UserRepository):

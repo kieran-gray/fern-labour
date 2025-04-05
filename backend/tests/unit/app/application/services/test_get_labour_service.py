@@ -3,16 +3,16 @@ from datetime import UTC, datetime
 import pytest
 import pytest_asyncio
 
-from app.application.dtos.labour import LabourDTO
-from app.application.services.get_labour_service import GetLabourService
-from app.domain.labour.entity import Labour
-from app.domain.labour.exceptions import InvalidLabourId
-from app.domain.labour.repository import LabourRepository
-from app.domain.labour.vo_labour_id import LabourId
-from app.domain.user.exceptions import (
+from app.labour.application.dtos.labour import LabourDTO
+from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.exceptions import InvalidLabourId
+from app.labour.domain.labour.repository import LabourRepository
+from app.labour.domain.labour.value_objects.labour_id import LabourId
+from app.user.domain.exceptions import (
     UserDoesNotHaveActiveLabour,
 )
-from app.domain.user.vo_user_id import UserId
+from app.user.domain.value_objects.user_id import UserId
 from tests.unit.app.application.conftest import MockLabourRepository
 
 BIRTHING_PERSON = "bp_id"

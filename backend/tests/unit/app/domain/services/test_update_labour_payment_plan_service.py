@@ -1,11 +1,13 @@
 import pytest
 
-from app.domain.labour.entity import Labour
-from app.domain.labour.enums import LabourPaymentPlan
-from app.domain.labour.exceptions import CannotDowngradeLabourPlan, LabourAlreadyCompleted
-from app.domain.services.begin_labour import BeginLabourService
-from app.domain.services.complete_labour import CompleteLabourService
-from app.domain.services.update_labour_payment_plan import UpdateLabourPaymentPlanService
+from app.labour.domain.labour.entity import Labour
+from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.labour.domain.labour.exceptions import CannotDowngradeLabourPlan, LabourAlreadyCompleted
+from app.labour.domain.labour.services.begin_labour import BeginLabourService
+from app.labour.domain.labour.services.complete_labour import CompleteLabourService
+from app.labour.domain.labour.services.update_labour_payment_plan import (
+    UpdateLabourPaymentPlanService,
+)
 
 
 @pytest.mark.parametrize(

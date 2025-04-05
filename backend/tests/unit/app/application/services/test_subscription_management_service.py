@@ -4,23 +4,25 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.application.dtos.subscription import SubscriptionDTO
-from app.application.security.token_generator import TokenGenerator
-from app.application.services.labour_service import LabourService
-from app.application.services.subscription_management_service import SubscriptionManagementService
-from app.application.services.subscription_service import SubscriptionService
-from app.application.services.user_service import UserService
-from app.domain.labour.enums import LabourPaymentPlan
-from app.domain.subscription.enums import ContactMethod, SubscriberRole, SubscriptionStatus
-from app.domain.subscription.exceptions import (
+from app.labour.application.security.token_generator import TokenGenerator
+from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.subscription.application.dtos.subscription import SubscriptionDTO
+from app.subscription.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from app.subscription.domain.exceptions import (
     SubscriberRoleInvalid,
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
     UnauthorizedSubscriptionUpdateRequest,
 )
-from app.domain.user.entity import User
-from app.domain.user.vo_user_id import UserId
+from app.user.application.services.user_service import UserService
+from app.user.domain.entity import User
+from app.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"

@@ -1,13 +1,13 @@
 import pytest
 
-from app.application.dtos.user import UserDTO
-from app.application.dtos.user_summary import UserSummaryDTO
-from app.application.services.user_service import UserService
-from app.domain.user.entity import User
-from app.domain.user.exceptions import (
+from app.user.application.dtos.user import UserDTO
+from app.user.application.dtos.user_summary import UserSummaryDTO
+from app.user.application.services.user_service import UserService
+from app.user.domain.entity import User
+from app.user.domain.exceptions import (
     UserNotFoundById,
 )
-from app.domain.user.vo_user_id import UserId
+from app.user.domain.value_objects.user_id import UserId
 
 
 async def register(user_service: UserService, ids: list[str]):
