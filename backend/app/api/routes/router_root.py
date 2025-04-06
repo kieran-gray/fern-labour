@@ -20,15 +20,15 @@ async def redirect_to_docs() -> RedirectResponse:
 
 @root_router.get("/docs", tags=["General"])
 @inject
-async def docs(settings: Annotated[Settings, FromComponent()]) -> HTMLResponse:
+async def docs(settings: Annotated[Settings, FromComponent()]) -> HTMLResponse | Response:
     if settings.base.environment != "production":
         return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
-    return Response(content="Forbidden",  status_code=403)
+    return Response(content="Forbidden", status_code=403)
 
 
 @root_router.get("/openapi.json", tags=["General"])
 @inject
-async def openapi(settings: Annotated[Settings, FromComponent()]) -> dict[str, Any]:
+async def openapi(settings: Annotated[Settings, FromComponent()]) -> dict[str, Any] | Response:
     if settings.base.environment != "production":
         return get_openapi(title="Labour Tracker", version="0.1.0", routes=root_router.routes)
     return Response(content="Forbidden", status_code=403)
@@ -36,7 +36,7 @@ async def openapi(settings: Annotated[Settings, FromComponent()]) -> dict[str, A
 
 @root_router.get("/redoc", tags=["General"])
 @inject
-async def redoc(settings: Annotated[Settings, FromComponent()]) -> HTMLResponse:
+async def redoc(settings: Annotated[Settings, FromComponent()]) -> HTMLResponse | Response:
     if settings.base.environment != "production":
         return get_redoc_html(openapi_url="/openapi.json", title="docs")
     return Response(content="Forbidden", status_code=403)
