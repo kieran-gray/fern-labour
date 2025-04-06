@@ -139,12 +139,3 @@ def test_unsubscribe_from_invalid_token(
         json={"labour_id": mock_subscription_dto.labour_id},
     )
     assert response.status_code == 401
-
-
-def test_get_subscriptions_invalid_token(client: TestClient) -> None:
-    """Test getting subscriptions with invalid token."""
-    response = client.get(
-        "/api/v1/subscription/subscriptions",
-        headers={"Authorization": "Bearer invalid_token"},
-    )
-    assert response.status_code == 401

@@ -8,7 +8,9 @@ from app.notification.application.dtos.notification_data import LabourUpdateData
 from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
 from app.notification.domain.enums import NotificationStatus
-from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
 from app.subscription.domain.enums import ContactMethod
 from app.user.application.dtos.user import UserDTO
 from app.user.application.services.user_service import UserService
@@ -25,13 +27,13 @@ class LabourBegunEventHandler(EventHandler):
     def __init__(
         self,
         user_service: UserService,
-        subscription_service: SubscriptionService,
+        subscription_query_service: SubscriptionQueryService,
         notification_service: NotificationService,
         email_generation_service: EmailGenerationService,
         tracking_link: str,
     ):
         self._user_service = user_service
-        self._subscription_service = subscription_service
+        self._subscription_query_service = subscription_query_service
         self._notification_service = notification_service
         self._email_generation_service = email_generation_service
         self._tracking_link = tracking_link
@@ -75,7 +77,7 @@ class LabourBegunEventHandler(EventHandler):
 
         birthing_person = await self._user_service.get(user_id=birthing_person_id)
 
-        subscriptions = await self._subscription_service.get_labour_subscriptions(
+        subscriptions = await self._subscription_query_service.get_labour_subscriptions(
             requester_id=birthing_person_id, labour_id=labour_id
         )
 

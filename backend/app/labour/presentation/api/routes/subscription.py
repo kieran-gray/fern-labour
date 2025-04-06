@@ -7,7 +7,7 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from app.api.dependencies import bearer_scheme
 from app.api.exception_handler import ExceptionSchema
-from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.presentation.api.schemas.requests.subscription import (
     SubscribeToRequest,
     UnsubscribeFromRequest,
@@ -20,6 +20,9 @@ from app.labour.presentation.api.schemas.responses.subscription import (
     SubscriptionsResponse,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.user.application.services.user_service import UserService
 from app.user.infrastructure.auth.interfaces.controller import AuthController
@@ -91,7 +94,7 @@ async def unsubscribe_from(
 )
 @inject
 async def get_subscriptions(
-    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
+    service: Annotated[SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionsResponse:
@@ -113,15 +116,17 @@ async def get_subscriptions(
 )
 @inject
 async def get_subscriber_subscriptions(
-    subscription_service: Annotated[
-        SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    subscription_query_service: Annotated[
+        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
     ],
     user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriberSubscriptionsResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    subscriptions = await subscription_service.get_subscriber_subscriptions(subscriber_id=user.id)
+    subscriptions = await subscription_query_service.get_subscriber_subscriptions(
+        subscriber_id=user.id
+    )
     birthing_persons = await user_service.get_many_summary(
         user_ids=[subscription.birthing_person_id for subscription in subscriptions]
     )
@@ -144,20 +149,20 @@ async def get_subscriber_subscriptions(
 @inject
 async def get_subscription_by_id(
     subscription_id: str,
-    subscription_service: Annotated[
-        SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    subscription_query_service: Annotated[
+        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
     ],
     user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
-    get_labour_service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    labour_query_service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionDataResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    subscription = await subscription_service.get_by_id(
+    subscription = await subscription_query_service.get_by_id(
         requester_id=user.id, subscription_id=subscription_id
     )
     birthing_person = await user_service.get_summary(user_id=subscription.birthing_person_id)
-    labour = await get_labour_service.get_labour_by_id(labour_id=subscription.labour_id)
+    labour = await labour_query_service.get_labour_by_id(labour_id=subscription.labour_id)
     return SubscriptionDataResponse(
         subscription=subscription, birthing_person=birthing_person, labour=labour
     )
@@ -177,15 +182,15 @@ async def get_subscription_by_id(
 @inject
 async def get_labour_subscriptions(
     labour_id: str,
-    subscription_service: Annotated[
-        SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    subscription_query_service: Annotated[
+        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
     ],
     user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionsResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    subscriptions = await subscription_service.get_labour_subscriptions(
+    subscriptions = await subscription_query_service.get_labour_subscriptions(
         requester_id=user.id, labour_id=labour_id
     )
     subscribers = await user_service.get_many_summary(

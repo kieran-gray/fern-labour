@@ -2,25 +2,29 @@ from collections.abc import Iterable
 
 from dishka import Provider
 
-from app.setup.ioc.di_providers.admin_application import AdminApplicationProvider
-from app.setup.ioc.di_providers.common_infrastructure import CommonInfrastructureProvider
-from app.setup.ioc.di_providers.common_settings import CommonSettingsProvider
-from app.setup.ioc.di_providers.events_application import EventsApplicationProvider
-from app.setup.ioc.di_providers.events_infrastructure import EventsInfrastructureProvider
-from app.setup.ioc.di_providers.labour_application import LabourApplicationProvider
-from app.setup.ioc.di_providers.labour_infrastructure import LabourInfrastructureProvider
-from app.setup.ioc.di_providers.notifications_application import NotificationsApplicationProvider
-from app.setup.ioc.di_providers.notifications_infrastructure import (
+from app.setup.ioc.di_providers.admin.application import AdminApplicationProvider
+from app.setup.ioc.di_providers.common.infrastructure import CommonInfrastructureProvider
+from app.setup.ioc.di_providers.common.settings import CommonSettingsProvider
+from app.setup.ioc.di_providers.events.infrastructure import EventsInfrastructureProvider
+from app.setup.ioc.di_providers.invites.application import InvitesApplicationProvider
+from app.setup.ioc.di_providers.labour.application import LabourApplicationProvider
+from app.setup.ioc.di_providers.labour.infrastructure import LabourInfrastructureProvider
+from app.setup.ioc.di_providers.labour_events.application import LabourEventsApplicationProvider
+from app.setup.ioc.di_providers.notification_generators.infrastructure import (
+    NotificationGeneratorsInfrastructureProvider,
+)
+from app.setup.ioc.di_providers.notifications.application import NotificationsApplicationProvider
+from app.setup.ioc.di_providers.notifications.infrastructure import (
     NotificationsInfrastructureProvider,
 )
-from app.setup.ioc.di_providers.payments_infrastructure import PaymentsInfrastructureProvider
-from app.setup.ioc.di_providers.subscriber_application import SubscriberApplicationProvider
-from app.setup.ioc.di_providers.subscriptions_application import SubscriptionsApplicationProvider
-from app.setup.ioc.di_providers.subscriptions_infrastructure import (
+from app.setup.ioc.di_providers.payment_events.application import PaymentEventsApplicationProvider
+from app.setup.ioc.di_providers.payments.infrastructure import PaymentsInfrastructureProvider
+from app.setup.ioc.di_providers.subscriptions.application import SubscriptionsApplicationProvider
+from app.setup.ioc.di_providers.subscriptions.infrastructure import (
     SubscriptionsInfrastructureProvider,
 )
-from app.setup.ioc.di_providers.user_application import UserApplicationProvider
-from app.setup.ioc.di_providers.user_infrastructure import UserInfrastructureProvider
+from app.setup.ioc.di_providers.user.application import UserApplicationProvider
+from app.setup.ioc.di_providers.user.infrastructure import UserInfrastructureProvider
 
 
 def get_providers() -> Iterable[Provider]:
@@ -28,16 +32,18 @@ def get_providers() -> Iterable[Provider]:
         AdminApplicationProvider(),
         CommonSettingsProvider(),
         CommonInfrastructureProvider(),
-        EventsApplicationProvider(),
+        LabourEventsApplicationProvider(),
         EventsInfrastructureProvider(),
         LabourApplicationProvider(),
         LabourInfrastructureProvider(),
         PaymentsInfrastructureProvider(),
-        SubscriberApplicationProvider(),
+        PaymentEventsApplicationProvider(),
+        InvitesApplicationProvider(),
         SubscriptionsApplicationProvider(),
         SubscriptionsInfrastructureProvider(),
         NotificationsApplicationProvider(),
         NotificationsInfrastructureProvider(),
+        NotificationGeneratorsInfrastructureProvider(),
         UserApplicationProvider(),
         UserInfrastructureProvider(),
     )

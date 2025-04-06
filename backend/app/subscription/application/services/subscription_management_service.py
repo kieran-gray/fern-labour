@@ -3,6 +3,9 @@ from uuid import UUID
 
 from app.common.infrastructure.events.interfaces.producer import EventProducer
 from app.subscription.application.dtos.subscription import SubscriptionDTO
+from app.subscription.application.security.subscription_authorization_service import (
+    SubscriptionAuthorizationService,
+)
 from app.subscription.domain.entity import Subscription
 from app.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from app.subscription.domain.exceptions import (
@@ -10,7 +13,6 @@ from app.subscription.domain.exceptions import (
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
-    UnauthorizedSubscriptionUpdateRequest,
 )
 from app.subscription.domain.repository import SubscriptionRepository
 from app.subscription.domain.value_objects.subscription_id import SubscriptionId
@@ -22,9 +24,11 @@ class SubscriptionManagementService:
     def __init__(
         self,
         subscription_repository: SubscriptionRepository,
+        subscription_authorization_service: SubscriptionAuthorizationService,
         event_producer: EventProducer,
     ):
         self._subscription_repository = subscription_repository
+        self._subscription_authorization_service = subscription_authorization_service
         self._event_producer = event_producer
 
     async def _get_subscription(self, subscription_id: str) -> Subscription:
@@ -41,8 +45,10 @@ class SubscriptionManagementService:
 
     async def remove_subscriber(self, requester_id: str, subscription_id: str) -> SubscriptionDTO:
         subscription = await self._get_subscription(subscription_id=subscription_id)
-        if requester_id != subscription.birthing_person_id.value:
-            raise UnauthorizedSubscriptionUpdateRequest()
+
+        await self._subscription_authorization_service.ensure_can_manage_as_birthing_person(
+            requester_id=requester_id, subscription=subscription
+        )
 
         subscription.update_status(SubscriptionStatus.REMOVED)
 
@@ -55,8 +61,9 @@ class SubscriptionManagementService:
     async def block_subscriber(self, requester_id: str, subscription_id: str) -> SubscriptionDTO:
         subscription = await self._get_subscription(subscription_id=subscription_id)
 
-        if requester_id != subscription.birthing_person_id.value:
-            raise UnauthorizedSubscriptionUpdateRequest()
+        await self._subscription_authorization_service.ensure_can_manage_as_birthing_person(
+            requester_id=requester_id, subscription=subscription
+        )
 
         subscription.update_status(SubscriptionStatus.BLOCKED)
 
@@ -71,8 +78,9 @@ class SubscriptionManagementService:
     ) -> SubscriptionDTO:
         subscription = await self._get_subscription(subscription_id=subscription_id)
 
-        if requester_id != subscription.birthing_person_id.value:
-            raise UnauthorizedSubscriptionUpdateRequest()
+        await self._subscription_authorization_service.ensure_can_manage_as_birthing_person(
+            requester_id=requester_id, subscription=subscription
+        )
 
         try:
             new_role = SubscriberRole(role)
@@ -92,8 +100,9 @@ class SubscriptionManagementService:
     ) -> SubscriptionDTO:
         subscription = await self._get_subscription(subscription_id=subscription_id)
 
-        if requester_id != subscription.subscriber_id.value:
-            raise UnauthorizedSubscriptionUpdateRequest()
+        await self._subscription_authorization_service.ensure_can_manage_as_subscriber(
+            requester_id=requester_id, subscription=subscription
+        )
 
         new_contact_methods = []
         for contact_method in contact_methods:

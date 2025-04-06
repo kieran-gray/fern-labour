@@ -31,7 +31,7 @@ subscriber_router = APIRouter(prefix="/subscriber", tags=["Subscriber"])
 async def send_invite(
     request_data: SendSubscriberInviteRequest,
     subscriber_invite_service: Annotated[
-        SubscriberInviteService, FromComponent(ComponentEnum.SUBSCRIBER)
+        SubscriberInviteService, FromComponent(ComponentEnum.INVITES)
     ],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),

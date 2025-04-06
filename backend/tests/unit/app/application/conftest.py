@@ -7,7 +7,7 @@ import pytest
 import pytest_asyncio
 
 from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.entity import Labour
 from app.labour.domain.labour.repository import LabourRepository
@@ -23,8 +23,14 @@ from app.notification.domain.entity import Notification
 from app.notification.domain.enums import NotificationStatus
 from app.notification.domain.repository import NotificationRepository
 from app.notification.domain.value_objects.notification_id import NotificationId
+from app.subscription.application.security.subscription_authorization_service import (
+    SubscriptionAuthorizationService,
+)
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
+)
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.entity import Subscription
@@ -131,7 +137,7 @@ class MockSubscriptionRepository(SubscriptionRepository):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
-        subscription_status: SubscriptionStatus | None = None,
+        status: SubscriptionStatus | None = None,
     ) -> Subscription | None:
         found_subscription = None
         for subscription in self._data.values():
@@ -141,7 +147,7 @@ class MockSubscriptionRepository(SubscriptionRepository):
                 continue
             if birthing_person_id and subscription.birthing_person_id != birthing_person_id:
                 continue
-            if subscription_status and subscription.status is not subscription_status:
+            if status and subscription.status is not status:
                 continue
             if found_subscription:
                 raise ValueError("Multiple results found")
@@ -263,35 +269,38 @@ async def user_service(user_repo: UserRepository) -> UserService:
 
 @pytest_asyncio.fixture
 async def labour_service(
-    user_service: UserService,
     labour_repo: LabourRepository,
 ) -> LabourService:
     return LabourService(
-        user_service=user_service,
         labour_repository=labour_repo,
         event_producer=AsyncMock(),
     )
 
 
 @pytest_asyncio.fixture
-async def get_labour_service(
+async def labour_query_service(
     labour_repo: LabourRepository,
-) -> GetLabourService:
-    return GetLabourService(
+) -> LabourQueryService:
+    return LabourQueryService(
         labour_repository=labour_repo,
     )
 
 
 @pytest_asyncio.fixture
+async def subscription_authorization_service(
+    subscription_repo: SubscriptionRepository,
+) -> SubscriptionAuthorizationService:
+    return SubscriptionAuthorizationService(subscription_repository=subscription_repo)
+
+
+@pytest_asyncio.fixture
 async def subscription_service(
-    get_labour_service: GetLabourService,
-    user_service: UserService,
+    labour_query_service: LabourQueryService,
     subscription_repo: SubscriptionRepository,
     token_generator: TokenGenerator,
 ) -> SubscriptionService:
     return SubscriptionService(
-        get_labour_service=get_labour_service,
-        user_service=user_service,
+        labour_query_service=labour_query_service,
         subscription_repository=subscription_repo,
         token_generator=token_generator,
         event_producer=AsyncMock(),
@@ -299,11 +308,25 @@ async def subscription_service(
 
 
 @pytest_asyncio.fixture
+async def subscription_query_service(
+    subscription_repo: SubscriptionRepository,
+    subscription_authorization_service: SubscriptionAuthorizationService,
+) -> SubscriptionQueryService:
+    return SubscriptionQueryService(
+        subscription_repository=subscription_repo,
+        subscription_authorization_service=subscription_authorization_service,
+    )
+
+
+@pytest_asyncio.fixture
 async def subscription_management_service(
     subscription_repo: SubscriptionRepository,
+    subscription_authorization_service: SubscriptionAuthorizationService,
 ) -> SubscriptionManagementService:
     return SubscriptionManagementService(
-        subscription_repository=subscription_repo, event_producer=AsyncMock()
+        subscription_repository=subscription_repo,
+        subscription_authorization_service=subscription_authorization_service,
+        event_producer=AsyncMock(),
     )
 
 

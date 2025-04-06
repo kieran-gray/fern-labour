@@ -5,7 +5,9 @@ from app.notification.application.dtos.notification import NotificationContent
 from app.notification.application.dtos.notification_data import LabourInviteData
 from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
-from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
 from app.subscription.domain.enums import ContactMethod
 from app.subscription.domain.exceptions import SubscriberAlreadySubscribed
 from app.user.application.dtos.user import UserDTO
@@ -19,13 +21,13 @@ class LabourInviteService:
         self,
         user_service: UserService,
         notification_service: NotificationService,
-        subscription_service: SubscriptionService,
+        subscription_query_service: SubscriptionQueryService,
         email_generation_service: EmailGenerationService,
         token_generator: TokenGenerator,
     ):
         self._user_service = user_service
         self._notification_service = notification_service
-        self._subscription_service = subscription_service
+        self._subscription_query_service = subscription_query_service
         self._email_generation_service = email_generation_service
         self._token_generator = token_generator
         self._template = "labour_invite.html"
@@ -47,7 +49,7 @@ class LabourInviteService:
 
     async def send_invite(self, birthing_person_id: str, labour_id: str, invite_email: str) -> None:
         birthing_person = await self._user_service.get(birthing_person_id)
-        subscriptions = await self._subscription_service.get_labour_subscriptions(
+        subscriptions = await self._subscription_query_service.get_labour_subscriptions(
             requester_id=birthing_person_id, labour_id=labour_id
         )
         subscriber_ids = [subscription.subscriber_id for subscription in subscriptions]

@@ -4,14 +4,19 @@ from dishka import FromComponent, Provider, Scope, provide
 
 from app.common.infrastructure.events.interfaces.producer import EventProducer
 from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_query_service import LabourQueryService
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.subscription.application.security.subscription_authorization_service import (
+    SubscriptionAuthorizationService,
+)
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.repository import SubscriptionRepository
-from app.user.application.services.user_service import UserService
 
 
 class SubscriptionsApplicationProvider(Provider):
@@ -19,33 +24,47 @@ class SubscriptionsApplicationProvider(Provider):
     scope = Scope.REQUEST
 
     @provide
+    def provide_subscription_authorization_service(
+        self,
+        subscription_repository: SubscriptionRepository,
+    ) -> SubscriptionAuthorizationService:
+        return SubscriptionAuthorizationService(subscription_repository=subscription_repository)
+
+    @provide
     def provide_subscription_service(
         self,
-        subscription_repository: Annotated[
-            SubscriptionRepository, FromComponent(ComponentEnum.SUBSCRIPTIONS)
-        ],
-        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
-        get_labour_service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+        subscription_repository: SubscriptionRepository,
+        labour_query_service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
         token_generator: TokenGenerator,
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
     ) -> SubscriptionService:
         return SubscriptionService(
             subscription_repository=subscription_repository,
-            user_service=user_service,
-            get_labour_service=get_labour_service,
+            labour_query_service=labour_query_service,
             token_generator=token_generator,
             event_producer=event_producer,
         )
 
     @provide
+    def provide_subscription_query_service(
+        self,
+        subscription_repository: SubscriptionRepository,
+        subscription_authorization_service: SubscriptionAuthorizationService,
+    ) -> SubscriptionQueryService:
+        return SubscriptionQueryService(
+            subscription_repository=subscription_repository,
+            subscription_authorization_service=subscription_authorization_service,
+        )
+
+    @provide
     def provide_subscription_management_service(
         self,
-        subscription_repository: Annotated[
-            SubscriptionRepository, FromComponent(ComponentEnum.SUBSCRIPTIONS)
-        ],
+        subscription_repository: SubscriptionRepository,
+        subscription_authorization_service: SubscriptionAuthorizationService,
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
     ) -> SubscriptionManagementService:
         return SubscriptionManagementService(
             subscription_repository=subscription_repository,
+            subscription_authorization_service=subscription_authorization_service,
             event_producer=event_producer,
         )

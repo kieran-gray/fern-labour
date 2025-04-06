@@ -53,13 +53,6 @@ class UnauthorizedSubscriptionRequest(DomainError):
         super().__init__("User is not authorized to access requested subscriptions.")
 
 
-class MaximumNumberOfSubscribersReached(DomainError):
-    def __init__(self) -> None:
-        super().__init__(
-            "Maximum number of subscribers reached for plan. Upgrade for more subscribers."
-        )
-
-
 class InvalidContactMethod(DomainValidationError):
     def __init__(self, contact_method: str) -> None:
         super().__init__(f"Contact method '{contact_method}' is not valid.")

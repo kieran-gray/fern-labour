@@ -14,6 +14,9 @@ from app.notification.application.services.notification_service import Notificat
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.enums import ContactMethod
 from app.user.application.services.user_service import UserService
@@ -48,7 +51,7 @@ def has_sent_sms(event_handler: LabourBegunEventHandler) -> bool:
 async def labour_begun_event_handler(
     user_service: UserService,
     notification_service: NotificationService,
-    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
     email_generation_service: EmailGenerationService,
 ) -> LabourBegunEventHandler:
     await user_service._user_repository.save(
@@ -73,7 +76,7 @@ async def labour_begun_event_handler(
     return LabourBegunEventHandler(
         user_service=user_service,
         notification_service=notification_service,
-        subscription_service=subscription_service,
+        subscription_query_service=subscription_query_service,
         email_generation_service=email_generation_service,
         tracking_link="http://localhost:5173",
     )
@@ -109,10 +112,11 @@ async def test_labour_begun_event_non_existent_birthing_person(
 async def test_labour_begun_event_non_existent_subscriber(
     caplog: pytest.LogCaptureFixture,
     labour_begun_event_handler: LabourBegunEventHandler,
+    subscription_service: SubscriptionService,
     labour: LabourDTO,
 ) -> None:
-    token = labour_begun_event_handler._subscription_service._token_generator.generate(labour.id)
-    await labour_begun_event_handler._subscription_service.subscribe_to(
+    token = subscription_service._token_generator.generate(labour.id)
+    await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
     labour_begun_event_handler._user_service._user_repository._data.pop(SUBSCRIBER)
@@ -126,10 +130,11 @@ async def test_labour_begun_event_non_existent_subscriber(
 
 async def test_labour_begun_event_has_subscriber_no_contact_methods(
     labour_begun_event_handler: LabourBegunEventHandler,
+    subscription_service: SubscriptionService,
     labour: LabourDTO,
 ) -> None:
-    token = labour_begun_event_handler._subscription_service._token_generator.generate(labour.id)
-    await labour_begun_event_handler._subscription_service.subscribe_to(
+    token = subscription_service._token_generator.generate(labour.id)
+    await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
 
@@ -141,11 +146,12 @@ async def test_labour_begun_event_has_subscriber_no_contact_methods(
 
 async def test_labour_begun_event_has_subscriber_email(
     labour_begun_event_handler: LabourBegunEventHandler,
+    subscription_service: SubscriptionService,
     labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
 ) -> None:
-    token = labour_begun_event_handler._subscription_service._token_generator.generate(labour.id)
-    subscription = await labour_begun_event_handler._subscription_service.subscribe_to(
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
     await subscription_management_service.update_contact_methods(
@@ -161,11 +167,12 @@ async def test_labour_begun_event_has_subscriber_email(
 
 async def test_labour_begun_event_has_subscriber_sms(
     labour_begun_event_handler: LabourBegunEventHandler,
+    subscription_service: SubscriptionService,
     labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
 ) -> None:
-    token = labour_begun_event_handler._subscription_service._token_generator.generate(labour.id)
-    subscription = await labour_begun_event_handler._subscription_service.subscribe_to(
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
     await subscription_management_service.update_contact_methods(
@@ -181,11 +188,12 @@ async def test_labour_begun_event_has_subscriber_sms(
 
 async def test_labour_begun_event_has_subscriber_all_contact_methods(
     labour_begun_event_handler: LabourBegunEventHandler,
+    subscription_service: SubscriptionService,
     labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
 ) -> None:
-    token = labour_begun_event_handler._subscription_service._token_generator.generate(labour.id)
-    subscription = await labour_begun_event_handler._subscription_service.subscribe_to(
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
     await subscription_management_service.update_contact_methods(
@@ -201,6 +209,7 @@ async def test_labour_begun_event_has_subscriber_all_contact_methods(
 
 async def test_labour_begun_event_has_subscriber_all_contact_methods_no_phone_number_or_email(
     labour_begun_event_handler: LabourBegunEventHandler,
+    subscription_service: SubscriptionService,
     labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
 ) -> None:
@@ -213,8 +222,8 @@ async def test_labour_begun_event_has_subscriber_all_contact_methods_no_phone_nu
             email="",
         )
     )
-    token = labour_begun_event_handler._subscription_service._token_generator.generate(labour.id)
-    subscription = await labour_begun_event_handler._subscription_service.subscribe_to(
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
         subscriber_id="new_subscriber", labour_id=labour.id, token=token
     )
     await subscription_management_service.update_contact_methods(
