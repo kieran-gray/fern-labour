@@ -27,6 +27,7 @@ from app.labour.domain.contraction.exceptions import (
 from app.labour.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
     CannotDeleteActiveLabour,
+    CannotSubscribeToOwnLabour,
     InsufficientLabourPaymentPlan,
     InvalidLabourId,
     InvalidLabourUpdateId,
@@ -36,6 +37,7 @@ from app.labour.domain.labour.exceptions import (
     LabourHasNoActiveContraction,
     LabourNotFoundById,
     LabourUpdateNotFoundById,
+    MaximumNumberOfSubscribersReached,
     UnauthorizedLabourRequest,
 )
 from app.labour.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
@@ -47,7 +49,6 @@ from app.notification.domain.exceptions import (
 )
 from app.payments.application.exceptions import StripeProductNotFound
 from app.subscription.domain.exceptions import (
-    MaximumNumberOfSubscribersReached,
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
     SubscriberNotSubscribed,
@@ -57,7 +58,6 @@ from app.subscription.domain.exceptions import (
     UnauthorizedSubscriptionUpdateRequest,
 )
 from app.user.domain.exceptions import (
-    UserCannotSubscribeToSelf,
     UserDoesNotHaveActiveLabour,
     UserHasActiveLabour,
     UserNotFoundById,
@@ -101,7 +101,7 @@ class ExceptionMapper:
             SubscriberAlreadySubscribed: status.HTTP_400_BAD_REQUEST,
             SubscriberNotSubscribed: status.HTTP_400_BAD_REQUEST,
             SubscriptionTokenIncorrect: status.HTTP_403_FORBIDDEN,
-            UserCannotSubscribeToSelf: status.HTTP_400_BAD_REQUEST,
+            CannotSubscribeToOwnLabour: status.HTTP_400_BAD_REQUEST,
             AuthorizationError: status.HTTP_401_UNAUTHORIZED,
             InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
             TooSoonSinceLastAnnouncement: status.HTTP_400_BAD_REQUEST,

@@ -7,10 +7,12 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from app.api.dependencies import bearer_scheme
 from app.api.exception_handler import ExceptionSchema
+from app.labour.application.security.labour_authorization_service import LabourAuthorizationService
 from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.application.services.get_labour_service import GetLabourService
 from app.labour.application.services.labour_invite_service import LabourInviteService
+from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.application.services.labour_service import LabourService
+from app.labour.domain.labour.exceptions import UnauthorizedLabourRequest
 from app.labour.presentation.api.schemas.requests.labour import (
     CompleteLabourRequest,
     PaymentPlanLabourRequest,
@@ -24,7 +26,9 @@ from app.labour.presentation.api.schemas.responses.labour import (
     LabourSummaryResponse,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum
-from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.application.security.subscription_authorization_service import (
+    SubscriptionAuthorizationService,
+)
 from app.user.infrastructure.auth.interfaces.controller import AuthController
 
 labour_router = APIRouter(prefix="/labour", tags=["Labour"])
@@ -44,7 +48,7 @@ labour_router = APIRouter(prefix="/labour", tags=["Labour"])
 )
 @inject
 async def get_all_labours(
-    service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourListResponse:
@@ -68,16 +72,27 @@ async def get_all_labours(
 @inject
 async def get_labour_by_id(
     labour_id: str,
-    service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
-    subscription_service: Annotated[
-        SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
+    subscription_authorization_service: Annotated[
+        SubscriptionAuthorizationService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    ],
+    labour_authorization_service: Annotated[
+        LabourAuthorizationService, FromComponent(ComponentEnum.LABOUR)
     ],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    await subscription_service.can_user_access_labour(requester_id=user.id, labour_id=labour_id)
     labour = await service.get_labour_by_id(labour_id=labour_id)
+    try:
+        await labour_authorization_service.ensure_can_access_labour(
+            requester_id=user.id, labour=labour
+        )
+    except UnauthorizedLabourRequest:
+        await subscription_authorization_service.ensure_can_access_labour(
+            requester_id=user.id, labour_id=labour.id
+        )
+
     return LabourResponse(labour=labour)
 
 
@@ -245,7 +260,7 @@ async def delete_labour(
 )
 @inject
 async def get_active_labour(
-    service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
@@ -267,7 +282,7 @@ async def get_active_labour(
 )
 @inject
 async def get_active_labour_summary(
-    service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSummaryResponse:
@@ -289,7 +304,7 @@ async def get_active_labour_summary(
 )
 @inject
 async def get_subscription_token(
-    service: Annotated[GetLabourService, FromComponent(ComponentEnum.LABOUR)],
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
     token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -315,7 +330,7 @@ async def get_subscription_token(
 @inject
 async def send_invite(
     request_data: SendInviteRequest,
-    labour_invite_service: Annotated[LabourInviteService, FromComponent(ComponentEnum.LABOUR)],
+    labour_invite_service: Annotated[LabourInviteService, FromComponent(ComponentEnum.INVITES)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> None:

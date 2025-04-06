@@ -10,9 +10,12 @@ from app.labour.application.services.labour_invite_service import (
 )
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.labour.domain.labour.exceptions import LabourNotFoundById
+from app.labour.domain.labour.exceptions import InvalidLabourId
 from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.exceptions import SubscriberAlreadySubscribed
 from app.user.application.services.user_service import UserService
@@ -28,7 +31,7 @@ SUBSCRIBER = "test_subscriber"
 async def labour_invite_service(
     user_service: UserService,
     notification_service: NotificationService,
-    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
     email_generation_service: EmailGenerationService,
     token_generator: TokenGenerator,
 ) -> LabourInviteService:
@@ -54,7 +57,7 @@ async def labour_invite_service(
     return LabourInviteService(
         user_service=user_service,
         notification_service=notification_service,
-        subscription_service=subscription_service,
+        subscription_query_service=subscription_query_service,
         email_generation_service=email_generation_service,
         token_generator=token_generator,
     )
@@ -86,19 +89,20 @@ async def test_cannnot_send_invite_for_non_existent_birthing_person(
         )
 
 
-async def test_cannnot_send_invite_for_non_existent_labour(
+async def test_cannnot_send_invite_for_invalid_labour_id(
     labour_invite_service: LabourInviteService,
 ) -> None:
-    with pytest.raises(LabourNotFoundById):
+    with pytest.raises(InvalidLabourId):
         await labour_invite_service.send_invite(
             birthing_person_id=BIRTHING_PERSON,
-            labour_id=str(uuid4()),
+            labour_id="invalid",
             invite_email="test@email.com",
         )
 
 
 async def test_cannnot_send_invite_for_email_already_subscribed(
     labour_invite_service: LabourInviteService,
+    subscription_service: SubscriptionService,
     labour_service: LabourService,
 ) -> None:
     labour = await labour_service.plan_labour(
@@ -109,7 +113,7 @@ async def test_cannnot_send_invite_for_email_already_subscribed(
     )
     token = labour_invite_service._token_generator.generate(labour.id)
 
-    await labour_invite_service._subscription_service.subscribe_to(
+    await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
 

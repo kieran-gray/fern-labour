@@ -28,7 +28,6 @@ from app.user.domain.entity import User
 from app.user.domain.exceptions import (
     UserDoesNotHaveActiveLabour,
     UserHasActiveLabour,
-    UserNotFoundById,
 )
 from app.user.domain.value_objects.user_id import UserId
 
@@ -64,7 +63,6 @@ async def labour_service(
         ),
     }
     return LabourService(
-        user_service=user_service,
         labour_repository=labour_repo,
         event_producer=event_producer,
     )
@@ -82,11 +80,6 @@ async def test_can_update_labour_plan(labour_service: LabourService) -> None:
 
     labour = await labour_service.update_labour_plan(BIRTHING_PERSON, False, labour.due_date)
     assert not labour.first_labour
-
-
-async def test_cannot_plan_labour_for_non_existent_user(labour_service: LabourService) -> None:
-    with pytest.raises(UserNotFoundById):
-        await labour_service.plan_labour("TEST123456", True, datetime.now(UTC))
 
 
 async def test_cannot_update_labour_plan_for_non_existent_user(

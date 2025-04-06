@@ -17,7 +17,7 @@ from app.common.infrastructure.security.interfaces.request_verification_service 
     RequestVerificationService,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum
-from app.setup.ioc.di_providers.common_settings import PostgresDsn
+from app.setup.ioc.di_providers.common.settings import PostgresDsn
 from app.setup.settings import Settings, SqlaEngineSettings
 from app.user.infrastructure.auth.interfaces.controller import AuthController
 from app.user.infrastructure.auth.interfaces.service import AuthService

@@ -7,35 +7,33 @@ import pytest_asyncio
 
 from app.labour.application.dtos.labour import LabourDTO
 from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
 from app.labour.domain.labour.exceptions import (
+    CannotSubscribeToOwnLabour,
     InsufficientLabourPaymentPlan,
     InvalidLabourId,
     LabourNotFoundById,
-    UnauthorizedLabourRequest,
+    MaximumNumberOfSubscribersReached,
 )
-from app.subscription.application.dtos.subscription import SubscriptionDTO
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
+)
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.enums import SubscriptionStatus
 from app.subscription.domain.exceptions import (
-    MaximumNumberOfSubscribersReached,
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
     SubscriberNotSubscribed,
-    SubscriptionIdInvalid,
-    SubscriptionNotFoundById,
     SubscriptionTokenIncorrect,
-    UnauthorizedSubscriptionRequest,
 )
 from app.subscription.domain.repository import SubscriptionRepository
 from app.user.application.services.user_service import UserService
 from app.user.domain.entity import User
-from app.user.domain.exceptions import UserCannotSubscribeToSelf, UserNotFoundById
 from app.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
@@ -44,7 +42,7 @@ SUBSCRIBER = "subscriber_id"
 
 @pytest_asyncio.fixture
 async def subscription_service(
-    get_labour_service: GetLabourService,
+    labour_query_service: LabourQueryService,
     user_service: UserService,
     subscription_repo: SubscriptionRepository,
     token_generator: TokenGenerator,
@@ -69,8 +67,7 @@ async def subscription_service(
         )
     )
     return SubscriptionService(
-        get_labour_service=get_labour_service,
-        user_service=user_service,
+        labour_query_service=labour_query_service,
         subscription_repository=subscription_repo,
         token_generator=token_generator,
         event_producer=AsyncMock(),
@@ -88,9 +85,11 @@ async def labour(labour_service: LabourService) -> LabourDTO:
 
 
 async def test_can_subscribe_to_labour(
-    subscription_service: SubscriptionService, labour: LabourDTO
+    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
+    labour: LabourDTO,
 ) -> None:
-    subscriptions = await subscription_service.get_subscriber_subscriptions(
+    subscriptions = await subscription_query_service.get_subscriber_subscriptions(
         subscriber_id=SUBSCRIBER
     )
     assert subscriptions == []
@@ -105,7 +104,7 @@ async def test_can_subscribe_to_labour(
     assert subscription.subscriber_id == SUBSCRIBER
     assert subscription.status == SubscriptionStatus.SUBSCRIBED.value
 
-    subscriptions = await subscription_service.get_subscriber_subscriptions(
+    subscriptions = await subscription_query_service.get_subscriber_subscriptions(
         subscriber_id=SUBSCRIBER
     )
     assert subscriptions == [subscription]
@@ -141,11 +140,13 @@ async def test_cannot_subscribe_to_labour_with_solo_payment_plan(
 
 
 async def test_cannot_subscribe_to_labour_with_solo_payment_plan_sub_limit_reached(
-    subscription_service: SubscriptionService, labour_service: LabourService
+    subscription_service: SubscriptionService,
+    labour_service: LabourService,
+    user_service: UserService,
 ) -> None:
     user_ids = [str(uuid4()) for _ in range(5)]
     for user_id in user_ids:
-        await labour_service._user_service._user_repository.save(
+        await user_service._user_repository.save(
             User(
                 id_=UserId(user_id),
                 username=user_id,
@@ -197,97 +198,6 @@ async def test_cannot_subscribe_to_labour_invalid_id(
     with pytest.raises(InvalidLabourId):
         await subscription_service.subscribe_to(
             subscriber_id=SUBSCRIBER, labour_id="test", token=token
-        )
-
-
-async def test_can_get_subscription_by_id(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    subscription_by_id = await subscription_service.get_by_id(
-        requester_id=SUBSCRIBER, subscription_id=subscription.id
-    )
-    assert isinstance(subscription_by_id, SubscriptionDTO)
-    assert subscription == subscription_by_id
-
-
-async def test_cannot_get_subscription_by_id_as_subscriber_when_not_subscribed(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
-    with pytest.raises(UnauthorizedSubscriptionRequest):
-        await subscription_service.get_by_id(
-            requester_id=SUBSCRIBER, subscription_id=subscription.id
-        )
-
-
-async def test_can_get_subscription_by_id_as_birthing_person_when_not_subscribed(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    subscription = await subscription_service.unsubscribe_from(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id
-    )
-    subscription_by_id = await subscription_service.get_by_id(
-        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
-    )
-    assert isinstance(subscription_by_id, SubscriptionDTO)
-    assert subscription == subscription_by_id
-
-
-async def test_can_get_subscription_by_id_request_by_birthing_person(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    subscription_by_id = await subscription_service.get_by_id(
-        requester_id=labour.birthing_person_id, subscription_id=subscription.id
-    )
-    assert isinstance(subscription_by_id, SubscriptionDTO)
-    assert subscription == subscription_by_id
-
-
-async def test_cannot_get_subscription_with_invalid_id(
-    subscription_service: SubscriptionService,
-) -> None:
-    with pytest.raises(SubscriptionIdInvalid):
-        await subscription_service.get_by_id(requester_id=SUBSCRIBER, subscription_id="test")
-
-
-async def test_cannot_get_non_existent_subscription(
-    subscription_service: SubscriptionService,
-) -> None:
-    with pytest.raises(SubscriptionNotFoundById):
-        await subscription_service.get_by_id(requester_id=SUBSCRIBER, subscription_id=str(uuid4()))
-
-
-async def test_cannot_get_subscription_if_not_subscriber_or_birthing_person(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    with pytest.raises(UnauthorizedSubscriptionRequest):
-        await subscription_service.get_by_id(
-            requester_id=str(uuid4()), subscription_id=subscription.id
         )
 
 
@@ -357,7 +267,7 @@ async def test_cannot_subscribe_to_own_labour(
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
 
-    with pytest.raises(UserCannotSubscribeToSelf):
+    with pytest.raises(CannotSubscribeToOwnLabour):
         await subscription_service.subscribe_to(
             subscriber_id=BIRTHING_PERSON, labour_id=labour.id, token=token
         )
@@ -366,18 +276,12 @@ async def test_cannot_subscribe_to_own_labour(
 async def test_cannot_subscribe_to_non_existent_labour(
     subscription_service: SubscriptionService,
 ) -> None:
+    labour_id = str(uuid4())
+    token = subscription_service._token_generator.generate(labour_id)
     with pytest.raises(LabourNotFoundById):
         await subscription_service.subscribe_to(
-            subscriber_id=SUBSCRIBER, labour_id=str(uuid4()), token="test"
+            subscriber_id=SUBSCRIBER, labour_id=labour_id, token=token
         )
-
-
-async def test_cannot_subscribe_with_non_existent_subscriber(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    with pytest.raises(UserNotFoundById):
-        await subscription_service.subscribe_to("TEST", labour_id=labour.id, token=token)
 
 
 async def test_cannot_subscribe_to_with_incorrect_token(
@@ -390,13 +294,15 @@ async def test_cannot_subscribe_to_with_incorrect_token(
 
 
 async def test_can_unsubscribe_from_labour(
-    subscription_service: SubscriptionService, labour: LabourDTO
+    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
+    labour: LabourDTO,
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
-    subscriptions = await subscription_service.get_subscriber_subscriptions(
+    subscriptions = await subscription_query_service.get_subscriber_subscriptions(
         subscriber_id=SUBSCRIBER
     )
     assert subscriptions == [subscription]
@@ -408,13 +314,15 @@ async def test_can_unsubscribe_from_labour(
 
 
 async def test_cannot_unsubscribe_from_labour_twice(
-    subscription_service: SubscriptionService, labour: LabourDTO
+    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
+    labour: LabourDTO,
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
-    subscriptions = await subscription_service.get_subscriber_subscriptions(
+    subscriptions = await subscription_query_service.get_subscriber_subscriptions(
         subscriber_id=SUBSCRIBER
     )
     assert subscriptions == [subscription]
@@ -440,134 +348,3 @@ async def test_cannot_unsubscribed_from_labour_not_subscribed_to(
 ) -> None:
     with pytest.raises(SubscriberNotSubscribed):
         await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
-
-
-async def test_cannot_unsubscribe_with_non_existent_subscriber(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    with pytest.raises(UserNotFoundById):
-        await subscription_service.unsubscribe_from(subscriber_id="TEST", labour_id=labour.id)
-
-
-async def test_can_query_own_subscriptions(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    subscriptions = await subscription_service.get_subscriber_subscriptions(
-        subscriber_id=SUBSCRIBER
-    )
-    assert subscriptions == [subscription]
-
-
-async def test_can_query_subscriptions_for_own_labour(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    subscriptions = await subscription_service.get_labour_subscriptions(
-        requester_id=BIRTHING_PERSON, labour_id=labour.id
-    )
-    assert subscriptions == [subscription]
-
-
-async def test_cannot_query_subscriptions_for_other_labour(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    with pytest.raises(UnauthorizedSubscriptionRequest):
-        await subscription_service.get_labour_subscriptions(
-            requester_id=SUBSCRIBER, labour_id=labour.id
-        )
-
-
-async def test_can_user_access_labour_subscriber(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    assert await subscription_service.can_user_access_labour(
-        requester_id=SUBSCRIBER, labour_id=labour.id
-    )
-
-
-async def test_cannot_access_labour_when_not_subscribed(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    with pytest.raises(UnauthorizedLabourRequest):
-        await subscription_service.can_user_access_labour(
-            requester_id=SUBSCRIBER, labour_id=labour.id
-        )
-
-
-async def test_cannot_access_labour_invalid_id(subscription_service: SubscriptionService) -> None:
-    with pytest.raises(InvalidLabourId):
-        await subscription_service.can_user_access_labour(requester_id=SUBSCRIBER, labour_id="test")
-
-
-async def test_cannot_access_labour_when_subscription_status_unsubscribed(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
-
-    with pytest.raises(UnauthorizedLabourRequest):
-        await subscription_service.can_user_access_labour(
-            requester_id=SUBSCRIBER, labour_id=labour.id
-        )
-
-
-async def test_cannot_access_labour_when_subscription_status_blocked(
-    subscription_service: SubscriptionService,
-    subscription_management_service: SubscriptionManagementService,
-    labour: LabourDTO,
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    await subscription_management_service.block_subscriber(
-        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
-    )
-    with pytest.raises(UnauthorizedLabourRequest):
-        await subscription_service.can_user_access_labour(
-            requester_id=SUBSCRIBER, labour_id=labour.id
-        )
-
-
-async def test_can_access_labour_when_subscription_status_removed(
-    subscription_service: SubscriptionService,
-    subscription_management_service: SubscriptionManagementService,
-    labour: LabourDTO,
-) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
-    await subscription_management_service.remove_subscriber(
-        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
-    )
-    with pytest.raises(UnauthorizedLabourRequest):
-        await subscription_service.can_user_access_labour(
-            requester_id=SUBSCRIBER, labour_id=labour.id
-        )
-
-
-async def test_can_user_access_labour_own_labour(
-    subscription_service: SubscriptionService, labour: LabourDTO
-) -> None:
-    assert await subscription_service.can_user_access_labour(
-        requester_id=BIRTHING_PERSON, labour_id=labour.id
-    )

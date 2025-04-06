@@ -13,32 +13,34 @@ from app.notification.application.services.email_generation_service import Email
 from app.notification.application.services.notification_service import NotificationService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
-from app.subscription.application.services.subscription_service import SubscriptionService
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
 from app.user.application.services.user_service import UserService
 
 
-class EventsApplicationProvider(Provider):
-    component = ComponentEnum.EVENTS
+class LabourEventsApplicationProvider(Provider):
+    component = ComponentEnum.LABOUR_EVENTS
     scope = Scope.REQUEST
 
     @provide
     def get_labour_update_posted_event_handler(
         self,
         user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
-        subscription_service: Annotated[
-            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+        subscription_query_service: Annotated[
+            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
         email_generation_service: Annotated[
-            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATIONS)
+            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
         ],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourUpdatePostedEventHandler:
         return LabourUpdatePostedEventHandler(
             user_service=user_service,
-            subscription_service=subscription_service,
+            subscription_query_service=subscription_query_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,
             tracking_link=settings.notifications.email.tracking_link,
@@ -48,20 +50,20 @@ class EventsApplicationProvider(Provider):
     def get_labour_begun_event_handler(
         self,
         user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
-        subscription_service: Annotated[
-            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+        subscription_query_service: Annotated[
+            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
         email_generation_service: Annotated[
-            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATIONS)
+            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
         ],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourBegunEventHandler:
         return LabourBegunEventHandler(
             user_service=user_service,
-            subscription_service=subscription_service,
+            subscription_query_service=subscription_query_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,
             tracking_link=settings.notifications.email.tracking_link,
@@ -71,20 +73,20 @@ class EventsApplicationProvider(Provider):
     def get_labour_completed_event_handler(
         self,
         user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
-        subscription_service: Annotated[
-            SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+        subscription_query_service: Annotated[
+            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
         email_generation_service: Annotated[
-            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATIONS)
+            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
         ],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourCompletedEventHandler:
         return LabourCompletedEventHandler(
             user_service=user_service,
-            subscription_service=subscription_service,
+            subscription_query_service=subscription_query_service,
             notification_service=notification_service,
             email_generation_service=email_generation_service,
             tracking_link=settings.notifications.email.tracking_link,

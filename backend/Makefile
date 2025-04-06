@@ -30,5 +30,12 @@ test-debug:
 
 check: lint test
 
+# Dishka
+
+plot-data:
+	PYTHONPATH="." python scripts/plot_dependencies.py
+
+# clean
+
 pycache-del:
 	./scripts/pycache_del.sh

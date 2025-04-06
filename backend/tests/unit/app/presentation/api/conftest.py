@@ -22,13 +22,20 @@ from app.common.infrastructure.security.interfaces.request_verification_service 
     RequestVerificationService,
 )
 from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.services.get_labour_service import GetLabourService
+from app.labour.application.security.labour_authorization_service import LabourAuthorizationService
+from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.application.services.labour_service import LabourService
 from app.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.subscription.application.dtos.subscription import SubscriptionDTO
+from app.subscription.application.security.subscription_authorization_service import (
+    SubscriptionAuthorizationService,
+)
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
+)
+from app.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.user.application.dtos.user import UserDTO
@@ -182,15 +189,30 @@ class MockSubscriptionProvider(Provider):
         )
 
     @provide()
+    def get_subscription_authorization_service(self) -> SubscriptionAuthorizationService:
+        """Create a mock subscription authorization service."""
+        service = MagicMock(spec=SubscriptionAuthorizationService)
+        service.ensure_can_view_subscription.return_value = None
+        service.ensure_can_manage_as_birthing_person.return_value = None
+        service.ensure_can_manage_as_subscriber.return_value = None
+        service.ensure_can_access_labour.return_value = None
+        return service
+
+    @provide()
     def get_subscription_service(self) -> SubscriptionService:
         """Create a mock subscription service."""
         service = MagicMock(spec=SubscriptionService)
+        service.subscribe_to.return_value = self.get_mock_subscription()
+        service.unsubscribe_from.return_value = self.get_mock_subscription("unsubscribed")
+        return service
+
+    @provide()
+    def get_subscription_query_service(self) -> SubscriptionQueryService:
+        """Create a mock subscription query service."""
+        service = MagicMock(spec=SubscriptionQueryService)
         service.get_by_id.return_value = self.get_mock_subscription()
         service.get_subscriber_subscriptions.return_value = [self.get_mock_subscription()]
         service.get_labour_subscriptions.return_value = [self.get_mock_subscription()]
-        service.subscribe_to.return_value = self.get_mock_subscription()
-        service.unsubscribe_from.return_value = self.get_mock_subscription("unsubscribed")
-        service.can_user_access_labour.return_value = False
         return service
 
     @provide()
@@ -246,10 +268,16 @@ class MockLabourProvider(Provider):
         )
 
     @provide()
-    def get_get_labour_service(self) -> GetLabourService:
+    def get_labour_authorization_service(self) -> LabourAuthorizationService:
+        service = MagicMock(spec=LabourAuthorizationService)
+        service.ensure_can_access_labour.return_value = None
+        return service
+
+    @provide()
+    def get_labour_query_service(self) -> LabourQueryService:
         """Create a mock get labour service."""
         mock_labour_dto = self.get_mock_labour_dto()
-        service = MagicMock(spec=GetLabourService)
+        service = MagicMock(spec=LabourQueryService)
         service.get_all_labours.return_value = [mock_labour_dto]
         service.get_labour_by_id.return_value = mock_labour_dto
         service.get_active_labour.return_value = mock_labour_dto

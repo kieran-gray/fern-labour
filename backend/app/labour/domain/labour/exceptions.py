@@ -71,3 +71,15 @@ class CannotDowngradeLabourPlan(DomainError):
 class InsufficientLabourPaymentPlan(DomainError):
     def __init__(self) -> None:
         super().__init__("Requested action is not supported with current payment plan.")
+
+
+class MaximumNumberOfSubscribersReached(DomainError):
+    def __init__(self) -> None:
+        super().__init__(
+            "Maximum number of subscribers reached for plan. Upgrade for more subscribers."
+        )
+
+
+class CannotSubscribeToOwnLabour(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Cannot subscribe to own labour")

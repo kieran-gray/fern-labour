@@ -32,7 +32,6 @@ from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.labour.domain.labour_update.enums import LabourUpdateType
 from app.labour.domain.labour_update.services.post_labour_update import PostLabourUpdateService
 from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
-from app.user.application.services.user_service import UserService
 from app.user.domain.exceptions import UserDoesNotHaveActiveLabour, UserHasActiveLabour
 from app.user.domain.value_objects.user_id import UserId
 
@@ -40,13 +39,7 @@ log = logging.getLogger(__name__)
 
 
 class LabourService:
-    def __init__(
-        self,
-        user_service: UserService,
-        labour_repository: LabourRepository,
-        event_producer: EventProducer,
-    ):
-        self._user_service = user_service
+    def __init__(self, labour_repository: LabourRepository, event_producer: EventProducer):
         self._labour_repository = labour_repository
         self._event_producer = event_producer
 
@@ -58,7 +51,6 @@ class LabourService:
         labour_name: str | None = None,
     ) -> LabourDTO:
         domain_id = UserId(birthing_person_id)
-        _ = await self._user_service.get(birthing_person_id)
         existing_labour = await self._labour_repository.get_active_labour_by_birthing_person_id(
             domain_id
         )

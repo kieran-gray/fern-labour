@@ -5,12 +5,15 @@ class ComponentEnum(StrEnum):
     DEFAULT = ""
     ADMIN = "admin"
     LABOUR = "labour"
+    LABOUR_EVENTS = "labour_events"
     EVENTS = "events"
     USER = "user"
-    SUBSCRIBER = "subscriber"
+    INVITES = "invites"
     NOTIFICATIONS = "notifications"
+    NOTIFICATION_GENERATORS = "notification_generators"
     SUBSCRIPTIONS = "subscriptions"
     PAYMENTS = "payments"
+    PAYMENT_EVENTS = "payment_events"
 
     def __repr__(self) -> str:
         return self.value
