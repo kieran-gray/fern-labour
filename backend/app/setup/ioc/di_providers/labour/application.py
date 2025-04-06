@@ -3,6 +3,7 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide
 
 from app.common.infrastructure.events.interfaces.producer import EventProducer
+from app.labour.application.security.labour_authorization_service import LabourAuthorizationService
 from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.repository import LabourRepository
@@ -29,3 +30,7 @@ class LabourApplicationProvider(Provider):
         self, labour_repository: LabourRepository
     ) -> LabourQueryService:
         return LabourQueryService(labour_repository=labour_repository)
+    
+    @provide
+    def provide_labour_authorization_service(self) -> LabourAuthorizationService:
+        return LabourAuthorizationService()

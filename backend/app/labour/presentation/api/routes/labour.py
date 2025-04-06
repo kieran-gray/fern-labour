@@ -330,7 +330,7 @@ async def get_subscription_token(
 @inject
 async def send_invite(
     request_data: SendInviteRequest,
-    labour_invite_service: Annotated[LabourInviteService, FromComponent(ComponentEnum.LABOUR)],
+    labour_invite_service: Annotated[LabourInviteService, FromComponent(ComponentEnum.INVITES)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> None:
