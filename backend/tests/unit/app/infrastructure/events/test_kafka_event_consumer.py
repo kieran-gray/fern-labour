@@ -83,7 +83,7 @@ async def test_process_message_success(
     await kafka_event_consumer._process_message(message, async_container_mock)
 
     async_container_mock.get.assert_called_once_with(
-        type(event_handler_mock), component=ComponentEnum.EVENTS
+        type(event_handler_mock), component=ComponentEnum.LABOUR_EVENTS
     )
     event_handler_mock.handle.assert_called_once_with({"key": "value"})
 

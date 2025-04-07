@@ -84,7 +84,7 @@ class NotificationGenerationService:
 
         notification_content_generator = self._get_notification_content_generator(notification.type)
         generated_content = notification_content_generator(template=template, data=data)
-        log.info(f"Successfully generated content for notification {notification_id}")
+        log.info(f"Successfully generated {notification.type.value} content for {notification_id}")
         return generated_content
 
     def _get_payload_type(self, template: NotificationTemplate) -> type[BaseNotificationData]:

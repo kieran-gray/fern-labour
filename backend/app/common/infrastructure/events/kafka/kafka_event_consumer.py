@@ -110,7 +110,9 @@ class KafkaEventConsumer(EventConsumer):
             return
 
         try:
-            event_handler = await request_container.get(handler_cls, component=ComponentEnum.EVENTS)
+            event_handler = await request_container.get(
+                handler_cls, component=ComponentEnum.LABOUR_EVENTS
+            )  # TODO not all events will be in this component
             await event_handler.handle(message.value)
             self._consumer.commit()
             log.info(f"Committed offset for topic: {message.topic}")
