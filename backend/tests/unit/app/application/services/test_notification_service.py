@@ -6,12 +6,16 @@ import pytest_asyncio
 
 from app.labour.domain.labour.exceptions import InvalidLabourId, InvalidLabourUpdateId
 from app.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
+from app.notification.application.dtos.notification_data import ContactUsData
 from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
 )
 from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from app.notification.application.services.notification_generation_service import (
+    NotificationGenerationService,
+)
 from app.notification.application.services.notification_service import NotificationService
-from app.notification.domain.enums import NotificationStatus
+from app.notification.domain.enums import NotificationStatus, NotificationTemplate
 from app.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
@@ -53,6 +57,7 @@ def sms_notification_gateway():
 async def notification_service(
     email_notification_gateway: EmailNotificationGateway,
     sms_notification_gateway: SMSNotificationGateway,
+    notification_generation_service: NotificationGenerationService,
     notification_repo: NotificationRepository,
 ) -> NotificationService:
     email_notification_gateway.sent_notifications = []
@@ -60,6 +65,7 @@ async def notification_service(
     return NotificationService(
         email_notification_gateway=email_notification_gateway,
         sms_notification_gateway=sms_notification_gateway,
+        notification_generation_service=notification_generation_service,
         notification_repository=notification_repo,
     )
 
@@ -189,10 +195,12 @@ async def test_can_send_email(notification_service: NotificationService) -> None
     notification = await notification_service.create_notification(
         type=ContactMethod.EMAIL.value,
         destination="test",
-        template="template.html",
-        data={"test": "test"},
+        template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
+        data=ContactUsData(
+            email="test@email.com", name="test", message="test", user_id="abc123"
+        ).to_dict(),
     )
-    await notification_service.send(notification)
+    await notification_service.send(notification_id=notification.id)
     stored_notification = await notification_service._notification_repository.get_by_id(
         notification_id=NotificationId(UUID(notification.id))
     )
@@ -201,17 +209,32 @@ async def test_can_send_email(notification_service: NotificationService) -> None
     assert stored_notification.type is ContactMethod.EMAIL
 
     assert notification_service._sms_notification_gateway.sent_notifications == []
-    assert notification_service._email_notification_gateway.sent_notifications == [notification]
+    sent_email = notification_service._email_notification_gateway.sent_notifications[0]
+    assert sent_email.destination == notification.destination
+    assert sent_email.data == notification.data
+    assert sent_email.external_id == notification.external_id
+    assert sent_email.from_user_id == notification.from_user_id
+    assert sent_email.id == notification.id
+    assert sent_email.labour_id == notification.labour_id
+    assert sent_email.labour_update_id == notification.labour_update_id
+    assert sent_email.to_user_id == notification.to_user_id
+    assert sent_email.type == notification.type
+    assert sent_email.template == notification.template
+
+    assert sent_email.subject != notification.subject
+    assert sent_email.message != notification.message
 
 
 async def test_can_send_sms(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
         type=ContactMethod.SMS.value,
         destination="test",
-        template="template.html",
-        data={"test": "test"},
+        template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
+        data=ContactUsData(
+            email="test@email.com", name="test", message="test", user_id="abc123"
+        ).to_dict(),
     )
-    await notification_service.send(notification)
+    await notification_service.send(notification_id=notification.id)
     stored_notification = await notification_service._notification_repository.get_by_id(
         notification_id=NotificationId(UUID(notification.id))
     )
@@ -219,26 +242,31 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
     assert stored_notification.status is NotificationStatus.SENT
     assert stored_notification.type is ContactMethod.SMS
 
-    assert notification_service._sms_notification_gateway.sent_notifications == [notification]
+    sent_sms = notification_service._sms_notification_gateway.sent_notifications[0]
     assert notification_service._email_notification_gateway.sent_notifications == []
 
+    assert sent_sms.destination == notification.destination
+    assert sent_sms.data == notification.data
+    assert sent_sms.external_id == notification.external_id
+    assert sent_sms.from_user_id == notification.from_user_id
+    assert sent_sms.id == notification.id
+    assert sent_sms.labour_id == notification.labour_id
+    assert sent_sms.labour_update_id == notification.labour_update_id
+    assert sent_sms.to_user_id == notification.to_user_id
+    assert sent_sms.type == notification.type
+    assert sent_sms.template == notification.template
 
-async def test_invalid_type_raises_error(
-    notification_service: NotificationService,
-) -> None:
-    class ContactMethod(StrEnum):
-        TEST = "test"
+    assert sent_sms.message != notification.message
 
-    notification: NotificationDTO = NotificationDTO(
-        id=str(uuid4()),
-        status=NotificationStatus.CREATED,
-        type=ContactMethod.TEST,
-        destination="dest",
-        template="template.html",
-        data={"test": "test"},
-    )
-    with pytest.raises(InvalidContactMethod):
-        await notification_service.send(notification)
+
+async def test_cannot_send_with_invalid_id(notification_service: NotificationService) -> None:
+    with pytest.raises(InvalidNotificationId):
+        await notification_service.send(notification_id="invalid")
+
+
+async def test_cannot_send_with_non_found_id(notification_service: NotificationService) -> None:
+    with pytest.raises(NotificationNotFoundById):
+        await notification_service.send(notification_id=str(uuid4()))
 
 
 async def test_invalid_type_raises_not_implemented(

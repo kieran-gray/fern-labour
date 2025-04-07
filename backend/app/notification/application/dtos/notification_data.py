@@ -92,7 +92,7 @@ class SubscriberInviteData(BaseNotificationData):
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Self:
         return cls(
-            subscriber_name=data["birthing_person_name"],
+            subscriber_name=data["subscriber_name"],
             link=data["link"],
         )
 

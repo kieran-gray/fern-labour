@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from app.common.infrastructure.events.interfaces.producer import EventProducer
+from app.common.domain.producer import EventProducer
 from app.labour.application.security.labour_authorization_service import LabourAuthorizationService
 from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.application.services.labour_service import LabourService

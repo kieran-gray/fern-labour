@@ -71,7 +71,7 @@ class NotificationGenerationService:
         try:
             template = NotificationTemplate(notification.template)
         except ValueError:
-            InvalidNotificationTemplate(template=template)
+            raise InvalidNotificationTemplate(template=notification.template)
 
         payload_data_type = self._get_payload_type(template)
 

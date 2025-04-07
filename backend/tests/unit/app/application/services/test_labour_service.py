@@ -5,7 +5,7 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.common.infrastructure.events.interfaces.producer import EventProducer
+from app.common.domain.producer import EventProducer
 from app.labour.application.dtos.labour import LabourDTO
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.contraction.exceptions import ContractionIdInvalid

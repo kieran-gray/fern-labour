@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from app.common.infrastructure.events.interfaces.producer import EventProducer
+from app.common.domain.producer import EventProducer
 from app.labour.application.security.token_generator import TokenGenerator
 from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.domain.labour.exceptions import (

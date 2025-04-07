@@ -26,6 +26,11 @@ class NotificationProcessingError(DomainError):
         super().__init__(message)
 
 
+class GenerationTemplateNotFound(DomainError):
+    def __init__(self, template: str) -> None:
+        super().__init__(f"Notification generation template not found for template '{template}'.")
+
+
 class InvalidNotificationTemplate(DomainValidationError):
     def __init__(self, template: str | None) -> None:
         super().__init__(f"Notification template '{template}' is not valid.")

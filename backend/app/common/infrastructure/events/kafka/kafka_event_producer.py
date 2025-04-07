@@ -5,7 +5,7 @@ from kafka import KafkaProducer
 from kafka.errors import KafkaTimeoutError
 
 from app.common.domain.event import DomainEvent
-from app.common.infrastructure.events.interfaces.producer import EventProducer
+from app.common.domain.producer import EventProducer
 
 log = logging.getLogger(__name__)
 

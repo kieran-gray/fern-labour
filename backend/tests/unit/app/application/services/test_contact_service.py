@@ -2,7 +2,6 @@ import pytest_asyncio
 
 from app.common.application.services.contact_service import ContactService
 from app.notification.application.services.notification_service import NotificationService
-from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"
@@ -14,13 +13,9 @@ def has_sent_email(contact_service: ContactService) -> bool:
 
 
 @pytest_asyncio.fixture
-async def contact_service(
-    notification_service: NotificationService,
-    email_template_engine: EmailTemplateEngine,
-) -> ContactService:
+async def contact_service(notification_service: NotificationService) -> ContactService:
     return ContactService(
         notification_service=notification_service,
-        email_template_engine=email_template_engine,
         contact_email="support@test.com",
     )
 

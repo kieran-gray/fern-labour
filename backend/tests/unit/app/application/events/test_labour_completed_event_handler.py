@@ -12,7 +12,6 @@ from app.labour.application.event_handlers.labour_completed_event_handler import
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
 from app.notification.application.services.notification_service import NotificationService
-from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
@@ -54,7 +53,6 @@ async def labour_completed_event_handler(
     user_service: UserService,
     notification_service: NotificationService,
     subscription_query_service: SubscriptionQueryService,
-    email_template_engine: EmailTemplateEngine,
 ) -> LabourCompletedEventHandler:
     await user_service._user_repository.save(
         User(
@@ -79,7 +77,6 @@ async def labour_completed_event_handler(
         user_service=user_service,
         notification_service=notification_service,
         subscription_query_service=subscription_query_service,
-        email_template_engine=email_template_engine,
         tracking_link="http://localhost:5173",
     )
 
