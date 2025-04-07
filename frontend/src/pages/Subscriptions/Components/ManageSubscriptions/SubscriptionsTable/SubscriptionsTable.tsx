@@ -22,8 +22,7 @@ export function SubscriptionsTable() {
     queryKey: ['subscriber_subscriptions', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response =
-          await SubscriptionService.getSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGet();
+        const response = await SubscriptionService.getSubscriberSubscriptions();
         return response;
       } catch (err) {
         throw new Error('Failed to load subscriptions. Please try again later.');

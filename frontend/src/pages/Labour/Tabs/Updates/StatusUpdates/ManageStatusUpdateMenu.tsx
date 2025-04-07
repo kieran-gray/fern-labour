@@ -15,9 +15,7 @@ export function ManageStatusUpdateMenu({ statusUpdateId }: { statusUpdateId: str
   const deleteStatusUpdate = useMutation({
     mutationFn: async () => {
       const requestBody: DeleteLabourUpdateRequest = { labour_update_id: statusUpdateId };
-      await LabourService.deleteLabourUpdateApiV1LabourLabourUpdateDelete({
-        requestBody,
-      });
+      await LabourService.deleteLabourUpdate({ requestBody });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });

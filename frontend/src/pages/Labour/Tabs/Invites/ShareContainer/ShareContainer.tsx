@@ -19,7 +19,7 @@ export function ShareContainer() {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['token', auth.user?.profile.sub],
     queryFn: async () => {
-      const response = await LabourService.getSubscriptionTokenApiV1LabourSubscriptionTokenGet();
+      const response = await LabourService.getSubscriptionToken();
       return response.token;
     },
   });

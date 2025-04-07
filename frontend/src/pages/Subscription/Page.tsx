@@ -77,12 +77,7 @@ export const SubscriptionPage = () => {
     queryKey: ['subscription_data', subscriptionId, auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response =
-          await SubscriptionService.getSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGet(
-            {
-              subscriptionId,
-            }
-          );
+        const response = await SubscriptionService.getSubscriptionById({ subscriptionId });
         return response;
       } catch (err) {
         if (err instanceof ApiError && [403, 404].includes(err.status)) {

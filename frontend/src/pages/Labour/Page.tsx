@@ -87,9 +87,9 @@ export const LabourPage = () => {
       try {
         let response;
         if (labourId !== null) {
-          response = await LabourService.getLabourByIdApiV1LabourGetLabourIdGet({ labourId });
+          response = await LabourService.getLabourById({ labourId });
         } else {
-          response = await LabourService.getActiveLabourApiV1LabourActiveGet();
+          response = await LabourService.getActiveLabour();
           setLabourId(response.labour.id);
         }
         return response.labour;

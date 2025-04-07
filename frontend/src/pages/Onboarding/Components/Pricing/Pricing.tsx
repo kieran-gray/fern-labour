@@ -174,9 +174,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
     mutationFn: async ({ selectedPlan }: { selectedPlan: string }) => {
       setMutationInProgress(true);
       const requestBody: PaymentPlanLabourRequest = { payment_plan: selectedPlan };
-      const response = await LabourService.updateLabourPaymentPlanApiV1LabourPaymentPlanPut({
-        requestBody,
-      });
+      const response = await LabourService.updateLabourPaymentPlan({ requestBody });
       return response.labour;
     },
     onSuccess: async (labour) => {
@@ -218,9 +216,7 @@ export const Pricing01 = ({ labour }: { labour: LabourDTO | undefined }) => {
         success_url: successUrl.toString(),
         cancel_url: cancelUrl.toString(),
       };
-      return await PaymentsService.createCheckoutSessionApiV1PaymentsCreateCheckoutSessionPost({
-        requestBody,
-      });
+      return await PaymentsService.createCheckoutSession({ requestBody });
     },
     onSuccess: async (data) => {
       window.location.href = data.url!;

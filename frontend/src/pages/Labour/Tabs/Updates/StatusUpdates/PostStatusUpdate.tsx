@@ -50,9 +50,7 @@ export function PostStatusUpdateButton({
         sent_time: labourUpdate.sent_time,
         message: labourUpdate.message,
       };
-      const response = await LabourService.postLabourUpdateApiV1LabourLabourUpdatePost({
-        requestBody,
-      });
+      const response = await LabourService.postLabourUpdate({ requestBody });
       return response.labour;
     },
     onMutate: async (labourUpdate: LabourUpdateDTO) => {

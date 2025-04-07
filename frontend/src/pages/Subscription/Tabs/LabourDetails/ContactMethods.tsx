@@ -20,7 +20,7 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
     queryKey: ['subscriber', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await UserService.getUserApiV1UserGet();
+        const response = await UserService.getUser();
         return response;
       } catch (err) {
         throw new Error('Failed to load subscriber. Please try again later.');

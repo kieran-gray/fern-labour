@@ -18,10 +18,7 @@ export function SubscribersTable() {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['labour_subscriptions', auth.user?.profile.sub],
     queryFn: async () => {
-      const response =
-        await SubscriptionService.getLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGet(
-          { labourId: labourId! }
-        );
+      const response = await SubscriptionService.getLabourSubscriptions({ labourId: labourId! });
       return response;
     },
     enabled: !!labourId,

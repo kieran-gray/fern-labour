@@ -26,9 +26,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
     queryKey: ['labour', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await LabourService.getLabourByIdApiV1LabourGetLabourIdGet({
-          labourId: labourId!,
-        });
+        const response = await LabourService.getLabourById({ labourId: labourId! });
         return response.labour;
       } catch (err) {
         if (err instanceof ApiError && err.status === 404) {

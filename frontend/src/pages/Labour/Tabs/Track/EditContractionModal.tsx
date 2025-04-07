@@ -58,9 +58,7 @@ export const EditContractionModal = ({
     mutationFn: async ({ contractionId }: { contractionId: string }) => {
       setDeleteMutationInProgress(true);
       const requestBody: DeleteContractionRequest = { contraction_id: contractionId };
-      const response = await LabourService.deleteContractionApiV1LabourContractionDeleteDelete({
-        requestBody,
-      });
+      const response = await LabourService.deleteContraction({ requestBody });
       return response.labour;
     },
     onSuccess: async (labour) => {
@@ -109,9 +107,7 @@ export const EditContractionModal = ({
         intensity: values.intensity != null ? values.intensity : contractionData!.intensity,
         contraction_id: contractionId,
       };
-      const response = await LabourService.updateContractionApiV1LabourContractionUpdatePut({
-        requestBody,
-      });
+      const response = await LabourService.updateContraction({ requestBody });
       return response.labour;
     },
     onSuccess: async (labour) => {
