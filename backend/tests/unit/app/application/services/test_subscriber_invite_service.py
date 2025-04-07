@@ -1,7 +1,7 @@
 import pytest_asyncio
 
-from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
+from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
 from app.subscription.application.services.subscriber_invite_service import SubscriberInviteService
 from app.user.application.services.user_service import UserService
 from app.user.domain.entity import User
@@ -15,7 +15,7 @@ SUBSCRIBER = "test_subscriber"
 async def subscriber_invite_service(
     user_service: UserService,
     notification_service: NotificationService,
-    email_generation_service: EmailGenerationService,
+    email_template_engine: EmailTemplateEngine,
 ) -> SubscriberInviteService:
     await user_service._user_repository.save(
         User(
@@ -30,7 +30,7 @@ async def subscriber_invite_service(
     return SubscriberInviteService(
         user_service=user_service,
         notification_service=notification_service,
-        email_generation_service=email_generation_service,
+        email_template_engine=email_template_engine,
     )
 
 

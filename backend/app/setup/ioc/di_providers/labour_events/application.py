@@ -9,8 +9,8 @@ from app.labour.application.event_handlers.labour_completed_event_handler import
 from app.labour.application.event_handlers.labour_update_posted_event_handler import (
     LabourUpdatePostedEventHandler,
 )
-from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
+from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
 from app.subscription.application.services.subscription_query_service import (
@@ -33,8 +33,8 @@ class LabourEventsApplicationProvider(Provider):
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
-        email_generation_service: Annotated[
-            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
+        email_template_engine: Annotated[
+            EmailTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
         ],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourUpdatePostedEventHandler:
@@ -42,7 +42,7 @@ class LabourEventsApplicationProvider(Provider):
             user_service=user_service,
             subscription_query_service=subscription_query_service,
             notification_service=notification_service,
-            email_generation_service=email_generation_service,
+            email_template_engine=email_template_engine,
             tracking_link=settings.notifications.email.tracking_link,
         )
 
@@ -56,8 +56,8 @@ class LabourEventsApplicationProvider(Provider):
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
-        email_generation_service: Annotated[
-            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
+        email_template_engine: Annotated[
+            EmailTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
         ],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourBegunEventHandler:
@@ -65,7 +65,7 @@ class LabourEventsApplicationProvider(Provider):
             user_service=user_service,
             subscription_query_service=subscription_query_service,
             notification_service=notification_service,
-            email_generation_service=email_generation_service,
+            email_template_engine=email_template_engine,
             tracking_link=settings.notifications.email.tracking_link,
         )
 
@@ -79,8 +79,8 @@ class LabourEventsApplicationProvider(Provider):
         notification_service: Annotated[
             NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
         ],
-        email_generation_service: Annotated[
-            EmailGenerationService, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
+        email_template_engine: Annotated[
+            EmailTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
         ],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourCompletedEventHandler:
@@ -88,6 +88,6 @@ class LabourEventsApplicationProvider(Provider):
             user_service=user_service,
             subscription_query_service=subscription_query_service,
             notification_service=notification_service,
-            email_generation_service=email_generation_service,
+            email_template_engine=email_template_engine,
             tracking_link=settings.notifications.email.tracking_link,
         )

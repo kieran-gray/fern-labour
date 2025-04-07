@@ -1,6 +1,6 @@
 from dishka import Provider, Scope, provide
 
-from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
 from app.notification.infrastructure.notifications.email.jinja2_email_generation_service import (
     Jinja2EmailGenerationService,
 )
@@ -12,5 +12,5 @@ class NotificationGeneratorsInfrastructureProvider(Provider):
     scope = Scope.APP
 
     @provide
-    def get_email_generation_service(self) -> EmailGenerationService:
+    def get_email_template_engine(self) -> EmailTemplateEngine:
         return Jinja2EmailGenerationService()

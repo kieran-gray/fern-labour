@@ -17,8 +17,8 @@ from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
 )
 from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
-from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
+from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
 from app.notification.domain.entity import Notification
 from app.notification.domain.enums import NotificationStatus
 from app.notification.domain.repository import NotificationRepository
@@ -250,7 +250,7 @@ class MockSMSNotificationGateway(SMSNotificationGateway):
         return NotificationSendResult(success=True, status=NotificationStatus.SENT)
 
 
-class MockEmailGenerationService(EmailGenerationService):
+class MockEmailGenerationService(EmailTemplateEngine):
     directory = Path()
 
     def generate(self, template_name: str, data: dict[str, Any]) -> str:
@@ -345,5 +345,5 @@ async def notification_service() -> NotificationService:
 
 
 @pytest_asyncio.fixture
-async def email_generation_service() -> EmailGenerationService:
+async def email_template_engine() -> EmailTemplateEngine:
     return MockEmailGenerationService()

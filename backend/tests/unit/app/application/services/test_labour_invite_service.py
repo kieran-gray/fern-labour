@@ -11,8 +11,8 @@ from app.labour.application.services.labour_invite_service import (
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
 from app.labour.domain.labour.exceptions import InvalidLabourId
-from app.notification.application.services.email_generation_service import EmailGenerationService
 from app.notification.application.services.notification_service import NotificationService
+from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
 from app.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
@@ -32,7 +32,7 @@ async def labour_invite_service(
     user_service: UserService,
     notification_service: NotificationService,
     subscription_query_service: SubscriptionQueryService,
-    email_generation_service: EmailGenerationService,
+    email_template_engine: EmailTemplateEngine,
     token_generator: TokenGenerator,
 ) -> LabourInviteService:
     await user_service._user_repository.save(
@@ -58,7 +58,7 @@ async def labour_invite_service(
         user_service=user_service,
         notification_service=notification_service,
         subscription_query_service=subscription_query_service,
-        email_generation_service=email_generation_service,
+        email_template_engine=email_template_engine,
         token_generator=token_generator,
     )
 
