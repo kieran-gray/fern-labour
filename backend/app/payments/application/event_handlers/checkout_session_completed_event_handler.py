@@ -31,7 +31,7 @@ class CheckoutSessionCompletedEventHandler(EventHandler):
                 log.error(f"No line items found for checkout {session_id}")
                 return
 
-            if len(checkout_session.line_items) > 1:
+            if len(checkout_session.line_items.data) > 1:
                 log.error(f"Multiple line items found for checkout {session_id}")
 
             purchased_item = checkout_session.line_items.data[0]
@@ -40,7 +40,7 @@ class CheckoutSessionCompletedEventHandler(EventHandler):
                 return
 
             # Casting to str for typing, it will be a str unless expanded.
-            stripe_product = await stripe.Product.retrieve_async(
+            stripe_product = await self._stripe.Product.retrieve_async(
                 id=str(purchased_item.price.product)
             )
 

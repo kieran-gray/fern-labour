@@ -179,6 +179,19 @@ class MockNotificationRepository(NotificationRepository):
                 notifications.append(notification)
         return notifications
 
+    async def get_by_external_id(self, external_id: str):
+        return next(
+            (
+                notification
+                for notification in self._data.values()
+                if notification.external_id == external_id
+            ),
+            None,
+        )
+
+    async def get_by_external_ids(self, external_ids):
+        return await super().get_by_external_ids(external_ids)
+
     async def filter(
         self,
         labour_id: LabourId | None = None,

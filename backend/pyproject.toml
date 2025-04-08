@@ -117,5 +117,6 @@ source = ["app"]
 omit = [
     "**/__init__.py",
     "**/alembic/*",
+    "**/infrastructure/persistence/*"
 ]
 show_missing = true

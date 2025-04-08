@@ -15,10 +15,11 @@ from app.notification.application.services.notification_generation_service impor
     NotificationGenerationService,
 )
 from app.notification.domain.entity import Notification
-from app.notification.domain.enums import NotificationStatus
+from app.notification.domain.enums import NotificationStatus, NotificationTemplate
 from app.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
+    InvalidNotificationTemplate,
     NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
@@ -102,13 +103,18 @@ class NotificationService:
         except ValueError:
             raise InvalidNotificationStatus(notification_status=status)
 
+        try:
+            notification_template = NotificationTemplate(template)
+        except ValueError:
+            raise InvalidNotificationTemplate(template=template)
+
         notification = Notification.create(
             labour_id=domain_labour_id,
             from_user_id=UserId(from_user_id) if from_user_id else None,
             to_user_id=UserId(to_user_id) if to_user_id else None,
             type=contact_method,
             destination=destination,
-            template=template,
+            template=notification_template,
             data=data,
             status=notification_status,
             labour_update_id=domain_labour_update_id,
@@ -162,4 +168,6 @@ class NotificationService:
         result = await notification_gateway.send(notification_dto)
 
         notification.status = result.status
+        if result.external_id:
+            notification.external_id = result.external_id
         await self._notification_repository.save(notification=notification)

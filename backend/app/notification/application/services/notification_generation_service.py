@@ -63,9 +63,6 @@ class NotificationGenerationService:
 
         notification = await self._notification_repository.get_by_id(notification_domain_id)
         if not notification:
-            log.error(
-                f"NotificationGenerationService: Notification record {notification_id} not found."
-            )
             raise NotificationNotFoundById(notification_id=notification_id)
 
         try:
