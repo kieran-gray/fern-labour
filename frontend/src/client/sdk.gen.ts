@@ -19,6 +19,7 @@ import type {
   DeleteLabourApiV1LabourDeleteLabourIdDeleteResponse,
   DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData,
   DeleteLabourUpdateApiV1LabourLabourUpdateDeleteResponse,
+  DocsDocsGetResponse,
   EndContractionApiV1LabourContractionEndPutData,
   EndContractionApiV1LabourContractionEndPutResponse,
   GetActiveLabourApiV1LabourActiveGetResponse,
@@ -39,12 +40,13 @@ import type {
   HealthcheckApiV1HealthGetResponse,
   LoginApiV1AuthLoginPostData,
   LoginApiV1AuthLoginPostResponse,
-  MyWebhookViewApiV1PaymentsWebhookPostResponse,
+  OpenapiOpenapiJsonGetResponse,
   PlanLabourApiV1LabourPlanPostData,
   PlanLabourApiV1LabourPlanPostResponse,
   PostLabourUpdateApiV1LabourLabourUpdatePostData,
   PostLabourUpdateApiV1LabourLabourUpdatePostResponse,
   RedirectToDocsGetResponse,
+  RedocRedocGetResponse,
   RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutData,
   RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutResponse,
   SendInviteApiV1LabourSendInvitePostData,
@@ -53,8 +55,11 @@ import type {
   SendInviteApiV1SubscriberSendInvitePostResponse,
   StartContractionApiV1LabourContractionStartPostData,
   StartContractionApiV1LabourContractionStartPostResponse,
+  StripeWebhookApiV1PaymentsWebhookPostResponse,
   SubscribeToApiV1SubscriptionSubscribeLabourIdPostData,
   SubscribeToApiV1SubscriptionSubscribeLabourIdPostResponse,
+  TwilioWebhookApiV1TwilioMessageStatusPostData,
+  TwilioWebhookApiV1TwilioMessageStatusPostResponse,
   UnsubscribeFromApiV1SubscriptionUnsubscribePostData,
   UnsubscribeFromApiV1SubscriptionUnsubscribePostResponse,
   UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutData,
@@ -85,7 +90,7 @@ export class AuthService {
    * @returns TokenResponse Successful Response
    * @throws ApiError
    */
-  public static loginApiV1AuthLoginPost(
+  public static login(
     data: LoginApiV1AuthLoginPostData
   ): CancelablePromise<LoginApiV1AuthLoginPostResponse> {
     return __request(OpenAPI, {
@@ -112,7 +117,7 @@ export class AuthService {
    * @returns UserDTO Successful Response
    * @throws ApiError
    */
-  public static getUserApiV1AuthUserGet(): CancelablePromise<GetUserApiV1AuthUserGetResponse> {
+  public static getUser(): CancelablePromise<GetUserApiV1AuthUserGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/auth/user',
@@ -128,7 +133,7 @@ export class ContactUsService {
    * @returns void Successful Response
    * @throws ApiError
    */
-  public static sendMessageApiV1ContactUsPost(
+  public static contactUsSendMessage(
     data: ContactUsSendMessageApiV1ContactUsPostData
   ): CancelablePromise<ContactUsSendMessageApiV1ContactUsPostResponse> {
     return __request(OpenAPI, {
@@ -140,6 +145,108 @@ export class ContactUsService {
         400: 'Bad Request',
         422: 'Validation Error',
         429: 'Too Many Requests',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+}
+
+export class ContractionService {
+  /**
+   * Start Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static startContraction(
+    data: StartContractionApiV1LabourContractionStartPostData
+  ): CancelablePromise<StartContractionApiV1LabourContractionStartPostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/labour/contraction/start',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * End Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static endContraction(
+    data: EndContractionApiV1LabourContractionEndPutData
+  ): CancelablePromise<EndContractionApiV1LabourContractionEndPutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/labour/contraction/end',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Update Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static updateContraction(
+    data: UpdateContractionApiV1LabourContractionUpdatePutData
+  ): CancelablePromise<UpdateContractionApiV1LabourContractionUpdatePutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/labour/contraction/update',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Delete Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static deleteContraction(
+    data: DeleteContractionApiV1LabourContractionDeleteDeleteData
+  ): CancelablePromise<DeleteContractionApiV1LabourContractionDeleteDeleteResponse> {
+    return __request(OpenAPI, {
+      method: 'DELETE',
+      url: '/api/v1/labour/contraction/delete',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
         500: 'Internal Server Error',
       },
     });
@@ -158,6 +265,42 @@ export class GeneralService {
       url: '/',
     });
   }
+
+  /**
+   * Docs
+   * @returns unknown Successful Response
+   * @throws ApiError
+   */
+  public static docsDocsGet(): CancelablePromise<DocsDocsGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/docs',
+    });
+  }
+
+  /**
+   * Openapi
+   * @returns unknown Successful Response
+   * @throws ApiError
+   */
+  public static openapiOpenapiJsonGet(): CancelablePromise<OpenapiOpenapiJsonGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/openapi.json',
+    });
+  }
+
+  /**
+   * Redoc
+   * @returns unknown Successful Response
+   * @throws ApiError
+   */
+  public static redocRedocGet(): CancelablePromise<RedocRedocGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/redoc',
+    });
+  }
 }
 
 export class HealthService {
@@ -166,7 +309,7 @@ export class HealthService {
    * @returns string Successful Response
    * @throws ApiError
    */
-  public static checkApiV1HealthGet(): CancelablePromise<HealthcheckApiV1HealthGetResponse> {
+  public static healthcheck(): CancelablePromise<HealthcheckApiV1HealthGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/health',
@@ -180,7 +323,7 @@ export class LabourService {
    * @returns LabourListResponse Successful Response
    * @throws ApiError
    */
-  public static getAllLaboursApiV1LabourGetAllGet(): CancelablePromise<GetAllLaboursApiV1LabourGetAllGetResponse> {
+  public static getAllLabours(): CancelablePromise<GetAllLaboursApiV1LabourGetAllGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/labour/get-all',
@@ -201,7 +344,7 @@ export class LabourService {
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static getLabourByIdApiV1LabourGetLabourIdGet(
+  public static getLabourById(
     data: GetLabourByIdApiV1LabourGetLabourIdGetData
   ): CancelablePromise<GetLabourByIdApiV1LabourGetLabourIdGetResponse> {
     return __request(OpenAPI, {
@@ -228,7 +371,7 @@ export class LabourService {
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static updateLabourPlanApiV1LabourPlanPut(
+  public static updateLabourPlan(
     data: UpdateLabourPlanApiV1LabourPlanPutData
   ): CancelablePromise<UpdateLabourPlanApiV1LabourPlanPutResponse> {
     return __request(OpenAPI, {
@@ -253,7 +396,7 @@ export class LabourService {
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static planLabourApiV1LabourPlanPost(
+  public static planLabour(
     data: PlanLabourApiV1LabourPlanPostData
   ): CancelablePromise<PlanLabourApiV1LabourPlanPostResponse> {
     return __request(OpenAPI, {
@@ -278,7 +421,7 @@ export class LabourService {
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static updateLabourPaymentPlanApiV1LabourPaymentPlanPut(
+  public static updateLabourPaymentPlan(
     data: UpdateLabourPaymentPlanApiV1LabourPaymentPlanPutData
   ): CancelablePromise<UpdateLabourPaymentPlanApiV1LabourPaymentPlanPutResponse> {
     return __request(OpenAPI, {
@@ -301,7 +444,7 @@ export class LabourService {
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static beginLabourApiV1LabourBeginPost(): CancelablePromise<BeginLabourApiV1LabourBeginPostResponse> {
+  public static beginLabour(): CancelablePromise<BeginLabourApiV1LabourBeginPostResponse> {
     return __request(OpenAPI, {
       method: 'POST',
       url: '/api/v1/labour/begin',
@@ -315,113 +458,13 @@ export class LabourService {
   }
 
   /**
-   * Start Contraction
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static startContractionApiV1LabourContractionStartPost(
-    data: StartContractionApiV1LabourContractionStartPostData
-  ): CancelablePromise<StartContractionApiV1LabourContractionStartPostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/labour/contraction/start',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * End Contraction
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static endContractionApiV1LabourContractionEndPut(
-    data: EndContractionApiV1LabourContractionEndPutData
-  ): CancelablePromise<EndContractionApiV1LabourContractionEndPutResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/v1/labour/contraction/end',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Update Contraction
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static updateContractionApiV1LabourContractionUpdatePut(
-    data: UpdateContractionApiV1LabourContractionUpdatePutData
-  ): CancelablePromise<UpdateContractionApiV1LabourContractionUpdatePutResponse> {
-    return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/v1/labour/contraction/update',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Delete Contraction
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static deleteContractionApiV1LabourContractionDeleteDelete(
-    data: DeleteContractionApiV1LabourContractionDeleteDeleteData
-  ): CancelablePromise<DeleteContractionApiV1LabourContractionDeleteDeleteResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/v1/labour/contraction/delete',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
    * Complete Labour
    * @param data The data for the request.
    * @param data.requestBody
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static completeLabourApiV1LabourCompletePut(
+  public static completeLabour(
     data: CompleteLabourApiV1LabourCompletePutData
   ): CancelablePromise<CompleteLabourApiV1LabourCompletePutResponse> {
     return __request(OpenAPI, {
@@ -447,7 +490,7 @@ export class LabourService {
    * @returns void No Content
    * @throws ApiError
    */
-  public static deleteLabourApiV1LabourDeleteLabourIdDelete(
+  public static deleteLabour(
     data: DeleteLabourApiV1LabourDeleteLabourIdDeleteData
   ): CancelablePromise<DeleteLabourApiV1LabourDeleteLabourIdDeleteResponse> {
     return __request(OpenAPI, {
@@ -471,7 +514,7 @@ export class LabourService {
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static getActiveLabourApiV1LabourActiveGet(): CancelablePromise<GetActiveLabourApiV1LabourActiveGetResponse> {
+  public static getActiveLabour(): CancelablePromise<GetActiveLabourApiV1LabourActiveGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/labour/active',
@@ -489,7 +532,7 @@ export class LabourService {
    * @returns LabourSummaryResponse Successful Response
    * @throws ApiError
    */
-  public static getActiveLabourSummaryApiV1LabourActiveSummaryGet(): CancelablePromise<GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse> {
+  public static getActiveLabourSummary(): CancelablePromise<GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/labour/active/summary',
@@ -503,61 +546,11 @@ export class LabourService {
   }
 
   /**
-   * Post Labour Update
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static postLabourUpdateApiV1LabourLabourUpdatePost(
-    data: PostLabourUpdateApiV1LabourLabourUpdatePostData
-  ): CancelablePromise<PostLabourUpdateApiV1LabourLabourUpdatePostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/labour/labour-update',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Delete Labour Update
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static deleteLabourUpdateApiV1LabourLabourUpdateDelete(
-    data: DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData
-  ): CancelablePromise<DeleteLabourUpdateApiV1LabourLabourUpdateDeleteResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/v1/labour/labour-update',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
    * Get Subscription Token
    * @returns LabourSubscriptionTokenResponse Successful Response
    * @throws ApiError
    */
-  public static getSubscriptionTokenApiV1LabourSubscriptionTokenGet(): CancelablePromise<GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse> {
+  public static getSubscriptionToken(): CancelablePromise<GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/labour/subscription-token',
@@ -577,7 +570,7 @@ export class LabourService {
    * @returns void Successful Response
    * @throws ApiError
    */
-  public static sendInviteApiV1LabourSendInvitePost(
+  public static sendInvite(
     data: SendInviteApiV1LabourSendInvitePostData
   ): CancelablePromise<SendInviteApiV1LabourSendInvitePostResponse> {
     return __request(OpenAPI, {
@@ -595,15 +588,217 @@ export class LabourService {
       },
     });
   }
+
+  /**
+   * Start Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static startContraction(
+    data: StartContractionApiV1LabourContractionStartPostData
+  ): CancelablePromise<StartContractionApiV1LabourContractionStartPostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/labour/contraction/start',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * End Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static endContraction(
+    data: EndContractionApiV1LabourContractionEndPutData
+  ): CancelablePromise<EndContractionApiV1LabourContractionEndPutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/labour/contraction/end',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Update Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static updateContraction(
+    data: UpdateContractionApiV1LabourContractionUpdatePutData
+  ): CancelablePromise<UpdateContractionApiV1LabourContractionUpdatePutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/labour/contraction/update',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Delete Contraction
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static deleteContraction(
+    data: DeleteContractionApiV1LabourContractionDeleteDeleteData
+  ): CancelablePromise<DeleteContractionApiV1LabourContractionDeleteDeleteResponse> {
+    return __request(OpenAPI, {
+      method: 'DELETE',
+      url: '/api/v1/labour/contraction/delete',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Post Labour Update
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static postLabourUpdate(
+    data: PostLabourUpdateApiV1LabourLabourUpdatePostData
+  ): CancelablePromise<PostLabourUpdateApiV1LabourLabourUpdatePostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/labour/labour-update/',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Delete Labour Update
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static deleteLabourUpdate(
+    data: DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData
+  ): CancelablePromise<DeleteLabourUpdateApiV1LabourLabourUpdateDeleteResponse> {
+    return __request(OpenAPI, {
+      method: 'DELETE',
+      url: '/api/v1/labour/labour-update/',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+}
+
+export class LabourUpdateService {
+  /**
+   * Post Labour Update
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static postLabourUpdate(
+    data: PostLabourUpdateApiV1LabourLabourUpdatePostData
+  ): CancelablePromise<PostLabourUpdateApiV1LabourLabourUpdatePostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/labour/labour-update/',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Delete Labour Update
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static deleteLabourUpdate(
+    data: DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData
+  ): CancelablePromise<DeleteLabourUpdateApiV1LabourLabourUpdateDeleteResponse> {
+    return __request(OpenAPI, {
+      method: 'DELETE',
+      url: '/api/v1/labour/labour-update/',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
 }
 
 export class PaymentsService {
   /**
-   * My Webhook View
+   * Stripe Webhook
    * @returns unknown Successful Response
    * @throws ApiError
    */
-  public static myWebhookViewApiV1PaymentsWebhookPost(): CancelablePromise<MyWebhookViewApiV1PaymentsWebhookPostResponse> {
+  public static stripeWebhook(): CancelablePromise<StripeWebhookApiV1PaymentsWebhookPostResponse> {
     return __request(OpenAPI, {
       method: 'POST',
       url: '/api/v1/payments/webhook',
@@ -621,7 +816,7 @@ export class PaymentsService {
    * @returns CheckoutResponse Successful Response
    * @throws ApiError
    */
-  public static createCheckoutSessionApiV1PaymentsCreateCheckoutSessionPost(
+  public static createCheckoutSession(
     data: CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostData
   ): CancelablePromise<CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostResponse> {
     return __request(OpenAPI, {
@@ -648,7 +843,7 @@ export class SubscriberService {
    * @returns void Successful Response
    * @throws ApiError
    */
-  public static sendInviteApiV1SubscriberSendInvitePost(
+  public static sendInvite(
     data: SendInviteApiV1SubscriberSendInvitePostData
   ): CancelablePromise<SendInviteApiV1SubscriberSendInvitePostResponse> {
     return __request(OpenAPI, {
@@ -677,7 +872,7 @@ export class SubscriptionService {
    * @returns SubscriptionResponse Successful Response
    * @throws ApiError
    */
-  public static subscribeToApiV1SubscriptionSubscribeLabourIdPost(
+  public static subscribeTo(
     data: SubscribeToApiV1SubscriptionSubscribeLabourIdPostData
   ): CancelablePromise<SubscribeToApiV1SubscriptionSubscribeLabourIdPostResponse> {
     return __request(OpenAPI, {
@@ -705,7 +900,7 @@ export class SubscriptionService {
    * @returns SubscriptionResponse Successful Response
    * @throws ApiError
    */
-  public static unsubscribeFromApiV1SubscriptionUnsubscribePost(
+  public static unsubscribeFrom(
     data: UnsubscribeFromApiV1SubscriptionUnsubscribePostData
   ): CancelablePromise<UnsubscribeFromApiV1SubscriptionUnsubscribePostResponse> {
     return __request(OpenAPI, {
@@ -728,7 +923,7 @@ export class SubscriptionService {
    * @returns SubscriptionsResponse Successful Response
    * @throws ApiError
    */
-  public static getSubscriptionsApiV1SubscriptionSubscriptionsGet(): CancelablePromise<GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse> {
+  public static getSubscriptions(): CancelablePromise<GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/subscription/subscriptions',
@@ -746,7 +941,7 @@ export class SubscriptionService {
    * @returns SubscriberSubscriptionsResponse Successful Response
    * @throws ApiError
    */
-  public static getSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGet(): CancelablePromise<GetSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGetResponse> {
+  public static getSubscriberSubscriptions(): CancelablePromise<GetSubscriberSubscriptionsApiV1SubscriptionSubscriberSubscriptionsGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/subscription/subscriber_subscriptions',
@@ -766,7 +961,7 @@ export class SubscriptionService {
    * @returns SubscriptionDataResponse Successful Response
    * @throws ApiError
    */
-  public static getSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGet(
+  public static getSubscriptionById(
     data: GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetData
   ): CancelablePromise<GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetResponse> {
     return __request(OpenAPI, {
@@ -792,7 +987,7 @@ export class SubscriptionService {
    * @returns LabourSubscriptionsResponse Successful Response
    * @throws ApiError
    */
-  public static getLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGet(
+  public static getLabourSubscriptions(
     data: GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetData
   ): CancelablePromise<GetLabourSubscriptionsApiV1SubscriptionLabourSubscriptionsLabourIdGetResponse> {
     return __request(OpenAPI, {
@@ -820,7 +1015,7 @@ export class SubscriptionManagementService {
    * @returns SubscriptionResponse Successful Response
    * @throws ApiError
    */
-  public static removeSubscriberApiV1SubscriptionManagementRemoveSubscriberPut(
+  public static removeSubscriber(
     data: RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutData
   ): CancelablePromise<RemoveSubscriberApiV1SubscriptionManagementRemoveSubscriberPutResponse> {
     return __request(OpenAPI, {
@@ -846,7 +1041,7 @@ export class SubscriptionManagementService {
    * @returns SubscriptionResponse Successful Response
    * @throws ApiError
    */
-  public static blockSubscriberApiV1SubscriptionManagementBlockSubscriberPut(
+  public static blockSubscriber(
     data: BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutData
   ): CancelablePromise<BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutResponse> {
     return __request(OpenAPI, {
@@ -872,7 +1067,7 @@ export class SubscriptionManagementService {
    * @returns SubscriptionResponse Successful Response
    * @throws ApiError
    */
-  public static updateRoleApiV1SubscriptionManagementUpdateRolePut(
+  public static updateRole(
     data: UpdateRoleApiV1SubscriptionManagementUpdateRolePutData
   ): CancelablePromise<UpdateRoleApiV1SubscriptionManagementUpdateRolePutResponse> {
     return __request(OpenAPI, {
@@ -898,7 +1093,7 @@ export class SubscriptionManagementService {
    * @returns SubscriptionResponse Successful Response
    * @throws ApiError
    */
-  public static updateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPut(
+  public static updateContactMethods(
     data: UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutData
   ): CancelablePromise<UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutResponse> {
     return __request(OpenAPI, {
@@ -918,13 +1113,39 @@ export class SubscriptionManagementService {
   }
 }
 
+export class TwilioService {
+  /**
+   * Twilio Webhook
+   * @param data The data for the request.
+   * @param data.formData
+   * @returns void Successful Response
+   * @throws ApiError
+   */
+  public static twilioWebhook(
+    data: TwilioWebhookApiV1TwilioMessageStatusPostData = {}
+  ): CancelablePromise<TwilioWebhookApiV1TwilioMessageStatusPostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/twilio/message-status',
+      formData: data.formData,
+      mediaType: 'application/x-www-form-urlencoded',
+      errors: {
+        400: 'Bad Request',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+}
+
 export class UserService {
   /**
    * Get User
    * @returns UserResponse Successful Response
    * @throws ApiError
    */
-  public static getUserApiV1UserGet(): CancelablePromise<GetUserApiV1UserGetResponse> {
+  public static getUser(): CancelablePromise<GetUserApiV1UserGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/user/',
@@ -942,7 +1163,7 @@ export class UserService {
    * @returns UserSummaryResponse Successful Response
    * @throws ApiError
    */
-  public static getUserSummaryApiV1UserSummaryGet(): CancelablePromise<GetUserSummaryApiV1UserSummaryGetResponse> {
+  public static getUserSummary(): CancelablePromise<GetUserSummaryApiV1UserSummaryGetResponse> {
     return __request(OpenAPI, {
       method: 'GET',
       url: '/api/v1/user/summary',

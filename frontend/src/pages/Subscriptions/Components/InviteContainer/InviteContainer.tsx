@@ -33,7 +33,7 @@ export function InviteContainer() {
     mutationFn: async (values: typeof form.values) => {
       setMutationInProgress(true);
       const requestBody: SendSubscriberInviteRequest = { invite_email: values.email };
-      await SubscriberService.sendInviteApiV1SubscriberSendInvitePost({ requestBody });
+      await SubscriberService.sendInvite({ requestBody });
     },
     onSuccess: () => {
       notifications.show({

@@ -18,7 +18,7 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
 
   const deleteLabourMutation = useMutation({
     mutationFn: async () => {
-      await LabourService.deleteLabourApiV1LabourDeleteLabourIdDelete({ labourId });
+      await LabourService.deleteLabour({ labourId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labours', auth.user?.profile.sub] });

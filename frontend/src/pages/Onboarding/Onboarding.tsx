@@ -53,7 +53,7 @@ export const OnboardingPage = () => {
     queryKey: ['labour', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await LabourService.getActiveLabourApiV1LabourActiveGet();
+        const response = await LabourService.getActiveLabour();
         setLabourId(response.labour.id);
         return response.labour;
       } catch (err) {

@@ -34,7 +34,7 @@ export default function CompleteLabourButton({
         end_time: new Date().toISOString(),
         notes: labourNotes,
       };
-      await LabourService.completeLabourApiV1LabourCompletePut({ requestBody });
+      await LabourService.completeLabour({ requestBody });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['birthingPerson', auth.user?.profile.sub] });

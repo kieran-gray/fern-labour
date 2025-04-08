@@ -9,6 +9,11 @@ export type Body_login_api_v1_auth_login_post = {
   password: string;
 };
 
+export type Body_twilio_webhook_api_v1_twilio_message_status_post = {
+  MessageSid?: string | null;
+  MessageStatus?: string | null;
+};
+
 export type CheckoutResponse = {
   id: string;
   url: string | null;
@@ -266,7 +271,39 @@ export type ContactUsSendMessageApiV1ContactUsPostData = {
 
 export type ContactUsSendMessageApiV1ContactUsPostResponse = void;
 
+export type StartContractionApiV1LabourContractionStartPostData = {
+  requestBody: StartContractionRequest;
+};
+
+export type StartContractionApiV1LabourContractionStartPostResponse = LabourResponse;
+
+export type EndContractionApiV1LabourContractionEndPutData = {
+  requestBody: EndContractionRequest;
+};
+
+export type EndContractionApiV1LabourContractionEndPutResponse = LabourResponse;
+
+export type UpdateContractionApiV1LabourContractionUpdatePutData = {
+  requestBody: UpdateContractionRequest;
+};
+
+export type UpdateContractionApiV1LabourContractionUpdatePutResponse = LabourResponse;
+
+export type DeleteContractionApiV1LabourContractionDeleteDeleteData = {
+  requestBody: DeleteContractionRequest;
+};
+
+export type DeleteContractionApiV1LabourContractionDeleteDeleteResponse = LabourResponse;
+
 export type RedirectToDocsGetResponse = unknown;
+
+export type DocsDocsGetResponse = unknown;
+
+export type OpenapiOpenapiJsonGetResponse = {
+  [key: string]: unknown;
+};
+
+export type RedocRedocGetResponse = unknown;
 
 export type HealthcheckApiV1HealthGetResponse = {
   [key: string]: string;
@@ -300,30 +337,6 @@ export type UpdateLabourPaymentPlanApiV1LabourPaymentPlanPutResponse = LabourRes
 
 export type BeginLabourApiV1LabourBeginPostResponse = LabourResponse;
 
-export type StartContractionApiV1LabourContractionStartPostData = {
-  requestBody: StartContractionRequest;
-};
-
-export type StartContractionApiV1LabourContractionStartPostResponse = LabourResponse;
-
-export type EndContractionApiV1LabourContractionEndPutData = {
-  requestBody: EndContractionRequest;
-};
-
-export type EndContractionApiV1LabourContractionEndPutResponse = LabourResponse;
-
-export type UpdateContractionApiV1LabourContractionUpdatePutData = {
-  requestBody: UpdateContractionRequest;
-};
-
-export type UpdateContractionApiV1LabourContractionUpdatePutResponse = LabourResponse;
-
-export type DeleteContractionApiV1LabourContractionDeleteDeleteData = {
-  requestBody: DeleteContractionRequest;
-};
-
-export type DeleteContractionApiV1LabourContractionDeleteDeleteResponse = LabourResponse;
-
 export type CompleteLabourApiV1LabourCompletePutData = {
   requestBody: CompleteLabourRequest;
 };
@@ -340,6 +353,15 @@ export type GetActiveLabourApiV1LabourActiveGetResponse = LabourResponse;
 
 export type GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse = LabourSummaryResponse;
 
+export type GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse =
+  LabourSubscriptionTokenResponse;
+
+export type SendInviteApiV1LabourSendInvitePostData = {
+  requestBody: SendInviteRequest;
+};
+
+export type SendInviteApiV1LabourSendInvitePostResponse = void;
+
 export type PostLabourUpdateApiV1LabourLabourUpdatePostData = {
   requestBody: LabourUpdateRequest;
 };
@@ -352,16 +374,7 @@ export type DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData = {
 
 export type DeleteLabourUpdateApiV1LabourLabourUpdateDeleteResponse = LabourResponse;
 
-export type GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse =
-  LabourSubscriptionTokenResponse;
-
-export type SendInviteApiV1LabourSendInvitePostData = {
-  requestBody: SendInviteRequest;
-};
-
-export type SendInviteApiV1LabourSendInvitePostResponse = void;
-
-export type MyWebhookViewApiV1PaymentsWebhookPostResponse = unknown;
+export type StripeWebhookApiV1PaymentsWebhookPostResponse = unknown;
 
 export type CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostData = {
   requestBody: CreateCheckoutRequest;
@@ -433,6 +446,12 @@ export type UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsP
 
 export type UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutResponse =
   SubscriptionResponse;
+
+export type TwilioWebhookApiV1TwilioMessageStatusPostData = {
+  formData?: Body_twilio_webhook_api_v1_twilio_message_status_post;
+};
+
+export type TwilioWebhookApiV1TwilioMessageStatusPostResponse = void;
 
 export type GetUserApiV1UserGetResponse = UserResponse;
 

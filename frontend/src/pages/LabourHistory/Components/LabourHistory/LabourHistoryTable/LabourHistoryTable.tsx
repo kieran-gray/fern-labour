@@ -24,7 +24,7 @@ export function LabourHistoryTable() {
     queryKey: ['labours', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await LabourService.getAllLaboursApiV1LabourGetAllGet();
+        const response = await LabourService.getAllLabours();
         return response.labours;
       } catch (err) {
         throw new Error('Failed to load labours. Please try again later.');

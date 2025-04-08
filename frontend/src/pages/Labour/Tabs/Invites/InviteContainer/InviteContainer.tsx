@@ -33,9 +33,7 @@ export function InviteContainer() {
     mutationFn: async (values: typeof form.values) => {
       setMutationInProgress(true);
       const requestBody: SendInviteRequest = { invite_email: values.email, labour_id: labourId! };
-      await LabourService.sendInviteApiV1LabourSendInvitePost({
-        requestBody,
-      });
+      await LabourService.sendInvite({ requestBody });
     },
     onSuccess: () => {
       notifications.show({

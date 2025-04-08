@@ -24,11 +24,7 @@ export function ManageSubscriptionMenu({ subscription_id }: { subscription_id: s
   const removeSubscriberMutation = useMutation({
     mutationFn: async () => {
       const requestBody: RemoveSubscriberRequest = { subscription_id };
-      await SubscriptionManagementService.removeSubscriberApiV1SubscriptionManagementRemoveSubscriberPut(
-        {
-          requestBody,
-        }
-      );
+      await SubscriptionManagementService.removeSubscriber({ requestBody });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
@@ -46,11 +42,7 @@ export function ManageSubscriptionMenu({ subscription_id }: { subscription_id: s
   const blockSubscriberMutation = useMutation({
     mutationFn: async () => {
       const requestBody: BlockSubscriberRequest = { subscription_id };
-      await SubscriptionManagementService.blockSubscriberApiV1SubscriptionManagementBlockSubscriberPut(
-        {
-          requestBody,
-        }
-      );
+      await SubscriptionManagementService.blockSubscriber({ requestBody });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });

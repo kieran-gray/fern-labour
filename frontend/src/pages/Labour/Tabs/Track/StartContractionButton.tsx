@@ -50,9 +50,7 @@ export default function StartContractionButton({
       const requestBody: StartContractionRequest = {
         start_time: contraction.start_time,
       };
-      const response = await LabourService.startContractionApiV1LabourContractionStartPost({
-        requestBody,
-      });
+      const response = await LabourService.startContraction({ requestBody });
       return response.labour;
     },
     onMutate: async (contraction: ContractionDTO) => {

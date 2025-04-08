@@ -19,9 +19,7 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
   const unsubscribeMutation = useMutation({
     mutationFn: async () => {
       const requestBody: UnsubscribeFromRequest = { labour_id };
-      await SubscriptionService.unsubscribeFromApiV1SubscriptionUnsubscribePost({
-        requestBody,
-      });
+      await SubscriptionService.unsubscribeFrom({ requestBody });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

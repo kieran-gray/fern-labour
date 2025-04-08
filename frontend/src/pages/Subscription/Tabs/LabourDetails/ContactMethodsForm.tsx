@@ -45,7 +45,7 @@ export default function ContactMethodsForm({
     queryKey: ['subscriber', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await UserService.getUserApiV1UserGet();
+        const response = await UserService.getUser();
         return response;
       } catch (err) {
         throw new Error('Failed to load subscriber. Please try again later.');
@@ -87,10 +87,7 @@ export default function ContactMethodsForm({
         contact_methods: values.contactMethods,
         subscription_id: subscriptionId,
       };
-      const response =
-        await SubscriptionManagementService.updateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPut(
-          { requestBody }
-        );
+      const response = await SubscriptionManagementService.updateContactMethods({ requestBody });
       return response.subscription;
     },
     onSuccess: async (subscription) => {

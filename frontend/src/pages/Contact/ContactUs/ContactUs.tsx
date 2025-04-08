@@ -49,7 +49,7 @@ export function ContactUs() {
         token: turnstileToken!,
         user_id: auth.user?.profile.sub,
       };
-      await ContactUsService.sendMessageApiV1ContactUsPost({ requestBody });
+      await ContactUsService.contactUsSendMessage({ requestBody });
     },
     onSuccess: () => {
       form.setInitialValues({ email: '', name: '', message: '' });

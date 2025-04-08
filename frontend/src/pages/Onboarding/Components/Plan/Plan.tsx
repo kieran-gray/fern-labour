@@ -56,9 +56,9 @@ export default function Plan({
       };
       let response;
       if (existing) {
-        response = await LabourService.updateLabourPlanApiV1LabourPlanPut({ requestBody });
+        response = await LabourService.updateLabourPlan({ requestBody });
       } else {
-        response = await LabourService.planLabourApiV1LabourPlanPost({ requestBody });
+        response = await LabourService.planLabour({ requestBody });
       }
       return response.labour;
     },

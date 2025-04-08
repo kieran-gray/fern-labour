@@ -44,10 +44,7 @@ export default function SubscribeForm({
     mutationFn: async (values: typeof form.values) => {
       setMutationInProgress(true);
       const requestBody: SubscribeToRequest = { token: values.token };
-      const response = await SubscriptionService.subscribeToApiV1SubscriptionSubscribeLabourIdPost({
-        requestBody,
-        labourId,
-      });
+      const response = await SubscriptionService.subscribeTo({ requestBody, labourId });
       return response.subscription;
     },
     onSuccess: (subscription) => {
