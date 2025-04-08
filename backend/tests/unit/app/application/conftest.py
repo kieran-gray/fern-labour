@@ -13,14 +13,19 @@ from app.labour.domain.labour.entity import Labour
 from app.labour.domain.labour.repository import LabourRepository
 from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.notification.application.dtos.notification import NotificationSendResult
+from app.notification.application.dtos.notification_data import BaseNotificationData
 from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
 )
 from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
-from app.notification.application.services.email_generation_service import EmailGenerationService
+from app.notification.application.services.notification_generation_service import (
+    NotificationGenerationService,
+)
 from app.notification.application.services.notification_service import NotificationService
+from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
+from app.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
 from app.notification.domain.entity import Notification
-from app.notification.domain.enums import NotificationStatus
+from app.notification.domain.enums import NotificationStatus, NotificationTemplate
 from app.notification.domain.repository import NotificationRepository
 from app.notification.domain.value_objects.notification_id import NotificationId
 from app.subscription.application.security.subscription_authorization_service import (
@@ -174,6 +179,19 @@ class MockNotificationRepository(NotificationRepository):
                 notifications.append(notification)
         return notifications
 
+    async def get_by_external_id(self, external_id: str):
+        return next(
+            (
+                notification
+                for notification in self._data.values()
+                if notification.external_id == external_id
+            ),
+            None,
+        )
+
+    async def get_by_external_ids(self, external_ids):
+        return await super().get_by_external_ids(external_ids)
+
     async def filter(
         self,
         labour_id: LabourId | None = None,
@@ -250,11 +268,30 @@ class MockSMSNotificationGateway(SMSNotificationGateway):
         return NotificationSendResult(success=True, status=NotificationStatus.SENT)
 
 
-class MockEmailGenerationService(EmailGenerationService):
+class MockEmailTemplateEngine(EmailTemplateEngine):
     directory = Path()
 
-    def generate(self, template_name: str, data: dict[str, Any]) -> str:
-        return f"Mock HTML email: {template_name} {json.dumps(data)}"
+    def generate_subject(
+        self, template_name: NotificationTemplate, data: BaseNotificationData
+    ) -> str:
+        return f"Mock HTML subject: {template_name} {json.dumps(data.to_dict())}"
+
+    def generate_message(
+        self, template_name: NotificationTemplate, data: BaseNotificationData
+    ) -> str:
+        return f"Mock HTML email: {template_name} {json.dumps(data.to_dict())}"
+
+
+class MockSMSTemplateEngine(SMSTemplateEngine):
+    def generate_subject(
+        self, template_name: NotificationTemplate, data: BaseNotificationData
+    ) -> str:
+        raise NotImplementedError()
+
+    def generate_message(
+        self, template_name: NotificationTemplate, data: BaseNotificationData
+    ) -> str:
+        return f"Mock sms: {template_name} {json.dumps(data.to_dict())}"
 
 
 @pytest.fixture
@@ -330,20 +367,41 @@ async def subscription_management_service(
     )
 
 
+@pytest.fixture
+def email_template_engine() -> EmailTemplateEngine:
+    return MockEmailTemplateEngine()
+
+
+@pytest.fixture
+def sms_template_engine() -> EmailTemplateEngine:
+    return MockSMSTemplateEngine()
+
+
 @pytest_asyncio.fixture
-async def notification_service() -> NotificationService:
+async def notification_generation_service(
+    notification_repo: NotificationRepository,
+    email_template_engine: EmailTemplateEngine,
+    sms_template_engine: SMSTemplateEngine,
+) -> NotificationGenerationService:
+    return NotificationGenerationService(
+        notification_repo=notification_repo,
+        email_template_engine=email_template_engine,
+        sms_template_engine=sms_template_engine,
+    )
+
+
+@pytest_asyncio.fixture
+async def notification_service(
+    notification_generation_service: NotificationGenerationService,
+    notification_repo: NotificationRepository,
+) -> NotificationService:
     email_notification_gateway = MockEmailNotificationGateway()
     sms_notification_gateway = MockSMSNotificationGateway()
-    notification_repository = MockNotificationRepository()
     email_notification_gateway.sent_notifications = []
     sms_notification_gateway.sent_notifications = []
     return NotificationService(
         email_notification_gateway=email_notification_gateway,
         sms_notification_gateway=sms_notification_gateway,
-        notification_repository=notification_repository,
+        notification_generation_service=notification_generation_service,
+        notification_repository=notification_repo,
     )
-
-
-@pytest_asyncio.fixture
-async def email_generation_service() -> EmailGenerationService:
-    return MockEmailGenerationService()

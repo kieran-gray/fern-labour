@@ -11,11 +11,15 @@ from app.notification.application.gateways.email_notification_gateway import (
 )
 from app.notification.application.gateways.notfication_gateway import NotificationGateway
 from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from app.notification.application.services.notification_generation_service import (
+    NotificationGenerationService,
+)
 from app.notification.domain.entity import Notification
-from app.notification.domain.enums import NotificationStatus
+from app.notification.domain.enums import NotificationStatus, NotificationTemplate
 from app.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
+    InvalidNotificationTemplate,
     NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
@@ -33,10 +37,12 @@ class NotificationService:
         self,
         email_notification_gateway: EmailNotificationGateway,
         sms_notification_gateway: SMSNotificationGateway,
+        notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
     ):
         self._email_notification_gateway = email_notification_gateway
         self._sms_notification_gateway = sms_notification_gateway
+        self._notification_generation_service = notification_generation_service
         self._notification_repository = notification_repository
 
     def _get_notification_gateway(self, notification_type: ContactMethod) -> NotificationGateway:
@@ -48,6 +54,20 @@ class NotificationService:
             raise NotImplementedError(
                 f"Notification gateway for type {notification_type.value} not implemented"
             )
+
+    async def _get_notification(self, notification_id: str) -> Notification:
+        try:
+            domain_notification_id = NotificationId(UUID(notification_id))
+        except ValueError:
+            raise InvalidNotificationId(notification_id=notification_id)
+
+        notification = await self._notification_repository.get_by_id(
+            notification_id=domain_notification_id
+        )
+        if not notification:
+            raise NotificationNotFoundById(notification_id=notification_id)
+
+        return notification
 
     async def create_notification(
         self,
@@ -83,13 +103,18 @@ class NotificationService:
         except ValueError:
             raise InvalidNotificationStatus(notification_status=status)
 
+        try:
+            notification_template = NotificationTemplate(template)
+        except ValueError:
+            raise InvalidNotificationTemplate(template=template)
+
         notification = Notification.create(
             labour_id=domain_labour_id,
             from_user_id=UserId(from_user_id) if from_user_id else None,
             to_user_id=UserId(to_user_id) if to_user_id else None,
             type=contact_method,
             destination=destination,
-            template=template,
+            template=notification_template,
             data=data,
             status=notification_status,
             labour_update_id=domain_labour_update_id,
@@ -102,20 +127,11 @@ class NotificationService:
         self, notification_id: str, status: str, external_id: str | None = None
     ) -> NotificationDTO:
         try:
-            domain_notification_id = NotificationId(UUID(notification_id))
-        except ValueError:
-            raise InvalidNotificationId(notification_id=notification_id)
-
-        try:
             notification_status = NotificationStatus(status)
         except ValueError:
             raise InvalidNotificationStatus(notification_status=status)
 
-        notification = await self._notification_repository.get_by_id(
-            notification_id=domain_notification_id
-        )
-        if not notification:
-            raise NotificationNotFoundById(notification_id=notification_id)
+        notification = await self._get_notification(notification_id=notification_id)
 
         notification.status = notification_status
         if external_id:
@@ -139,14 +155,19 @@ class NotificationService:
         notification.status = notification_status
         await self._notification_repository.save(notification=notification)
 
-    async def send(self, notification: NotificationDTO) -> None:
-        try:
-            contact_method = ContactMethod(notification.type)
-        except ValueError:
-            raise InvalidContactMethod(notification.type)
-
-        notification_gateway = self._get_notification_gateway(contact_method)
-        result = await notification_gateway.send(notification)
-        await self.update_notification(
-            notification_id=notification.id, status=result.status, external_id=result.external_id
+    async def send(self, notification_id: str) -> None:
+        notification = await self._get_notification(notification_id=notification_id)
+        notification_content = await self._notification_generation_service.generate_content(
+            notification_id=notification_id
         )
+
+        notification_dto = NotificationDTO.from_domain(notification=notification)
+        notification_dto.add_notification_content(content=notification_content)
+
+        notification_gateway = self._get_notification_gateway(notification.type)
+        result = await notification_gateway.send(notification_dto)
+
+        notification.status = result.status
+        if result.external_id:
+            notification.external_id = result.external_id
+        await self._notification_repository.save(notification=notification)

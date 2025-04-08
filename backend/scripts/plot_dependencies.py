@@ -15,7 +15,7 @@ def generate_dependency_graph_d2(container: AsyncContainer) -> str:
     Generates a dependency graph for the container in `d2` format.
     See https://d2lang.com for rendering instructions.
     """
-    return dishka.plotter.render_mermaid(container)
+    return dishka.plotter.render_d2(container)
 
 
 async def main():

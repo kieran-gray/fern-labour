@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
@@ -6,8 +7,8 @@ import pytest_asyncio
 from app.labour.application.dtos.labour import LabourDTO
 from app.labour.application.services.labour_query_service import LabourQueryService
 from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.exceptions import InvalidLabourId
-from app.labour.domain.labour.repository import LabourRepository
+from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.labour.domain.labour.exceptions import InvalidLabourId, LabourNotFoundById
 from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.user.domain.exceptions import (
     UserDoesNotHaveActiveLabour,
@@ -17,24 +18,21 @@ from tests.unit.app.application.conftest import MockLabourRepository
 
 BIRTHING_PERSON = "bp_id"
 BIRTHING_PERSON_IN_LABOUR = "bp_2_id"
+LABOUR_ID = UUID("12345678-1234-5678-1234-567812345678")
 
 
 @pytest_asyncio.fixture
-async def labour_repo():
-    repo = MockLabourRepository()
-    repo._data = {
-        "test": Labour(
-            id_=LabourId("test"),
+async def labour_query_service() -> LabourQueryService:
+    labour_repo = MockLabourRepository()
+    labour_repo._data = {
+        LABOUR_ID: Labour(
+            id_=LabourId(LABOUR_ID),
             birthing_person_id=UserId(BIRTHING_PERSON_IN_LABOUR),
             due_date=datetime.now(UTC),
             first_labour=True,
+            payment_plan=LabourPaymentPlan.COMMUNITY,
         ),
     }
-    return repo
-
-
-@pytest_asyncio.fixture
-async def labour_query_service(labour_repo: LabourRepository) -> LabourQueryService:
     return LabourQueryService(labour_repository=labour_repo)
 
 
@@ -74,6 +72,11 @@ async def test_cannot_get_active_labour_summary_for_birthing_person_without_acti
         await labour_query_service.get_active_labour_summary(BIRTHING_PERSON)
 
 
+async def test_can_get_labour_by_id(labour_query_service: LabourQueryService) -> None:
+    labour = await labour_query_service.get_labour_by_id(str(LABOUR_ID))
+    assert isinstance(labour, LabourDTO)
+
+
 async def test_invalid_labour_id_raises_error(labour_query_service: LabourQueryService) -> None:
     with pytest.raises(InvalidLabourId):
         await labour_query_service.get_labour_by_id("test")
@@ -84,3 +87,22 @@ async def test_can_get_all_labours(labour_query_service: LabourQueryService) -> 
     assert isinstance(response, list)
     assert len(response) == 1
     assert isinstance(response[0], LabourDTO)
+
+
+async def test_can_accept_subscriber(labour_query_service: LabourQueryService) -> None:
+    result = await labour_query_service.can_accept_subscriber("subscriber", str(LABOUR_ID), 0)
+    assert result is None
+
+
+async def test_cannot_accept_subscriber_invalid_labour_id(
+    labour_query_service: LabourQueryService,
+) -> None:
+    with pytest.raises(InvalidLabourId):
+        await labour_query_service.can_accept_subscriber("subscriber", "invalid", 0)
+
+
+async def test_cannot_accept_subscriber_labour_not_found(
+    labour_query_service: LabourQueryService,
+) -> None:
+    with pytest.raises(LabourNotFoundById):
+        await labour_query_service.can_accept_subscriber("subscriber", str(uuid4()), 0)

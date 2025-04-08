@@ -19,3 +19,18 @@ class NotificationNotFoundById(DomainError):
 class NotificationNotFoundByExternalId(DomainError):
     def __init__(self, external_id: str | None) -> None:
         super().__init__(f"Notification with external id '{external_id}' not found.")
+
+
+class NotificationProcessingError(DomainError):
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
+class GenerationTemplateNotFound(DomainError):
+    def __init__(self, template: str) -> None:
+        super().__init__(f"Notification generation template not found for template '{template}'.")
+
+
+class InvalidNotificationTemplate(DomainValidationError):
+    def __init__(self, template: str | None) -> None:
+        super().__init__(f"Notification template '{template}' is not valid.")

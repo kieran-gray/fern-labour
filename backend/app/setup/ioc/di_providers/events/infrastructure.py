@@ -2,8 +2,8 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
+from app.common.domain.producer import EventProducer
 from app.common.infrastructure.events.interfaces.consumer import EventConsumer
-from app.common.infrastructure.events.interfaces.producer import EventProducer
 from app.common.infrastructure.events.kafka.kafka_event_consumer import KafkaEventConsumer
 from app.common.infrastructure.events.kafka.kafka_event_producer import KafkaEventProducer
 from app.setup.ioc.di_component_enum import ComponentEnum

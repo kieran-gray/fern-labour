@@ -1,14 +1,31 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Protocol, Self
+
+
+class BaseNotificationData(Protocol):
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Self: ...
+
+    def to_dict(self) -> dict[str, Any]: ...
 
 
 @dataclass
-class LabourUpdateData:
+class LabourUpdateData(BaseNotificationData):
     birthing_person_name: str
     subscriber_first_name: str
     update: str
     link: str
     notes: str | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Self:
+        return cls(
+            birthing_person_name=data["birthing_person_name"],
+            subscriber_first_name=data["subscriber_first_name"],
+            update=data["update"],
+            link=data["link"],
+            notes=data["notes"],
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -21,11 +38,20 @@ class LabourUpdateData:
 
 
 @dataclass
-class ContactUsData:
+class ContactUsData(BaseNotificationData):
     email: str
     name: str
     message: str
     user_id: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Self:
+        return cls(
+            email=data["email"],
+            name=data["name"],
+            message=data["message"],
+            user_id=data["user_id"],
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -37,10 +63,18 @@ class ContactUsData:
 
 
 @dataclass
-class LabourInviteData:
+class LabourInviteData(BaseNotificationData):
     birthing_person_name: str
     birthing_person_first_name: str
     link: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Self:
+        return cls(
+            birthing_person_name=data["birthing_person_name"],
+            birthing_person_first_name=data["birthing_person_first_name"],
+            link=data["link"],
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -51,9 +85,16 @@ class LabourInviteData:
 
 
 @dataclass
-class SubscriberInviteData:
+class SubscriberInviteData(BaseNotificationData):
     subscriber_name: str
     link: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Self:
+        return cls(
+            subscriber_name=data["subscriber_name"],
+            link=data["link"],
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {

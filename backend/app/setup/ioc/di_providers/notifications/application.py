@@ -6,7 +6,12 @@ from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
 )
 from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from app.notification.application.services.notification_generation_service import (
+    NotificationGenerationService,
+)
 from app.notification.application.services.notification_service import NotificationService
+from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
+from app.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
 from app.notification.domain.repository import NotificationRepository
 from app.notification.infrastructure.notifications.email.logger_email_notification_gateway import (
     LoggerEmailNotificationGateway,
@@ -74,14 +79,33 @@ class NotificationsApplicationProvider(Provider):
             return LoggerSMSNotificationGateway()
 
     @provide
+    def get_notification_generation_service(
+        self,
+        email_template_engine: Annotated[
+            EmailTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
+        ],
+        sms_template_engine: Annotated[
+            SMSTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
+        ],
+        notification_repository: NotificationRepository,
+    ) -> NotificationGenerationService:
+        return NotificationGenerationService(
+            email_template_engine=email_template_engine,
+            sms_template_engine=sms_template_engine,
+            notification_repo=notification_repository,
+        )
+
+    @provide
     def get_notification_service(
         self,
         email_notification_gateway: EmailNotificationGateway,
         sms_notification_gateway: SMSNotificationGateway,
+        notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
     ) -> NotificationService:
         return NotificationService(
             email_notification_gateway=email_notification_gateway,
             sms_notification_gateway=sms_notification_gateway,
+            notification_generation_service=notification_generation_service,
             notification_repository=notification_repository,
         )

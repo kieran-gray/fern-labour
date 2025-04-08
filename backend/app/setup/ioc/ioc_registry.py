@@ -36,6 +36,7 @@ def get_providers() -> Iterable[Provider]:
         EventsInfrastructureProvider(),
         LabourApplicationProvider(),
         LabourInfrastructureProvider(),
+        LabourEventsApplicationProvider(),
         PaymentsInfrastructureProvider(),
         PaymentEventsApplicationProvider(),
         InvitesApplicationProvider(),

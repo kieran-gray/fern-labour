@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 from app.common.domain.aggregate_root import AggregateRoot
 from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
-from app.notification.domain.enums import NotificationStatus
+from app.notification.domain.enums import NotificationStatus, NotificationTemplate
 from app.notification.domain.value_objects.notification_id import NotificationId
 from app.subscription.domain.enums import ContactMethod
 from app.user.domain.value_objects.user_id import UserId
@@ -30,7 +30,7 @@ class Notification(AggregateRoot[NotificationId]):
         *,
         type: ContactMethod,
         destination: str,
-        template: str,
+        template: NotificationTemplate,
         data: dict[str, Any],
         status: NotificationStatus | None = None,
         labour_id: LabourId | None = None,
