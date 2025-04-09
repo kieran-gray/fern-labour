@@ -2,6 +2,7 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
+from app.common.domain.producer import EventProducer
 from app.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from app.labour.application.event_handlers.labour_completed_event_handler import (
     LabourCompletedEventHandler,
@@ -9,7 +10,6 @@ from app.labour.application.event_handlers.labour_completed_event_handler import
 from app.labour.application.event_handlers.labour_update_posted_event_handler import (
     LabourUpdatePostedEventHandler,
 )
-from app.notification.application.services.notification_service import NotificationService
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
 from app.subscription.application.services.subscription_query_service import (
@@ -29,15 +29,13 @@ class LabourEventsApplicationProvider(Provider):
         subscription_query_service: Annotated[
             SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
-        notification_service: Annotated[
-            NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
-        ],
+        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourUpdatePostedEventHandler:
         return LabourUpdatePostedEventHandler(
             user_service=user_service,
             subscription_query_service=subscription_query_service,
-            notification_service=notification_service,
+            event_producer=event_producer,
             tracking_link=settings.notifications.email.tracking_link,
         )
 
@@ -48,15 +46,13 @@ class LabourEventsApplicationProvider(Provider):
         subscription_query_service: Annotated[
             SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
-        notification_service: Annotated[
-            NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
-        ],
+        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourBegunEventHandler:
         return LabourBegunEventHandler(
             user_service=user_service,
             subscription_query_service=subscription_query_service,
-            notification_service=notification_service,
+            event_producer=event_producer,
             tracking_link=settings.notifications.email.tracking_link,
         )
 
@@ -67,14 +63,12 @@ class LabourEventsApplicationProvider(Provider):
         subscription_query_service: Annotated[
             SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
-        notification_service: Annotated[
-            NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
-        ],
+        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourCompletedEventHandler:
         return LabourCompletedEventHandler(
             user_service=user_service,
             subscription_query_service=subscription_query_service,
-            notification_service=notification_service,
+            event_producer=event_producer,
             tracking_link=settings.notifications.email.tracking_link,
         )

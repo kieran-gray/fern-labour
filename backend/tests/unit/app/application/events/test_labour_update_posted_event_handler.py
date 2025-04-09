@@ -1,5 +1,6 @@
 import logging
 from datetime import UTC, datetime
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
@@ -13,7 +14,6 @@ from app.labour.application.event_handlers.labour_update_posted_event_handler im
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
 from app.labour.domain.labour_update.enums import LabourUpdateType
-from app.notification.application.services.notification_service import NotificationService
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
@@ -54,7 +54,6 @@ def generate_domain_event(
 @pytest_asyncio.fixture
 async def labour_update_posted_event_handler(
     user_service: UserService,
-    notification_service: NotificationService,
     subscription_query_service: SubscriptionQueryService,
 ) -> LabourUpdatePostedEventHandler:
     await user_service._user_repository.save(
@@ -78,7 +77,7 @@ async def labour_update_posted_event_handler(
     )
     return LabourUpdatePostedEventHandler(
         user_service=user_service,
-        notification_service=notification_service,
+        event_producer=AsyncMock(),
         subscription_query_service=subscription_query_service,
         tracking_link="http://localhost:5173",
     )
@@ -95,13 +94,11 @@ async def labour(labour_service: LabourService) -> LabourDTO:
 
 
 def has_sent_email(event_handler: LabourUpdatePostedEventHandler) -> bool:
-    email_gateway = event_handler._notification_service._email_notification_gateway
-    return email_gateway.sent_notifications != []
+    return event_handler._event_producer.publish.call_count > 0
 
 
 def has_sent_sms(event_handler: LabourUpdatePostedEventHandler) -> bool:
-    sms_gateway = event_handler._notification_service._sms_notification_gateway
-    return sms_gateway.sent_notifications != []
+    return event_handler._event_producer.publish.call_count > 0
 
 
 async def test_labour_update_posted_event_no_subscribers(

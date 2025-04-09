@@ -1,5 +1,6 @@
 import logging
 from datetime import UTC, datetime
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
@@ -11,7 +12,6 @@ from app.labour.application.event_handlers.labour_completed_event_handler import
 )
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.notification.application.services.notification_service import NotificationService
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
@@ -39,19 +39,16 @@ def generate_domain_event(birthing_person_id: str, labour_id: str, notes: str = 
 
 
 def has_sent_email(event_handler: LabourCompletedEventHandler) -> bool:
-    email_gateway = event_handler._notification_service._email_notification_gateway
-    return email_gateway.sent_notifications != []
+    return event_handler._event_producer.publish.call_count > 0
 
 
 def has_sent_sms(event_handler: LabourCompletedEventHandler) -> bool:
-    sms_gateway = event_handler._notification_service._sms_notification_gateway
-    return sms_gateway.sent_notifications != []
+    return event_handler._event_producer.publish.call_count > 0
 
 
 @pytest_asyncio.fixture
 async def labour_completed_event_handler(
     user_service: UserService,
-    notification_service: NotificationService,
     subscription_query_service: SubscriptionQueryService,
 ) -> LabourCompletedEventHandler:
     await user_service._user_repository.save(
@@ -75,7 +72,7 @@ async def labour_completed_event_handler(
     )
     return LabourCompletedEventHandler(
         user_service=user_service,
-        notification_service=notification_service,
+        event_producer=AsyncMock(),
         subscription_query_service=subscription_query_service,
         tracking_link="http://localhost:5173",
     )

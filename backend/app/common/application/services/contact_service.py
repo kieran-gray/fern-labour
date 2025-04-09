@@ -1,9 +1,10 @@
 import logging
 from dataclasses import dataclass
 
+from app.common.domain.producer import EventProducer
 from app.notification.application.dtos.notification_data import ContactUsData
-from app.notification.application.services.notification_service import NotificationService
 from app.notification.domain.enums import NotificationTemplate
+from app.notification.domain.events import NotificationRequested
 from app.subscription.domain.enums import ContactMethod
 
 log = logging.getLogger(__name__)
@@ -20,10 +21,10 @@ class ContactNotificationMetadata:
 class ContactService:
     def __init__(
         self,
-        notification_service: NotificationService,
+        event_producer: EventProducer,
         contact_email: str,
     ):
-        self._notification_service = notification_service
+        self._event_producer = event_producer
         self._contact_email = contact_email
         self._template = NotificationTemplate.CONTACT_US_SUBMISSION
 
@@ -40,11 +41,13 @@ class ContactService:
             email=email, name=name, message=message, user_id=user_id
         )
         notification_metadata = ContactNotificationMetadata(from_user_id=user_id or "null")
-        notification = await self._notification_service.create_notification(
-            type=ContactMethod.EMAIL.value,
-            destination=self._contact_email,
-            template=self._template.value,
-            data=notification_data.to_dict(),
-            metadata=notification_metadata.to_dict(),
+        notification_event = NotificationRequested.create(
+            data={
+                "type": ContactMethod.EMAIL,
+                "destination": self._contact_email,
+                "template": self._template.value,
+                "data": notification_data.to_dict(),
+                "metadata": notification_metadata.to_dict(),
+            }
         )
-        await self._notification_service.send(notification_id=notification.id)
+        await self._event_producer.publish(event=notification_event)
