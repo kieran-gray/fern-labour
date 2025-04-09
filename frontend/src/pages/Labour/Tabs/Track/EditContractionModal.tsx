@@ -147,6 +147,15 @@ export const EditContractionModal = ({
     }
   }
 
+  const getTime = (timestamp: string) => {
+    return new Date(timestamp).toLocaleTimeString(navigator.language, {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+  };
+
   return (
     <Modal
       opened={opened}
@@ -178,7 +187,7 @@ export const EditContractionModal = ({
           radius="lg"
           label="Start Time"
           {...form.getInputProps('startTime')}
-          defaultValue={contractionData?.startTime.split('T')[1].slice(0, 8) || undefined}
+          defaultValue={getTime(contractionData?.startTime) || undefined}
         />
         <Space h="lg" />
         <TimeInput
@@ -188,7 +197,7 @@ export const EditContractionModal = ({
           radius="lg"
           label="End Time"
           {...form.getInputProps('endTime')}
-          defaultValue={contractionData?.endTime.split('T')[1].slice(0, 8) || undefined}
+          defaultValue={getTime(contractionData?.endTime) || undefined}
         />
         <Space h="lg" />
         <Text size="sm" fw={500}>
