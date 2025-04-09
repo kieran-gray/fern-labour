@@ -3,15 +3,14 @@ import logging
 import os
 from typing import Any
 
-from sqlalchemy import Column, Enum, ForeignKey, String, Table
+from sqlalchemy import Column, Enum, String, Table
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP, UUID
 from sqlalchemy.sql import func
 from sqlalchemy_utils import StringEncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
 from app.common.infrastructure.persistence.orm_registry import mapper_registry
-from app.notification.domain.enums import NotificationStatus
-from app.subscription.domain.enums import ContactMethod
+from app.notification.domain.enums import NotificationStatus, NotificationType
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +50,7 @@ notifications_table = Table(
     mapper_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
     Column("status", Enum(NotificationStatus, name="notification_status"), nullable=False),
-    Column("type", Enum(ContactMethod, name="contact_method"), nullable=False),
+    Column("type", Enum(NotificationType, name="notification_type"), nullable=False),
     Column("destination", String, nullable=False),
     Column("template", String, nullable=False),
     Column(
@@ -64,10 +63,7 @@ notifications_table = Table(
         ),
         nullable=False,
     ),
-    Column("labour_id", UUID(as_uuid=True), ForeignKey("labours.id"), nullable=True),
-    Column("from_user_id", String, nullable=True),
-    Column("to_user_id", String, nullable=True),
-    Column("labour_update_id", UUID(as_uuid=True), ForeignKey("labour_updates.id"), nullable=True),
+    Column("metadata", JSONB, nullable=True),
     Column("external_id", String, nullable=True),
     Column("created_at", TIMESTAMP(timezone=True), server_default=func.now(), nullable=False),
     Column(

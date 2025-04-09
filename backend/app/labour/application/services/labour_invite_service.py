@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 
 from app.labour.application.security.token_generator import TokenGenerator
 from app.notification.application.dtos.notification_data import LabourInviteData
@@ -13,6 +14,18 @@ from app.user.application.dtos.user import UserDTO
 from app.user.application.services.user_service import UserService
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class LabourInviteNotificationMetadata:
+    labour_id: str
+    from_user_id: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "labour_id": self.labour_id,
+            "from_user_id": self.from_user_id,
+        }
 
 
 class LabourInviteService:
@@ -54,12 +67,15 @@ class LabourInviteService:
         notification_data = self._generate_notification_data(
             birthing_person=birthing_person, labour_id=labour_id
         )
+        notification_metadata = LabourInviteNotificationMetadata(
+            labour_id=labour_id,
+            from_user_id=birthing_person_id,
+        )
         notification = await self._notification_service.create_notification(
             type=ContactMethod.EMAIL,
             destination=invite_email,
             template=self._template.value,
             data=notification_data.to_dict(),
-            labour_id=labour_id,
-            from_user_id=birthing_person_id,
+            metadata=notification_metadata.to_dict(),
         )
         await self._notification_service.send(notification_id=notification.id)

@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 
 from app.notification.application.dtos.notification_data import ContactUsData
 from app.notification.application.services.notification_service import NotificationService
@@ -6,6 +7,14 @@ from app.notification.domain.enums import NotificationTemplate
 from app.subscription.domain.enums import ContactMethod
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class ContactNotificationMetadata:
+    from_user_id: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {"from_user_id": self.from_user_id}
 
 
 class ContactService:
@@ -30,11 +39,12 @@ class ContactService:
         notification_data = self._generate_notification_data(
             email=email, name=name, message=message, user_id=user_id
         )
+        notification_metadata = ContactNotificationMetadata(from_user_id=user_id or "null")
         notification = await self._notification_service.create_notification(
             type=ContactMethod.EMAIL.value,
             destination=self._contact_email,
             template=self._template.value,
             data=notification_data.to_dict(),
-            from_user_id=user_id,
+            metadata=notification_metadata.to_dict(),
         )
         await self._notification_service.send(notification_id=notification.id)

@@ -2,9 +2,6 @@ import logging
 from typing import Any
 from uuid import UUID
 
-from app.labour.domain.labour.exceptions import InvalidLabourId, InvalidLabourUpdateId
-from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
 from app.notification.application.dtos.notification import NotificationDTO
 from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
@@ -15,19 +12,17 @@ from app.notification.application.services.notification_generation_service impor
     NotificationGenerationService,
 )
 from app.notification.domain.entity import Notification
-from app.notification.domain.enums import NotificationStatus, NotificationTemplate
+from app.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
 from app.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
     InvalidNotificationTemplate,
+    InvalidNotificationType,
     NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
 from app.notification.domain.repository import NotificationRepository
 from app.notification.domain.value_objects.notification_id import NotificationId
-from app.subscription.domain.enums import ContactMethod
-from app.subscription.domain.exceptions import InvalidContactMethod
-from app.user.domain.value_objects.user_id import UserId
 
 log = logging.getLogger(__name__)
 
@@ -45,10 +40,10 @@ class NotificationService:
         self._notification_generation_service = notification_generation_service
         self._notification_repository = notification_repository
 
-    def _get_notification_gateway(self, notification_type: ContactMethod) -> NotificationGateway:
-        if notification_type is ContactMethod.EMAIL:
+    def _get_notification_gateway(self, notification_type: NotificationType) -> NotificationGateway:
+        if notification_type is NotificationType.EMAIL:
             return self._email_notification_gateway
-        elif notification_type is ContactMethod.SMS:
+        elif notification_type is NotificationType.SMS:
             return self._sms_notification_gateway
         else:
             raise NotImplementedError(
@@ -76,27 +71,12 @@ class NotificationService:
         template: str,
         data: dict[str, Any],
         status: str | None = None,
-        labour_id: str | None = None,
-        from_user_id: str | None = None,
-        to_user_id: str | None = None,
-        labour_update_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> NotificationDTO:
         try:
-            domain_labour_id = LabourId(UUID(labour_id)) if labour_id else None
+            notification_type = NotificationType(type)
         except ValueError:
-            raise InvalidLabourId()
-
-        try:
-            domain_labour_update_id = (
-                LabourUpdateId(UUID(labour_update_id)) if labour_update_id else None
-            )
-        except ValueError:
-            raise InvalidLabourUpdateId()
-
-        try:
-            contact_method = ContactMethod(type)
-        except ValueError:
-            raise InvalidContactMethod(contact_method=type)
+            raise InvalidNotificationType(notification_type=type)
 
         try:
             notification_status = NotificationStatus(status) if status else None
@@ -109,15 +89,12 @@ class NotificationService:
             raise InvalidNotificationTemplate(template=template)
 
         notification = Notification.create(
-            labour_id=domain_labour_id,
-            from_user_id=UserId(from_user_id) if from_user_id else None,
-            to_user_id=UserId(to_user_id) if to_user_id else None,
-            type=contact_method,
+            type=notification_type,
             destination=destination,
             template=notification_template,
             data=data,
+            metadata=metadata,
             status=notification_status,
-            labour_update_id=domain_labour_update_id,
         )
         await self._notification_repository.save(notification)
 

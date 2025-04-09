@@ -1,11 +1,7 @@
 from typing import Protocol
 
-from app.labour.domain.labour.value_objects.labour_id import LabourId
 from app.notification.domain.entity import Notification
-from app.notification.domain.enums import NotificationStatus
 from app.notification.domain.value_objects.notification_id import NotificationId
-from app.subscription.domain.enums import ContactMethod
-from app.user.domain.value_objects.user_id import UserId
 
 
 class NotificationRepository(Protocol):
@@ -25,28 +21,6 @@ class NotificationRepository(Protocol):
 
         Args:
             Notification: The Notification to delete
-        """
-
-    async def filter(
-        self,
-        labour_id: LabourId | None = None,
-        from_user_id: UserId | None = None,
-        to_user_id: UserId | None = None,
-        notification_type: ContactMethod | None = None,
-        notification_status: NotificationStatus | None = None,
-    ) -> list[Notification]:
-        """
-        Filter Notifications based on inputs.
-
-        Args:
-            labour_id: An optional Labour ID
-            from_user_id: An optional User ID, representing the sender of the notification
-            to_user_id: An optional User ID, representing the receiver of the notification
-            notification_type: An optional type of notification
-            notification_status: An optional Notification status
-
-        Returns:
-            A list of Notifications
         """
 
     async def get_by_id(self, notification_id: NotificationId) -> Notification | None:

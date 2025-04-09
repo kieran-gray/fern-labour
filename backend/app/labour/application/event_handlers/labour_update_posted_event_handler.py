@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 from typing import Any, Protocol
 
 from app.common.application.event_handler import EventHandler
@@ -17,6 +18,22 @@ from app.user.application.services.user_service import UserService
 from app.user.domain.exceptions import UserNotFoundById
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class LabourUpdatePostedNotificationMetadata:
+    labour_id: str
+    from_user_id: str
+    to_user_id: str
+    labour_update_id: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "labour_id": self.labour_id,
+            "from_user_id": self.from_user_id,
+            "to_user_id": self.to_user_id,
+            "labour_update_id": self.labour_update_id,
+        }
 
 
 class AnnouncementMadeNotificationGenerator(Protocol):
@@ -83,14 +100,17 @@ class LabourUpdatePostedEventHandler(EventHandler):
                     subscriber=subscriber,
                     announcement=domain_event.data["message"],
                 )
+                notification_metadata = LabourUpdatePostedNotificationMetadata(
+                    labour_id=subscription.labour_id,
+                    from_user_id=subscription.birthing_person_id,
+                    to_user_id=subscriber.id,
+                    labour_update_id=labour_update_id,
+                )
                 notification = await self._notification_service.create_notification(
                     type=ContactMethod(method),
                     destination=destination,
                     template=self._template.value,
                     data=notification_data.to_dict(),
-                    labour_id=labour_id,
-                    from_user_id=birthing_person_id,
-                    to_user_id=subscriber.id,
-                    labour_update_id=labour_update_id,
+                    metadata=notification_metadata.to_dict(),
                 )
                 await self._notification_service.send(notification_id=notification.id)

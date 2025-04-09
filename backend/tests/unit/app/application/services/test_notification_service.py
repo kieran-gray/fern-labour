@@ -4,7 +4,6 @@ from uuid import UUID, uuid4
 import pytest
 import pytest_asyncio
 
-from app.labour.domain.labour.exceptions import InvalidLabourId, InvalidLabourUpdateId
 from app.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
 from app.notification.application.dtos.notification_data import ContactUsData
 from app.notification.application.gateways.email_notification_gateway import (
@@ -15,18 +14,17 @@ from app.notification.application.services.notification_generation_service impor
     NotificationGenerationService,
 )
 from app.notification.application.services.notification_service import NotificationService
-from app.notification.domain.enums import NotificationStatus, NotificationTemplate
+from app.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
 from app.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
     InvalidNotificationTemplate,
+    InvalidNotificationType,
     NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
 from app.notification.domain.repository import NotificationRepository
 from app.notification.domain.value_objects.notification_id import NotificationId
-from app.subscription.domain.enums import ContactMethod
-from app.subscription.domain.exceptions import InvalidContactMethod
 
 
 class MockEmailNotificationGateway(EmailNotificationGateway):
@@ -78,7 +76,7 @@ async def notification_service(
 
 async def test_can_create_notification(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=ContactMethod.EMAIL.value,
+        type=NotificationType.EMAIL.value,
         destination="test",
         template="labour_update",
         data={"test": "test"},
@@ -92,36 +90,10 @@ async def test_can_create_notification(notification_service: NotificationService
     assert stored_notification.status is NotificationStatus.CREATED
 
 
-async def test_cannot_create_notification_invalid_labour_id(
+async def test_cannot_create_notification_invalid_notification_type(
     notification_service: NotificationService,
 ) -> None:
-    with pytest.raises(InvalidLabourId):
-        await notification_service.create_notification(
-            type=ContactMethod.EMAIL.value,
-            destination="test",
-            template="labour_update",
-            data={"test": "test"},
-            labour_id="test",
-        )
-
-
-async def test_cannot_create_notification_invalid_labour_update_id(
-    notification_service: NotificationService,
-) -> None:
-    with pytest.raises(InvalidLabourUpdateId):
-        await notification_service.create_notification(
-            type=ContactMethod.EMAIL.value,
-            destination="test",
-            template="labour_update",
-            data={"test": "test"},
-            labour_update_id="test",
-        )
-
-
-async def test_cannot_create_notification_invalid_contact_method(
-    notification_service: NotificationService,
-) -> None:
-    with pytest.raises(InvalidContactMethod):
+    with pytest.raises(InvalidNotificationType):
         await notification_service.create_notification(
             type="fail",
             destination="test",
@@ -135,7 +107,7 @@ async def test_cannot_create_notification_invalid_notification_status(
 ) -> None:
     with pytest.raises(InvalidNotificationStatus):
         await notification_service.create_notification(
-            type=ContactMethod.SMS.value,
+            type=NotificationType.SMS.value,
             destination="test",
             template="labour_update",
             data={"test": "test"},
@@ -148,7 +120,7 @@ async def test_cannot_create_notification_invalid_template(
 ) -> None:
     with pytest.raises(InvalidNotificationTemplate):
         await notification_service.create_notification(
-            type=ContactMethod.SMS.value,
+            type=NotificationType.SMS.value,
             destination="test",
             template="invalid",
             data={"test": "test"},
@@ -157,7 +129,7 @@ async def test_cannot_create_notification_invalid_template(
 
 async def test_can_update_notification(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=ContactMethod.EMAIL.value,
+        type=NotificationType.EMAIL.value,
         destination="test",
         template="labour_update",
         data={"test": "test"},
@@ -172,7 +144,7 @@ async def test_can_update_notification_with_external_id(
     notification_service: NotificationService,
 ) -> None:
     notification = await notification_service.create_notification(
-        type=ContactMethod.EMAIL.value,
+        type=NotificationType.EMAIL.value,
         destination="test",
         template="labour_update",
         data={"test": "test"},
@@ -211,12 +183,13 @@ async def test_cannot_update_notification_notification_not_found(
 
 async def test_can_send_email(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=ContactMethod.EMAIL.value,
+        type=NotificationType.EMAIL.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(
             email="test@email.com", name="test", message="test", user_id="abc123"
         ).to_dict(),
+        metadata={"test": "abc", "more_data": "test123"},
     )
     await notification_service.send(notification_id=notification.id)
     stored_notification = await notification_service._notification_repository.get_by_id(
@@ -224,20 +197,17 @@ async def test_can_send_email(notification_service: NotificationService) -> None
     )
     assert stored_notification
     assert stored_notification.status is NotificationStatus.SENT
-    assert stored_notification.type is ContactMethod.EMAIL
+    assert stored_notification.type is NotificationType.EMAIL
 
     assert notification_service._sms_notification_gateway.sent_notifications == []
     sent_email = notification_service._email_notification_gateway.sent_notifications[0]
     assert sent_email.destination == notification.destination
     assert sent_email.data == notification.data
 
-    assert sent_email.from_user_id == notification.from_user_id
     assert sent_email.id == notification.id
-    assert sent_email.labour_id == notification.labour_id
-    assert sent_email.labour_update_id == notification.labour_update_id
-    assert sent_email.to_user_id == notification.to_user_id
     assert sent_email.type == notification.type
     assert sent_email.template == notification.template
+    assert sent_email.metadata == notification.metadata
 
     assert sent_email.subject != notification.subject
     assert sent_email.message != notification.message
@@ -246,12 +216,13 @@ async def test_can_send_email(notification_service: NotificationService) -> None
 
 async def test_can_send_sms(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=ContactMethod.SMS.value,
+        type=NotificationType.SMS.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(
             email="test@email.com", name="test", message="test", user_id="abc123"
         ).to_dict(),
+        metadata={"test": "abc", "more_data": "test123"},
     )
     await notification_service.send(notification_id=notification.id)
     stored_notification = await notification_service._notification_repository.get_by_id(
@@ -259,7 +230,7 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
     )
     assert stored_notification
     assert stored_notification.status is NotificationStatus.SENT
-    assert stored_notification.type is ContactMethod.SMS
+    assert stored_notification.type is NotificationType.SMS
 
     sent_sms = notification_service._sms_notification_gateway.sent_notifications[0]
     assert notification_service._email_notification_gateway.sent_notifications == []
@@ -267,13 +238,10 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
     assert sent_sms.destination == notification.destination
     assert sent_sms.data == notification.data
 
-    assert sent_sms.from_user_id == notification.from_user_id
     assert sent_sms.id == notification.id
-    assert sent_sms.labour_id == notification.labour_id
-    assert sent_sms.labour_update_id == notification.labour_update_id
-    assert sent_sms.to_user_id == notification.to_user_id
     assert sent_sms.type == notification.type
     assert sent_sms.template == notification.template
+    assert sent_sms.metadata == notification.metadata
 
     assert sent_sms.external_id != stored_notification.external_id
     assert sent_sms.message != notification.message
@@ -292,16 +260,16 @@ async def test_cannot_send_with_non_found_id(notification_service: NotificationS
 async def test_invalid_type_raises_not_implemented(
     notification_service: NotificationService,
 ) -> None:
-    class ContactMethod(StrEnum):
+    class NotificationType(StrEnum):
         TEST = "test"
 
     with pytest.raises(NotImplementedError):
-        await notification_service._get_notification_gateway(ContactMethod.TEST)
+        await notification_service._get_notification_gateway(NotificationType.TEST)
 
 
 async def test_status_callback_updates_status(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=ContactMethod.EMAIL.value,
+        type=NotificationType.EMAIL.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(
@@ -326,7 +294,7 @@ async def test_status_callback_error_invalid_status(
     notification_service: NotificationService,
 ) -> None:
     notification = await notification_service.create_notification(
-        type=ContactMethod.EMAIL.value,
+        type=NotificationType.EMAIL.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(

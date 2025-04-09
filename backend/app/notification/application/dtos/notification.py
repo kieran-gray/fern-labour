@@ -28,10 +28,7 @@ class NotificationDTO:
     destination: str
     template: str
     data: dict[str, Any]
-    labour_id: str | None = None
-    from_user_id: str | None = None
-    to_user_id: str | None = None
-    labour_update_id: str | None = None
+    metadata: dict[str, Any] | None = None
     external_id: str | None = None
     message: str | None = None
     subject: str | None = None
@@ -51,12 +48,7 @@ class NotificationDTO:
             destination=notification.destination,
             template=notification.template,
             data=notification.data,
-            labour_id=str(notification.labour_id.value) if notification.labour_id else None,
-            from_user_id=notification.from_user_id.value if notification.from_user_id else None,
-            to_user_id=notification.to_user_id.value if notification.to_user_id else None,
-            labour_update_id=str(notification.labour_update_id)
-            if notification.labour_update_id
-            else None,
+            metadata=notification.metadata,
             external_id=notification.external_id,
         )
 
@@ -69,9 +61,6 @@ class NotificationDTO:
             "destination": self.destination,
             "template": self.template,
             "data": self.data,
-            "labour_id": self.labour_id,
-            "from_user_id": self.from_user_id,
-            "to_user_id": self.to_user_id,
-            "labour_update_id": self.labour_update_id,
+            "metadata": self.metadata,
             "external_id": self.external_id,
         }
