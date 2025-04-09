@@ -1,6 +1,11 @@
 from app.common.domain.exceptions import DomainError, DomainValidationError
 
 
+class InvalidNotificationType(DomainValidationError):
+    def __init__(self, notification_type: str | None) -> None:
+        super().__init__(f"Notification type '{notification_type}' is not valid.")
+
+
 class InvalidNotificationStatus(DomainValidationError):
     def __init__(self, notification_status: str | None) -> None:
         super().__init__(f"Notification status '{notification_status}' is not valid.")

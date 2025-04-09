@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 from typing import Any, Protocol
 
 from app.common.application.event_handler import EventHandler
@@ -6,7 +7,7 @@ from app.common.domain.event import DomainEvent
 from app.notification.application.dtos.notification import NotificationContent
 from app.notification.application.dtos.notification_data import LabourUpdateData
 from app.notification.application.services.notification_service import NotificationService
-from app.notification.domain.enums import NotificationStatus, NotificationTemplate
+from app.notification.domain.enums import NotificationTemplate
 from app.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
@@ -15,6 +16,20 @@ from app.user.application.services.user_service import UserService
 from app.user.domain.exceptions import UserNotFoundById
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class LabourBegunNotificationMetadata:
+    labour_id: str
+    from_user_id: str
+    to_user_id: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "labour_id": self.labour_id,
+            "from_user_id": self.from_user_id,
+            "to_user_id": self.to_user_id,
+        }
 
 
 class LabourBegunNotificationContentGenerator(Protocol):
@@ -69,15 +84,16 @@ class LabourBegunEventHandler(EventHandler):
                     continue
 
                 notification_data = self._generate_notification_data(birthing_person, subscriber)
-                notification = await self._notification_service.create_notification(
+                notification_metadata = LabourBegunNotificationMetadata(
                     labour_id=subscription.labour_id,
                     from_user_id=subscription.birthing_person_id,
                     to_user_id=subscriber.id,
+                )
+                notification = await self._notification_service.create_notification(
                     type=method,
                     destination=destination,
                     template=self._template.value,
                     data=notification_data.to_dict(),
-                    status=NotificationStatus.CREATED.value,
-                    labour_update_id=None,
+                    metadata=notification_metadata.to_dict(),
                 )
                 await self._notification_service.send(notification_id=notification.id)

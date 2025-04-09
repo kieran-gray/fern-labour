@@ -12,7 +12,7 @@ from app.notification.application.dtos.notification_data import (
 )
 from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
 from app.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
-from app.notification.domain.enums import NotificationTemplate
+from app.notification.domain.enums import NotificationTemplate, NotificationType
 from app.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationTemplate,
@@ -21,7 +21,6 @@ from app.notification.domain.exceptions import (
 )
 from app.notification.domain.repository import NotificationRepository
 from app.notification.domain.value_objects.notification_id import NotificationId
-from app.subscription.domain.enums import ContactMethod
 
 log = logging.getLogger(__name__)
 
@@ -106,10 +105,10 @@ class NotificationGenerationService:
         return NotificationContent(message=message)
 
     def _get_notification_content_generator(
-        self, contact_method: ContactMethod
+        self, notification_type: NotificationType
     ) -> NotificationContentGenerator:
-        if contact_method is ContactMethod.EMAIL:
+        if notification_type is NotificationType.EMAIL:
             return self._generate_email
-        if contact_method is ContactMethod.SMS:
+        if notification_type is NotificationType.SMS:
             return self._generate_sms
-        raise NotImplementedError(f"Notification generator for {contact_method} not implemented")
+        raise NotImplementedError(f"Notification generator for {notification_type} not implemented")
