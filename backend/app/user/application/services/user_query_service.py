@@ -5,7 +5,7 @@ from app.user.domain.repository import UserRepository
 from app.user.domain.value_objects.user_id import UserId
 
 
-class UserService:
+class UserQueryService:
     def __init__(self, user_repository: UserRepository):
         self._user_repository = user_repository
 

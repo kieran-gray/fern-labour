@@ -9,7 +9,7 @@ SUBSCRIBER = "test_subscriber_id"
 
 
 def has_sent_email(contact_service: ContactService) -> bool:
-    return contact_service._event_producer.publish.assert_called()
+    return contact_service._event_producer.publish.call_count > 0
 
 
 @pytest_asyncio.fixture

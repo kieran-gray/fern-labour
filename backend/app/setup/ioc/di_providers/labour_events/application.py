@@ -15,7 +15,7 @@ from app.setup.settings import Settings
 from app.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 
 
 class LabourEventsApplicationProvider(Provider):
@@ -25,7 +25,7 @@ class LabourEventsApplicationProvider(Provider):
     @provide
     def get_labour_update_posted_event_handler(
         self,
-        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
+        user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         subscription_query_service: Annotated[
             SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
@@ -42,7 +42,7 @@ class LabourEventsApplicationProvider(Provider):
     @provide
     def get_labour_begun_event_handler(
         self,
-        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
+        user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         subscription_query_service: Annotated[
             SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],
@@ -59,7 +59,7 @@ class LabourEventsApplicationProvider(Provider):
     @provide
     def get_labour_completed_event_handler(
         self,
-        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
+        user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         subscription_query_service: Annotated[
             SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
         ],

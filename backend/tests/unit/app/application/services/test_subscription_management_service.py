@@ -20,7 +20,7 @@ from app.subscription.domain.exceptions import (
     SubscriptionNotFoundById,
     UnauthorizedSubscriptionUpdateRequest,
 )
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.value_objects.user_id import UserId
 
@@ -30,7 +30,7 @@ SUBSCRIBER = "subscriber_id"
 
 @pytest_asyncio.fixture
 async def subscription(
-    user_service: UserService,
+    user_service: UserQueryService,
     labour_service: LabourService,
     subscription_service: SubscriptionService,
     token_generator: TokenGenerator,

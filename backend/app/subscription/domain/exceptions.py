@@ -51,8 +51,3 @@ class UnauthorizedSubscriptionUpdateRequest(DomainError):
 class UnauthorizedSubscriptionRequest(DomainError):
     def __init__(self) -> None:
         super().__init__("User is not authorized to access requested subscriptions.")
-
-
-class InvalidContactMethod(DomainValidationError):
-    def __init__(self, contact_method: str) -> None:
-        super().__init__(f"Contact method '{contact_method}' is not valid.")

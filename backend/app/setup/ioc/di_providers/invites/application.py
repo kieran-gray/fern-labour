@@ -10,7 +10,7 @@ from app.subscription.application.services.subscriber_invite_service import Subs
 from app.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 
 
 class InvitesApplicationProvider(Provider):
@@ -20,7 +20,7 @@ class InvitesApplicationProvider(Provider):
     @provide
     def provide_labour_invite_service(
         self,
-        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
+        user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         subscription_query_service: Annotated[
             SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
@@ -37,7 +37,7 @@ class InvitesApplicationProvider(Provider):
     @provide
     def provide_subscriber_invite_service(
         self,
-        user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
+        user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
     ) -> SubscriberInviteService:
         return SubscriberInviteService(

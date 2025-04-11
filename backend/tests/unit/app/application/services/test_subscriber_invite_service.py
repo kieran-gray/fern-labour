@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 import pytest_asyncio
 
 from app.subscription.application.services.subscriber_invite_service import SubscriberInviteService
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.value_objects.user_id import UserId
 
@@ -12,7 +12,7 @@ SUBSCRIBER = "test_subscriber"
 
 
 @pytest_asyncio.fixture
-async def subscriber_invite_service(user_service: UserService) -> SubscriberInviteService:
+async def subscriber_invite_service(user_service: UserQueryService) -> SubscriberInviteService:
     await user_service._user_repository.save(
         User(
             id_=UserId(SUBSCRIBER),
@@ -27,7 +27,7 @@ async def subscriber_invite_service(user_service: UserService) -> SubscriberInvi
 
 
 def has_sent_email(subscriber_invite_service: SubscriberInviteService) -> bool:
-    return subscriber_invite_service._event_producer.publish.assert_called()
+    return subscriber_invite_service._event_producer.publish.call_count > 0
 
 
 async def test_can_send_invite(

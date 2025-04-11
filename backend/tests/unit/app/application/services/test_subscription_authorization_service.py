@@ -18,7 +18,7 @@ from app.subscription.application.services.subscription_management_service impor
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.repository import SubscriptionRepository
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.value_objects.user_id import UserId
 
@@ -28,7 +28,7 @@ SUBSCRIBER = "subscriber_id"
 
 @pytest_asyncio.fixture
 async def auth_service(
-    user_service: UserService,
+    user_service: UserQueryService,
     subscription_repo: SubscriptionRepository,
 ) -> SubscriptionAuthorizationService:
     await user_service._user_repository.save(

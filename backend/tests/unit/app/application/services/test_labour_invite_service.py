@@ -17,7 +17,7 @@ from app.subscription.application.services.subscription_query_service import (
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.exceptions import SubscriberAlreadySubscribed
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.exceptions import UserNotFoundById
 from app.user.domain.value_objects.user_id import UserId
@@ -28,7 +28,7 @@ SUBSCRIBER = "test_subscriber"
 
 @pytest_asyncio.fixture
 async def labour_invite_service(
-    user_service: UserService,
+    user_service: UserQueryService,
     subscription_query_service: SubscriptionQueryService,
     token_generator: TokenGenerator,
 ) -> LabourInviteService:
@@ -60,7 +60,7 @@ async def labour_invite_service(
 
 
 def has_sent_email(labour_invite_service: LabourInviteService) -> bool:
-    return labour_invite_service._event_producer.publish.assert_called()
+    return labour_invite_service._event_producer.publish.call_count > 0
 
 
 async def test_can_send_invite(

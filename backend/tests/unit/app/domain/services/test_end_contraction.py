@@ -14,6 +14,15 @@ def test_can_end_contraction(sample_labour: Labour):
     EndContractionService().end_contraction(sample_labour, intensity=CONTRACTION_MAX_INTENSITY)
 
 
+def test_can_end_contraction_with_notes(sample_labour: Labour):
+    BeginLabourService().begin_labour(sample_labour)
+    StartContractionService().start_contraction(sample_labour)
+    labour = EndContractionService().end_contraction(
+        sample_labour, intensity=CONTRACTION_MAX_INTENSITY, notes="Test note"
+    )
+    assert labour.contractions[0].notes == "Test note"
+
+
 def test_cannot_end_contraction_that_doesnt_exist(sample_labour: Labour):
     BeginLabourService().begin_labour(sample_labour)
     with pytest.raises(LabourHasNoActiveContraction):

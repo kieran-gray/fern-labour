@@ -12,7 +12,7 @@ from app.subscription.application.services.subscription_query_service import (
 from app.subscription.domain.enums import ContactMethod
 from app.subscription.domain.exceptions import SubscriberAlreadySubscribed
 from app.user.application.dtos.user import UserDTO
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class LabourInviteNotificationMetadata:
 class LabourInviteService:
     def __init__(
         self,
-        user_service: UserService,
+        user_service: UserQueryService,
         event_producer: EventProducer,
         subscription_query_service: SubscriptionQueryService,
         token_generator: TokenGenerator,

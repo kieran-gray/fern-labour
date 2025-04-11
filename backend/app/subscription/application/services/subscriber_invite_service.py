@@ -7,7 +7,7 @@ from app.notification.domain.enums import NotificationTemplate
 from app.notification.domain.events import NotificationRequested
 from app.subscription.domain.enums import ContactMethod
 from app.user.application.dtos.user import UserDTO
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class SubscriberInviteNotificationMetadata:
 class SubscriberInviteService:
     def __init__(
         self,
-        user_service: UserService,
+        user_service: UserQueryService,
         event_producer: EventProducer,
     ):
         self._user_service = user_service

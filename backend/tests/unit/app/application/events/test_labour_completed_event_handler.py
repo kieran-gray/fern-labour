@@ -12,6 +12,8 @@ from app.labour.application.event_handlers.labour_completed_event_handler import
 )
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
+from app.notification.domain.enums import NotificationType
+from app.notification.domain.events import NotificationRequested
 from app.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
@@ -20,7 +22,7 @@ from app.subscription.application.services.subscription_query_service import (
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.enums import ContactMethod
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.exceptions import UserNotFoundById
 from app.user.domain.value_objects.user_id import UserId
@@ -39,16 +41,24 @@ def generate_domain_event(birthing_person_id: str, labour_id: str, notes: str = 
 
 
 def has_sent_email(event_handler: LabourCompletedEventHandler) -> bool:
-    return event_handler._event_producer.publish.call_count > 0
+    for call in event_handler._event_producer.publish.mock_calls:
+        event: NotificationRequested = call.kwargs["event"]
+        if event.data["type"] == NotificationType.EMAIL.value:
+            return True
+    return False
 
 
 def has_sent_sms(event_handler: LabourCompletedEventHandler) -> bool:
-    return event_handler._event_producer.publish.call_count > 0
+    for call in event_handler._event_producer.publish.mock_calls:
+        event: NotificationRequested = call.kwargs["event"]
+        if event.data["type"] == NotificationType.SMS.value:
+            return True
+    return False
 
 
 @pytest_asyncio.fixture
 async def labour_completed_event_handler(
-    user_service: UserService,
+    user_service: UserQueryService,
     subscription_query_service: SubscriptionQueryService,
 ) -> LabourCompletedEventHandler:
     await user_service._user_repository.save(
@@ -202,13 +212,8 @@ async def test_labour_completed_event_has_subscriber_all_contact_methods(
         birthing_person_id=BIRTHING_PERSON, labour_id=labour.id, notes="FINDME"
     )
     await labour_completed_event_handler.handle(event.to_dict())
-    notification_service = labour_completed_event_handler._notification_service
-    sent_emails = notification_service._email_notification_gateway.sent_notifications
-    sent_sms = notification_service._sms_notification_gateway.sent_notifications
-    assert sent_emails != []
-    assert sent_sms != []
-    assert "FINDME" in sent_emails[0].message
-    assert "FINDME" in sent_sms[0].message
+    assert has_sent_email(labour_completed_event_handler)
+    assert has_sent_sms(labour_completed_event_handler)
 
 
 async def test_labour_completed_event_has_subscriber_all_contact_methods_no_phone_number_or_email(

@@ -32,7 +32,7 @@ from app.subscription.domain.exceptions import (
     SubscriptionTokenIncorrect,
 )
 from app.subscription.domain.repository import SubscriptionRepository
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.value_objects.user_id import UserId
 
@@ -43,7 +43,7 @@ SUBSCRIBER = "subscriber_id"
 @pytest_asyncio.fixture
 async def subscription_service(
     labour_query_service: LabourQueryService,
-    user_service: UserService,
+    user_service: UserQueryService,
     subscription_repo: SubscriptionRepository,
     token_generator: TokenGenerator,
 ) -> SubscriptionService:
@@ -142,7 +142,7 @@ async def test_cannot_subscribe_to_labour_with_solo_payment_plan(
 async def test_cannot_subscribe_to_labour_with_solo_payment_plan_sub_limit_reached(
     subscription_service: SubscriptionService,
     labour_service: LabourService,
-    user_service: UserService,
+    user_service: UserQueryService,
 ) -> None:
     user_ids = [str(uuid4()) for _ in range(5)]
     for user_id in user_ids:

@@ -13,7 +13,7 @@ from app.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
 from app.user.application.dtos.user import UserDTO
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.exceptions import UserNotFoundById
 
 log = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ class LabourCompletedNotificationGenerator(Protocol):
 class LabourCompletedEventHandler(EventHandler):
     def __init__(
         self,
-        user_service: UserService,
+        user_service: UserQueryService,
         subscription_query_service: SubscriptionQueryService,
         event_producer: EventProducer,
         tracking_link: str,

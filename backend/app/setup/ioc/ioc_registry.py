@@ -10,6 +10,9 @@ from app.setup.ioc.di_providers.invites.application import InvitesApplicationPro
 from app.setup.ioc.di_providers.labour.application import LabourApplicationProvider
 from app.setup.ioc.di_providers.labour.infrastructure import LabourInfrastructureProvider
 from app.setup.ioc.di_providers.labour_events.application import LabourEventsApplicationProvider
+from app.setup.ioc.di_providers.notification_events.application import (
+    NotificationEventsApplicationProvider,
+)
 from app.setup.ioc.di_providers.notification_generators.infrastructure import (
     NotificationGeneratorsInfrastructureProvider,
 )
@@ -44,6 +47,7 @@ def get_providers() -> Iterable[Provider]:
         SubscriptionsInfrastructureProvider(),
         NotificationsApplicationProvider(),
         NotificationsInfrastructureProvider(),
+        NotificationEventsApplicationProvider(),
         NotificationGeneratorsInfrastructureProvider(),
         UserApplicationProvider(),
         UserInfrastructureProvider(),

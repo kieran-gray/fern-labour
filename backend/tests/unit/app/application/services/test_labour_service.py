@@ -23,7 +23,7 @@ from app.labour.domain.labour.exceptions import (
 )
 from app.labour.domain.labour.repository import LabourRepository
 from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.exceptions import (
     UserDoesNotHaveActiveLabour,
@@ -43,7 +43,7 @@ def event_producer():
 @pytest_asyncio.fixture
 async def labour_service(
     labour_repo: LabourRepository,
-    user_service: UserService,
+    user_service: UserQueryService,
     event_producer: EventProducer,
 ) -> LabourService:
     user_service._user_repository._data = {

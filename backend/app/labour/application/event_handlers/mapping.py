@@ -7,7 +7,7 @@ from app.labour.application.event_handlers.labour_update_posted_event_handler im
     LabourUpdatePostedEventHandler,
 )
 
-EVENT_HANDLER_MAPPING: dict[str, type[EventHandler]] = {
+LABOUR_EVENT_HANDLER_MAPPING: dict[str, type[EventHandler]] = {
     "labour.update-posted": LabourUpdatePostedEventHandler,
     "labour.begun": LabourBegunEventHandler,
     "labour.completed": LabourCompletedEventHandler,

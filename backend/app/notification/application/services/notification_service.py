@@ -2,6 +2,7 @@ import logging
 from typing import Any
 from uuid import UUID
 
+from app.common.domain.producer import EventProducer
 from app.notification.application.dtos.notification import NotificationDTO
 from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
@@ -34,11 +35,13 @@ class NotificationService:
         sms_notification_gateway: SMSNotificationGateway,
         notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
+        event_producer: EventProducer,
     ):
         self._email_notification_gateway = email_notification_gateway
         self._sms_notification_gateway = sms_notification_gateway
         self._notification_generation_service = notification_generation_service
         self._notification_repository = notification_repository
+        self._event_producer = event_producer
 
     def _get_notification_gateway(self, notification_type: NotificationType) -> NotificationGateway:
         if notification_type is NotificationType.EMAIL:
@@ -110,10 +113,14 @@ class NotificationService:
 
         notification = await self._get_notification(notification_id=notification_id)
 
-        notification.status = notification_status
         if external_id:
             notification.external_id = external_id
+
+        notification.update_status(notification_status)
+
         await self._notification_repository.save(notification=notification)
+
+        await self._event_producer.publish_batch(notification.clear_domain_events())
 
         return NotificationDTO.from_domain(notification=notification)
 
@@ -144,7 +151,11 @@ class NotificationService:
         notification_gateway = self._get_notification_gateway(notification.type)
         result = await notification_gateway.send(notification_dto)
 
-        notification.status = result.status
         if result.external_id:
             notification.external_id = result.external_id
+
+        notification.update_status(result.status)
+
         await self._notification_repository.save(notification=notification)
+
+        await self._event_producer.publish_batch(notification.clear_domain_events())

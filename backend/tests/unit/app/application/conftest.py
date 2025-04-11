@@ -42,7 +42,7 @@ from app.subscription.domain.entity import Subscription
 from app.subscription.domain.enums import ContactMethod, SubscriptionStatus
 from app.subscription.domain.repository import SubscriptionRepository
 from app.subscription.domain.value_objects.subscription_id import SubscriptionId
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.repository import UserRepository
 from app.user.domain.value_objects.user_id import UserId
@@ -300,8 +300,8 @@ def token_generator() -> TokenGenerator:
 
 
 @pytest_asyncio.fixture
-async def user_service(user_repo: UserRepository) -> UserService:
-    return UserService(user_repository=user_repo)
+async def user_service(user_repo: UserRepository) -> UserQueryService:
+    return UserQueryService(user_repository=user_repo)
 
 
 @pytest_asyncio.fixture
@@ -404,4 +404,5 @@ async def notification_service(
         sms_notification_gateway=sms_notification_gateway,
         notification_generation_service=notification_generation_service,
         notification_repository=notification_repo,
+        event_producer=AsyncMock(),
     )
