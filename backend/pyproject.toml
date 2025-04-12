@@ -46,9 +46,6 @@ dev = [
     "ruff<1.0.0,>=0.6.3",
 ]
 
-[tool.uv]
-default-groups = ["dev", "test"]  # TODO don't include in prod image
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
