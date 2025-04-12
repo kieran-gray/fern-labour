@@ -49,9 +49,14 @@ export const EditContractionModal = ({
   };
 
   const updateTime = (dateTime: string, time: string) => {
-    const split = dateTime.split('T');
-    split[1] = `${time}Z`;
-    return split.join('T');
+    const originalDate = new Date(dateTime);
+
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+
+    const newLocalDate = new Date(originalDate);
+    newLocalDate.setHours(hours, minutes, seconds);
+
+    return newLocalDate.toISOString();
   };
 
   const deleteContractionMutation = useMutation({
