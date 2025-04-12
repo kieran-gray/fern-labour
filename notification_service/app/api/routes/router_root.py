@@ -30,7 +30,7 @@ async def docs(settings: Annotated[Settings, FromComponent()]) -> HTMLResponse:
 @inject
 async def openapi(settings: Annotated[Settings, FromComponent()]) -> dict[str, Any]:
     if settings.base.environment != "production":
-        return get_openapi(title="Labour Tracker", version="0.1.0", routes=root_router.routes)
+        return get_openapi(title="Notification Service", version="0.1.0", routes=root_router.routes)
     return {"status": "Forbidden"}
 
 
