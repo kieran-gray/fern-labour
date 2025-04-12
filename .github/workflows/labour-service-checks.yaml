@@ -1,4 +1,4 @@
-name: Backend Checks
+name: Labour Service Checks
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - 'backend/**'
+      - 'labour_service/**'
       - '.github/workflows/**'
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
           enable-cache: true
       - name: Run tests
         run: uv run pytest --cov
-        working-directory: ./backend
+        working-directory: ./labour_service
 
   lint:
     runs-on: ubuntu-latest
@@ -39,10 +39,10 @@ jobs:
           enable-cache: true
       - name: Run MyPy
         run: uv run mypy app
-        working-directory: ./backend
+        working-directory: ./labour_service
       - name: Run Ruff Check
         run: uv run ruff check app
-        working-directory: ./backend
+        working-directory: ./labour_service
       - name: Run Ruff Format Check
         run: uv run ruff format app --check
-        working-directory: ./backend
+        working-directory: ./labour_service

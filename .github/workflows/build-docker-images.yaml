@@ -3,7 +3,7 @@ on:
   push:
     branches: ['main']
     paths:
-      - 'backend/**'
+      - 'labour_service/**'
       - 'frontend/**'
       - 'marketing/**'
       - 'keycloak/**'
@@ -18,7 +18,7 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      backend: ${{ steps.filter.outputs.backend }}
+      labour_service: ${{ steps.filter.outputs.labour_service }}
       frontend: ${{ steps.filter.outputs.frontend }}
       marketing: ${{ steps.filter.outputs.marketing }}
       keycloak: ${{ steps.filter.outputs.keycloak }}
@@ -31,8 +31,8 @@ jobs:
         id: filter
         with:
           filters: |
-            backend:
-              - 'backend/**'
+            labour_service:
+              - 'labour_service/**'
             frontend:
               - 'frontend/**'
             marketing:
@@ -42,13 +42,13 @@ jobs:
             notification_service:
               - 'notification_service/**'
 
-  backend:
+  labour_service:
     needs: check-changes
-    if: ${{ needs.check-changes.outputs.backend == 'true' }}
+    if: ${{ needs.check-changes.outputs.labour_service == 'true' }}
     uses: ./.github/workflows/build-and-push.yaml
     with:
-      directory: backend
-      image-name: labour-tracker-backend
+      directory: labour_service
+      image-name: labour-service-backend
     
   notification_service:
     needs: check-changes

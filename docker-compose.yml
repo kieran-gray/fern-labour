@@ -1,9 +1,9 @@
 services:
 
-  backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:latest'
+  labour-service:
+    image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
     build:
-      context: ./backend
+      context: ./labour_service
       target: dev
     restart: "no"
     networks:
@@ -13,17 +13,17 @@ services:
       db:
         condition: service_healthy
         restart: true
-      backend-pre-start:
+      labour-service-pre-start:
         condition: service_completed_successfully
         restart: false
     env_file:
-      - ./backend/.env
+      - ./labour_service/.env
     ports:
       - "8000:8000"
       - "5678:5678"
     volumes:
-      - ./backend/app:/app/app
-      - ./backend/config.toml/:/app/config.toml
+      - ./labour_service/app:/app/app
+      - ./labour_service/config.toml/:/app/config.toml
     command: [ "debugpy", "--listen", "0.0.0.0:5678", "-m", "app.run" ]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
@@ -31,19 +31,19 @@ services:
       timeout: 5s
       retries: 5
 
-  backend-pre-start:
-    image: '${DOCKER_IMAGE_REPOSITORY}${DOCKER_IMAGE_BACKEND?Variable not set}:latest'
+  labour-service-pre-start:
+    image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
     restart: "no"
     depends_on:
       db:
         condition: service_healthy
         restart: true
     env_file:
-      - ./backend/.env
+      - ./labour_service/.env
     command: [ "alembic", "upgrade", "head" ]
 
   notification-service:
-    image: '${DOCKER_IMAGE_NOTIFICATIONS?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
     build:
       context: ./notification_service
       target: dev
@@ -74,7 +74,7 @@ services:
       retries: 5
 
   notification-service-pre-start:
-    image: '${DOCKER_IMAGE_NOTIFICATIONS?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
     restart: "no"
     depends_on:
       db:
@@ -117,14 +117,14 @@ services:
       - "max_replication_slots=1"
 
   labour-consumer:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
     restart: "no"
     depends_on:
       init-kafka:
         condition: service_completed_successfully
         restart: false
     env_file:
-      - ./backend/.env
+      - ./labour_service/.env
     ports:
       - "5679:5679"
     command: [ "debugpy", "--listen", "0.0.0.0:5679", "-m", "app.run_consumer" ]
@@ -132,7 +132,7 @@ services:
       - default
 
   notifications-consumer:
-    image: '${DOCKER_IMAGE_NOTIFICATIONS?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
     restart: "no"
     depends_on:
       init-kafka:

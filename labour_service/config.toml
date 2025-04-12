@@ -1,6 +1,7 @@
 # Any values that are set in .env will replace these values.
 [base]
 ENVIRONMENT = ""
+SUPPORT_EMAIL = "support@fernlabour.com"
 
 [security.keycloak]
 KEYCLOAK_SERVER_URL = "http://localhost:8080"
@@ -56,26 +57,6 @@ PYPROJECT_TOML = "pyproject.toml"
 BACKEND_CORS_ORIGINS = "http://localhost,https://localhost"
 FRONTEND_HOST = "http://localhost:5173"
 MARKETING_HOST = "http://localhost:3000"
-
-
-[notifications.email]
-SMTP_HOST = "mailcatcher"
-SMTP_USER = ""
-SMTP_PASSWORD = ""
-EMAILS_FROM_EMAIL = "noreply@example.com"
-EMAILS_FROM_NAME = "kieran"
-SMTP_SSL = false
-SMTP_TLS = false
-SMTP_PORT = 1025
-SUPPORT_EMAIL = "support@fernlabour.com"
-TRACKING_LINK = "https://track.fernlabour.com"
-
-
-[notifications.twilio]
-TWILIO_ACCOUNT_SID = ""
-TWILIO_AUTH_TOKEN = ""
-SMS_FROM_NUMBER = ""
-MESSAGING_SERVICE_SID = ""
 
 
 [events.kafka_producer]
