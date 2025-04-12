@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
@@ -11,13 +12,12 @@ from app.labour.application.services.labour_invite_service import (
 from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.enums import LabourPaymentPlan
 from app.labour.domain.labour.exceptions import InvalidLabourId
-from app.notification.application.services.notification_service import NotificationService
 from app.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.exceptions import SubscriberAlreadySubscribed
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.entity import User
 from app.user.domain.exceptions import UserNotFoundById
 from app.user.domain.value_objects.user_id import UserId
@@ -28,8 +28,7 @@ SUBSCRIBER = "test_subscriber"
 
 @pytest_asyncio.fixture
 async def labour_invite_service(
-    user_service: UserService,
-    notification_service: NotificationService,
+    user_service: UserQueryService,
     subscription_query_service: SubscriptionQueryService,
     token_generator: TokenGenerator,
 ) -> LabourInviteService:
@@ -54,27 +53,27 @@ async def labour_invite_service(
     )
     return LabourInviteService(
         user_service=user_service,
-        notification_service=notification_service,
+        event_producer=AsyncMock(),
         subscription_query_service=subscription_query_service,
         token_generator=token_generator,
     )
+
+
+def has_sent_email(labour_invite_service: LabourInviteService) -> bool:
+    return labour_invite_service._event_producer.publish.call_count > 0
 
 
 async def test_can_send_invite(
     labour_service: LabourService,
     labour_invite_service: LabourInviteService,
 ) -> None:
-    notification_service = labour_invite_service._notification_service
-
-    assert notification_service._email_notification_gateway.sent_notifications == []
-
     labour = await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
     )
     await labour_invite_service.send_invite(
         birthing_person_id=BIRTHING_PERSON, labour_id=labour.id, invite_email="test@email.com"
     )
-    assert notification_service._email_notification_gateway.sent_notifications != []
+    assert has_sent_email(labour_invite_service=labour_invite_service)
 
 
 async def test_cannnot_send_invite_for_non_existent_birthing_person(

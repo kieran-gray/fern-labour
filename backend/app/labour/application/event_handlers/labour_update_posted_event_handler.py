@@ -4,17 +4,17 @@ from typing import Any, Protocol
 
 from app.common.application.event_handler import EventHandler
 from app.common.domain.event import DomainEvent
+from app.common.domain.producer import EventProducer
 from app.labour.domain.labour_update.enums import LabourUpdateType
 from app.notification.application.dtos.notification import NotificationContent
 from app.notification.application.dtos.notification_data import LabourUpdateData
-from app.notification.application.services.notification_service import NotificationService
 from app.notification.domain.enums import NotificationTemplate
+from app.notification.domain.events import NotificationRequested
 from app.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.subscription.domain.enums import ContactMethod
 from app.user.application.dtos.user import UserDTO
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.exceptions import UserNotFoundById
 
 log = logging.getLogger(__name__)
@@ -43,14 +43,14 @@ class AnnouncementMadeNotificationGenerator(Protocol):
 class LabourUpdatePostedEventHandler(EventHandler):
     def __init__(
         self,
-        user_service: UserService,
+        user_service: UserQueryService,
         subscription_query_service: SubscriptionQueryService,
-        notification_service: NotificationService,
+        event_producer: EventProducer,
         tracking_link: str,
     ):
         self._user_service = user_service
         self._subscription_query_service = subscription_query_service
-        self._notification_service = notification_service
+        self._event_producer = event_producer
         self._tracking_link = tracking_link
         self._template = NotificationTemplate.LABOUR_UPDATE
 
@@ -106,11 +106,13 @@ class LabourUpdatePostedEventHandler(EventHandler):
                     to_user_id=subscriber.id,
                     labour_update_id=labour_update_id,
                 )
-                notification = await self._notification_service.create_notification(
-                    type=ContactMethod(method),
-                    destination=destination,
-                    template=self._template.value,
-                    data=notification_data.to_dict(),
-                    metadata=notification_metadata.to_dict(),
+                notification_event = NotificationRequested.create(
+                    data={
+                        "type": method,
+                        "destination": destination,
+                        "template": self._template.value,
+                        "data": notification_data.to_dict(),
+                        "metadata": notification_metadata.to_dict(),
+                    }
                 )
-                await self._notification_service.send(notification_id=notification.id)
+                await self._event_producer.publish(event=notification_event)

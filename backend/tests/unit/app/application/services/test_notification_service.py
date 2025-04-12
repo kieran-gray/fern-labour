@@ -1,4 +1,5 @@
 from enum import StrEnum
+from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
@@ -71,6 +72,7 @@ async def notification_service(
         sms_notification_gateway=sms_notification_gateway,
         notification_generation_service=notification_generation_service,
         notification_repository=notification_repo,
+        event_producer=AsyncMock(),
     )
 
 

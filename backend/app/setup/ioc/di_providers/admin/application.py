@@ -3,7 +3,7 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide
 
 from app.common.application.services.contact_service import ContactService
-from app.notification.application.services.notification_service import NotificationService
+from app.common.domain.producer import EventProducer
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.setup.settings import Settings
 
@@ -15,12 +15,10 @@ class AdminApplicationProvider(Provider):
     @provide
     def get_contact_service(
         self,
-        notification_service: Annotated[
-            NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
-        ],
+        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> ContactService:
         return ContactService(
-            notification_service=notification_service,
+            event_producer=event_producer,
             contact_email=settings.notifications.email.support_email,
         )

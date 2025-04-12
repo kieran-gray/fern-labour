@@ -1,7 +1,7 @@
 from dishka import Provider, Scope, provide
 
 from app.setup.ioc.di_component_enum import ComponentEnum
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.domain.repository import UserRepository
 
 
@@ -10,5 +10,5 @@ class UserApplicationProvider(Provider):
     scope = Scope.REQUEST
 
     @provide
-    def provide_user_service(self, user_repository: UserRepository) -> UserService:
-        return UserService(user_repository=user_repository)
+    def provide_user_service(self, user_repository: UserRepository) -> UserQueryService:
+        return UserQueryService(user_repository=user_repository)

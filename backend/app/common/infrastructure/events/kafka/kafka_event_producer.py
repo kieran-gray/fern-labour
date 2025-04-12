@@ -89,7 +89,7 @@ class KafkaEventProducer(EventProducer):
         try:
             for event in events:
                 topic = self._get_topic(event)
-                log.debug(f"Queueing event {event.id} for topic {topic}")
+                log.info(f"Queueing event for topic {topic}")
                 self._producer.send(topic, value=event.to_dict(), key=event.id)
 
             self._producer.flush()

@@ -2,6 +2,7 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
+from app.common.domain.producer import EventProducer
 from app.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
 )
@@ -102,10 +103,12 @@ class NotificationsApplicationProvider(Provider):
         sms_notification_gateway: SMSNotificationGateway,
         notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
+        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
     ) -> NotificationService:
         return NotificationService(
             email_notification_gateway=email_notification_gateway,
             sms_notification_gateway=sms_notification_gateway,
             notification_generation_service=notification_generation_service,
             notification_repository=notification_repository,
+            event_producer=event_producer,
         )

@@ -1,21 +1,21 @@
+from unittest.mock import AsyncMock
+
 import pytest_asyncio
 
 from app.common.application.services.contact_service import ContactService
-from app.notification.application.services.notification_service import NotificationService
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"
 
 
 def has_sent_email(contact_service: ContactService) -> bool:
-    email_gateway = contact_service._notification_service._email_notification_gateway
-    return email_gateway.sent_notifications != []
+    return contact_service._event_producer.publish.call_count > 0
 
 
 @pytest_asyncio.fixture
-async def contact_service(notification_service: NotificationService) -> ContactService:
+async def contact_service() -> ContactService:
     return ContactService(
-        notification_service=notification_service,
+        event_producer=AsyncMock(),
         contact_email="support@test.com",
     )
 

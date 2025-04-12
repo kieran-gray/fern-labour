@@ -1,5 +1,6 @@
 import json
 import logging
+from dataclasses import dataclass
 from typing import Any
 
 from dishka import AsyncContainer, Scope
@@ -7,10 +8,17 @@ from kafka import KafkaConsumer
 
 from app.common.application.event_handler import EventHandler
 from app.common.infrastructure.events.interfaces.consumer import EventConsumer
-from app.labour.application.event_handlers.mapping import EVENT_HANDLER_MAPPING
+from app.labour.application.event_handlers.mapping import LABOUR_EVENT_HANDLER_MAPPING
+from app.notification.application.event_handlers.mapping import NOTIFICATION_EVENT_HANDLER_MAPPING
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class HandlerInfo:
+    handler: type[EventHandler]
+    component: ComponentEnum
 
 
 class KafkaEventConsumer(EventConsumer):
@@ -40,9 +48,11 @@ class KafkaEventConsumer(EventConsumer):
             value_deserializer=lambda v: json.loads(v),
             enable_auto_commit=False,
         )
-        self._handlers: dict[str, type[EventHandler]] = {
-            f"{topic_prefix}.{topic}": handler for topic, handler in EVENT_HANDLER_MAPPING.items()
-        }
+        self._topic_prefix = topic_prefix
+
+        self._handlers: dict[str, HandlerInfo] = {}
+        self._register_handlers()
+
         self._running = False
         self._container: AsyncContainer | None = None
         self._subscribe_to_topics()
@@ -67,6 +77,24 @@ class KafkaEventConsumer(EventConsumer):
             container: AsyncContainer with scope=APP.
         """
         self._container = container
+
+    def _register_handlers(self) -> None:
+        self._handlers.update(
+            {
+                f"{self._topic_prefix}.{topic}": HandlerInfo(
+                    handler=handler, component=ComponentEnum.LABOUR_EVENTS
+                )
+                for topic, handler in LABOUR_EVENT_HANDLER_MAPPING.items()
+            }
+        )
+        self._handlers.update(
+            {
+                f"{self._topic_prefix}.{topic}": HandlerInfo(
+                    handler=handler, component=ComponentEnum.NOTIFICATION_EVENTS
+                )
+                for topic, handler in NOTIFICATION_EVENT_HANDLER_MAPPING.items()
+            }
+        )
 
     def _subscribe_to_topics(self) -> None:
         """
@@ -103,16 +131,16 @@ class KafkaEventConsumer(EventConsumer):
             request_container: A container scoped for handling the message.
         """
         log.info(f"Received message with topic: {message.topic}")
-        handler_cls = self._handlers.get(message.topic)
+        handler_info = self._handlers.get(message.topic)
 
-        if not handler_cls:
+        if not handler_info:
             log.error(f"No handler found for topic: {message.topic}")
             return
 
         try:
             event_handler = await request_container.get(
-                handler_cls, component=ComponentEnum.LABOUR_EVENTS
-            )  # TODO not all events will be in this component
+                handler_info.handler, component=handler_info.component
+            )
             await event_handler.handle(message.value)
             self._consumer.commit()
             log.info(f"Committed offset for topic: {message.topic}")

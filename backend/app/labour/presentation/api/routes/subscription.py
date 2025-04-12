@@ -24,7 +24,7 @@ from app.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.infrastructure.auth.interfaces.controller import AuthController
 
 subscription_router = APIRouter(prefix="/subscription", tags=["Subscription"])
@@ -119,7 +119,7 @@ async def get_subscriber_subscriptions(
     subscription_query_service: Annotated[
         SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
     ],
-    user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
+    user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriberSubscriptionsResponse:
@@ -152,7 +152,7 @@ async def get_subscription_by_id(
     subscription_query_service: Annotated[
         SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
     ],
-    user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
+    user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
     labour_query_service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -185,7 +185,7 @@ async def get_labour_subscriptions(
     subscription_query_service: Annotated[
         SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
     ],
-    user_service: Annotated[UserService, FromComponent(ComponentEnum.USER)],
+    user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionsResponse:

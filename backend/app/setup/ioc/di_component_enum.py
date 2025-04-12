@@ -10,6 +10,7 @@ class ComponentEnum(StrEnum):
     USER = "user"
     INVITES = "invites"
     NOTIFICATIONS = "notifications"
+    NOTIFICATION_EVENTS = "notification_events"
     NOTIFICATION_GENERATORS = "notification_generators"
     SUBSCRIPTIONS = "subscriptions"
     PAYMENTS = "payments"

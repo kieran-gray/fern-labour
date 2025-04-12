@@ -19,6 +19,15 @@ def test_can_complete_labour(sample_labour: Labour):
     assert sample_labour.current_phase is LabourPhase.COMPLETE
 
 
+def test_can_complete_labour_with_notes(sample_labour: Labour):
+    BeginLabourService().begin_labour(sample_labour)
+    assert sample_labour.is_active
+    CompleteLabourService().complete_labour(sample_labour, notes="Test note")
+    assert not sample_labour.is_active
+    assert sample_labour.notes == "Test note"
+    assert sample_labour.current_phase is LabourPhase.COMPLETE
+
+
 def test_cannot_complete_labour_already_complete(sample_labour: Labour):
     BeginLabourService().begin_labour(sample_labour)
     CompleteLabourService().complete_labour(sample_labour)

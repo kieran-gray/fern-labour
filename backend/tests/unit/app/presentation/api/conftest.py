@@ -40,7 +40,7 @@ from app.subscription.application.services.subscription_query_service import (
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.user.application.dtos.user import UserDTO
 from app.user.application.dtos.user_summary import UserSummaryDTO
-from app.user.application.services.user_service import UserService
+from app.user.application.services.user_query_service import UserQueryService
 from app.user.infrastructure.auth.interfaces.controller import AuthController
 from app.user.infrastructure.auth.interfaces.exceptions import AuthorizationError
 from app.user.infrastructure.auth.interfaces.models import AuthorizationCredentials
@@ -301,7 +301,7 @@ class MockUserProvider(Provider):
     component = ComponentEnum.USER
 
     @provide()
-    def get_user_service(self) -> UserService:
+    def get_user_service(self) -> UserQueryService:
         test_user = UserDTO(
             id="test_id",
             username="test_user",
@@ -310,7 +310,7 @@ class MockUserProvider(Provider):
             last_name="User",
             phone_number="",
         )
-        service = MagicMock(spec=UserService)
+        service = MagicMock(spec=UserQueryService)
         service.get.return_value = test_user
         service.get_many.return_value = [test_user]
         service.get_summary.return_value = test_user.to_summary()

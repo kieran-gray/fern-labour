@@ -6,7 +6,10 @@ from dishka import AsyncContainer
 from kafka import KafkaConsumer
 
 from app.common.application.event_handler import EventHandler
-from app.common.infrastructure.events.kafka.kafka_event_consumer import KafkaEventConsumer
+from app.common.infrastructure.events.kafka.kafka_event_consumer import (
+    HandlerInfo,
+    KafkaEventConsumer,
+)
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 MODULE = "app.infrastructure.events.kafka_event_consumer"
@@ -77,7 +80,9 @@ async def test_process_message_success(
 ):
     """Test successful processing of a single message."""
     message = MagicMock(topic="test-prefix.topic", value={"key": "value"})
-    kafka_event_consumer._handlers = {"test-prefix.topic": type(event_handler_mock)}
+    kafka_event_consumer._handlers = {
+        "test-prefix.topic": HandlerInfo(type(event_handler_mock), ComponentEnum.LABOUR_EVENTS)
+    }
     async_container_mock.get.return_value = event_handler_mock
 
     await kafka_event_consumer._process_message(message, async_container_mock)

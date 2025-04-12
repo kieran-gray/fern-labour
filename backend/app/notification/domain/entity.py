@@ -4,6 +4,7 @@ from uuid import UUID, uuid4
 
 from app.common.domain.aggregate_root import AggregateRoot
 from app.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
+from app.notification.domain.events import NotificationStatusUpdated
 from app.notification.domain.value_objects.notification_id import NotificationId
 
 
@@ -41,3 +42,16 @@ class Notification(AggregateRoot[NotificationId]):
             metadata=metadata,
             external_id=external_id,
         )
+
+    def update_status(self, status: NotificationStatus) -> None:
+        self.add_domain_event(
+            NotificationStatusUpdated.create(
+                data={
+                    "notification_id": str(self.id_.value),
+                    "external_id": self.external_id,
+                    "from_status": self.status.value,
+                    "to_status": status.value,
+                }
+            )
+        )
+        self.status = status
