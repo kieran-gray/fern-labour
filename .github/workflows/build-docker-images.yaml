@@ -3,10 +3,11 @@ on:
   push:
     branches: ['main']
     paths:
-      - 'backend/**'
+      - 'labour_service/**'
       - 'frontend/**'
       - 'marketing/**'
       - 'keycloak/**'
+      - 'notification_service/**'
       - '.github/workflows/**'
 
 permissions:
@@ -17,10 +18,11 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      backend: ${{ steps.filter.outputs.backend }}
+      labour_service: ${{ steps.filter.outputs.labour_service }}
       frontend: ${{ steps.filter.outputs.frontend }}
       marketing: ${{ steps.filter.outputs.marketing }}
       keycloak: ${{ steps.filter.outputs.keycloak }}
+      notification_service: ${{ steps.filter.outputs.notification_service }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,22 +31,32 @@ jobs:
         id: filter
         with:
           filters: |
-            backend:
-              - 'backend/**'
+            labour_service:
+              - 'labour_service/**'
             frontend:
               - 'frontend/**'
             marketing:
               - 'marketing/**'
             keycloak:
               - 'keycloak/**'
+            notification_service:
+              - 'notification_service/**'
 
-  backend:
+  labour_service:
     needs: check-changes
-    if: ${{ needs.check-changes.outputs.backend == 'true' }}
+    if: ${{ needs.check-changes.outputs.labour_service == 'true' }}
     uses: ./.github/workflows/build-and-push.yaml
     with:
-      directory: backend
-      image-name: labour-tracker-backend
+      directory: labour_service
+      image-name: labour-service-backend
+    
+  notification_service:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.notification_service == 'true' }}
+    uses: ./.github/workflows/build-and-push.yaml
+    with:
+      directory: notification_service
+      image-name: notification-service-backend
 
   frontend:
     needs: check-changes
