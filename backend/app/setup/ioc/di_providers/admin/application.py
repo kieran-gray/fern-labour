@@ -20,5 +20,5 @@ class AdminApplicationProvider(Provider):
     ) -> ContactService:
         return ContactService(
             event_producer=event_producer,
-            contact_email=settings.notifications.email.support_email,
+            contact_email=settings.base.support_email,
         )

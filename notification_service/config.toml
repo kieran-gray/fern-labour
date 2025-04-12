@@ -1,0 +1,83 @@
+# Any values that are set in .env will replace these values.
+[base]
+ENVIRONMENT = ""
+
+[security.keycloak]
+KEYCLOAK_SERVER_URL = "http://localhost:8080"
+KEYCLOAK_DOCKER_URL = "http://keycloak:8080"
+KEYCLOAK_REALM  = "labour_tracker"
+KEYCLOAK_CLIENT_ID  = "labour_tracker_backend"
+KEYCLOAK_CLIENT_SECRET  = "changeme"
+KEYCLOAK_ADMIN = ""
+KEYCLOAK_ADMIN_PASSWORD = ""
+# JWT_ALGORITHM can be set to "HS256", "HS384", "HS512", "RS256", "RS384", "RS512"
+JWT_ALGORITHM = "HS256"
+
+[logging]
+# Level can be set to "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+LOG_LEVEL = "INFO"
+
+
+[uvicorn]
+UVICORN_HOST = "0.0.0.0"
+UVICORN_PORT = 8000
+UVICORN_RELOAD = false
+
+
+[db.postgres]
+# Specify as in Docker network
+POSTGRES_USER = "postgres"
+POSTGRES_PASSWORD = "changeme"
+POSTGRES_DB = "app"
+POSTGRES_HOST = "db"
+POSTGRES_PORT = 5432
+
+
+[db.sqla_engine]
+SQLA_ECHO = false
+SQLA_ECHO_POOL = false
+SQLA_POOL_SIZE = 50
+SQLA_MAX_OVERFLOW = 10
+
+
+[structure]
+CONFIG_TOML = "config.toml"
+PYPROJECT_TOML = "pyproject.toml"
+
+
+[security.cors]
+BACKEND_CORS_ORIGINS = "http://localhost,https://localhost"
+
+
+[notifications.email]
+SMTP_HOST = "mailcatcher"
+SMTP_USER = ""
+SMTP_PASSWORD = ""
+EMAILS_FROM_EMAIL = "noreply@example.com"
+EMAILS_FROM_NAME = "kieran"
+SMTP_SSL = false
+SMTP_TLS = false
+SMTP_PORT = 1025
+SUPPORT_EMAIL = "support@fernlabour.com"
+TRACKING_LINK = "https://track.fernlabour.com"
+
+
+[notifications.twilio]
+TWILIO_ACCOUNT_SID = ""
+TWILIO_AUTH_TOKEN = ""
+SMS_FROM_NUMBER = ""
+MESSAGING_SERVICE_SID = ""
+
+
+[events.kafka_producer]
+KAFKA_TOPIC_PREFIX = "labour-tracker"
+KAFKA_PRODUCER_RETRIES = 3
+KAFKA_PRODUCER_ACKS = "all"
+
+
+[events.kafka]
+KAFKA_BOOTSTRAP_SERVERS = "kafka:9092"
+
+
+[events.kafka_consumer]
+KAFKA_GROUP_ID = "labour-tracker-group"

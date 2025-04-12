@@ -9,7 +9,6 @@ from kafka import KafkaConsumer
 from app.common.application.event_handler import EventHandler
 from app.common.infrastructure.events.interfaces.consumer import EventConsumer
 from app.labour.application.event_handlers.mapping import LABOUR_EVENT_HANDLER_MAPPING
-from app.notification.application.event_handlers.mapping import NOTIFICATION_EVENT_HANDLER_MAPPING
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 log = logging.getLogger(__name__)
@@ -85,14 +84,6 @@ class KafkaEventConsumer(EventConsumer):
                     handler=handler, component=ComponentEnum.LABOUR_EVENTS
                 )
                 for topic, handler in LABOUR_EVENT_HANDLER_MAPPING.items()
-            }
-        )
-        self._handlers.update(
-            {
-                f"{self._topic_prefix}.{topic}": HandlerInfo(
-                    handler=handler, component=ComponentEnum.NOTIFICATION_EVENTS
-                )
-                for topic, handler in NOTIFICATION_EVENT_HANDLER_MAPPING.items()
             }
         )
 

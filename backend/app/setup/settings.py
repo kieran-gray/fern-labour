@@ -14,11 +14,11 @@ log = logging.getLogger(__name__)
 
 class BaseSettings(BaseModel):
     environment: str = Field(alias="ENVIRONMENT")
+    support_email: str = Field(alias="SUPPORT_EMAIL")
 
 
 class KeycloakSettings(BaseModel):
     server_url: str = Field(alias="KEYCLOAK_SERVER_URL")
-    docker_url: str | None = Field(alias="KEYCLOAK_DOCKER_URL", default=None)
     realm: str = Field(alias="KEYCLOAK_REALM")
     client_id: str = Field(alias="KEYCLOAK_CLIENT_ID")
     client_secret: str = Field(alias="KEYCLOAK_CLIENT_SECRET")
@@ -113,39 +113,6 @@ class DbSettings(BaseModel):
     sqla_engine: SqlaEngineSettings
 
 
-class EmailSettings(BaseModel):
-    smtp_host: str | None = Field(alias="SMTP_HOST", default=None)
-    smtp_user: str | None = Field(alias="SMTP_USER", default=None)
-    smtp_password: str | None = Field(alias="SMTP_PASSWORD", default=None)
-    emails_from_email: str | None = Field(alias="EMAILS_FROM_EMAIL", default=None)
-    emails_from_name: str | None = Field(alias="EMAILS_FROM_NAME", default=None)
-    smtp_tls: bool = Field(alias="SMTP_TLS", default=True)
-    smtp_ssl: bool = Field(alias="SMTP_SSL", default=False)
-    smtp_port: int = Field(alias="SMTP_PORT", default=587)
-    support_email: str = Field(alias="SUPPORT_EMAIL")
-    tracking_link: str = Field(alias="TRACKING_LINK")
-
-    @property
-    def emails_enabled(self) -> bool:
-        return bool(self.smtp_host and self.smtp_port and self.emails_from_email)
-
-
-class TwilioSettings(BaseModel):
-    account_sid: str | None = Field(alias="TWILIO_ACCOUNT_SID", default=None)
-    auth_token: str | None = Field(alias="TWILIO_AUTH_TOKEN", default=None)
-    sms_from_number: str | None = Field(alias="SMS_FROM_NUMBER", default=None)
-    messaging_service_sid: str | None = Field(alias="MESSAGING_SERVICE_SID", default=None)
-
-    @property
-    def twilio_enabled(self) -> bool:
-        return bool(self.account_sid and self.auth_token)
-
-
-class NotificationSettings(BaseModel):
-    email: EmailSettings
-    twilio: TwilioSettings
-
-
 class KafkaSettings(BaseModel):
     bootstrap_servers: str = Field(alias="KAFKA_BOOTSTRAP_SERVERS")
     topic_prefix: str = Field(alias="KAFKA_TOPIC_PREFIX", default="labour-tracker")
@@ -188,7 +155,6 @@ class Settings(BaseModel):
     security: SecuritySettings
     logging: LoggingSettings
     uvicorn: UvicornSettings
-    notifications: NotificationSettings
     events: EventSettings
     db: DbSettings
     payments: PaymentSettings

@@ -8,7 +8,6 @@ from app.labour.presentation.api.routes.subscription import subscription_router
 from app.labour.presentation.api.routes.subscription_management import (
     subscription_management_router,
 )
-from app.notification.presentation.api.routes.twilio import twilio_router
 from app.payments.presentation.api.routes.payments import payments_router
 from app.user.presentation.api.routes.auth import auth_router
 from app.user.presentation.api.routes.user import user_router
@@ -26,7 +25,6 @@ api_v1_sub_routers = (
     subscription_management_router,
     subscriber_router,
     payments_router,
-    twilio_router,
     healthcheck_router,
 )
 

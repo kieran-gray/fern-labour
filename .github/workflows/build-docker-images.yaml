@@ -7,6 +7,7 @@ on:
       - 'frontend/**'
       - 'marketing/**'
       - 'keycloak/**'
+      - 'notification_service/**'
       - '.github/workflows/**'
 
 permissions:
@@ -21,6 +22,7 @@ jobs:
       frontend: ${{ steps.filter.outputs.frontend }}
       marketing: ${{ steps.filter.outputs.marketing }}
       keycloak: ${{ steps.filter.outputs.keycloak }}
+      notification_service: ${{ steps.filter.outputs.notification_service }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,6 +39,8 @@ jobs:
               - 'marketing/**'
             keycloak:
               - 'keycloak/**'
+            notification_service:
+              - 'notification_service/**'
 
   backend:
     needs: check-changes
@@ -45,6 +49,14 @@ jobs:
     with:
       directory: backend
       image-name: labour-tracker-backend
+    
+  notification_service:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.notification_service == 'true' }}
+    uses: ./.github/workflows/build-and-push.yaml
+    with:
+      directory: notification_service
+      image-name: notification-service-backend
 
   frontend:
     needs: check-changes

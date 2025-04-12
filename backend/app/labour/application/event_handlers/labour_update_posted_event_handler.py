@@ -1,12 +1,11 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any
 
 from app.common.application.event_handler import EventHandler
 from app.common.domain.event import DomainEvent
 from app.common.domain.producer import EventProducer
 from app.labour.domain.labour_update.enums import LabourUpdateType
-from app.notification.application.dtos.notification import NotificationContent
 from app.notification.application.dtos.notification_data import LabourUpdateData
 from app.notification.domain.enums import NotificationTemplate
 from app.notification.domain.events import NotificationRequested
@@ -34,10 +33,6 @@ class LabourUpdatePostedNotificationMetadata:
             "to_user_id": self.to_user_id,
             "labour_update_id": self.labour_update_id,
         }
-
-
-class AnnouncementMadeNotificationGenerator(Protocol):
-    def __call__(self, data: LabourUpdateData) -> NotificationContent: ...
 
 
 class LabourUpdatePostedEventHandler(EventHandler):

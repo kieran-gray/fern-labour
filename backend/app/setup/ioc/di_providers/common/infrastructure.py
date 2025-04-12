@@ -80,7 +80,7 @@ class CommonInfrastructureProvider(Provider):
     @provide
     def provide_auth_client(self, settings: Settings) -> KeycloakOpenID:
         return KeycloakOpenID(
-            server_url=settings.security.keycloak.docker_url,
+            server_url=settings.security.keycloak.server_url,
             realm_name=settings.security.keycloak.realm,
             client_id=settings.security.keycloak.client_id,
             client_secret_key=settings.security.keycloak.client_secret,

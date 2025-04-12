@@ -36,7 +36,7 @@ class LabourEventsApplicationProvider(Provider):
             user_service=user_service,
             subscription_query_service=subscription_query_service,
             event_producer=event_producer,
-            tracking_link=settings.notifications.email.tracking_link,
+            tracking_link=settings.security.cors.frontend_host,
         )
 
     @provide
@@ -53,7 +53,7 @@ class LabourEventsApplicationProvider(Provider):
             user_service=user_service,
             subscription_query_service=subscription_query_service,
             event_producer=event_producer,
-            tracking_link=settings.notifications.email.tracking_link,
+            tracking_link=settings.security.cors.frontend_host,
         )
 
     @provide
@@ -70,5 +70,5 @@ class LabourEventsApplicationProvider(Provider):
             user_service=user_service,
             subscription_query_service=subscription_query_service,
             event_producer=event_producer,
-            tracking_link=settings.notifications.email.tracking_link,
+            tracking_link=settings.security.cors.frontend_host,
         )

@@ -1,0 +1,183 @@
+import json
+from pathlib import Path
+from typing import Any
+from unittest.mock import AsyncMock
+
+import pytest
+import pytest_asyncio
+
+from app.notification.application.dtos.notification import NotificationSendResult
+from app.notification.application.dtos.notification_data import BaseNotificationData
+from app.notification.application.gateways.email_notification_gateway import (
+    EmailNotificationGateway,
+)
+from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from app.notification.application.services.notification_generation_service import (
+    NotificationGenerationService,
+)
+from app.notification.application.services.notification_service import NotificationService
+from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
+from app.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
+from app.notification.domain.entity import Notification
+from app.notification.domain.enums import NotificationStatus, NotificationTemplate
+from app.notification.domain.repository import NotificationRepository
+from app.notification.domain.value_objects.notification_id import NotificationId
+from app.user.application.services.user_query_service import UserQueryService
+from app.user.domain.entity import User
+from app.user.domain.repository import UserRepository
+from app.user.domain.value_objects.user_id import UserId
+
+
+class MockUserRepository(UserRepository):
+    _data = {}
+
+    async def save(self, user: User) -> None:
+        self._data[user.id_.value] = user
+
+    async def delete(self, user: User) -> None:
+        self._data.pop(user.id_.value)
+
+    async def get_by_id(self, user_id: UserId) -> User | None:
+        return self._data.get(user_id.value, None)
+
+    async def get_by_ids(self, user_ids: list[UserId]) -> list[User]:
+        users = []
+        for user_id in user_ids:
+            if user := self._data.get(user_id.value, None):
+                users.append(user)
+        return users
+
+
+class MockNotificationRepository(NotificationRepository):
+    _data: dict[str, Notification] = {}
+
+    async def save(self, notification: Notification) -> None:
+        self._data[notification.id_.value] = notification
+
+    async def delete(self, notification: Notification) -> None:
+        self._data.pop(notification.id_.value)
+
+    async def get_by_id(self, notification_id: NotificationId) -> Notification | None:
+        return self._data.get(notification_id.value, None)
+
+    async def get_by_ids(self, notification_ids: list[NotificationId]) -> list[Notification]:
+        notifications = []
+        for notification_id in notification_ids:
+            if notification := self._data.get(notification_id.value, None):
+                notifications.append(notification)
+        return notifications
+
+    async def get_by_external_id(self, external_id: str):
+        return next(
+            (
+                notification
+                for notification in self._data.values()
+                if notification.external_id == external_id
+            ),
+            None,
+        )
+
+    async def get_by_external_ids(self, external_ids):
+        return await super().get_by_external_ids(external_ids)
+
+
+@pytest_asyncio.fixture
+async def user_repo() -> UserRepository:
+    repo = MockUserRepository()
+    repo._data = {}
+    return repo
+
+
+@pytest_asyncio.fixture
+async def notification_repo() -> NotificationRepository:
+    repo = MockNotificationRepository()
+    repo._data = {}
+    return repo
+
+
+class MockEmailNotificationGateway(EmailNotificationGateway):
+    sent_notifications = []
+
+    async def send(self, data: dict[str, Any]) -> NotificationSendResult:
+        self.sent_notifications.append(data)
+        return NotificationSendResult(success=True, status=NotificationStatus.SENT)
+
+
+class MockSMSNotificationGateway(SMSNotificationGateway):
+    sent_notifications = []
+
+    async def send(self, data: dict[str, Any]) -> NotificationSendResult:
+        self.sent_notifications.append(data)
+        return NotificationSendResult(success=True, status=NotificationStatus.SENT)
+
+
+class MockEmailTemplateEngine(EmailTemplateEngine):
+    directory = Path()
+
+    def generate_subject(
+        self, template_name: NotificationTemplate, data: BaseNotificationData
+    ) -> str:
+        return f"Mock HTML subject: {template_name} {json.dumps(data.to_dict())}"
+
+    def generate_message(
+        self, template_name: NotificationTemplate, data: BaseNotificationData
+    ) -> str:
+        return f"Mock HTML email: {template_name} {json.dumps(data.to_dict())}"
+
+
+class MockSMSTemplateEngine(SMSTemplateEngine):
+    def generate_subject(
+        self, template_name: NotificationTemplate, data: BaseNotificationData
+    ) -> str:
+        raise NotImplementedError()
+
+    def generate_message(
+        self, template_name: NotificationTemplate, data: BaseNotificationData
+    ) -> str:
+        return f"Mock sms: {template_name} {json.dumps(data.to_dict())}"
+
+
+@pytest_asyncio.fixture
+async def user_service(user_repo: UserRepository) -> UserQueryService:
+    return UserQueryService(user_repository=user_repo)
+
+
+@pytest.fixture
+def email_template_engine() -> EmailTemplateEngine:
+    return MockEmailTemplateEngine()
+
+
+@pytest.fixture
+def sms_template_engine() -> EmailTemplateEngine:
+    return MockSMSTemplateEngine()
+
+
+@pytest_asyncio.fixture
+async def notification_generation_service(
+    notification_repo: NotificationRepository,
+    email_template_engine: EmailTemplateEngine,
+    sms_template_engine: SMSTemplateEngine,
+) -> NotificationGenerationService:
+    return NotificationGenerationService(
+        notification_repo=notification_repo,
+        email_template_engine=email_template_engine,
+        sms_template_engine=sms_template_engine,
+    )
+
+
+@pytest_asyncio.fixture
+async def notification_service(
+    notification_generation_service: NotificationGenerationService,
+    notification_repo: NotificationRepository,
+) -> NotificationService:
+    email_notification_gateway = MockEmailNotificationGateway()
+    sms_notification_gateway = MockSMSNotificationGateway()
+    email_notification_gateway.sent_notifications = []
+    sms_notification_gateway.sent_notifications = []
+    return NotificationService(
+        email_notification_gateway=email_notification_gateway,
+        sms_notification_gateway=sms_notification_gateway,
+        notification_generation_service=notification_generation_service,
+        notification_repository=notification_repo,
+        event_producer=AsyncMock(),
+    )

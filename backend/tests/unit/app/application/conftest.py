@@ -1,6 +1,3 @@
-import json
-from pathlib import Path
-from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
@@ -12,22 +9,6 @@ from app.labour.application.services.labour_service import LabourService
 from app.labour.domain.labour.entity import Labour
 from app.labour.domain.labour.repository import LabourRepository
 from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.notification.application.dtos.notification import NotificationSendResult
-from app.notification.application.dtos.notification_data import BaseNotificationData
-from app.notification.application.gateways.email_notification_gateway import (
-    EmailNotificationGateway,
-)
-from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
-from app.notification.application.services.notification_generation_service import (
-    NotificationGenerationService,
-)
-from app.notification.application.services.notification_service import NotificationService
-from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
-from app.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
-from app.notification.domain.entity import Notification
-from app.notification.domain.enums import NotificationStatus, NotificationTemplate
-from app.notification.domain.repository import NotificationRepository
-from app.notification.domain.value_objects.notification_id import NotificationId
 from app.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
 )
@@ -39,7 +20,7 @@ from app.subscription.application.services.subscription_query_service import (
 )
 from app.subscription.application.services.subscription_service import SubscriptionService
 from app.subscription.domain.entity import Subscription
-from app.subscription.domain.enums import ContactMethod, SubscriptionStatus
+from app.subscription.domain.enums import SubscriptionStatus
 from app.subscription.domain.repository import SubscriptionRepository
 from app.subscription.domain.value_objects.subscription_id import SubscriptionId
 from app.user.application.services.user_query_service import UserQueryService
@@ -160,62 +141,6 @@ class MockSubscriptionRepository(SubscriptionRepository):
         return found_subscription
 
 
-class MockNotificationRepository(NotificationRepository):
-    _data: dict[str, Notification] = {}
-
-    async def save(self, notification: Notification) -> None:
-        self._data[notification.id_.value] = notification
-
-    async def delete(self, notification: Notification) -> None:
-        self._data.pop(notification.id_.value)
-
-    async def get_by_id(self, notification_id: NotificationId) -> Notification | None:
-        return self._data.get(notification_id.value, None)
-
-    async def get_by_ids(self, notification_ids: list[NotificationId]) -> list[Notification]:
-        notifications = []
-        for notification_id in notification_ids:
-            if notification := self._data.get(notification_id.value, None):
-                notifications.append(notification)
-        return notifications
-
-    async def get_by_external_id(self, external_id: str):
-        return next(
-            (
-                notification
-                for notification in self._data.values()
-                if notification.external_id == external_id
-            ),
-            None,
-        )
-
-    async def get_by_external_ids(self, external_ids):
-        return await super().get_by_external_ids(external_ids)
-
-    async def filter(
-        self,
-        labour_id: LabourId | None = None,
-        from_user_id: UserId | None = None,
-        to_user_id: UserId | None = None,
-        notification_type: ContactMethod | None = None,
-        notification_status: NotificationStatus | None = None,
-    ) -> list[Notification]:
-        notifications = []
-        for notification in self._data.values():
-            if labour_id and notification.labour_id != labour_id:
-                continue
-            if from_user_id and notification.from_user_id != from_user_id:
-                continue
-            if to_user_id and notification.to_user_id != to_user_id:
-                continue
-            if notification_status and notification.status is not notification_status:
-                continue
-            if notification_type and notification.type is not notification_type:
-                continue
-            notifications.append(notification)
-        return notifications
-
-
 @pytest_asyncio.fixture
 async def user_repo() -> UserRepository:
     repo = MockUserRepository()
@@ -237,61 +162,12 @@ async def subscription_repo() -> SubscriptionRepository:
     return repo
 
 
-@pytest_asyncio.fixture
-async def notification_repo() -> NotificationRepository:
-    repo = MockNotificationRepository()
-    repo._data = {}
-    return repo
-
-
 class MockTokenGenerator(TokenGenerator):
     def generate(self, input: str) -> str:
         return input
 
     def validate(self, id: str, token: str):
         return token == id
-
-
-class MockEmailNotificationGateway(EmailNotificationGateway):
-    sent_notifications = []
-
-    async def send(self, data: dict[str, Any]) -> NotificationSendResult:
-        self.sent_notifications.append(data)
-        return NotificationSendResult(success=True, status=NotificationStatus.SENT)
-
-
-class MockSMSNotificationGateway(SMSNotificationGateway):
-    sent_notifications = []
-
-    async def send(self, data: dict[str, Any]) -> NotificationSendResult:
-        self.sent_notifications.append(data)
-        return NotificationSendResult(success=True, status=NotificationStatus.SENT)
-
-
-class MockEmailTemplateEngine(EmailTemplateEngine):
-    directory = Path()
-
-    def generate_subject(
-        self, template_name: NotificationTemplate, data: BaseNotificationData
-    ) -> str:
-        return f"Mock HTML subject: {template_name} {json.dumps(data.to_dict())}"
-
-    def generate_message(
-        self, template_name: NotificationTemplate, data: BaseNotificationData
-    ) -> str:
-        return f"Mock HTML email: {template_name} {json.dumps(data.to_dict())}"
-
-
-class MockSMSTemplateEngine(SMSTemplateEngine):
-    def generate_subject(
-        self, template_name: NotificationTemplate, data: BaseNotificationData
-    ) -> str:
-        raise NotImplementedError()
-
-    def generate_message(
-        self, template_name: NotificationTemplate, data: BaseNotificationData
-    ) -> str:
-        return f"Mock sms: {template_name} {json.dumps(data.to_dict())}"
 
 
 @pytest.fixture
@@ -363,46 +239,5 @@ async def subscription_management_service(
     return SubscriptionManagementService(
         subscription_repository=subscription_repo,
         subscription_authorization_service=subscription_authorization_service,
-        event_producer=AsyncMock(),
-    )
-
-
-@pytest.fixture
-def email_template_engine() -> EmailTemplateEngine:
-    return MockEmailTemplateEngine()
-
-
-@pytest.fixture
-def sms_template_engine() -> EmailTemplateEngine:
-    return MockSMSTemplateEngine()
-
-
-@pytest_asyncio.fixture
-async def notification_generation_service(
-    notification_repo: NotificationRepository,
-    email_template_engine: EmailTemplateEngine,
-    sms_template_engine: SMSTemplateEngine,
-) -> NotificationGenerationService:
-    return NotificationGenerationService(
-        notification_repo=notification_repo,
-        email_template_engine=email_template_engine,
-        sms_template_engine=sms_template_engine,
-    )
-
-
-@pytest_asyncio.fixture
-async def notification_service(
-    notification_generation_service: NotificationGenerationService,
-    notification_repo: NotificationRepository,
-) -> NotificationService:
-    email_notification_gateway = MockEmailNotificationGateway()
-    sms_notification_gateway = MockSMSNotificationGateway()
-    email_notification_gateway.sent_notifications = []
-    sms_notification_gateway.sent_notifications = []
-    return NotificationService(
-        email_notification_gateway=email_notification_gateway,
-        sms_notification_gateway=sms_notification_gateway,
-        notification_generation_service=notification_generation_service,
-        notification_repository=notification_repo,
         event_producer=AsyncMock(),
     )

@@ -9,19 +9,18 @@ from app.notification.application.services.notification_generation_service impor
     NotificationGenerationService,
 )
 from app.notification.application.services.notification_service import NotificationService
-from app.notification.domain.enums import NotificationTemplate
+from app.notification.domain.enums import NotificationTemplate, NotificationType
 from app.notification.domain.exceptions import (
     InvalidNotificationId,
     NotificationNotFoundById,
     NotificationProcessingError,
 )
-from app.subscription.domain.enums import ContactMethod
 
 
 @pytest_asyncio.fixture
 async def notification(notification_service: NotificationService) -> NotificationDTO:
     return await notification_service.create_notification(
-        type=ContactMethod.EMAIL.value,
+        type=NotificationType.EMAIL.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(
@@ -60,7 +59,7 @@ async def test_cannot_generate_notification_content_invalid_data(
     notification_service: NotificationService,
 ) -> None:
     notification = await notification_service.create_notification(
-        type=ContactMethod.EMAIL.value,
+        type=NotificationType.EMAIL.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data={"test": "test"},
