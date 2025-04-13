@@ -41,7 +41,6 @@ services:
         restart: true
     env_file:
       - ./labour_service/.env
-    command: [ "alembic", "upgrade", "head" ]
 
   notification-service:
     image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
@@ -211,8 +210,9 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list" ]
       interval: 15s
-      timeout: 5s
-      retries: 3
+      timeout: 10s
+      retries: 5
+      start_period: 20s
 
   init-kafka:
     image: docker.io/bitnami/kafka:3.9

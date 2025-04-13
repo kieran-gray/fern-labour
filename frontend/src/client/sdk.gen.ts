@@ -58,8 +58,6 @@ import type {
   StripeWebhookApiV1PaymentsWebhookPostResponse,
   SubscribeToApiV1SubscriptionSubscribeLabourIdPostData,
   SubscribeToApiV1SubscriptionSubscribeLabourIdPostResponse,
-  TwilioWebhookApiV1TwilioMessageStatusPostData,
-  TwilioWebhookApiV1TwilioMessageStatusPostResponse,
   UnsubscribeFromApiV1SubscriptionUnsubscribePostData,
   UnsubscribeFromApiV1SubscriptionUnsubscribePostResponse,
   UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutData,
@@ -1105,32 +1103,6 @@ export class SubscriptionManagementService {
         400: 'Bad Request',
         401: 'Unauthorized',
         403: 'Forbidden',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-}
-
-export class TwilioService {
-  /**
-   * Twilio Webhook
-   * @param data The data for the request.
-   * @param data.formData
-   * @returns void Successful Response
-   * @throws ApiError
-   */
-  public static twilioWebhook(
-    data: TwilioWebhookApiV1TwilioMessageStatusPostData = {}
-  ): CancelablePromise<TwilioWebhookApiV1TwilioMessageStatusPostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/twilio/message-status',
-      formData: data.formData,
-      mediaType: 'application/x-www-form-urlencoded',
-      errors: {
-        400: 'Bad Request',
         404: 'Not Found',
         422: 'Validation Error',
         500: 'Internal Server Error',
