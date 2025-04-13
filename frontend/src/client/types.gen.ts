@@ -9,11 +9,6 @@ export type Body_login_api_v1_auth_login_post = {
   password: string;
 };
 
-export type Body_twilio_webhook_api_v1_twilio_message_status_post = {
-  MessageSid?: string | null;
-  MessageStatus?: string | null;
-};
-
 export type CheckoutResponse = {
   id: string;
   url: string | null;
@@ -446,12 +441,6 @@ export type UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsP
 
 export type UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutResponse =
   SubscriptionResponse;
-
-export type TwilioWebhookApiV1TwilioMessageStatusPostData = {
-  formData?: Body_twilio_webhook_api_v1_twilio_message_status_post;
-};
-
-export type TwilioWebhookApiV1TwilioMessageStatusPostResponse = void;
 
 export type GetUserApiV1UserGetResponse = UserResponse;
 
