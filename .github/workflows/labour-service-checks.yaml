@@ -20,8 +20,11 @@ jobs:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v4
         with:
-          version: "0.5.5"
+          version: "0.6.3"
           enable-cache: true
+      - name: Install the project
+        run: uv sync --all-groups
+        working-directory: ./labour_service
       - name: Run tests
         run: uv run pytest --cov
         working-directory: ./labour_service
@@ -35,8 +38,11 @@ jobs:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v4
         with:
-          version: "0.5.5"
+          version: "0.6.3"
           enable-cache: true
+      - name: Install the project
+        run: uv sync --all-groups
+        working-directory: ./labour_service
       - name: Run MyPy
         run: uv run mypy app
         working-directory: ./labour_service

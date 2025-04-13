@@ -4,7 +4,7 @@ services:
     image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
     build:
       context: ./labour_service
-      target: dev
+      target: http
     restart: "no"
     networks:
       - traefik-public
@@ -20,11 +20,9 @@ services:
       - ./labour_service/.env
     ports:
       - "8000:8000"
-      - "5678:5678"
     volumes:
       - ./labour_service/app:/app/app
       - ./labour_service/config.toml/:/app/config.toml
-    command: [ "debugpy", "--listen", "0.0.0.0:5678", "-m", "app.run" ]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
       interval: 30s
@@ -32,7 +30,10 @@ services:
       retries: 5
 
   labour-service-pre-start:
-    image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}-alembic:latest'
+    build:
+      context: ./labour_service
+      target: migrations
     restart: "no"
     depends_on:
       db:
@@ -46,7 +47,7 @@ services:
     image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
     build:
       context: ./notification_service
-      target: dev
+      target: http
     restart: "no"
     networks:
       - traefik-public
@@ -62,11 +63,6 @@ services:
       - ./notification_service/.env
     ports:
       - "8001:8001"
-      - "5680:5680"
-    volumes:
-      - ./notification_service/app:/app/app
-      - ./notification_service/config.toml/:/app/config.toml
-    command: [ "debugpy", "--listen", "0.0.0.0:5680", "-m", "app.run" ]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8001/api/v1/health" ]
       interval: 30s
@@ -74,7 +70,10 @@ services:
       retries: 5
 
   notification-service-pre-start:
-    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}-alembic:latest'
+    build:
+      context: ./notification_service
+      target: migrations
     restart: "no"
     depends_on:
       db:
@@ -82,7 +81,6 @@ services:
         restart: true
     env_file:
       - ./notification_service/.env
-    command: [ "alembic", "upgrade", "head" ]
 
   db:
     image: postgres:16.2
@@ -125,9 +123,7 @@ services:
         restart: false
     env_file:
       - ./labour_service/.env
-    ports:
-      - "5679:5679"
-    command: [ "debugpy", "--listen", "0.0.0.0:5679", "-m", "app.run_consumer" ]
+    command: [ "python", "-m", "app.run_consumer" ]
     networks:
       - default
 
@@ -140,9 +136,7 @@ services:
         restart: false
     env_file:
       - ./notification_service/.env
-    ports:
-      - "5681:5681"
-    command: [ "debugpy", "--listen", "0.0.0.0:5681", "-m", "app.run_consumer" ]
+    command: [ "python", "-m", "app.run_consumer" ]
     networks:
       - default
 

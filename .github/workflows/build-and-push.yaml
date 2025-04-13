@@ -9,6 +9,9 @@ on:
       image-name:
         required: true
         type: string
+      stage:
+        required: false
+        type: string
       build-args:
         required: false
         type: string
@@ -55,6 +58,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./${{ inputs.directory }}
+          target: ${{ inputs.stage }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
