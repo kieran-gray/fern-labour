@@ -12,6 +12,7 @@ dependencies = [
     "kafka-python-ng>=2.2.3",
     "orjson<4.0.0,>=3.10.7",
     "psycopg[binary]<4.0.0,>=3.2.3",
+    "pydantic[email]<3.0.0,>=2.9.0",
     "python-keycloak>=5.1.1",
     "python-multipart>=0.0.20",
     "rtoml<1.0.0,>=0.11.0",
@@ -26,7 +27,6 @@ http = [
     "fastapi<1.0.0,>=0.115.0",
     "uvicorn<1.0.0,>=0.32.0",
     "uvloop<1.0.0,>=0.21.0",
-    "pydantic[email]<3.0.0,>=2.9.0",
 ]
 migrations = [
     "alembic<2.0.0,>=1.13.2",

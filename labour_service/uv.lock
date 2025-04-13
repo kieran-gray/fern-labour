@@ -412,6 +412,7 @@ dependencies = [
     { name = "kafka-python-ng" },
     { name = "orjson" },
     { name = "psycopg", extra = ["binary"] },
+    { name = "pydantic", extra = ["email"] },
     { name = "python-keycloak" },
     { name = "python-multipart" },
     { name = "rtoml" },
@@ -435,7 +436,6 @@ dev = [
 ]
 http = [
     { name = "fastapi" },
-    { name = "pydantic", extra = ["email"] },
     { name = "sentry-sdk", extra = ["fastapi"] },
     { name = "uvicorn" },
     { name = "uvloop" },
@@ -451,6 +451,7 @@ requires-dist = [
     { name = "kafka-python-ng", specifier = ">=2.2.3" },
     { name = "orjson", specifier = ">=3.10.7,<4.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.3,<4.0.0" },
+    { name = "pydantic", extras = ["email"], specifier = ">=2.9.0,<3.0.0" },
     { name = "python-keycloak", specifier = ">=5.1.1" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "rtoml", specifier = ">=0.11.0,<1.0.0" },
@@ -474,7 +475,6 @@ dev = [
 ]
 http = [
     { name = "fastapi", specifier = ">=0.115.0,<1.0.0" },
-    { name = "pydantic", extras = ["email"], specifier = ">=2.9.0,<3.0.0" },
     { name = "sentry-sdk", extras = ["fastapi"], specifier = ">=2.22.0" },
     { name = "uvicorn", specifier = ">=0.32.0,<1.0.0" },
     { name = "uvloop", specifier = ">=0.21.0,<1.0.0" },
