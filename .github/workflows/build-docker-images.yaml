@@ -49,6 +49,16 @@ jobs:
     with:
       directory: labour_service
       image-name: labour-service-backend
+      stage: http
+
+  labour_service_alembic:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.labour_service == 'true' }}
+    uses: ./.github/workflows/build-and-push.yaml
+    with:
+      directory: labour_service
+      image-name: labour-service-backend-alembic
+      stage: migrations
     
   notification_service:
     needs: check-changes
@@ -57,6 +67,16 @@ jobs:
     with:
       directory: notification_service
       image-name: notification-service-backend
+      stage: http
+
+  notification_service_alembic:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.notification_service == 'true' }}
+    uses: ./.github/workflows/build-and-push.yaml
+    with:
+      directory: notification_service
+      image-name: notification-service-backend-alembic
+      stage: migrations
 
   frontend:
     needs: check-changes

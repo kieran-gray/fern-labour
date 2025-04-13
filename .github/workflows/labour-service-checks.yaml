@@ -20,7 +20,7 @@ jobs:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v4
         with:
-          version: "0.5.5"
+          version: "0.6.3"
           enable-cache: true
       - name: Run tests
         run: uv run pytest --cov
@@ -35,7 +35,7 @@ jobs:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v4
         with:
-          version: "0.5.5"
+          version: "0.6.3"
           enable-cache: true
       - name: Run MyPy
         run: uv run mypy app

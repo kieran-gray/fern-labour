@@ -1,51 +1,107 @@
-FROM python:3.12 AS production
+FROM python:3.12-slim AS base
+ARG UID=1001
+ARG GID=1001
 
-ENV PYTHONUNBUFFERED=1
+# Create a non-root user and group with fixed IDs
+RUN groupadd --gid $GID nonroot && \
+    useradd --uid $UID --gid $GID --shell /bin/bash --create-home nonroot
 
-WORKDIR /app/
+WORKDIR /app
+
+# Creating a separate directory for venvs allows to easily
+# copy them from the builder and to mount the application
+# for local development
+RUN mkdir /venv && chown nonroot:nonroot /app /venv
+
+# Add venv to PATH here, so it's available in all subsequent stages
+ENV PATH="/venv/bin:$PATH"
+
+# Install necessary runtime libraries
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked  \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends curl
+
+# ---- Stage 1: Base Builder ----
+# Installs build tools and uv. Used as a base for specific dependency builders.
+FROM base AS base_builder
+ENV UV_PROJECT_ENVIRONMENT=/venv
+
+# Install build-time system dependencies (needed for compiling some Python packages)
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install uv
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
-COPY --from=ghcr.io/astral-sh/uv:0.5.5 /uv /bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.6.3 /uv /bin/uv
 
-# Place executables in the environment at the front of the path
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#using-the-environment
-ENV PATH="/app/.venv/bin:$PATH"
+# Set uv environment variables
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
 
-# Compile bytecode
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#compiling-bytecode
-ENV UV_COMPILE_BYTECODE=1
+# Copy project definition files needed by all builders
+COPY --chown=nonroot:nonroot pyproject.toml uv.lock config.toml ./
 
-# uv Cache
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#caching
-ENV UV_LINK_MODE=copy
+# Switch to non-root user for dependency installation from now on
+USER nonroot
 
-# Install dependencies
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --all-groups --no-install-project
+# ---- Stage 2a: HTTP Builder ----
+# Installs core + http dependencies
+FROM base_builder AS http_builder
+RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
+    uv sync --frozen --no-dev --group http --no-install-project
 
-COPY . .
+# ---- Stage 2b: Migrations Builder ----
+# Installs core + migrations dependencies
+FROM base_builder AS migrations_builder
+RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
+    uv sync --frozen --no-dev --group migrations --no-install-project
 
-# Sync the project
-# TODO temporarily install all
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen
+# ---- Stage 3a: Production - HTTP ----
+# Final minimal production image for the HTTP server
+FROM base AS http
 
-USER www-data
+ARG UVICORN_PORT=8001
 
-ARG UVICORN_PORT
+# Copy the virtual environment with core + http dependencies
+COPY --from=http_builder --chown=nonroot:nonroot /venv /venv
 
+# Copy the application code
+COPY --chown=nonroot:nonroot . .
+
+USER nonroot
 EXPOSE ${UVICORN_PORT}
 
-FROM production AS dev
+# Run the HTTP application
+CMD [ "python", "-m", "app.run" ]
 
-USER root
+# ---- Stage 3b: Production - Migrations ----
+# Final minimal production image for running migrations
+FROM base AS migrations
 
-RUN --mount=type=cache,target=/root/.cache/uv \
+# Copy the virtual environment with core + migrations dependencies
+COPY --from=migrations_builder --chown=nonroot:nonroot /venv /venv
+
+# Copy the application code (including alembic.ini, migration scripts)
+COPY --chown=nonroot:nonroot . .
+
+USER nonroot
+
+# Run Alembic migrations
+# Assumes alembic.ini is in the root project directory
+CMD ["alembic", "upgrade", "head"]
+
+# ---- Stage 4: Development ----
+# Development image with ALL dependencies and potentially dev tools/settings
+FROM base_builder AS development
+
+# Install ALL dependencies (core + http + consumer + migrations + dev)
+RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
     uv sync --frozen --all-groups
 
-ENV PATH="/app/.venv/bin:$PATH"
+# Copy application code
+COPY --chown=nonroot:nonroot . .
+
+USER nonroot

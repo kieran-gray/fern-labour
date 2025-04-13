@@ -8,34 +8,29 @@ authors = [
 ]
 requires-python = "<3.13,>=3.12"
 dependencies = [
-    "alembic<2.0.0,>=1.13.2",
-    "alembic-postgresql-enum<2.0.0,>=1.3.0",
     "dishka<2.0.0,>=1.4.0",
-    "emails>=0.6",
-    "fastapi<1.0.0,>=0.115.0",
-    "jinja2>=3.1.5",
     "kafka-python-ng>=2.2.3",
     "orjson<4.0.0,>=3.10.7",
     "psycopg[binary]<4.0.0,>=3.2.3",
-    "pydantic[email]<3.0.0,>=2.9.0",
     "python-keycloak>=5.1.1",
     "python-multipart>=0.0.20",
     "rtoml<1.0.0,>=0.11.0",
-    "sentry-sdk[fastapi]>=2.22.0",
     "sqlalchemy-utils>=0.41.2",
     "sqlalchemy[mypy]==2.0.36",
     "stripe>=11.6.0",
-    "twilio>=9.4.1",
-    "uvicorn<1.0.0,>=0.32.0",
-    "uvloop<1.0.0,>=0.21.0",
 ]
 
 [dependency-groups]
-test = [
-    "coverage<8.0.0,>=7.6.1",
-    "pytest-cov>=6.0.0",
-    "pytest<9.0.0,>=8.3.2",
-    "pytest-asyncio<1.0.0,>=0.24.0",
+http = [
+    "sentry-sdk[fastapi]>=2.22.0",
+    "fastapi<1.0.0,>=0.115.0",
+    "uvicorn<1.0.0,>=0.32.0",
+    "uvloop<1.0.0,>=0.21.0",
+    "pydantic[email]<3.0.0,>=2.9.0",
+]
+migrations = [
+    "alembic<2.0.0,>=1.13.2",
+    "alembic-postgresql-enum<2.0.0,>=1.3.0",
 ]
 dev = [
     "bandit<2.0.0,>=1.7.9",
@@ -44,10 +39,11 @@ dev = [
     "mypy<2.0.0,>=1.11.2",
     "pylint<4.0.0,>=3.3.0",
     "ruff<1.0.0,>=0.6.3",
+    "coverage<8.0.0,>=7.6.1",
+    "pytest-cov>=6.0.0",
+    "pytest<9.0.0,>=8.3.2",
+    "pytest-asyncio<1.0.0,>=0.24.0",
 ]
-
-[tool.uv]
-default-groups = ["dev", "test"]  # TODO don't include in prod image
 
 [build-system]
 requires = ["hatchling"]
