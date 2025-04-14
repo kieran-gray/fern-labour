@@ -7,8 +7,8 @@ import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import {
+  ContractionsService,
   DeleteContractionRequest,
-  LabourService,
   OpenAPI,
   UpdateContractionRequest,
 } from '../../../../client';
@@ -63,7 +63,7 @@ export const EditContractionModal = ({
     mutationFn: async ({ contractionId }: { contractionId: string }) => {
       setDeleteMutationInProgress(true);
       const requestBody: DeleteContractionRequest = { contraction_id: contractionId };
-      const response = await LabourService.deleteContraction({ requestBody });
+      const response = await ContractionsService.deleteContraction({ requestBody });
       return response.labour;
     },
     onSuccess: async (labour) => {
@@ -112,7 +112,7 @@ export const EditContractionModal = ({
         intensity: values.intensity != null ? values.intensity : contractionData!.intensity,
         contraction_id: contractionId,
       };
-      const response = await LabourService.updateContraction({ requestBody });
+      const response = await ContractionsService.updateContraction({ requestBody });
       return response.labour;
     },
     onSuccess: async (labour) => {

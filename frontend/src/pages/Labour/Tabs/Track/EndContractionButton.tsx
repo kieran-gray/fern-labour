@@ -7,9 +7,9 @@ import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
   ContractionDTO,
+  ContractionsService,
   EndContractionRequest,
   LabourDTO,
-  LabourService,
   OpenAPI,
 } from '../../../../client';
 import { contractionDurationSeconds } from '../../../../shared-components/utils';
@@ -35,7 +35,7 @@ export default function EndContractionButton({
     mutationFn: async ({ intensity, endTime }: { intensity: number; endTime: string }) => {
       setMutationInProgress(true);
       const requestBody: EndContractionRequest = { end_time: endTime, intensity };
-      const response = await LabourService.endContraction({ requestBody });
+      const response = await ContractionsService.endContraction({ requestBody });
       return response.labour;
     },
     onMutate: async ({ intensity, endTime }: { intensity: number; endTime: string }) => {

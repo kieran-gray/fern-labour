@@ -7,8 +7,8 @@ import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
   ContractionDTO,
+  ContractionsService,
   LabourDTO,
-  LabourService,
   OpenAPI,
   StartContractionRequest,
 } from '../../../../client';
@@ -50,7 +50,7 @@ export default function StartContractionButton({
       const requestBody: StartContractionRequest = {
         start_time: contraction.start_time,
       };
-      const response = await LabourService.startContraction({ requestBody });
+      const response = await ContractionsService.startContraction({ requestBody });
       return response.labour;
     },
     onMutate: async (contraction: ContractionDTO) => {

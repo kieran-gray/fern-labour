@@ -11,7 +11,7 @@ import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space, Tabs, Text } from '@mantine/core';
-import { ApiError, LabourService, OpenAPI } from '../../client';
+import { ApiError, LabourQueriesService, OpenAPI } from '../../client';
 import { NotFoundError } from '../../Errors';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
@@ -69,7 +69,6 @@ export const LabourPage = () => {
     },
     delta: 10,
     swipeDuration: 250,
-    trackMouse: true,
     trackTouch: true,
     preventScrollOnSwipe: true,
   });
@@ -87,9 +86,9 @@ export const LabourPage = () => {
       try {
         let response;
         if (labourId !== null) {
-          response = await LabourService.getLabourById({ labourId });
+          response = await LabourQueriesService.getLabourById({ labourId });
         } else {
-          response = await LabourService.getActiveLabour();
+          response = await LabourQueriesService.getActiveLabour();
           setLabourId(response.labour.id);
         }
         return response.labour;

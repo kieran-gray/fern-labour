@@ -12,7 +12,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Stepper } from '@mantine/core';
 import { useWindowScroll } from '@mantine/hooks';
 import { ApiError, OpenAPI } from '../../client/index.ts';
-import { LabourService } from '../../client/sdk.gen.ts';
+import { LabourQueriesService } from '../../client/sdk.gen.ts';
 import { NotFoundError } from '../../Errors.tsx';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
@@ -53,7 +53,7 @@ export const OnboardingPage = () => {
     queryKey: ['labour', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await LabourService.getActiveLabour();
+        const response = await LabourQueriesService.getActiveLabour();
         setLabourId(response.labour.id);
         return response.labour;
       } catch (err) {
