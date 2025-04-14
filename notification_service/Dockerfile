@@ -57,7 +57,7 @@ RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gi
 # Installs core + migrations dependencies
 FROM base_builder AS migrations_builder
 RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
-    uv sync --frozen --no-dev --group migrations --no-install-project
+    uv sync --frozen --only-group migrations --no-install-project
 
 # ---- Stage 3a: Production - HTTP ----
 # Final minimal production image for the HTTP server
@@ -69,7 +69,8 @@ ARG UVICORN_PORT=8001
 COPY --from=http_builder --chown=nonroot:nonroot /venv /venv
 
 # Copy the application code
-COPY --chown=nonroot:nonroot . .
+COPY --chown=nonroot:nonroot app app
+COPY --chown=nonroot:nonroot pyproject.toml config.toml ./
 
 USER nonroot
 EXPOSE ${UVICORN_PORT}
@@ -85,7 +86,8 @@ FROM base AS migrations
 COPY --from=migrations_builder --chown=nonroot:nonroot /venv /venv
 
 # Copy the application code (including alembic.ini, migration scripts)
-COPY --chown=nonroot:nonroot . .
+COPY --chown=nonroot:nonroot app app
+COPY --chown=nonroot:nonroot alembic.ini ./
 
 USER nonroot
 
