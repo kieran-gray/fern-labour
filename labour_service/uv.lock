@@ -393,17 +393,20 @@ dependencies = [
     { name = "dishka" },
     { name = "kafka-python-ng" },
     { name = "orjson" },
-    { name = "psycopg", extra = ["binary"] },
     { name = "pydantic", extra = ["email"] },
     { name = "python-keycloak" },
     { name = "python-multipart" },
     { name = "rtoml" },
-    { name = "sqlalchemy", extra = ["mypy"] },
-    { name = "sqlalchemy-utils" },
     { name = "stripe" },
 ]
 
 [package.dev-dependencies]
+db = [
+    { name = "cryptography" },
+    { name = "psycopg", extra = ["binary"] },
+    { name = "sqlalchemy", extra = ["mypy"] },
+    { name = "sqlalchemy-utils" },
+]
 dev = [
     { name = "bandit" },
     { name = "debugpy" },
@@ -430,17 +433,20 @@ requires-dist = [
     { name = "dishka", specifier = ">=1.4.0,<2.0.0" },
     { name = "kafka-python-ng", specifier = ">=2.2.3" },
     { name = "orjson", specifier = ">=3.10.7,<4.0.0" },
-    { name = "psycopg", extras = ["binary"], specifier = ">=3.2.3,<4.0.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.9.0,<3.0.0" },
     { name = "python-keycloak", specifier = ">=5.1.1" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "rtoml", specifier = ">=0.11.0,<1.0.0" },
-    { name = "sqlalchemy", extras = ["mypy"], specifier = "==2.0.36" },
-    { name = "sqlalchemy-utils", specifier = ">=0.41.2" },
     { name = "stripe", specifier = ">=11.6.0" },
 ]
 
 [package.metadata.requires-dev]
+db = [
+    { name = "cryptography", specifier = ">=44.0.2" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.2.3,<4.0.0" },
+    { name = "sqlalchemy", extras = ["mypy"], specifier = "==2.0.36" },
+    { name = "sqlalchemy-utils", specifier = ">=0.41.2" },
+]
 dev = [
     { name = "bandit", specifier = ">=1.7.9,<2.0.0" },
     { name = "debugpy", specifier = ">=1.8.9" },

@@ -52,3 +52,6 @@ jobs:
       - name: Run Ruff Format Check
         run: uv run ruff format app --check
         working-directory: ./notification_service
+      - name: Check uv lock
+        run: uv lock --check
+        working-directory: ./labour_service
