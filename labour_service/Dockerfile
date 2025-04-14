@@ -57,7 +57,7 @@ RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gi
 # Installs core + migrations dependencies
 FROM base_builder AS migrations_builder
 RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
-    uv sync --frozen --no-dev --group migrations --no-install-project
+    uv sync --frozen --only-group migrations --no-install-project
 
 # ---- Stage 3a: Production - HTTP ----
 # Final minimal production image for the HTTP server
