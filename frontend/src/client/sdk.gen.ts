@@ -149,7 +149,7 @@ export class ContactUsService {
   }
 }
 
-export class ContractionService {
+export class ContractionsService {
   /**
    * Start Contraction
    * @param data The data for the request.
@@ -317,52 +317,6 @@ export class HealthService {
 
 export class LabourService {
   /**
-   * Get All Labours
-   * @returns LabourListResponse Successful Response
-   * @throws ApiError
-   */
-  public static getAllLabours(): CancelablePromise<GetAllLaboursApiV1LabourGetAllGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/labour/get-all',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        403: 'Forbidden',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Labour By Id
-   * @param data The data for the request.
-   * @param data.labourId
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static getLabourById(
-    data: GetLabourByIdApiV1LabourGetLabourIdGetData
-  ): CancelablePromise<GetLabourByIdApiV1LabourGetLabourIdGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/labour/get/{labour_id}',
-      path: {
-        labour_id: data.labourId,
-      },
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        403: 'Forbidden',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
    * Update Labour Plan
    * @param data The data for the request.
    * @param data.requestBody
@@ -508,42 +462,6 @@ export class LabourService {
   }
 
   /**
-   * Get Active Labour
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static getActiveLabour(): CancelablePromise<GetActiveLabourApiV1LabourActiveGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/labour/active',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Get Active Labour Summary
-   * @returns LabourSummaryResponse Successful Response
-   * @throws ApiError
-   */
-  public static getActiveLabourSummary(): CancelablePromise<GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/labour/active/summary',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
    * Get Subscription Token
    * @returns LabourSubscriptionTokenResponse Successful Response
    * @throws ApiError
@@ -586,25 +504,48 @@ export class LabourService {
       },
     });
   }
+}
 
+export class LabourQueriesService {
   /**
-   * Start Contraction
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
+   * Get All Labours
+   * @returns LabourListResponse Successful Response
    * @throws ApiError
    */
-  public static startContraction(
-    data: StartContractionApiV1LabourContractionStartPostData
-  ): CancelablePromise<StartContractionApiV1LabourContractionStartPostResponse> {
+  public static getAllLabours(): CancelablePromise<GetAllLaboursApiV1LabourGetAllGetResponse> {
     return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/labour/contraction/start',
-      body: data.requestBody,
-      mediaType: 'application/json',
+      method: 'GET',
+      url: '/api/v1/labour/get-all',
       errors: {
         400: 'Bad Request',
         401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Get Labour By Id
+   * @param data The data for the request.
+   * @param data.labourId
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static getLabourById(
+    data: GetLabourByIdApiV1LabourGetLabourIdGetData
+  ): CancelablePromise<GetLabourByIdApiV1LabourGetLabourIdGetResponse> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/v1/labour/get/{labour_id}',
+      path: {
+        labour_id: data.labourId,
+      },
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
         404: 'Not Found',
         422: 'Validation Error',
         500: 'Internal Server Error',
@@ -613,132 +554,43 @@ export class LabourService {
   }
 
   /**
-   * End Contraction
-   * @param data The data for the request.
-   * @param data.requestBody
+   * Get Active Labour
    * @returns LabourResponse Successful Response
    * @throws ApiError
    */
-  public static endContraction(
-    data: EndContractionApiV1LabourContractionEndPutData
-  ): CancelablePromise<EndContractionApiV1LabourContractionEndPutResponse> {
+  public static getActiveLabour(): CancelablePromise<GetActiveLabourApiV1LabourActiveGetResponse> {
     return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/v1/labour/contraction/end',
-      body: data.requestBody,
-      mediaType: 'application/json',
+      method: 'GET',
+      url: '/api/v1/labour/active',
       errors: {
         400: 'Bad Request',
         401: 'Unauthorized',
         404: 'Not Found',
-        422: 'Validation Error',
         500: 'Internal Server Error',
       },
     });
   }
 
   /**
-   * Update Contraction
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
+   * Get Active Labour Summary
+   * @returns LabourSummaryResponse Successful Response
    * @throws ApiError
    */
-  public static updateContraction(
-    data: UpdateContractionApiV1LabourContractionUpdatePutData
-  ): CancelablePromise<UpdateContractionApiV1LabourContractionUpdatePutResponse> {
+  public static getActiveLabourSummary(): CancelablePromise<GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse> {
     return __request(OpenAPI, {
-      method: 'PUT',
-      url: '/api/v1/labour/contraction/update',
-      body: data.requestBody,
-      mediaType: 'application/json',
+      method: 'GET',
+      url: '/api/v1/labour/active/summary',
       errors: {
         400: 'Bad Request',
         401: 'Unauthorized',
         404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Delete Contraction
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static deleteContraction(
-    data: DeleteContractionApiV1LabourContractionDeleteDeleteData
-  ): CancelablePromise<DeleteContractionApiV1LabourContractionDeleteDeleteResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/v1/labour/contraction/delete',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Post Labour Update
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static postLabourUpdate(
-    data: PostLabourUpdateApiV1LabourLabourUpdatePostData
-  ): CancelablePromise<PostLabourUpdateApiV1LabourLabourUpdatePostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/labour/labour-update/',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
-        500: 'Internal Server Error',
-      },
-    });
-  }
-
-  /**
-   * Delete Labour Update
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns LabourResponse Successful Response
-   * @throws ApiError
-   */
-  public static deleteLabourUpdate(
-    data: DeleteLabourUpdateApiV1LabourLabourUpdateDeleteData
-  ): CancelablePromise<DeleteLabourUpdateApiV1LabourLabourUpdateDeleteResponse> {
-    return __request(OpenAPI, {
-      method: 'DELETE',
-      url: '/api/v1/labour/labour-update/',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        404: 'Not Found',
-        422: 'Validation Error',
         500: 'Internal Server Error',
       },
     });
   }
 }
 
-export class LabourUpdateService {
+export class LabourUpdatesService {
   /**
    * Post Labour Update
    * @param data The data for the request.

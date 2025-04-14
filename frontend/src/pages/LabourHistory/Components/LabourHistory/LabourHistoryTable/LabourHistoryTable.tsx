@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Table, Text } from '@mantine/core';
-import { LabourService, OpenAPI } from '../../../../../client';
+import { LabourQueriesService, OpenAPI } from '../../../../../client';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { useLabour } from '../../../../Labour/LabourContext';
@@ -24,7 +24,7 @@ export function LabourHistoryTable() {
     queryKey: ['labours', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await LabourService.getAllLabours();
+        const response = await LabourQueriesService.getAllLabours();
         return response.labours;
       } catch (err) {
         throw new Error('Failed to load labours. Please try again later.');

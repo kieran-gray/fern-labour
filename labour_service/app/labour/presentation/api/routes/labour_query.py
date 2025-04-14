@@ -7,24 +7,87 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from app.api.dependencies import bearer_scheme
 from app.api.exception_handler import ExceptionSchema
-from app.labour.application.services.labour_service import LabourService
-from app.labour.presentation.api.schemas.requests.contraction import (
-    DeleteContractionRequest,
-    EndContractionRequest,
-    StartContractionRequest,
-    UpdateContractionRequest,
-)
+from app.labour.application.security.labour_authorization_service import LabourAuthorizationService
+from app.labour.application.services.labour_query_service import LabourQueryService
+from app.labour.domain.labour.exceptions import UnauthorizedLabourRequest
 from app.labour.presentation.api.schemas.responses.labour import (
+    LabourListResponse,
     LabourResponse,
+    LabourSummaryResponse,
 )
 from app.setup.ioc.di_component_enum import ComponentEnum
+from app.subscription.application.security.subscription_authorization_service import (
+    SubscriptionAuthorizationService,
+)
 from app.user.infrastructure.auth.interfaces.controller import AuthController
 
-contraction_router = APIRouter(prefix="/labour/contraction", tags=["Contractions"])
+labour_query_router = APIRouter(prefix="/labour", tags=["Labour Queries"])
 
 
-@contraction_router.post(
-    "/start",
+@labour_query_router.get(
+    "/get-all",
+    responses={
+        status.HTTP_200_OK: {"model": LabourListResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_all_labours(
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourListResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    labours = await service.get_all_labours(birthing_person_id=user.id)
+    return LabourListResponse(labours=labours)
+
+
+@labour_query_router.get(
+    "/get/{labour_id}",
+    responses={
+        status.HTTP_200_OK: {"model": LabourResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_labour_by_id(
+    labour_id: str,
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
+    subscription_authorization_service: Annotated[
+        SubscriptionAuthorizationService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+    ],
+    labour_authorization_service: Annotated[
+        LabourAuthorizationService, FromComponent(ComponentEnum.LABOUR)
+    ],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> LabourResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    labour = await service.get_labour_by_id(labour_id=labour_id)
+    try:
+        await labour_authorization_service.ensure_can_access_labour(
+            requester_id=user.id, labour=labour
+        )
+    except UnauthorizedLabourRequest:
+        await subscription_authorization_service.ensure_can_access_labour(
+            requester_id=user.id, labour_id=labour.id
+        )
+
+    return LabourResponse(labour=labour)
+
+
+@labour_query_router.get(
+    "/active",
     responses={
         status.HTTP_200_OK: {"model": LabourResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
@@ -35,26 +98,20 @@ contraction_router = APIRouter(prefix="/labour/contraction", tags=["Contractions
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def start_contraction(
-    request_data: StartContractionRequest,
-    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+async def get_active_labour(
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await service.start_contraction(
-        birthing_person_id=user.id,
-        start_time=request_data.start_time,
-        intensity=request_data.intensity,
-        notes=request_data.notes,
-    )
+    labour = await service.get_active_labour(birthing_person_id=user.id)
     return LabourResponse(labour=labour)
 
 
-@contraction_router.put(
-    "/end",
+@labour_query_router.get(
+    "/active/summary",
     responses={
-        status.HTTP_200_OK: {"model": LabourResponse},
+        status.HTTP_200_OK: {"model": LabourSummaryResponse},
         status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
         status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
         status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
@@ -63,73 +120,11 @@ async def start_contraction(
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def end_contraction(
-    request_data: EndContractionRequest,
-    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+async def get_active_labour_summary(
+    service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-) -> LabourResponse:
+) -> LabourSummaryResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await service.end_contraction(
-        birthing_person_id=user.id,
-        intensity=request_data.intensity,
-        end_time=request_data.end_time,
-        notes=request_data.notes,
-    )
-    return LabourResponse(labour=labour)
-
-
-@contraction_router.put(
-    "/update",
-    responses={
-        status.HTTP_200_OK: {"model": LabourResponse},
-        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
-        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
-        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
-    },
-    status_code=status.HTTP_200_OK,
-)
-@inject
-async def update_contraction(
-    request_data: UpdateContractionRequest,
-    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
-    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-) -> LabourResponse:
-    user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await service.update_contraction(
-        birthing_person_id=user.id,
-        contraction_id=request_data.contraction_id,
-        start_time=request_data.start_time,
-        end_time=request_data.end_time,
-        intensity=request_data.intensity,
-        notes=request_data.notes,
-    )
-    return LabourResponse(labour=labour)
-
-
-@contraction_router.delete(
-    "/delete",
-    responses={
-        status.HTTP_200_OK: {"model": LabourResponse},
-        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
-        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
-        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
-    },
-    status_code=status.HTTP_200_OK,
-)
-@inject
-async def delete_contraction(
-    request_data: DeleteContractionRequest,
-    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
-    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-) -> LabourResponse:
-    user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await service.delete_contraction(
-        birthing_person_id=user.id,
-        contraction_id=request_data.contraction_id,
-    )
-    return LabourResponse(labour=labour)
+    labour = await service.get_active_labour_summary(birthing_person_id=user.id)
+    return LabourSummaryResponse(labour=labour)

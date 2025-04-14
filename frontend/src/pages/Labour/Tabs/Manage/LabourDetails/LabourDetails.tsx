@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Image, Text } from '@mantine/core';
-import { ApiError, LabourService, OpenAPI } from '../../../../../client';
+import { ApiError, LabourQueriesService, OpenAPI } from '../../../../../client';
 import { NotFoundError } from '../../../../../Errors';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
@@ -26,7 +26,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
     queryKey: ['labour', auth.user?.profile.sub],
     queryFn: async () => {
       try {
-        const response = await LabourService.getLabourById({ labourId: labourId! });
+        const response = await LabourQueriesService.getLabourById({ labourId: labourId! });
         return response.labour;
       } catch (err) {
         if (err instanceof ApiError && err.status === 404) {

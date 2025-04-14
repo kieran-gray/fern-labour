@@ -304,14 +304,6 @@ export type HealthcheckApiV1HealthGetResponse = {
   [key: string]: string;
 };
 
-export type GetAllLaboursApiV1LabourGetAllGetResponse = LabourListResponse;
-
-export type GetLabourByIdApiV1LabourGetLabourIdGetData = {
-  labourId: string;
-};
-
-export type GetLabourByIdApiV1LabourGetLabourIdGetResponse = LabourResponse;
-
 export type UpdateLabourPlanApiV1LabourPlanPutData = {
   requestBody: PlanLabourRequest;
 };
@@ -344,10 +336,6 @@ export type DeleteLabourApiV1LabourDeleteLabourIdDeleteData = {
 
 export type DeleteLabourApiV1LabourDeleteLabourIdDeleteResponse = unknown | void;
 
-export type GetActiveLabourApiV1LabourActiveGetResponse = LabourResponse;
-
-export type GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse = LabourSummaryResponse;
-
 export type GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse =
   LabourSubscriptionTokenResponse;
 
@@ -356,6 +344,18 @@ export type SendInviteApiV1LabourSendInvitePostData = {
 };
 
 export type SendInviteApiV1LabourSendInvitePostResponse = void;
+
+export type GetAllLaboursApiV1LabourGetAllGetResponse = LabourListResponse;
+
+export type GetLabourByIdApiV1LabourGetLabourIdGetData = {
+  labourId: string;
+};
+
+export type GetLabourByIdApiV1LabourGetLabourIdGetResponse = LabourResponse;
+
+export type GetActiveLabourApiV1LabourActiveGetResponse = LabourResponse;
+
+export type GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse = LabourSummaryResponse;
 
 export type PostLabourUpdateApiV1LabourLabourUpdatePostData = {
   requestBody: LabourUpdateRequest;

@@ -18,7 +18,7 @@ from app.labour.presentation.api.schemas.responses.labour import (
 from app.setup.ioc.di_component_enum import ComponentEnum
 from app.user.infrastructure.auth.interfaces.controller import AuthController
 
-labour_update_router = APIRouter(prefix="/labour-update", tags=["Labour Update"])
+labour_update_router = APIRouter(prefix="/labour/labour-update", tags=["Labour Updates"])
 
 
 @labour_update_router.post(

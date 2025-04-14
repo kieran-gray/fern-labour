@@ -8,9 +8,9 @@ import { notifications } from '@mantine/notifications';
 import {
   ApiError,
   LabourDTO,
-  LabourService,
   LabourUpdateDTO,
   LabourUpdateRequest,
+  LabourUpdatesService,
   OpenAPI,
 } from '../../../../../client';
 import { useLabour } from '../../../LabourContext';
@@ -54,7 +54,7 @@ export default function MakeAnnouncementButton({
         sent_time: labourUpdate.sent_time,
         message: labourUpdate.message,
       };
-      const response = await LabourService.postLabourUpdate({ requestBody });
+      const response = await LabourUpdatesService.postLabourUpdate({ requestBody });
       return response.labour;
     },
     onMutate: async (labourUpdate: LabourUpdateDTO) => {
