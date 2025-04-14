@@ -47,8 +47,9 @@ dev = [
     "pytest<9.0.0,>=8.3.2",
     "pytest-asyncio<1.0.0,>=0.24.0",
 ]
+
 [tool.uv]
-default-groups = ['db']
+default-groups = ["db"]
 
 [build-system]
 requires = ["hatchling"]
