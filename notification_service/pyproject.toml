@@ -13,17 +13,20 @@ dependencies = [
     "jinja2>=3.1.5",
     "kafka-python-ng>=2.2.3",
     "orjson<4.0.0,>=3.10.7",
-    "psycopg[binary]<4.0.0,>=3.2.3",
     "pydantic[email]<3.0.0,>=2.9.0",
     "python-keycloak>=5.1.1",
     "python-multipart>=0.0.20",
     "rtoml<1.0.0,>=0.11.0",
-    "sqlalchemy-utils>=0.41.2",
-    "sqlalchemy[mypy]==2.0.36",
     "twilio>=9.4.1",
 ]
 
 [dependency-groups]
+db = [
+    "sqlalchemy[mypy]==2.0.36",
+    "sqlalchemy-utils>=0.41.2",
+    "psycopg[binary]<4.0.0,>=3.2.3",
+    "cryptography>=44.0.2",
+]
 http = [
     "sentry-sdk[fastapi]>=2.22.0",
     "fastapi<1.0.0,>=0.115.0",
@@ -39,13 +42,13 @@ dev = [
     "debugpy>=1.8.9",
     "isort<6.0.0,>=5.13.2",
     "mypy<2.0.0,>=1.11.2",
-    "pylint<4.0.0,>=3.3.0",
     "ruff<1.0.0,>=0.6.3",
-    "coverage<8.0.0,>=7.6.1",
     "pytest-cov>=6.0.0",
     "pytest<9.0.0,>=8.3.2",
     "pytest-asyncio<1.0.0,>=0.24.0",
 ]
+[tool.uv]
+default-groups = ['db']
 
 [build-system]
 requires = ["hatchling"]

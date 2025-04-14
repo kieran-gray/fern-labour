@@ -177,3 +177,5 @@ todo/
 node_modules/
 key.json
 backup.sql
+
+deployment/
