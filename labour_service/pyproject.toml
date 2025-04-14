@@ -7,7 +7,9 @@ authors = [
     {name = "Kieran Gray", email = "gray.kieran@protonmail.com"},
 ]
 requires-python = "<3.13,>=3.12"
-dependencies = [
+
+[dependency-groups]
+app = [
     "dishka<2.0.0,>=1.4.0",
     "kafka-python-ng>=2.2.3",
     "orjson<4.0.0,>=3.10.7",
@@ -17,8 +19,6 @@ dependencies = [
     "rtoml<1.0.0,>=0.11.0",
     "stripe>=11.6.0",
 ]
-
-[dependency-groups]
 db = [
     "sqlalchemy[mypy]==2.0.36",
     "sqlalchemy-utils>=0.41.2",

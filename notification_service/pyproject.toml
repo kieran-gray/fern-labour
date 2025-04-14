@@ -7,7 +7,9 @@ authors = [
     {name = "Kieran Gray", email = "gray.kieran@protonmail.com"},
 ]
 requires-python = "<3.13,>=3.12"
-dependencies = [
+
+[dependency-groups]
+app = [
     "dishka<2.0.0,>=1.4.0",
     "emails>=0.6",
     "jinja2>=3.1.5",
@@ -19,8 +21,6 @@ dependencies = [
     "rtoml<1.0.0,>=0.11.0",
     "twilio>=9.4.1",
 ]
-
-[dependency-groups]
 db = [
     "sqlalchemy[mypy]==2.0.36",
     "sqlalchemy-utils>=0.41.2",

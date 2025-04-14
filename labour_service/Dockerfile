@@ -51,13 +51,13 @@ USER nonroot
 # Installs core + http dependencies
 FROM base_builder AS http_builder
 RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
-    uv sync --frozen --no-dev --group http --no-install-project
+    uv sync --frozen --no-dev --group app --group http --no-install-project
 
 # ---- Stage 2b: Migrations Builder ----
 # Installs core + migrations dependencies
 FROM base_builder AS migrations_builder
 RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
-    uv sync --frozen --no-default-groups --group migrations --group db --no-install-project
+    uv sync --frozen --no-dev --group migrations --no-install-project
 
 # ---- Stage 3a: Production - HTTP ----
 # Final minimal production image for the HTTP server
