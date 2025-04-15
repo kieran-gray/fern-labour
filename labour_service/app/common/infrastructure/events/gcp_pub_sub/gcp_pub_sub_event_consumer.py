@@ -1,13 +1,12 @@
+import asyncio
 import json
 import logging
-from typing import Type
-import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 from dishka import AsyncContainer, Scope
 from google.cloud import pubsub_v1
-from google.cloud.pubsub_v1.subscriber.message import Message
 from google.cloud.pubsub_v1.subscriber.futures import StreamingPullFuture
-from concurrent.futures import ThreadPoolExecutor
+from google.cloud.pubsub_v1.subscriber.message import Message
 
 from app.application.events.consumer import EventConsumer
 from app.application.events.event_handler import EventHandler
@@ -26,7 +25,6 @@ class PubSubEventConsumer(EventConsumer):
         self,
         project_id: str,
         subscription_prefix: str,
-        topic_prefix: str,
         subscriber: pubsub_v1.SubscriberClient | None = None,
     ):
         """
@@ -41,9 +39,7 @@ class PubSubEventConsumer(EventConsumer):
         self._project_id = project_id
         self._subscription_prefix = subscription_prefix
         self._subscriber = subscriber or pubsub_v1.SubscriberClient()
-        self._handlers: dict[str, Type[EventHandler]] = {
-            f"{topic_prefix}.{topic}": handler for topic, handler in EVENT_HANDLER_MAPPING.items()
-        }
+        self._handlers: dict[str, type[EventHandler]] = EVENT_HANDLER_MAPPING
         self._running = False
         self._container: AsyncContainer | None = None
         self._streaming_pull_futures: list[StreamingPullFuture] = []
@@ -61,14 +57,14 @@ class PubSubEventConsumer(EventConsumer):
     def _get_subscription_path(self, topic: str) -> str:
         """
         Get the full subscription path for a topic.
-        
+
         Args:
             topic: The topic name.
-            
+
         Returns:
             Full subscription path.
         """
-        subscription_id = f"{self._subscription_prefix}.{topic.split('.')[-1]}"
+        subscription_id = f"{self._subscription_prefix}.{topic}"
         return self._subscriber.subscription_path(self._project_id, subscription_id)
 
     async def _process_message(self, message: Message) -> None:
@@ -82,14 +78,14 @@ class PubSubEventConsumer(EventConsumer):
             log.error("Dependency injection container not set. Cannot process messages.")
             message.nack()
             return
-        
+
         topic_name = message.topic
         log.info(f"Received message from topic: {topic_name}")
-        
-        topic_parts = topic_name.split('/')
+
+        topic_parts = topic_name.split("/")
         short_topic = topic_parts[-1]
         full_topic = next((t for t in self._handlers.keys() if t.endswith(short_topic)), None)
-        
+
         if not full_topic:
             log.error(f"No handler found for topic: {short_topic}")
             message.nack()
@@ -103,11 +99,13 @@ class PubSubEventConsumer(EventConsumer):
 
         try:
             data = json.loads(message.data.decode("utf-8"))
-            
+
             async with self._container(scope=Scope.REQUEST) as request_container:
-                event_handler = await request_container.get(handler_cls, component=ComponentEnum.EVENTS)
+                event_handler = await request_container.get(
+                    handler_cls, component=ComponentEnum.EVENTS
+                )
                 await event_handler.handle(data)
-                
+
             message.ack()
             log.info(f"Successfully processed message from topic: {full_topic}")
         except Exception as e:
@@ -123,7 +121,7 @@ class PubSubEventConsumer(EventConsumer):
             message: The received Pub/Sub message.
         """
         import asyncio
-        
+
         if not self._running:
             message.nack()
             return
@@ -149,11 +147,11 @@ class PubSubEventConsumer(EventConsumer):
         log.info("PubSubEventConsumer started.")
 
         for topic in self._handlers.keys():
-            topic_short_name = topic.split('.')[-1]
+            topic_short_name = topic.split(".")[-1]
             subscription_path = self._get_subscription_path(topic_short_name)
-            
+
             log.info(f"Subscribing to {subscription_path}")
-            
+
             streaming_pull_future = self._subscriber.subscribe(
                 subscription=subscription_path,
                 callback=self._message_callback,
@@ -168,12 +166,12 @@ class PubSubEventConsumer(EventConsumer):
         Stop the Pub/Sub consumer.
         """
         self._running = False
-        
+
         for future in self._streaming_pull_futures:
             future.cancel()
-        
+
         self._streaming_pull_futures = []
-        
+
         if self._subscriber:
             self._subscriber.close()
 
@@ -191,7 +189,7 @@ class PubSubEventConsumer(EventConsumer):
         if not self._subscriber:
             log.warning("Pub/Sub subscriber is not initialized.")
             return False
-            
+
         try:
             for future in self._streaming_pull_futures:
                 if future.cancelled() or future.done():

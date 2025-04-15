@@ -1,8 +1,8 @@
 import json
 import logging
 
-from google.cloud import pubsub_v1
 from google.api_core.exceptions import DeadlineExceeded
+from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.publisher.futures import Future
 
 from app.application.events.producer import EventProducer
@@ -24,7 +24,6 @@ class PubSubEventProducer(EventProducer):
     def __init__(
         self,
         project_id: str,
-        topic_prefix: str,
         retries: int = 3,
         publisher: pubsub_v1.PublisherClient | None = None,
     ):
@@ -39,7 +38,6 @@ class PubSubEventProducer(EventProducer):
         """
         self._publisher = publisher or pubsub_v1.PublisherClient()
         self._project_id = project_id
-        self._topic_prefix = topic_prefix
         self._retries = retries
 
     def _get_topic_path(self, event: DomainEvent) -> str:
@@ -52,8 +50,7 @@ class PubSubEventProducer(EventProducer):
         Returns:
             The generated Pub/Sub topic path.
         """
-        topic_id = f"{self._topic_prefix}.{event.type.lower()}"
-        return self._publisher.topic_path(self._project_id, topic_id)
+        return self._publisher.topic_path(self._project_id, event.type.lower())
 
     def _serialize_event(self, event: DomainEvent) -> bytes:
         """
@@ -76,18 +73,17 @@ class PubSubEventProducer(EventProducer):
         """
         topic_path = self._get_topic_path(event)
         data = self._serialize_event(event)
-        
-        attributes = {
-            "event_id": event.id
-        }
-        
+
+        attributes = {"event_id": event.id}
+
         try:
             future: Future = self._publisher.publish(topic_path, data=data, **attributes)
             message_id = future.result(timeout=FUTURE_TIMEOUT_SECONDS)
             log.debug(f"Published event {event.id} to {topic_path} with message ID {message_id}")
         except DeadlineExceeded as e:
             log.critical(
-                f"Timeout error while publishing event {event.id} to topic {topic_path}.", exc_info=e
+                f"Timeout error while publishing event {event.id} to topic {topic_path}.",
+                exc_info=e,
             )
         except Exception as e:
             log.critical(f"Unexpected error while publishing event {event.id}", exc_info=e)
@@ -104,27 +100,29 @@ class PubSubEventProducer(EventProducer):
             return
 
         futures = []
-        
+
         try:
             for event in events:
                 topic_path = self._get_topic_path(event)
                 data = self._serialize_event(event)
                 attributes = {"event_id": event.id}
-                
+
                 log.debug(f"Queueing event {event.id} for topic {topic_path}")
                 future: Future = self._publisher.publish(topic_path, data=data, **attributes)
                 futures.append((future, event.id, topic_path))
-            
+
             for future, event_id, topic_path in futures:
                 try:
                     message_id = future.result(timeout=FUTURE_TIMEOUT_SECONDS)
-                    log.debug(f"Published event {event_id} to {topic_path} with message ID {message_id}")
+                    log.debug(
+                        f"Published event {event_id} to {topic_path} with message ID {message_id}"
+                    )
                 except Exception as e:
                     log.error(f"Failed to publish event {event_id}: {str(e)}")
-            
+
             log.info(f"Successfully published {len(events)} events to Pub/Sub.")
         except Exception as e:
-            log.critical(f"Unexpected error while publishing batch of events", exc_info=e)
+            log.critical("Unexpected error while publishing batch of events", exc_info=e)
 
     def close(self) -> None:
         """

@@ -148,6 +148,11 @@ class KafkaConsumerSettings(BaseModel):
     group_id: str = Field(alias="KAFKA_GROUP_ID", default="labour-tracker-group")
 
 
+class GCPPubSubSettings(BaseModel):
+    project_id: str | None = Field(alias="GCP_PUB_SUB_PROJECT_ID", default="")
+    subscription_prefix: str | None = Field(alias="GCP_PUB_SUB_SUBSCRIPTION_PREFIX", default="")
+
+
 class EventSettings(BaseModel):
     kafka_producer: KafkaProducerSettings
     kafka_consumer: KafkaConsumerSettings

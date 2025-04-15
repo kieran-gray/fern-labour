@@ -228,6 +228,30 @@ services:
     networks:
       - default
 
+  pub-sub-emulator:
+    image: google/cloud-sdk:latest
+    command: ["gcloud", "beta", "emulators", "pubsub", "start", "--host-port=0.0.0.0:8085", "--project=test"]
+    ports:
+      - "8085:8085"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/v1/projects/test/schemas"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  pub-sub-init:
+    image: curlimages/curl:latest
+    depends_on:
+      pub-sub-emulator:
+        condition: service_healthy
+    volumes:
+      - ./gcp_pub_sub/pub-sub-init.sh:/pubsub-init.sh
+    entrypoint: ["/bin/sh", "/pubsub-init.sh"]
+    environment:
+      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
+      - PUBSUB_PROJECT_ID=test
+
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:latest'
     build:
