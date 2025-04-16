@@ -4,7 +4,7 @@ services:
     image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
     build:
       context: ./labour_service
-      target: http
+      target: development
     restart: "no"
     networks:
       - traefik-public
@@ -18,11 +18,15 @@ services:
         restart: false
     env_file:
       - ./labour_service/.env
+    environment:
+      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
     ports:
       - "8000:8000"
+      - "5678:5678"
     volumes:
       - ./labour_service/app:/app/app
       - ./labour_service/config.toml/:/app/config.toml
+    command: [ "debugpy", "--listen", "0.0.0.0:5678", "-m", "app.run" ]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
       interval: 30s
@@ -116,12 +120,10 @@ services:
   labour-consumer:
     image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
     restart: "no"
-    depends_on:
-      init-kafka:
-        condition: service_completed_successfully
-        restart: false
     env_file:
       - ./labour_service/.env
+    environment:
+      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
     command: [ "python", "-m", "app.run_consumer" ]
     networks:
       - default
@@ -129,10 +131,6 @@ services:
   notifications-consumer:
     image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
     restart: "no"
-    depends_on:
-      init-kafka:
-        condition: service_completed_successfully
-        restart: false
     env_file:
       - ./notification_service/.env
     command: [ "python", "-m", "app.run_consumer" ]
@@ -172,61 +170,6 @@ services:
     volumes:
       - ./keycloak/labour_tracker_theme:/opt/keycloak/themes/labour_tracker_theme
       - ./keycloak/realms:/opt/keycloak/data/import:ro
-
-  zookeeper:
-    image: docker.io/bitnami/zookeeper:3.8
-    container_name: zookeeper
-    restart: always
-    ports:
-      - "2181:2181"
-    volumes:
-      - "zookeeper-volume:/bitnami"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    networks:
-      - default
-
-  kafka:
-    image: docker.io/bitnami/kafka:3.9
-    container_name: kafka
-    restart: always
-    ports:
-      - "9093:9093"
-      - "9092:9092"
-    volumes:
-      - "kafka-volume:/bitnami"
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
-    depends_on:
-      - zookeeper
-    networks:
-      - default
-    healthcheck:
-      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list" ]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-
-  init-kafka:
-    image: docker.io/bitnami/kafka:3.9
-    depends_on:
-      kafka:
-        condition: service_healthy
-    entrypoint: [ '/bin/bash', '/setup.sh' ]
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS?variable not set}
-      - KAFKA_TOPIC_PREFIX=${KAFKA_TOPIC_PREFIX?variable not set}
-    volumes:
-      - ./kafka/setup.sh:/setup.sh
-    networks:
-      - default
 
   pub-sub-emulator:
     image: google/cloud-sdk:latest
@@ -298,21 +241,6 @@ services:
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?variable not set}
     command: [ "npm", "run", "dev" ]
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
-    ports:
-      - "8081:8080"
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
-    depends_on:
-      - kafka
-      - zookeeper
-    networks:
-      - default
-
   mailcatcher:
     image: schickling/mailcatcher
     ports:
@@ -321,9 +249,6 @@ services:
 
 volumes:
   app-db-data:
-  kafka-volume:
-  zookeeper-volume:
-
 
 networks:
   traefik-public:

@@ -15,7 +15,7 @@ export PUBSUB_EMULATOR_HOST="pub-sub-emulator:8085"
 export PUBSUB_PROJECT_ID="test"
 
 # Create topics
-topics="labour.begun labour.completed labour.update-posted labour.send-invite contact-us.message-sent contraction.started contraction.ended"
+topics="labour.begun labour.completed labour.update-posted notification.requested notification.status-updated contraction.started contraction.ended"
 
 for topic in $topics; do
   # Create topic using curl to the emulator REST API
@@ -27,7 +27,7 @@ for topic in $topics; do
   echo " - Topic $topic created or already exists."
   
   # Create subscription with the same name as topic
-  subscription_name="${topic}-subscription"
+  subscription_name="${topic}.sub"
   echo "Creating subscription: $subscription_name"
   curl -X PUT "http://pub-sub-emulator:8085/v1/projects/test/subscriptions/$subscription_name" \
        -H "Content-Type: application/json" \
@@ -40,6 +40,3 @@ for topic in $topics; do
 done
 
 echo "All topics and subscriptions created!"
-
-# Keep the container running to maintain logs (optional)
-tail -f /dev/null

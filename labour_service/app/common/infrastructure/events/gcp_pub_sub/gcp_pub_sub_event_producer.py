@@ -1,12 +1,13 @@
+import asyncio
 import json
 import logging
+from concurrent.futures import TimeoutError
 
-from google.api_core.exceptions import DeadlineExceeded
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.publisher.futures import Future
 
-from app.application.events.producer import EventProducer
-from app.domain.base.event import DomainEvent
+from app.common.domain.event import DomainEvent
+from app.common.domain.producer import EventProducer
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +33,6 @@ class PubSubEventProducer(EventProducer):
 
         Args:
             project_id: Google Cloud project ID.
-            topic_prefix: Prefix for Pub/Sub topics.
             retries: Number of retries for failed publish operations.
             publisher: Optional custom PublisherClient instance.
         """
@@ -50,7 +50,7 @@ class PubSubEventProducer(EventProducer):
         Returns:
             The generated Pub/Sub topic path.
         """
-        return self._publisher.topic_path(self._project_id, event.type.lower())
+        return str(self._publisher.topic_path(self._project_id, event.type.lower()))
 
     def _serialize_event(self, event: DomainEvent) -> bytes:
         """
@@ -78,9 +78,10 @@ class PubSubEventProducer(EventProducer):
 
         try:
             future: Future = self._publisher.publish(topic_path, data=data, **attributes)
-            message_id = future.result(timeout=FUTURE_TIMEOUT_SECONDS)
+            loop = asyncio.get_running_loop()
+            message_id = await loop.run_in_executor(None, future.result, FUTURE_TIMEOUT_SECONDS)
             log.debug(f"Published event {event.id} to {topic_path} with message ID {message_id}")
-        except DeadlineExceeded as e:
+        except TimeoutError as e:
             log.critical(
                 f"Timeout error while publishing event {event.id} to topic {topic_path}.",
                 exc_info=e,
@@ -99,45 +100,65 @@ class PubSubEventProducer(EventProducer):
             log.debug("No events to publish in batch.")
             return
 
-        futures = []
+        loop = asyncio.get_running_loop()
+        publish_tasks = []
+        event_details = {}
 
-        try:
-            for event in events:
+        for event in events:
+            try:
                 topic_path = self._get_topic_path(event)
                 data = self._serialize_event(event)
-                attributes = {"event_id": event.id}
+                attributes = {"event_id": str(event.id)}
 
                 log.debug(f"Queueing event {event.id} for topic {topic_path}")
                 future: Future = self._publisher.publish(topic_path, data=data, **attributes)
-                futures.append((future, event.id, topic_path))
 
-            for future, event_id, topic_path in futures:
-                try:
-                    message_id = future.result(timeout=FUTURE_TIMEOUT_SECONDS)
-                    log.debug(
-                        f"Published event {event_id} to {topic_path} with message ID {message_id}"
-                    )
-                except Exception as e:
-                    log.error(f"Failed to publish event {event_id}: {str(e)}")
+                task = loop.run_in_executor(None, future.result, FUTURE_TIMEOUT_SECONDS)
+                publish_tasks.append(task)
+                event_details[task] = {"id": event.id, "topic": topic_path}
 
-            log.info(f"Successfully published {len(events)} events to Pub/Sub.")
-        except Exception as e:
-            log.critical("Unexpected error while publishing batch of events", exc_info=e)
-
-    def close(self) -> None:
-        """
-        Close the Pub/Sub publisher to release resources.
-        """
-        if self._publisher:
-            try:
-                log.debug("Closing Pub/Sub publisher.")
-                self._publisher.close()
-                log.info("Pub/Sub publisher closed successfully.")
             except Exception as e:
-                log.error("Error while closing Pub/Sub publisher.", exc_info=e)
+                log.error(
+                    "Failed to initiate publishing for event "
+                    f"{getattr(event, 'id', 'unknown')}: {e}",
+                    exc_info=e,
+                )
 
-    def __del__(self) -> None:
-        """
-        Destructor to ensure proper cleanup of Pub/Sub publisher.
-        """
-        self.close()
+        if not publish_tasks:
+            log.warning("No publish tasks were successfully created for the batch.")
+            return
+
+        log.info(f"Waiting for {len(publish_tasks)} publish operations to complete...")
+        results = await asyncio.gather(*publish_tasks, return_exceptions=True)
+
+        published_count = 0
+        failed_count = 0
+        for i, result in enumerate(results):
+            task = publish_tasks[i]
+            details = event_details[task]
+            event_id = details["id"]
+            topic_path = details["topic"]
+
+            if isinstance(result, Exception):
+                failed_count += 1
+                if isinstance(result, TimeoutError):
+                    log.error(f"Timed out publishing event {event_id} to {topic_path}")
+                else:
+                    log.error(
+                        f"Failed to publish event {event_id} to {topic_path}: {result}",
+                        exc_info=result,
+                    )
+            else:
+                published_count += 1
+                log.debug(
+                    f"Successfully published event {event_id} to "
+                    f"{topic_path} with message ID {result}"
+                )
+
+        if failed_count > 0:
+            log.error(f"Failed to publish {failed_count} out of {len(events)} events in the batch.")
+        if published_count > 0:
+            log.info(
+                f"Successfully published {published_count} out of "
+                f"{len(events)} events in the batch."
+            )

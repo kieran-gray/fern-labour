@@ -113,28 +113,13 @@ class DbSettings(BaseModel):
     sqla_engine: SqlaEngineSettings
 
 
-class KafkaSettings(BaseModel):
-    bootstrap_servers: str = Field(alias="KAFKA_BOOTSTRAP_SERVERS")
-    topic_prefix: str = Field(alias="KAFKA_TOPIC_PREFIX", default="labour-tracker")
-
-    @property
-    def kafka_enabled(self) -> bool:
-        return bool(self.bootstrap_servers)
-
-
-class KafkaProducerSettings(BaseModel):
-    retries: int = Field(alias="KAFKA_PRODUCER_RETRIES", default=3)
-    acks: str = Field(alias="KAFKA_PRODUCER_ACKS", default="all")
-
-
-class KafkaConsumerSettings(BaseModel):
-    group_id: str = Field(alias="KAFKA_GROUP_ID", default="labour-tracker-group")
+class GCPSettings(BaseModel):
+    project_id: str = Field(alias="GCP_PROJECT_ID")
+    retries: int = Field(alias="GCP_PRODUCER_RETRIES", default=3)
 
 
 class EventSettings(BaseModel):
-    kafka_producer: KafkaProducerSettings
-    kafka_consumer: KafkaConsumerSettings
-    kafka: KafkaSettings
+    gcp: GCPSettings
 
 
 class StripeSettings(BaseModel):

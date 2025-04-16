@@ -3,11 +3,15 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide
 
 from app.common.domain.producer import EventProducer
+from app.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_consumer import (
+    PubSubEventConsumer,
+)
+from app.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_producer import (
+    PubSubEventProducer,
+)
 from app.common.infrastructure.events.interfaces.consumer import EventConsumer
-from app.common.infrastructure.events.kafka.kafka_event_consumer import KafkaEventConsumer
-from app.common.infrastructure.events.kafka.kafka_event_producer import KafkaEventProducer
 from app.setup.ioc.di_component_enum import ComponentEnum
-from app.setup.settings import Settings
+from app.setup.settings import GCPSettings, Settings
 
 
 class EventsInfrastructureProvider(Provider):
@@ -15,23 +19,15 @@ class EventsInfrastructureProvider(Provider):
     scope = Scope.APP
 
     @provide
-    def get_kafka_event_producer(
+    def get_gcp_settings(
         self, settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)]
-    ) -> EventProducer:
-        return KafkaEventProducer(
-            bootstrap_servers=settings.events.kafka.bootstrap_servers,
-            acks=settings.events.kafka_producer.acks,
-            retries=settings.events.kafka_producer.retries,
-            topic_prefix=settings.events.kafka.topic_prefix,
-        )
+    ) -> GCPSettings:
+        return settings.events.gcp
 
     @provide
-    def get_kafka_event_consumer(
-        self,
-        settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
-    ) -> EventConsumer:
-        return KafkaEventConsumer(
-            bootstrap_servers=settings.events.kafka.bootstrap_servers,
-            group_id=settings.events.kafka_consumer.group_id,
-            topic_prefix=settings.events.kafka.topic_prefix,
-        )
+    def get_gcp_pub_sub_event_producer(self, settings: GCPSettings) -> EventProducer:
+        return PubSubEventProducer(project_id=settings.project_id)
+
+    @provide
+    def get_gcp_pub_sub_event_consumer(self, settings: GCPSettings) -> EventConsumer:
+        return PubSubEventConsumer(project_id=settings.project_id)

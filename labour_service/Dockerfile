@@ -101,7 +101,7 @@ FROM base_builder AS development
 
 # Install ALL dependencies (core + http + consumer + migrations + dev)
 RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
-    uv sync --frozen --all-groups
+    uv sync --frozen --all-groups --no-install-project
 
 # Copy application code
 COPY --chown=nonroot:nonroot . .

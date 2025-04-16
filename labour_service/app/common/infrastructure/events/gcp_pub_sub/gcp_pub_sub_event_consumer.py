@@ -1,16 +1,17 @@
 import asyncio
+import functools
 import json
 import logging
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future
 
 from dishka import AsyncContainer, Scope
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.subscriber.futures import StreamingPullFuture
 from google.cloud.pubsub_v1.subscriber.message import Message
 
-from app.application.events.consumer import EventConsumer
-from app.application.events.event_handler import EventHandler
-from app.application.events.event_handlers.mapping import EVENT_HANDLER_MAPPING
+from app.common.application.event_handler import EventHandler
+from app.common.infrastructure.events.interfaces.consumer import EventConsumer
+from app.labour.application.event_handlers.mapping import LABOUR_EVENT_HANDLER_MAPPING
 from app.setup.ioc.di_component_enum import ComponentEnum
 
 log = logging.getLogger(__name__)
@@ -24,7 +25,6 @@ class PubSubEventConsumer(EventConsumer):
     def __init__(
         self,
         project_id: str,
-        subscription_prefix: str,
         subscriber: pubsub_v1.SubscriberClient | None = None,
     ):
         """
@@ -32,18 +32,19 @@ class PubSubEventConsumer(EventConsumer):
 
         Args:
             project_id: Google Cloud project ID.
-            subscription_prefix: Prefix for Pub/Sub subscriptions.
             topic_prefix: Prefix for Pub/Sub topics.
             subscriber: Optional pre-configured SubscriberClient.
         """
         self._project_id = project_id
-        self._subscription_prefix = subscription_prefix
         self._subscriber = subscriber or pubsub_v1.SubscriberClient()
-        self._handlers: dict[str, type[EventHandler]] = EVENT_HANDLER_MAPPING
+        self._handlers: dict[str, type[EventHandler]] = {
+            f"{topic}.sub": handler for topic, handler in LABOUR_EVENT_HANDLER_MAPPING.items()
+        }
         self._running = False
         self._container: AsyncContainer | None = None
-        self._streaming_pull_futures: list[StreamingPullFuture] = []
-        self._executor = ThreadPoolExecutor(max_workers=10)
+        self._streaming_pull_futures: dict[str, StreamingPullFuture] = {}
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._tasks: set[Future[None]] = set()
 
     def set_container(self, container: AsyncContainer) -> None:
         """
@@ -53,6 +54,7 @@ class PubSubEventConsumer(EventConsumer):
             container: AsyncContainer with scope=APP.
         """
         self._container = container
+        log.info("Dependency injection container set for PubSubEventConsumer.")
 
     def _get_subscription_path(self, topic: str) -> str:
         """
@@ -64,137 +66,221 @@ class PubSubEventConsumer(EventConsumer):
         Returns:
             Full subscription path.
         """
-        subscription_id = f"{self._subscription_prefix}.{topic}"
-        return self._subscriber.subscription_path(self._project_id, subscription_id)
+        subscription_path = f"{topic}.sub"
+        return str(self._subscriber.subscription_path(self._project_id, subscription_path))
 
     async def _process_message(self, message: Message) -> None:
-        """
-        Process a single Pub/Sub message.
+        subscription_path = message.ack_id.split(":#")[0]
+        subscription_long = subscription_path.split("/")[-1]
+        topic = subscription_long.split(".sub")[0]
 
-        Args:
-            message: The Pub/Sub message to process.
-        """
+        subscription = f"{topic}.sub"
+        handler_cls = self._handlers.get(subscription)
+        if not handler_cls:
+            log.error(
+                "No handler found for message from subscription related to ack_id: "
+                f"{message.ack_id}. Attempted path match: {subscription}"
+            )
+            message.nack()
+            return
+
+        log.info(f"Received message for topic: {topic} (Subscription: {subscription})")
+
         if not self._container:
             log.error("Dependency injection container not set. Cannot process messages.")
             message.nack()
             return
 
-        topic_name = message.topic
-        log.info(f"Received message from topic: {topic_name}")
-
-        topic_parts = topic_name.split("/")
-        short_topic = topic_parts[-1]
-        full_topic = next((t for t in self._handlers.keys() if t.endswith(short_topic)), None)
-
-        if not full_topic:
-            log.error(f"No handler found for topic: {short_topic}")
-            message.nack()
-            return
-
-        handler_cls = self._handlers.get(full_topic)
-        if not handler_cls:
-            log.error(f"No handler found for topic: {full_topic}")
-            message.nack()
-            return
-
         try:
-            data = json.loads(message.data.decode("utf-8"))
+            data_str = message.data.decode("utf-8")
+            log.debug(f"Message data for topic {topic}: {data_str}")
+            data = json.loads(data_str)
 
             async with self._container(scope=Scope.REQUEST) as request_container:
                 event_handler = await request_container.get(
-                    handler_cls, component=ComponentEnum.EVENTS
+                    handler_cls, component=ComponentEnum.LABOUR_EVENTS
                 )
                 await event_handler.handle(data)
 
             message.ack()
-            log.info(f"Successfully processed message from topic: {full_topic}")
+            log.info(f"Successfully processed and ACKed message for topic: {topic}")
+
+        except json.JSONDecodeError as e:
+            log.exception(
+                f"Failed to decode JSON message data for topic {topic}: {message.data!r}",
+                exc_info=e,
+            )
+            message.nack()  # NACK invalid messages
         except Exception as e:
-            log.exception(f"Error processing message from topic {full_topic}.", exc_info=e)
-            message.nack()
+            log.exception(f"Error processing message for topic {topic}.", exc_info=e)
+            message.nack()  # NACK on processing errors
 
     def _message_callback(self, message: Message) -> None:
         """
-        Callback function for received messages.
-        Bridges the sync callback to async processing.
+        Callback function executed by the Pub/Sub library's thread pool
+        for each received message. Bridges the sync callback to async processing.
 
         Args:
             message: The received Pub/Sub message.
         """
-        import asyncio
-
         if not self._running:
+            log.warning(f"Consumer not running, NACKing message: {message.message_id}")
             message.nack()
             return
 
-        loop = asyncio.new_event_loop()
-        try:
-            loop.run_until_complete(self._process_message(message))
-        except Exception as e:
-            log.exception("Error in message callback", exc_info=e)
+        if not self._loop:
+            log.error("Event loop not available in callback. Cannot schedule async processing.")
             message.nack()
-        finally:
-            loop.close()
+            return
+
+        coro = self._process_message(message)
+        future = asyncio.run_coroutine_threadsafe(coro, self._loop)
+
+        self._tasks.add(future)
+        future.add_done_callback(lambda f: self._tasks.remove(f))
+
+    def _on_future_done(self, subscription_path: str, future: StreamingPullFuture) -> None:
+        """
+        Callback executed when a StreamingPullFuture finishes (completes, errors, or is cancelled).
+        Runs in the Pub/Sub library's thread pool.
+        """
+        try:
+            future.result(timeout=0)
+            log.info(
+                f"Streaming pull future for {subscription_path}"
+                " completed normally (likely cancelled)."
+            )
+        except Exception as e:
+            log.exception(f"Streaming pull future for {subscription_path} failed!", exc_info=e)
+            if self._running:
+                log.error(f"Subscription {subscription_path} may no longer be active due to error.")
+
+        if subscription_path in self._streaming_pull_futures:
+            if self._streaming_pull_futures[subscription_path] == future:
+                del self._streaming_pull_futures[subscription_path]
+                log.info(f"Removed completed/failed future for {subscription_path}.")
 
     async def start(self) -> None:
         """
-        Start the Pub/Sub consumer and begin processing messages.
+        Start the Pub/Sub consumer, subscribe to topics, and begin processing messages.
+        Keeps running until stop() is called.
         """
+        if self._running:
+            log.warning("Consumer is already running.")
+            return
+
         if not self._handlers:
-            log.error("No event handlers registered.")
-            return await self.stop()
+            log.error("No event handlers registered. Cannot start consumer.")
+            return
 
+        if not self._container:
+            log.error("Dependency injection container not set. Cannot start consumer.")
+            return
+
+        self._loop = asyncio.get_running_loop()
         self._running = True
-        log.info("PubSubEventConsumer started.")
+        self._streaming_pull_futures.clear()
+        log.info(f"Starting PubSubEventConsumer for project {self._project_id}...")
 
-        for topic in self._handlers.keys():
-            topic_short_name = topic.split(".")[-1]
-            subscription_path = self._get_subscription_path(topic_short_name)
+        for subscription in self._handlers.keys():
+            topic = subscription.split(".sub")[0]  # TODO make function
+            log.info(f"Attempting to subscribe to: {subscription} (for topic: {topic})")
 
-            log.info(f"Subscribing to {subscription_path}")
+            try:
+                done_callback = functools.partial(self._on_future_done, subscription)
 
-            streaming_pull_future = self._subscriber.subscribe(
-                subscription=subscription_path,
-                callback=self._message_callback,
-            )
-            self._streaming_pull_futures.append(streaming_pull_future)
+                streaming_pull_future = self._subscriber.subscribe(
+                    subscription=self._get_subscription_path(topic=topic),
+                    callback=self._message_callback,
+                )
+                streaming_pull_future.add_done_callback(done_callback)
+                self._streaming_pull_futures[subscription] = streaming_pull_future
+                log.info(f"Successfully subscribed to {subscription}. Future started.")
+
+            except Exception as e:
+                log.exception(f"Failed to subscribe to {subscription}", exc_info=e)
+
+        if not self._streaming_pull_futures:
+            log.error("No subscriptions were successfully started. Stopping consumer.")
+            self._running = False
+            return
+
+        log.info(
+            "PubSubEventConsumer started. Monitoring "
+            f"{len(self._streaming_pull_futures)} subscriptions."
+        )
 
         while self._running:
-            await asyncio.sleep(1)
+            await asyncio.sleep(5)
+
+            if self._running and not self._streaming_pull_futures:
+                log.warning("Consumer is running but has no active subscriptions left. Stopping.")
+                await self.stop()
 
     async def stop(self) -> None:
         """
-        Stop the Pub/Sub consumer.
+        Stop the Pub/Sub consumer gracefully.
         """
+        if not self._running:
+            log.info("PubSubEventConsumer is not running.")
+            return
+
+        log.info("Stopping PubSubEventConsumer...")
         self._running = False
 
-        for future in self._streaming_pull_futures:
-            future.cancel()
+        futures_to_cancel = list(self._streaming_pull_futures.values())
+        if futures_to_cancel:
+            log.info(f"Cancelling {len(futures_to_cancel)} subscription future(s)...")
+            for future in futures_to_cancel:
+                future.cancel()
 
-        self._streaming_pull_futures = []
+            await asyncio.sleep(1)
 
         if self._subscriber:
-            self._subscriber.close()
+            log.info("Closing Pub/Sub subscriber client...")
+            try:
+                await asyncio.get_running_loop().run_in_executor(None, self._subscriber.close)
+                log.info("Pub/Sub subscriber client closed.")
+            except Exception as e:
+                log.exception("Error closing Pub/Sub subscriber client.", exc_info=e)
 
-        self._executor.shutdown(wait=True)
+        self._streaming_pull_futures.clear()
+        if self._tasks:
+            log.info(f"Waiting for {len(self._tasks)} message processing tasks to complete...")
+            await asyncio.wait(self._tasks, timeout=10)  # type: ignore
 
         log.info("PubSubEventConsumer stopped.")
 
     async def is_healthy(self) -> bool:
         """
         Check if the Pub/Sub consumer is healthy.
+        Checks if running, subscriber exists, and futures are active.
 
         Returns:
             True if healthy, otherwise False.
         """
-        if not self._subscriber:
-            log.warning("Pub/Sub subscriber is not initialized.")
+        if not self._running:
+            log.debug("Health check: Consumer not running.")
             return False
 
-        try:
-            for future in self._streaming_pull_futures:
-                if future.cancelled() or future.done():
-                    return False
-            return self._running and len(self._streaming_pull_futures) > 0
-        except Exception as e:
-            log.exception("Error checking Pub/Sub consumer health.", exc_info=e)
+        if not self._subscriber:
+            log.warning("Health check: Pub/Sub subscriber is not initialized.")
             return False
+
+        if not self._streaming_pull_futures:
+            log.warning("Health check: No active subscription futures.")
+            return False
+
+        any_running = False
+        for sub_path, future in self._streaming_pull_futures.items():
+            if future.running():
+                any_running = True
+                log.debug(f"Health check: Subscription {sub_path} future is running.")
+
+        if not any_running:
+            log.warning(
+                "Health check: Consumer is running, but no subscription futures are active."
+            )
+            return False
+
+        return True
