@@ -98,7 +98,7 @@ class PubSubEventConsumer(EventConsumer):
 
             async with self._container(scope=Scope.REQUEST) as request_container:
                 event_handler = await request_container.get(
-                    handler_cls, component=ComponentEnum.LABOUR_EVENTS
+                    handler_cls, component=ComponentEnum.NOTIFICATION_EVENTS
                 )
                 await event_handler.handle(data)
 
@@ -106,14 +106,15 @@ class PubSubEventConsumer(EventConsumer):
             log.info(f"Successfully processed and ACKed message for topic: {topic}")
 
         except json.JSONDecodeError as e:
-            log.exception(
+            log.error(
                 f"Failed to decode JSON message data for topic {topic}: {message.data!r}",
                 exc_info=e,
             )
-            message.nack()  # NACK invalid messages
+            message.nack()
+
         except Exception as e:
-            log.exception(f"Error processing message for topic {topic}.", exc_info=e)
-            message.nack()  # NACK on processing errors
+            log.error(f"Error processing message for topic {topic}.", exc_info=e)
+            message.nack()
 
     def _message_callback(self, message: Message) -> None:
         """

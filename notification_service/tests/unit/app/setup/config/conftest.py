@@ -59,9 +59,9 @@ class MockConfigReader(ConfigReader):
                 "twilio": {},
             },
             "events": {
-                "kafka_producer": {},
-                "kafka_consumer": {},
-                "kafka": {"KAFKA_BOOTSTRAP_SERVERS": "test"},
+                "gcp": {
+                    "GCP_PROJECT_ID": "test",
+                },
             },
         }
 

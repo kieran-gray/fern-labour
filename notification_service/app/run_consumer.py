@@ -68,7 +68,8 @@ class ConsumerRunner:
                 is_healthy = await self._consumer.is_healthy()
                 if not is_healthy:
                     logger.warning("Consumer health check failed!")
-                await asyncio.sleep(30)
+                    self.stop()
+                await asyncio.sleep(15)
             except Exception as e:
                 logger.error("Error in health check.", exc_info=e)
                 await asyncio.sleep(5)

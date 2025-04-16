@@ -50,8 +50,6 @@ def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):
     assert settings.notifications.email.emails_enabled is False
     assert settings.notifications.twilio.twilio_enabled is False
 
-    assert settings.events.kafka.kafka_enabled is True
-
 
 def test_settings_from_file_not_found(mock_config_reader: ConfigReader):
     fake_path: Path = Path("fake_path")
