@@ -64,6 +64,8 @@ services:
         restart: false
     env_file:
       - ./notification_service/.env
+    environment:
+      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
     ports:
       - "8001:8001"
     healthcheck:
@@ -133,6 +135,8 @@ services:
     restart: "no"
     env_file:
       - ./notification_service/.env
+    environment:
+      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
     command: [ "python", "-m", "app.run_consumer" ]
     networks:
       - default
@@ -199,7 +203,7 @@ services:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:latest'
     build:
       context: ./frontend
-      target: build-stage
+      # target: build-stage
       args:
         - VITE_API_URL=http://localhost:8000
         - NODE_ENV=development
@@ -213,11 +217,11 @@ services:
       - traefik-public
       - default
     ports:
-      - "5173:5173"
+      - "5173:80"
     volumes:
       - ./frontend:/app
       - ./.env:/app/.env
-    command: [ "npm", "run", "dev" ]
+    # command: [ "npm", "run", "dev" ]
 
   marketing:
     image: '${DOCKER_IMAGE_MARKETING?Variable not set}:latest'
