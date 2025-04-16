@@ -58,20 +58,9 @@ BACKEND_CORS_ORIGINS = "http://localhost,https://localhost"
 FRONTEND_HOST = "http://localhost:5173"
 MARKETING_HOST = "http://localhost:3000"
 
-
-[events.kafka_producer]
-KAFKA_TOPIC_PREFIX = "labour-tracker"
-KAFKA_PRODUCER_RETRIES = 3
-KAFKA_PRODUCER_ACKS = "all"
-
-
-[events.kafka]
-KAFKA_BOOTSTRAP_SERVERS = "kafka:9092"
-
-
-[events.kafka_consumer]
-KAFKA_GROUP_ID = "labour-tracker-group"
-
+[events.gcp]
+GCP_PROJECT_ID = "test"
+GCP_PRODUCER_RETRIES = 3
 
 [payments.stripe]
 STRIPE_API_KEY = ""

@@ -86,10 +86,6 @@ services:
   labour-consumer:
     image: '${DOCKER_IMAGE_REPOSITORY}/${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: always
-    depends_on:
-      init-kafka:
-        condition: service_completed_successfully
-        restart: false
     env_file:
       - ./labour_service/.env
     command: [ "python", "-m", "app.run_consumer" ]
@@ -99,10 +95,6 @@ services:
   notifications-consumer:
     image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
     restart: always
-    depends_on:
-      init-kafka:
-        condition: service_completed_successfully
-        restart: false
     env_file:
       - ./notification_service/.env
     command: [ "python", "-m", "app.run_consumer" ]
@@ -143,60 +135,6 @@ services:
       - traefik.http.services.${STACK_NAME?Variable not set}-keycloak.loadbalancer.server.port=8080
     volumes:
       - ./keycloak/realms:/opt/keycloak/data/import:ro
-
-  zookeeper:
-    image: docker.io/bitnami/zookeeper:3.8
-    container_name: zookeeper
-    restart: always
-    ports:
-      - "2181:2181"
-    volumes:
-      - "zookeeper-volume:/bitnami"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    networks:
-      - default
-
-  kafka:
-    image: docker.io/bitnami/kafka:3.9
-    container_name: kafka
-    restart: always
-    ports:
-      - "9093:9093"
-      - "9092:9092"
-    volumes:
-      - "kafka-volume:/bitnami"
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
-    depends_on:
-      - zookeeper
-    networks:
-      - default
-    healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
-      interval: 15s
-      timeout: 10s
-      retries: 3
-
-  init-kafka:
-    image: docker.io/bitnami/kafka:3.9
-    depends_on:
-      kafka:
-        condition: service_healthy
-    entrypoint: [ '/bin/bash', '/setup.sh' ]
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS?variable not set}
-      - KAFKA_TOPIC_PREFIX=${KAFKA_TOPIC_PREFIX?variable not set}
-    volumes:
-      - ./kafka/setup.sh:/setup.sh
-    networks:
-      - default
 
   frontend:
     image: '${DOCKER_IMAGE_REPOSITORY?Variable not set}/${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
@@ -250,7 +188,6 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-marketing.middlewares=mywwwremove
 
 volumes:
-  kafka-volume:
   zookeeper-volume:
 
 networks:

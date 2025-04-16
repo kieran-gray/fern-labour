@@ -69,15 +69,6 @@ SMS_FROM_NUMBER = ""
 MESSAGING_SERVICE_SID = ""
 
 
-[events.kafka_producer]
-KAFKA_TOPIC_PREFIX = "labour-tracker"
-KAFKA_PRODUCER_RETRIES = 3
-KAFKA_PRODUCER_ACKS = "all"
-
-
-[events.kafka]
-KAFKA_BOOTSTRAP_SERVERS = "kafka:9092"
-
-
-[events.kafka_consumer]
-KAFKA_GROUP_ID = "labour-tracker-group"
+[events.gcp]
+GCP_PROJECT_ID="test"
+GCP_PRODUCER_RETRIES=3
