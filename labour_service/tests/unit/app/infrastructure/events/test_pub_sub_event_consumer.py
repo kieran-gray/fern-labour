@@ -1,6 +1,8 @@
 import asyncio
+import json
 import logging
 from concurrent.futures import Future
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, Mock, call, patch
 
 import pytest
@@ -11,6 +13,7 @@ from google.cloud.pubsub_v1.subscriber.futures import StreamingPullFuture
 from google.cloud.pubsub_v1.subscriber.message import Message
 
 from app.common.application.event_handler import EventHandler
+from app.common.domain.event import DomainEvent
 from app.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_consumer import (
     PubSubEventConsumer,
 )
@@ -65,10 +68,16 @@ def mock_async_container():
 @pytest.fixture
 def mock_message():
     """Fixture for mocking Pub/Sub Message."""
+    event = DomainEvent(
+        id="evt-123",
+        type="labour.begun",
+        data={"key": "value"},
+        time=datetime(2020, 1, 1, 12),
+    )
     message = MagicMock(spec=Message)
     message.ack = Mock()
     message.nack = Mock()
-    message.data = b'{"key": "value"}'
+    message.data = json.dumps(event.to_dict()).encode("utf-8")
     message.attributes = {"attribute_key": "attribute_value"}
     message.ack_id = f"projects/{TEST_PROJECT_ID}/subscriptions/labour.begun.sub:#MSG123"
     message.message_id = "test-message-id-123"
@@ -139,7 +148,13 @@ async def test_process_message_no_handler(
     caplog,
 ):
     """Test processing message when no handler matches."""
-    mock_message.ack_id = f"projects/{TEST_PROJECT_ID}/subscriptions/unknown.topic.sub:#MSG456"
+    event = DomainEvent(
+        id="evt-123",
+        type="not-found.topic",
+        data={"key": "value"},
+        time=datetime(2020, 1, 1, 12),
+    )
+    mock_message.data = json.dumps(event.to_dict()).encode("utf-8")
     consumer.set_container(mock_async_container)
 
     with caplog.at_level(logging.ERROR):
