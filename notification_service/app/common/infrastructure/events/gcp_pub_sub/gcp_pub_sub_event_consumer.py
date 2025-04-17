@@ -70,9 +70,15 @@ class PubSubEventConsumer(EventConsumer):
         return str(self._subscriber.subscription_path(self._project_id, subscription_path))
 
     async def _process_message(self, message: Message) -> None:
-        subscription_path = message.ack_id.split(":#")[0]
-        subscription_long = subscription_path.split("/")[-1]
-        topic = subscription_long.split(".sub")[0]
+        try:
+            data_str = message.data.decode("utf-8")
+            event = json.loads(data_str)
+            topic = event["type"]
+            log.debug(f"Message data for topic {topic}: {data_str}")
+        except json.JSONDecodeError as e:
+            log.exception(f"Failed to decode JSON message data for {message.data!r}", exc_info=e)
+            message.nack()
+            return
 
         subscription = f"{topic}.sub"
         handler_cls = self._handlers.get(subscription)
@@ -92,28 +98,15 @@ class PubSubEventConsumer(EventConsumer):
             return
 
         try:
-            data_str = message.data.decode("utf-8")
-            log.debug(f"Message data for topic {topic}: {data_str}")
-            data = json.loads(data_str)
-
             async with self._container(scope=Scope.REQUEST) as request_container:
                 event_handler = await request_container.get(
                     handler_cls, component=ComponentEnum.NOTIFICATION_EVENTS
                 )
-                await event_handler.handle(data)
-
+                await event_handler.handle(event)
             message.ack()
             log.info(f"Successfully processed and ACKed message for topic: {topic}")
-
-        except json.JSONDecodeError as e:
-            log.error(
-                f"Failed to decode JSON message data for topic {topic}: {message.data!r}",
-                exc_info=e,
-            )
-            message.nack()
-
         except Exception as e:
-            log.error(f"Error processing message for topic {topic}.", exc_info=e)
+            log.exception(f"Error processing message for topic {topic}.", exc_info=e)
             message.nack()
 
     def _message_callback(self, message: Message) -> None:
