@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite
 
-from src.common.infrastructure.persistence.orm_registry import mapper_registry
+from src.core.infrastructure.persistence.orm_registry import mapper_registry
 from src.notification.domain.entity import Notification
 from src.notification.domain.value_objects.notification_id import NotificationId
 from src.notification.infrastructure.persistence.tables.notifications import notifications_table

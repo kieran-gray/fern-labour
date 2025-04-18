@@ -2,14 +2,14 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from src.common.domain.producer import EventProducer
-from src.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_consumer import (
+from src.core.domain.producer import EventProducer
+from src.core.infrastructure.events.gcp_pub_sub.consumer import (
     PubSubEventConsumer,
 )
-from src.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_producer import (
+from src.core.infrastructure.events.gcp_pub_sub.producer import (
     PubSubEventProducer,
 )
-from src.common.infrastructure.events.interfaces.consumer import EventConsumer
+from src.core.infrastructure.events.interfaces.consumer import EventConsumer
 from src.notification.application.event_handlers.mapping import NOTIFICATION_EVENT_HANDLER_MAPPING
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import GCPSettings, Settings

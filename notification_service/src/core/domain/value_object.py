@@ -2,7 +2,7 @@ from abc import ABC
 from dataclasses import asdict, dataclass, fields
 from typing import Any
 
-from src.common.domain.exceptions import DomainValidationError
+from src.core.domain.exceptions import DomainValidationError
 
 
 @dataclass(frozen=True, repr=False)

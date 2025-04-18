@@ -17,7 +17,7 @@ from src.api.exception_handler import (
     ExceptionMessageProvider,
 )
 from src.api.routes.router_root import root_router
-from src.common.infrastructure.persistence import initialize_mapping
+from src.core.infrastructure.persistence import initialize_mapping
 from src.setup.ioc.ioc_registry import get_providers
 from src.setup.settings import Settings
 

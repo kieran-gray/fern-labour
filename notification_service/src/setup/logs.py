@@ -1,6 +1,6 @@
 import logging
 
-from src.common.infrastructure.custom_types import LoggingLevel
+from src.core.infrastructure.custom_types import LoggingLevel
 
 
 def configure_logging(level: LoggingLevel = "INFO") -> None:

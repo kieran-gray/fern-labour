@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from src.common.domain.producer import EventProducer
+from src.core.domain.producer import EventProducer
 from src.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,
 )

@@ -10,13 +10,13 @@ from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.publisher.futures import Future as PubSubFuture
 
 # Assuming these exist or create simple placeholders for tests
-from src.common.domain.event import DomainEvent
-from src.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_producer import (
+from src.core.domain.event import DomainEvent
+from src.core.infrastructure.events.gcp_pub_sub.producer import (
     FUTURE_TIMEOUT_SECONDS,
     PubSubEventProducer,
 )
 
-MODULE_PATH = "src.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_producer"
+MODULE_PATH = "src.core.infrastructure.events.gcp_pub_sub.producer"
 TEST_PROJECT_ID = "test-project"
 
 

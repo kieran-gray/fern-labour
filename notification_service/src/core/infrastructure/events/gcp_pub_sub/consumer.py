@@ -9,8 +9,8 @@ from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.subscriber.futures import StreamingPullFuture
 from google.cloud.pubsub_v1.subscriber.message import Message
 
-from src.common.application.event_handler import EventHandler
-from src.common.infrastructure.events.interfaces.consumer import EventConsumer
+from src.core.application.event_handler import EventHandler
+from src.core.infrastructure.events.interfaces.consumer import EventConsumer
 from src.setup.ioc.di_component_enum import ComponentEnum
 
 log = logging.getLogger(__name__)

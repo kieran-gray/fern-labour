@@ -1,4 +1,4 @@
-from src.common.domain.exceptions import DomainError, DomainValidationError
+from src.core.domain.exceptions import DomainError, DomainValidationError
 
 
 class InvalidNotificationType(DomainValidationError):

@@ -2,7 +2,7 @@ import logging
 from typing import Any
 from uuid import UUID
 
-from src.common.domain.producer import EventProducer
+from src.core.domain.producer import EventProducer
 from src.notification.application.dtos.notification import NotificationDTO
 from src.notification.application.gateways.email_notification_gateway import (
     EmailNotificationGateway,

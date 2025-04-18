@@ -6,8 +6,8 @@ from concurrent.futures import TimeoutError
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.publisher.futures import Future
 
-from src.common.domain.event import DomainEvent
-from src.common.domain.producer import EventProducer
+from src.core.domain.event import DomainEvent
+from src.core.domain.producer import EventProducer
 
 log = logging.getLogger(__name__)
 

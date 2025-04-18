@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Self
 from uuid import UUID, uuid4
 
-from src.common.domain.aggregate_root import AggregateRoot
+from src.core.domain.aggregate_root import AggregateRoot
 from src.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
 from src.notification.domain.events import NotificationStatusUpdated
 from src.notification.domain.value_objects.notification_id import NotificationId

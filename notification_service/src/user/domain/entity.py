@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.common.domain.entity import Entity
+from src.core.domain.entity import Entity
 from src.user.domain.value_objects.user_id import UserId
 
 

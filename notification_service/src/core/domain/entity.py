@@ -2,8 +2,8 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
-from src.common.domain.exceptions import DomainError
-from src.common.domain.value_object import ValueObject
+from src.core.domain.exceptions import DomainError
+from src.core.domain.value_object import ValueObject
 
 T = TypeVar("T", bound=ValueObject)
 

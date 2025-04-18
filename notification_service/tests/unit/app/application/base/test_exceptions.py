@@ -1,6 +1,6 @@
 import pytest
 
-from src.common.application.exceptions import ApplicationError
+from src.core.application.exceptions import ApplicationError
 
 
 def test_raise_application_error():

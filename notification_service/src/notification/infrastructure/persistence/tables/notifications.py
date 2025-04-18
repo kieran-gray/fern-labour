@@ -9,7 +9,7 @@ from sqlalchemy.sql import func
 from sqlalchemy_utils import StringEncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
-from src.common.infrastructure.persistence.orm_registry import mapper_registry
+from src.core.infrastructure.persistence.orm_registry import mapper_registry
 from src.notification.domain.enums import NotificationStatus, NotificationType
 
 log = logging.getLogger(__name__)
