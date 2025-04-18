@@ -13,3 +13,9 @@ class NotificationGateway(Protocol):
         Args:
             notification: The notification to send
         """
+
+
+class EmailNotificationGateway(NotificationGateway, Protocol): ...
+
+
+class SMSNotificationGateway(NotificationGateway, Protocol): ...

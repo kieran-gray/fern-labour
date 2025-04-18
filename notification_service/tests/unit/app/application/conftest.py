@@ -8,16 +8,18 @@ import pytest_asyncio
 
 from src.notification.application.dtos.notification import NotificationSendResult
 from src.notification.application.dtos.notification_data import BaseNotificationData
-from src.notification.application.gateways.email_notification_gateway import (
+from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
+    SMSNotificationGateway,
 )
-from src.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from src.notification.application.interfaces.template_engine import (
+    EmailTemplateEngine,
+    SMSTemplateEngine,
+)
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
 from src.notification.application.services.notification_service import NotificationService
-from src.notification.application.template_engines.email_template_engine import EmailTemplateEngine
-from src.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
 from src.notification.domain.entity import Notification
 from src.notification.domain.enums import NotificationStatus, NotificationTemplate
 from src.notification.domain.repository import NotificationRepository

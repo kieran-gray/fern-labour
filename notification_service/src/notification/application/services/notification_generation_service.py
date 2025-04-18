@@ -10,8 +10,10 @@ from src.notification.application.dtos.notification_data import (
     LabourUpdateData,
     SubscriberInviteData,
 )
-from src.notification.application.template_engines.email_template_engine import EmailTemplateEngine
-from src.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
+from src.notification.application.interfaces.template_engine import (
+    EmailTemplateEngine,
+    SMSTemplateEngine,
+)
 from src.notification.domain.enums import NotificationTemplate, NotificationType
 from src.notification.domain.exceptions import (
     InvalidNotificationId,

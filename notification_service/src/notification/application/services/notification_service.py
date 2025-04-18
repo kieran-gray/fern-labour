@@ -4,11 +4,11 @@ from uuid import UUID
 
 from src.core.domain.producer import EventProducer
 from src.notification.application.dtos.notification import NotificationDTO
-from src.notification.application.gateways.email_notification_gateway import (
+from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
+    NotificationGateway,
+    SMSNotificationGateway,
 )
-from src.notification.application.gateways.notfication_gateway import NotificationGateway
-from src.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )

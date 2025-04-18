@@ -3,7 +3,7 @@ import logging
 from twilio.rest import Client
 
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
-from src.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from src.notification.application.interfaces.notification_gateway import SMSNotificationGateway
 from src.notification.domain.enums import NotificationStatus
 
 log = logging.getLogger(__name__)

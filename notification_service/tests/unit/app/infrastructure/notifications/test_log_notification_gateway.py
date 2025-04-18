@@ -6,15 +6,15 @@ import pytest  # noqa
 
 from src.notification.application.dtos.notification import NotificationDTO
 from src.notification.domain.enums import NotificationStatus
-from src.notification.infrastructure.notifications.sms.logger_sms_notification_gateway import (
-    LoggerSMSNotificationGateway,
+from src.notification.infrastructure.gateways.log_gateway import (
+    LogNotificationGateway,
 )
 
 
-async def test_logger_notification_gateway(caplog):
-    module = "src.notification.infrastructure.notifications.sms.logger_sms_notification_gateway"
+async def test_log_notification_gateway(caplog):
+    module = "src.notification.infrastructure.gateways.log_gateway"
 
-    gateway = LoggerSMSNotificationGateway()
+    gateway = LogNotificationGateway()
 
     notification = NotificationDTO(
         id=str(uuid4()),

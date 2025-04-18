@@ -13,7 +13,7 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        app="app.run:app",
+        app="src.run:app",
         host=settings.uvicorn.host,
         port=settings.uvicorn.port,
         reload=settings.uvicorn.reload,

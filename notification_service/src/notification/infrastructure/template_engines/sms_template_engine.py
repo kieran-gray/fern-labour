@@ -1,10 +1,10 @@
 from src.notification.application.dtos.notification_data import BaseNotificationData
-from src.notification.application.template_engines.sms_template_engine import (
+from src.notification.application.interfaces.template_engine import (
     SMSTemplateEngine as SMSTemplateEngineInterface,
 )
 from src.notification.domain.enums import NotificationTemplate
 from src.notification.domain.exceptions import GenerationTemplateNotFound
-from src.notification.infrastructure.notifications.sms.templates.message_templates import (
+from src.notification.infrastructure.templates.sms.message_templates import (
     TEMPLATE_TO_MESSAGE_STRING_TEMPLATE,
 )
 

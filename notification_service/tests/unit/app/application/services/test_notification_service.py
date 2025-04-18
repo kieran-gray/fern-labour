@@ -7,10 +7,10 @@ import pytest_asyncio
 
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
 from src.notification.application.dtos.notification_data import ContactUsData
-from src.notification.application.gateways.email_notification_gateway import (
+from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
+    SMSNotificationGateway,
 )
-from src.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )

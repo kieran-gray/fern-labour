@@ -4,7 +4,7 @@ from typing import Any
 import emails
 
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
-from src.notification.application.gateways.email_notification_gateway import (
+from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
 )
 from src.notification.domain.enums import NotificationStatus

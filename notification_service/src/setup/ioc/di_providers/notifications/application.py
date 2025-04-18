@@ -3,27 +3,26 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide
 
 from src.core.domain.producer import EventProducer
-from src.notification.application.gateways.email_notification_gateway import (
+from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
+    SMSNotificationGateway,
 )
-from src.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
+from src.notification.application.interfaces.template_engine import (
+    EmailTemplateEngine,
+    SMSTemplateEngine,
+)
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
 from src.notification.application.services.notification_service import NotificationService
-from src.notification.application.template_engines.email_template_engine import EmailTemplateEngine
-from src.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
 from src.notification.domain.repository import NotificationRepository
-from src.notification.infrastructure.notifications.email.logger_email_notification_gateway import (
-    LoggerEmailNotificationGateway,
+from src.notification.infrastructure.gateways.log_gateway import (
+    LogNotificationGateway,
 )
-from src.notification.infrastructure.notifications.email.smtp_email_notification_gateway import (
+from src.notification.infrastructure.gateways.smtp_email_gateway import (
     SMTPEmailNotificationGateway,
 )
-from src.notification.infrastructure.notifications.sms.logger_sms_notification_gateway import (
-    LoggerSMSNotificationGateway,
-)
-from src.notification.infrastructure.notifications.sms.twilio_sms_notification_gateway import (
+from src.notification.infrastructure.gateways.twilio_sms_gateway import (
     TwilioSMSNotificationGateway,
 )
 from src.setup.ioc.di_component_enum import ComponentEnum
@@ -54,16 +53,16 @@ class NotificationsApplicationProvider(Provider):
             assert settings.smtp_port
             return SMTPEmailNotificationGateway(
                 smtp_host=settings.smtp_host,
-                smtp_user=settings.smtp_user,
-                smtp_password=settings.smtp_password,
+                smtp_port=settings.smtp_port,
                 emails_from_email=settings.emails_from_email,
-                emails_from_name=settings.emails_from_name,
                 smtp_tls=settings.smtp_tls,
                 smtp_ssl=settings.smtp_ssl,
-                smtp_port=settings.smtp_port,
+                smtp_user=settings.smtp_user,
+                smtp_password=settings.smtp_password,
+                emails_from_name=settings.emails_from_name,
             )
         else:
-            return LoggerEmailNotificationGateway()
+            return LogNotificationGateway()
 
     @provide(scope=Scope.APP)
     def get_sms_notification_gateway(self, settings: TwilioSettings) -> SMSNotificationGateway:
@@ -77,7 +76,7 @@ class NotificationsApplicationProvider(Provider):
                 messaging_service_sid=settings.messaging_service_sid,
             )
         else:
-            return LoggerSMSNotificationGateway()
+            return LogNotificationGateway()
 
     @provide
     def get_notification_generation_service(
