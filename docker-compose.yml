@@ -137,7 +137,7 @@ services:
       - ./notification_service/.env
     environment:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
-    command: [ "python", "-m", "app.run_consumer" ]
+    command: [ "python", "-m", "src.run_consumer" ]
     networks:
       - default
 

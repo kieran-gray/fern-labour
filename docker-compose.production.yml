@@ -102,7 +102,7 @@ services:
     restart: always
     env_file:
       - ./notification_service/.env
-    command: [ "python", "-m", "app.run_consumer" ]
+    command: [ "python", "-m", "src.run_consumer" ]
     networks:
       - default
     environment:
