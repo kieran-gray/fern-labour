@@ -12,13 +12,13 @@ from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.subscriber.futures import StreamingPullFuture
 from google.cloud.pubsub_v1.subscriber.message import Message
 
-from app.common.application.event_handler import EventHandler
-from app.common.domain.event import DomainEvent
-from app.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_consumer import (
+from src.common.application.event_handler import EventHandler
+from src.common.domain.event import DomainEvent
+from src.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_consumer import (
     PubSubEventConsumer,
 )
 
-MODULE_PATH = "app.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_consumer"
+MODULE_PATH = "src.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_consumer"
 TEST_PROJECT_ID = "test-project"
 
 

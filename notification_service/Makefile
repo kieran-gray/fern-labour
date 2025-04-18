@@ -1,4 +1,4 @@
-SRC_DIR=app
+SRC_DIR=src
 TEST_DIR=tests
 PYPROJECT_TOML=pyproject.toml
 
@@ -34,6 +34,9 @@ check: lint test
 
 plot-data:
 	PYTHONPATH="." python scripts/plot_dependencies.py
+
+print-tree:
+	PYTHONPATH="." python scripts/print_tree.py
 
 # clean
 

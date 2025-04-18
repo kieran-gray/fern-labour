@@ -3,14 +3,14 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.notification.application.dtos.notification import NotificationContent, NotificationDTO
-from app.notification.application.dtos.notification_data import ContactUsData
-from app.notification.application.services.notification_generation_service import (
+from src.notification.application.dtos.notification import NotificationContent, NotificationDTO
+from src.notification.application.dtos.notification_data import ContactUsData
+from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
-from app.notification.application.services.notification_service import NotificationService
-from app.notification.domain.enums import NotificationTemplate, NotificationType
-from app.notification.domain.exceptions import (
+from src.notification.application.services.notification_service import NotificationService
+from src.notification.domain.enums import NotificationTemplate, NotificationType
+from src.notification.domain.exceptions import (
     InvalidNotificationId,
     NotificationNotFoundById,
     NotificationProcessingError,
@@ -75,7 +75,7 @@ async def test_cannot_generate_notification_not_payload_dataclass(
 ) -> None:
     mock_template_mapping = {}
     monkeypatch.setattr(
-        "app.notification.application.services.notification_generation_service.TEMPLATE_TO_PAYLOAD",
+        "src.notification.application.services.notification_generation_service.TEMPLATE_TO_PAYLOAD",
         mock_template_mapping,
     )
     with pytest.raises(NotificationProcessingError):

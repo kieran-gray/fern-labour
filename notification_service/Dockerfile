@@ -69,7 +69,7 @@ ARG UVICORN_PORT=8001
 COPY --from=http_builder --chown=nonroot:nonroot /venv /venv
 
 # Copy the application code
-COPY --chown=nonroot:nonroot app app
+COPY --chown=nonroot:nonroot src app
 COPY --chown=nonroot:nonroot pyproject.toml config.toml ./
 
 USER nonroot
@@ -86,7 +86,7 @@ FROM base AS migrations
 COPY --from=migrations_builder --chown=nonroot:nonroot /venv /venv
 
 # Copy the application code (including alembic.ini, migration scripts)
-COPY --chown=nonroot:nonroot app app
+COPY --chown=nonroot:nonroot src app
 COPY --chown=nonroot:nonroot alembic.ini ./
 
 USER nonroot

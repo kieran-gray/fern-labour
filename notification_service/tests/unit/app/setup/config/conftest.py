@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from app.setup.readers.abstract import ConfigReader
+from src.setup.readers.abstract import ConfigReader
 
 
 class MockConfigReader(ConfigReader):

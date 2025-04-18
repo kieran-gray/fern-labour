@@ -2,8 +2,8 @@ from datetime import UTC, datetime
 
 import pytest
 
-from app.common.domain.event import DomainEvent
-from app.common.domain.exceptions import DomainError
+from src.common.domain.event import DomainEvent
+from src.common.domain.exceptions import DomainError
 from tests.unit.app.domain.base.conftest import SampleAggregateRoot, SingleFieldValueObject
 
 

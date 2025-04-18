@@ -9,21 +9,21 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.api.exception_handler import (
+from src.api.exception_handler import (
     ExceptionHandler,
     ExceptionHeaderMapper,
     ExceptionMapper,
     ExceptionMessageProvider,
 )
-from app.api.routes.router_root import root_router
-from app.setup.ioc.di_component_enum import ComponentEnum
-from app.user.application.dtos.user import UserDTO
-from app.user.application.dtos.user_summary import UserSummaryDTO
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.infrastructure.auth.interfaces.controller import AuthController
-from app.user.infrastructure.auth.interfaces.exceptions import AuthorizationError
-from app.user.infrastructure.auth.interfaces.models import AuthorizationCredentials
-from app.user.infrastructure.auth.interfaces.schemas import TokenResponse
+from src.api.routes.router_root import root_router
+from src.setup.ioc.di_component_enum import ComponentEnum
+from src.user.application.dtos.user import UserDTO
+from src.user.application.dtos.user_summary import UserSummaryDTO
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.infrastructure.auth.interfaces.controller import AuthController
+from src.user.infrastructure.auth.interfaces.exceptions import AuthorizationError
+from src.user.infrastructure.auth.interfaces.models import AuthorizationCredentials
+from src.user.infrastructure.auth.interfaces.schemas import TokenResponse
 
 
 @pytest.fixture(scope="session")

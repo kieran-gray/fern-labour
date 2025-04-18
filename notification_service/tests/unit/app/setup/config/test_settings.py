@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 from pydantic import PostgresDsn, ValidationError
 
-from app.setup.readers.abstract import ConfigReader
-from app.setup.settings import LoggingSettings, Settings
+from src.setup.readers.abstract import ConfigReader
+from src.setup.settings import LoggingSettings, Settings
 
 
 def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):

@@ -99,11 +99,11 @@ ignore = [
 keep-runtime-typing = true
 
 [tool.ruff.lint.per-file-ignores]
-"app/infrastructure/persistence/alembic/*.py" = ["F401"] # Unused imports
+"src/infrastructure/persistence/alembic/*.py" = ["F401"] # Unused imports
 
 [tool.pytest.ini_options]
 pythonpath = [
-    "app",
+    "src",
 ]
 testpaths = [
     "tests",
@@ -113,16 +113,16 @@ asyncio_default_fixture_loop_scope = "session"
 
 [tool.coverage.run]
 disable_warnings = ["no-data-collected"]
-source = ["app"]
+source = ["src"]
 
 [tool.coverage.report]
 omit = [
     "**/__init__.py",
     "**/alembic/*",
     "**/infrastructure/persistence/*",
-    "app/setup/ioc/*",
-    "app/setup/app_factory.py",
-    "app/run.py",
-    "app/run_consumer.py"
+    "src/setup/ioc/*",
+    "src/setup/app_factory.py",
+    "src/run.py",
+    "src/run_consumer.py"
 ]
 show_missing = true

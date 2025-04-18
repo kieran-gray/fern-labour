@@ -4,15 +4,15 @@ from uuid import uuid4
 
 import pytest  # noqa
 
-from app.notification.application.dtos.notification import NotificationDTO
-from app.notification.domain.enums import NotificationStatus
-from app.notification.infrastructure.notifications.email.logger_email_notification_gateway import (
+from src.notification.application.dtos.notification import NotificationDTO
+from src.notification.domain.enums import NotificationStatus
+from src.notification.infrastructure.notifications.email.logger_email_notification_gateway import (
     LoggerEmailNotificationGateway,
 )
 
 
 async def test_logger_notification_gateway(caplog):
-    module = "app.notification.infrastructure.notifications.email.logger_email_notification_gateway"
+    module = "src.notification.infrastructure.notifications.email.logger_email_notification_gateway"
 
     gateway = LoggerEmailNotificationGateway()
     notification = NotificationDTO(
