@@ -11,8 +11,8 @@ requires-python = "<3.13,>=3.12"
 [dependency-groups]
 app = [
     "dishka<2.0.0,>=1.4.0",
-    "google-cloud-pubsub>=2.28.0",
     "orjson<4.0.0,>=3.10.7",
+    "gcp-pub-sub-dishka>=0.1.1",
     "pydantic[email]<3.0.0,>=2.9.0",
     "python-keycloak>=5.1.1",
     "python-multipart>=0.0.20",
@@ -48,6 +48,15 @@ dev = [
 
 [tool.uv]
 default-groups = ["db"]
+
+[tool.uv.sources]
+gcp-pub-sub-dishka = { index = "fern-labour-packages" }
+
+[[tool.uv.index]]
+name = "fern-labour-packages"
+url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple"
+publish-url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/"
+explicit = true
 
 [build-system]
 requires = ["hatchling"]
