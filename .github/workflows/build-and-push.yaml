@@ -70,4 +70,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: ${{ inputs.build-args }}
           secret-files: |
-            "artifact_registry_token"=${{ steps.prepare_token.outputs.token_file_path }}
+            "artifact_registry_token=${{ steps.prepare_token.outputs.token_file_path }}"
