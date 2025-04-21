@@ -7,14 +7,12 @@ authors = [
     {name = "Kieran Gray", email = "gray.kieran@protonmail.com"},
 ]
 requires-python = "<3.13,>=3.12"
-dependencies = [
-    "gcp-pub-sub-dishka>=0.1.1",
-]
 
 [dependency-groups]
 app = [
     "dishka<2.0.0,>=1.4.0",
     "orjson<4.0.0,>=3.10.7",
+    "gcp-pub-sub-dishka>=0.1.1",
     "pydantic[email]<3.0.0,>=2.9.0",
     "python-keycloak>=5.1.1",
     "python-multipart>=0.0.20",

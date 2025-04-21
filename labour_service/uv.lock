@@ -546,13 +546,11 @@ wheels = [
 name = "labour-service"
 version = "0.1.0"
 source = { editable = "." }
-dependencies = [
-    { name = "gcp-pub-sub-dishka" },
-]
 
 [package.dev-dependencies]
 app = [
     { name = "dishka" },
+    { name = "gcp-pub-sub-dishka" },
     { name = "orjson" },
     { name = "pydantic", extra = ["email"] },
     { name = "python-keycloak" },
@@ -588,11 +586,11 @@ migrations = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "gcp-pub-sub-dishka", specifier = ">=0.1.1", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" }]
 
 [package.metadata.requires-dev]
 app = [
     { name = "dishka", specifier = ">=1.4.0,<2.0.0" },
+    { name = "gcp-pub-sub-dishka", specifier = ">=0.1.1", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" },
     { name = "orjson", specifier = ">=3.10.7,<4.0.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.9.0,<3.0.0" },
     { name = "python-keycloak", specifier = ">=5.1.1" },
