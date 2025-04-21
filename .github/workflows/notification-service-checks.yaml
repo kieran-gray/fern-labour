@@ -16,6 +16,10 @@ env:
   SERVICE_ACCOUNT: "github-actions-service-account@valued-vault-446719-t7.iam.gserviceaccount.com"
   WORKLOAD_IDENTITY_PROVIDER: "projects/549377932260/locations/global/workloadIdentityPools/fern-labour-dev-pool/providers/github-actions-provider"
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
