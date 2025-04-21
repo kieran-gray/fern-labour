@@ -1,5 +1,3 @@
-include .env
-
 TOKEN_CMD = gcloud auth application-default print-access-token
 CRED_FILE = $(CURDIR)/.artifact-registry-token
 SHELL = /bin/zsh
@@ -45,15 +43,6 @@ else
 	TOKEN = $(call generate_token)
 endif
 
-SRC_DIR=src
-TEST_DIR=tests
-PYPROJECT_TOML=pyproject.toml
-
-sync: ensure-token
-	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
-	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
-	uv sync --all-groups
-
 ensure-token:
 	@echo "Token check/generation occurred during Makefile parsing."
 	@if [ -z "$(TOKEN)" ]; then \
@@ -62,6 +51,21 @@ ensure-token:
 	else \
 		echo "TOKEN variable appears to be set."; \
 	fi
+
+SRC_DIR=src
+TEST_DIR=tests
+PYPROJECT_TOML=pyproject.toml
+
+deps: ensure-token
+	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
+	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
+	uv sync --all-groups --frozen
+
+update-deps: ensure-token
+	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
+	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
+	uv lock --upgrade
+	uv sync --all-groups --frozen
 
 # Source code formatting and linting
 .PHONY: format \
@@ -72,6 +76,7 @@ format:
 	uv run ruff check $(SRC_DIR) $(TEST_DIR) --fix
 
 lint:
+	uv lock --check
 	uv run mypy $(SRC_DIR)
 	uv run ruff check $(SRC_DIR)
 	uv run ruff format $(SRC_DIR) --check
