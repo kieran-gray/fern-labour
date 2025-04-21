@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = "==3.12.*"
 
 [[package]]
@@ -149,7 +150,7 @@ name = "bandit"
 version = "1.8.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "pyyaml" },
     { name = "rich" },
     { name = "stevedore" },
@@ -235,7 +236,7 @@ name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
@@ -365,11 +366,11 @@ wheels = [
 
 [[package]]
 name = "dishka"
-version = "1.5.2"
+version = "1.5.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/07/41/0918b36dc20db62fb18f0543daffeba624f0c016a08313492c8367df8338/dishka-1.5.2.tar.gz", hash = "sha256:beae47f4450ad8db6fd3e6044a48c81ffea4b164adb1887b5d141494c4d507c8", size = 63474 }
+sdist = { url = "https://files.pythonhosted.org/packages/9b/8d/9626362c36da6fd92dd8a49dd41d0d5ebd1b41803a513c4b5a6716b4f47d/dishka-1.5.3.tar.gz", hash = "sha256:d40c0d879f6662e66de0c72458081fbcbdb55fee5823ca5820b714bc1c690c29", size = 63979 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c5/6b/08f3b2233f77bbb53deacf11fde09356a859b61177854114d7b19fb50b21/dishka-1.5.2-py3-none-any.whl", hash = "sha256:fbd21fdc8de7f354643b25532d5cf9778b2bbee91887403f638a9bb437690cba", size = 88071 },
+    { url = "https://files.pythonhosted.org/packages/6d/68/17770f991f3284d7f8f9b917e7e9c53e17a24acd5219e050df8bc1bc23aa/dishka-1.5.3-py3-none-any.whl", hash = "sha256:838f2c21ad2f39424e326e836fb9dbef127d8e418593b9e9d5187c14479cd079", size = 88579 },
 ]
 
 [[package]]
@@ -447,6 +448,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/f9/7c/490133c160fb6b84ed374c266f42800e33b50c3bbab1652764e6e1fc498a/frozenlist-1.5.0-cp312-cp312-win32.whl", hash = "sha256:29d94c256679247b33a3dc96cce0f93cbc69c23bf75ff715919332fdbb6a32b8", size = 44721 },
     { url = "https://files.pythonhosted.org/packages/b1/56/4e45136ffc6bdbfa68c29ca56ef53783ef4c2fd395f7cbf99a2624aa9aaa/frozenlist-1.5.0-cp312-cp312-win_amd64.whl", hash = "sha256:8969190d709e7c48ea386db202d708eb94bdb29207a1f269bab1196ce0dcca1f", size = 51329 },
     { url = "https://files.pythonhosted.org/packages/c6/c8/a5be5b7550c10858fcf9b0ea054baccab474da77d37f1e828ce043a3a5d4/frozenlist-1.5.0-py3-none-any.whl", hash = "sha256:d994863bba198a4a518b467bb971c56e1db3f180a25c6cf7bb1949c267f748c3", size = 11901 },
+]
+
+[[package]]
+name = "gcp-pub-sub-dishka"
+version = "0.1.1"
+source = { registry = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" }
+dependencies = [
+    { name = "dishka" },
+    { name = "google-cloud-pubsub" },
+]
+sdist = { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/gcp-pub-sub-dishka/gcp_pub_sub_dishka-0.1.1.tar.gz", hash = "sha256:759468efca64745463a60f07f1bd86ecb569c5efbd1040555059fe8aa71fa42f" }
+wheels = [
+    { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/gcp-pub-sub-dishka/gcp_pub_sub_dishka-0.1.1-py3-none-any.whl", hash = "sha256:9c622580cbf938c52f4eb4384592c6d41fbc37ef2b82239fa95021dddcdb9e93" },
 ]
 
 [[package]]
@@ -834,7 +848,7 @@ source = { editable = "." }
 app = [
     { name = "dishka" },
     { name = "emails" },
-    { name = "google-cloud-pubsub" },
+    { name = "gcp-pub-sub-dishka" },
     { name = "jinja2" },
     { name = "orjson" },
     { name = "pydantic", extra = ["email"] },
@@ -876,7 +890,7 @@ migrations = [
 app = [
     { name = "dishka", specifier = ">=1.4.0,<2.0.0" },
     { name = "emails", specifier = ">=0.6" },
-    { name = "google-cloud-pubsub", specifier = ">=2.28.0" },
+    { name = "gcp-pub-sub-dishka", specifier = ">=0.1.1", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" },
     { name = "jinja2", specifier = ">=3.1.5" },
     { name = "orjson", specifier = ">=3.10.7,<4.0.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.9.0,<3.0.0" },

@@ -5,6 +5,8 @@ services:
     build:
       context: ./labour_service
       target: development
+      secrets:
+        - artifact_registry_token
     restart: "no"
     networks:
       - traefik-public
@@ -38,6 +40,8 @@ services:
     build:
       context: ./labour_service
       target: migrations
+      secrets:
+        - artifact_registry_token
     restart: "no"
     depends_on:
       db:
@@ -51,6 +55,8 @@ services:
     build:
       context: ./notification_service
       target: http
+      secrets:
+        - artifact_registry_token
     restart: "no"
     networks:
       - traefik-public
@@ -79,6 +85,8 @@ services:
     build:
       context: ./notification_service
       target: migrations
+      secrets:
+        - artifact_registry_token
     restart: "no"
     depends_on:
       db:
@@ -130,7 +138,7 @@ services:
     networks:
       - default
 
-  notifications-consumer:
+  notification-consumer:
     image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
     restart: "no"
     env_file:
@@ -193,7 +201,7 @@ services:
       pub-sub-emulator:
         condition: service_healthy
     volumes:
-      - ./gcp_pub_sub/pub-sub-init.sh:/pubsub-init.sh
+      - ./dev/pub-sub-init.sh:/pubsub-init.sh
     entrypoint: ["/bin/sh", "/pubsub-init.sh"]
     environment:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
@@ -257,3 +265,7 @@ volumes:
 networks:
   traefik-public:
     external: false
+
+secrets:
+  artifact_registry_token:
+    file: .artifact-registry-token

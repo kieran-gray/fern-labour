@@ -1,14 +1,10 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
+from gcp_pub_sub_dishka.consumer import PubSubEventConsumer
+from gcp_pub_sub_dishka.producer import PubSubEventProducer
 
 from src.core.domain.producer import EventProducer
-from src.core.infrastructure.events.gcp_pub_sub.consumer import (
-    PubSubEventConsumer,
-)
-from src.core.infrastructure.events.gcp_pub_sub.producer import (
-    PubSubEventProducer,
-)
 from src.core.infrastructure.events.interfaces.consumer import EventConsumer
 from src.notification.application.event_handlers.mapping import NOTIFICATION_EVENT_HANDLER_MAPPING
 from src.setup.ioc.di_component_enum import ComponentEnum
@@ -26,11 +22,11 @@ class EventsInfrastructureProvider(Provider):
         return settings.events.gcp
 
     @provide
-    def get_kafka_event_producer(self, settings: GCPSettings) -> EventProducer:
+    def get_gcp_pub_sub_event_producer(self, settings: GCPSettings) -> EventProducer:
         return PubSubEventProducer(project_id=settings.project_id, retries=settings.retries)
 
     @provide
-    def get_kafka_event_consumer(self, settings: GCPSettings) -> EventConsumer:
+    def get_gcp_pub_sub_event_consumer(self, settings: GCPSettings) -> EventConsumer:
         return PubSubEventConsumer(
             project_id=settings.project_id, topic_handlers=NOTIFICATION_EVENT_HANDLER_MAPPING
         )
