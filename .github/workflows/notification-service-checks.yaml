@@ -51,24 +51,10 @@ jobs:
         run: make deps
         working-directory: ./notification_service
 
-      - name: Run tests
+      - name: Run Tests
         run: make test
         working-directory: ./notification_service
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@v4
-        with:
-          version: "0.6.3"
-          enable-cache: true
-      - name: Install the project
-        run: make deps
-        working-directory: ./notification_service
-      - name: Lint
+      
+      - name: Run Lint Check
         run: make lint
         working-directory: ./notification_service
