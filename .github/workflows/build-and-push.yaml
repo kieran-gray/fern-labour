@@ -63,3 +63,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: ${{ inputs.build-args }}
+          secret-files: |
+            "artifact_registry_token"='${{ steps.auth.outputs.access_token }}'
