@@ -22,11 +22,11 @@ jobs:
         with:
           version: "0.6.3"
           enable-cache: true
-      - name: Install the project
-        run: uv sync --all-groups
+      - name: Install dependencies
+        run: make deps
         working-directory: ./notification_service
       - name: Run tests
-        run: uv run pytest --cov
+        run: make test
         working-directory: ./notification_service
 
   lint:
@@ -41,17 +41,8 @@ jobs:
           version: "0.6.3"
           enable-cache: true
       - name: Install the project
-        run: uv sync --all-groups
+        run: make deps
         working-directory: ./notification_service
-      - name: Run MyPy
-        run: uv run mypy app
-        working-directory: ./notification_service
-      - name: Run Ruff Check
-        run: uv run ruff check app
-        working-directory: ./notification_service
-      - name: Run Ruff Format Check
-        run: uv run ruff format app --check
-        working-directory: ./notification_service
-      - name: Check uv lock
-        run: uv lock --check
+      - name: Lint
+        run: make lint
         working-directory: ./notification_service
