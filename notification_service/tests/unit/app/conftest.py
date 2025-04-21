@@ -1,6 +1,6 @@
 import pytest
 
-from app.setup.settings import Settings
+from src.setup.settings import Settings
 from tests.unit.app.setup.config.conftest import MockConfigReader
 
 

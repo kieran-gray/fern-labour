@@ -6,26 +6,28 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 
-from app.notification.application.dtos.notification import NotificationSendResult
-from app.notification.application.dtos.notification_data import BaseNotificationData
-from app.notification.application.gateways.email_notification_gateway import (
+from src.notification.application.dtos.notification import NotificationSendResult
+from src.notification.application.dtos.notification_data import BaseNotificationData
+from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
+    SMSNotificationGateway,
 )
-from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
-from app.notification.application.services.notification_generation_service import (
+from src.notification.application.interfaces.template_engine import (
+    EmailTemplateEngine,
+    SMSTemplateEngine,
+)
+from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
-from app.notification.application.services.notification_service import NotificationService
-from app.notification.application.template_engines.email_template_engine import EmailTemplateEngine
-from app.notification.application.template_engines.sms_template_engine import SMSTemplateEngine
-from app.notification.domain.entity import Notification
-from app.notification.domain.enums import NotificationStatus, NotificationTemplate
-from app.notification.domain.repository import NotificationRepository
-from app.notification.domain.value_objects.notification_id import NotificationId
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.repository import UserRepository
-from app.user.domain.value_objects.user_id import UserId
+from src.notification.application.services.notification_service import NotificationService
+from src.notification.domain.entity import Notification
+from src.notification.domain.enums import NotificationStatus, NotificationTemplate
+from src.notification.domain.repository import NotificationRepository
+from src.notification.domain.value_objects.notification_id import NotificationId
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.repository import UserRepository
+from src.user.domain.value_objects.user_id import UserId
 
 
 class MockUserRepository(UserRepository):

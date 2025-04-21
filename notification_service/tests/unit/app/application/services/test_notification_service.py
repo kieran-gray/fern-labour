@@ -5,18 +5,18 @@ from uuid import UUID, uuid4
 import pytest
 import pytest_asyncio
 
-from app.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
-from app.notification.application.dtos.notification_data import ContactUsData
-from app.notification.application.gateways.email_notification_gateway import (
+from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
+from src.notification.application.dtos.notification_data import ContactUsData
+from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
+    SMSNotificationGateway,
 )
-from app.notification.application.gateways.sms_notification_gateway import SMSNotificationGateway
-from app.notification.application.services.notification_generation_service import (
+from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
-from app.notification.application.services.notification_service import NotificationService
-from app.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
-from app.notification.domain.exceptions import (
+from src.notification.application.services.notification_service import NotificationService
+from src.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
+from src.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
     InvalidNotificationTemplate,
@@ -24,8 +24,8 @@ from app.notification.domain.exceptions import (
     NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
-from app.notification.domain.repository import NotificationRepository
-from app.notification.domain.value_objects.notification_id import NotificationId
+from src.notification.domain.repository import NotificationRepository
+from src.notification.domain.value_objects.notification_id import NotificationId
 
 
 class MockEmailNotificationGateway(EmailNotificationGateway):

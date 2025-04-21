@@ -1,4 +1,4 @@
-from app.common.application.enums import ResponseStatusEnum
+from src.core.application.enums import ResponseStatusEnum
 
 
 def test_response_status_enum():

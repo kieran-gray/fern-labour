@@ -20,9 +20,9 @@ services:
       timeout: 5s
       retries: 5
     environment:
-      GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
-    volumes:
-      - /home/kieran/.config/gcloud/application_default_credentials.json:/app/credentials.json:ro
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp_application_credentials
+    secrets:
+      - gcp_application_credentials
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
@@ -62,9 +62,9 @@ services:
       timeout: 5s
       retries: 5
     environment:
-      GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
-    volumes:
-      - /home/kieran/.config/gcloud/application_default_credentials.json:/app/credentials.json:ro
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp_application_credentials
+    secrets:
+      - gcp_application_credentials
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
@@ -93,22 +93,22 @@ services:
     networks:
       - default
     environment:
-      GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
-    volumes:
-      - /home/kieran/.config/gcloud/application_default_credentials.json:/app/credentials.json:ro
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp_application_credentials
+    secrets:
+      - gcp_application_credentials
 
-  notifications-consumer:
+  notification-consumer:
     image: '${DOCKER_IMAGE_REPOSITORY?Variable not set}/${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:${TAG-latest}'
     restart: always
     env_file:
       - ./notification_service/.env
-    command: [ "python", "-m", "app.run_consumer" ]
+    command: [ "python", "-m", "src.run_consumer" ]
     networks:
       - default
     environment:
-      GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
-    volumes:
-      - /home/kieran/.config/gcloud/application_default_credentials.json:/app/credentials.json:ro
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp_application_credentials
+    secrets:
+      - gcp_application_credentials
 
   keycloak:
     image: '${DOCKER_IMAGE_REPOSITORY?Variable not set}/${STACK_NAME?Variable not set}-keycloak:${TAG-latest}'
@@ -200,3 +200,7 @@ networks:
   traefik-public:
     # Allow setting it to false for testing
     external: true
+
+secrets:
+  gcp_application_credentials:
+    file: /home/kieran/.config/gcloud/application_default_credentials.json

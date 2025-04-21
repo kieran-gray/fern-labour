@@ -9,49 +9,52 @@ on:
     paths:
       - 'notification_service/**'
       - '.github/workflows/**'
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: "valued-vault-446719-t7"
+  SERVICE_ACCOUNT: "github-actions-service-account@valued-vault-446719-t7.iam.gserviceaccount.com"
+  WORKLOAD_IDENTITY_PROVIDER: "projects/549377932260/locations/global/workloadIdentityPools/fern-labour-dev-pool/providers/github-actions-provider"
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - uses: astral-sh/setup-uv@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
         with:
           version: "0.6.3"
           enable-cache: true
-      - name: Install the project
-        run: uv sync --all-groups
-        working-directory: ./notification_service
-      - name: Run tests
-        run: uv run pytest --cov
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          token_format: 'access_token'
+          project_id: ${{ env.PROJECT_ID }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Install dependencies
+        run: make deps
         working-directory: ./notification_service
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@v4
-        with:
-          version: "0.6.3"
-          enable-cache: true
-      - name: Install the project
-        run: uv sync --all-groups
+      - name: Run Tests
+        run: make test
         working-directory: ./notification_service
-      - name: Run MyPy
-        run: uv run mypy app
-        working-directory: ./notification_service
-      - name: Run Ruff Check
-        run: uv run ruff check app
-        working-directory: ./notification_service
-      - name: Run Ruff Format Check
-        run: uv run ruff format app --check
-        working-directory: ./notification_service
-      - name: Check uv lock
-        run: uv lock --check
+      
+      - name: Run Lint Check
+        run: make lint
         working-directory: ./notification_service

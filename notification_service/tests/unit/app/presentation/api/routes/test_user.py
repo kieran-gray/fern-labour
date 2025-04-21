@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from app.user.application.dtos.user import UserDTO
+from src.user.application.dtos.user import UserDTO
 
 
 def test_get_user(client: TestClient, test_user: UserDTO) -> None:

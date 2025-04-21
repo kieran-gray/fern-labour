@@ -2,13 +2,13 @@ import logging
 from unittest.mock import patch
 from uuid import uuid4
 
-from app.notification.application.dtos.notification import NotificationDTO
-from app.notification.domain.enums import NotificationStatus, NotificationType
-from app.notification.infrastructure.notifications.email.smtp_email_notification_gateway import (
+from src.notification.application.dtos.notification import NotificationDTO
+from src.notification.domain.enums import NotificationStatus, NotificationType
+from src.notification.infrastructure.gateways.smtp_email_gateway import (
     SMTPEmailNotificationGateway,
 )
 
-MODULE = "app.notification.infrastructure.notifications.email.smtp_email_notification_gateway"
+MODULE = "src.notification.infrastructure.gateways.smtp_email_gateway"
 
 
 def test_smtp_email_notification_gateway_initialization():
