@@ -1,14 +1,10 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
+from gcp_pub_sub_dishka.consumer import PubSubEventConsumer
+from gcp_pub_sub_dishka.producer import PubSubEventProducer
 
 from app.common.domain.producer import EventProducer
-from app.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_consumer import (
-    PubSubEventConsumer,
-)
-from app.common.infrastructure.events.gcp_pub_sub.gcp_pub_sub_event_producer import (
-    PubSubEventProducer,
-)
 from app.common.infrastructure.events.interfaces.consumer import EventConsumer
 from app.labour.application.event_handlers.mapping import LABOUR_EVENT_HANDLER_MAPPING
 from app.setup.ioc.di_component_enum import ComponentEnum

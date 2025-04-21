@@ -25,6 +25,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked  \
 # Installs build tools and uv. Used as a base for specific dependency builders.
 FROM base AS base_builder
 ENV UV_PROJECT_ENVIRONMENT=/venv
+ENV UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken
 
 # Install build-time system dependencies (needed for compiling some Python packages)
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -44,19 +45,19 @@ ENV UV_COMPILE_BYTECODE=1 \
 # Copy project definition files needed by all builders
 COPY --chown=nonroot:nonroot pyproject.toml uv.lock config.toml ./
 
-# Switch to non-root user for dependency installation from now on
-USER nonroot
-
 # ---- Stage 2a: HTTP Builder ----
 # Installs core + http dependencies
-FROM base_builder AS http_builder
-RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
+RUN --mount=type=secret,id=artifact_registry_token \
+    --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
+    UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD="$(cat /run/secrets/artifact_registry_token)" \
     uv sync --frozen --no-dev --group app --group http --no-install-project
 
 # ---- Stage 2b: Migrations Builder ----
 # Installs core + migrations dependencies
 FROM base_builder AS migrations_builder
-RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
+RUN --mount=type=secret,id=artifact_registry_token \
+    --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
+    UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD="$(cat /run/secrets/artifact_registry_token)" \
     uv sync --frozen --no-dev --group migrations --no-install-project
 
 # ---- Stage 3a: Production - HTTP ----
@@ -100,7 +101,9 @@ CMD ["alembic", "upgrade", "head"]
 FROM base_builder AS development
 
 # Install ALL dependencies (core + http + consumer + migrations + dev)
-RUN --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
+RUN --mount=type=secret,id=artifact_registry_token \
+    --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
+    UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD="$(cat /run/secrets/artifact_registry_token)" \
     uv sync --frozen --all-groups --no-install-project
 
 # Copy application code
