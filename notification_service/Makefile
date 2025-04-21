@@ -1,6 +1,6 @@
 TOKEN_CMD = gcloud auth application-default print-access-token
 CRED_FILE = $(CURDIR)/.artifact-registry-token
-SHELL = /bin/zsh
+SHELL = /bin/bash
 
 define generate_token
 $(shell $(TOKEN_CMD) > $(CRED_FILE) 2>/dev/null; cat $(CRED_FILE))
