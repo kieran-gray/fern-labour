@@ -47,6 +47,7 @@ COPY --chown=nonroot:nonroot pyproject.toml uv.lock config.toml ./
 
 # ---- Stage 2a: HTTP Builder ----
 # Installs core + http dependencies
+FROM base_builder AS http_builder
 RUN --mount=type=secret,id=artifact_registry_token \
     --mount=type=cache,target=/home/nonroot/.cache/uv,sharing=locked,uid=$UID,gid=$GID \
     UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD="$(cat /run/secrets/artifact_registry_token)" \
