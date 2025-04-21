@@ -11,21 +11,42 @@ on:
       - '.github/workflows/**'
   workflow_dispatch:
 
+env:
+  PROJECT_ID: "valued-vault-446719-t7"
+  SERVICE_ACCOUNT: "github-actions-service-account@valued-vault-446719-t7.iam.gserviceaccount.com"
+  WORKLOAD_IDENTITY_PROVIDER: "projects/549377932260/locations/global/workloadIdentityPools/fern-labour-dev-pool/providers/github-actions-provider"
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - uses: astral-sh/setup-uv@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
         with:
           version: "0.6.3"
           enable-cache: true
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          token_format: 'access_token'
+          project_id: ${{ env.PROJECT_ID }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+
       - name: Install dependencies
         run: make deps
         working-directory: ./notification_service
+
       - name: Run tests
         run: make test
         working-directory: ./notification_service
