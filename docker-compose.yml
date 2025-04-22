@@ -208,7 +208,7 @@ services:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:latest'
     build:
       context: ./frontend
-      # target: build-stage
+      target: build-stage
       args:
         - VITE_API_URL=http://localhost:8000
         - NODE_ENV=development
@@ -222,11 +222,10 @@ services:
       - traefik-public
       - default
     ports:
-      - "5173:80"
+      - "5173:5173"
     volumes:
       - ./frontend:/app
-      - ./.env:/app/.env
-    # command: [ "npm", "run", "dev" ]
+    command: [ "npm", "run", "dev" ]
 
   marketing:
     image: '${DOCKER_IMAGE_MARKETING?Variable not set}:latest'

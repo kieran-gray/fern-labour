@@ -25,6 +25,13 @@ for topic in $topics; do
        -d "{}" \
        -s
   echo " - Topic $topic created or already exists."
+
+  echo "Creating dead-letter topic: $topic.dlq"
+  curl -X PUT "http://pub-sub-emulator:8085/v1/projects/test/topics/$topic.dlq" \
+       -H "Content-Type: application/json" \
+       -d "{}" \
+       -s
+  echo " - Topic $topic.dlq created or already exists."
   
   # Create subscription with the same name as topic
   subscription_name="${topic}.sub"
@@ -33,6 +40,14 @@ for topic in $topics; do
        -H "Content-Type: application/json" \
        -d "{
          \"topic\": \"projects/test/topics/$topic\",
+         \"retryPolicy\": {
+            \"minimumBackoff\": \"1s\",
+            \"maximumBackoff\": \"60s\"
+          },
+          \"deadLetterPolicy\": {
+            \"deadLetterTopic\": \"projects/test/topics/$topic.dlq\",
+            \"maxDeliveryAttempts\": 10   
+          },
          \"ackDeadlineSeconds\": 10
        }" \
        -s
