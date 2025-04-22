@@ -2,10 +2,9 @@ import logging
 from dataclasses import dataclass
 
 from src.common.domain.producer import EventProducer
-from src.notification.application.dtos.notification_data import ContactUsData
-from src.notification.domain.enums import NotificationTemplate
-from src.notification.domain.events import NotificationRequested
-from src.subscription.domain.enums import ContactMethod
+from src.notification.enums import NotificationTemplate, NotificationType
+from src.notification.events import NotificationRequested
+from src.notification.notification_data import ContactUsData
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ class ContactService:
         notification_metadata = ContactNotificationMetadata(from_user_id=user_id or "null")
         notification_event = NotificationRequested.create(
             data={
-                "type": ContactMethod.EMAIL,
+                "type": NotificationType.EMAIL,
                 "destination": self._contact_email,
                 "template": self._template.value,
                 "data": notification_data.to_dict(),

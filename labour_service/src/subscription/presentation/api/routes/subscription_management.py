@@ -7,17 +7,17 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from src.api.dependencies import bearer_scheme
 from src.api.exception_handler import ExceptionSchema
-from src.labour.presentation.api.schemas.requests.subscription import (
+from src.setup.ioc.di_component_enum import ComponentEnum
+from src.subscription.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from src.subscription.presentation.api.schema.requests.subscription import (
     BlockSubscriberRequest,
     RemoveSubscriberRequest,
     UpdateContactMethodsRequest,
     UpdateRoleRequest,
 )
-from src.labour.presentation.api.schemas.responses.subscription import SubscriptionResponse
-from src.setup.ioc.di_component_enum import ComponentEnum
-from src.subscription.application.services.subscription_management_service import (
-    SubscriptionManagementService,
-)
+from src.subscription.presentation.api.schema.responses.subscription import SubscriptionResponse
 from src.user.infrastructure.auth.interfaces.controller import AuthController
 
 subscription_management_router = APIRouter(

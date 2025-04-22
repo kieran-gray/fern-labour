@@ -8,22 +8,22 @@ from fastapi.security import HTTPAuthorizationCredentials
 from src.api.dependencies import bearer_scheme
 from src.api.exception_handler import ExceptionSchema
 from src.labour.application.services.labour_query_service import LabourQueryService
-from src.labour.presentation.api.schemas.requests.subscription import (
+from src.setup.ioc.di_component_enum import ComponentEnum
+from src.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.presentation.api.schema.requests.subscription import (
     SubscribeToRequest,
     UnsubscribeFromRequest,
 )
-from src.labour.presentation.api.schemas.responses.subscription import (
+from src.subscription.presentation.api.schema.responses.subscription import (
     LabourSubscriptionsResponse,
     SubscriberSubscriptionsResponse,
     SubscriptionDataResponse,
     SubscriptionResponse,
     SubscriptionsResponse,
 )
-from src.setup.ioc.di_component_enum import ComponentEnum
-from src.subscription.application.services.subscription_query_service import (
-    SubscriptionQueryService,
-)
-from src.subscription.application.services.subscription_service import SubscriptionService
 from src.user.application.services.user_query_service import UserQueryService
 from src.user.infrastructure.auth.interfaces.controller import AuthController
 

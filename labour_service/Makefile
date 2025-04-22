@@ -101,6 +101,9 @@ check: lint test
 plot-data:
 	PYTHONPATH="." python scripts/plot_dependencies.py
 
+tree:
+	PYTHONPATH="." python scripts/print_tree.py
+
 # clean
 
 pycache-del:

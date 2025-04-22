@@ -10,6 +10,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from src.admin.application.services.contact_service import ContactService
 from src.api.exception_handler import (
     ExceptionHandler,
     ExceptionHeaderMapper,
@@ -17,7 +18,6 @@ from src.api.exception_handler import (
     ExceptionMessageProvider,
 )
 from src.api.routes.router_root import root_router
-from src.common.application.services.contact_service import ContactService
 from src.common.infrastructure.security.interfaces.request_verification_service import (
     RequestVerificationService,
 )

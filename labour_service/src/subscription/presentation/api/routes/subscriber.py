@@ -7,9 +7,9 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from src.api.dependencies import bearer_scheme
 from src.api.exception_handler import ExceptionSchema
-from src.labour.presentation.api.schemas.requests.subscriber import SendSubscriberInviteRequest
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.subscription.application.services.subscriber_invite_service import SubscriberInviteService
+from src.subscription.presentation.api.schema.requests.subscriber import SendSubscriberInviteRequest
 from src.user.infrastructure.auth.interfaces.controller import AuthController
 
 subscriber_router = APIRouter(prefix="/subscriber", tags=["Subscriber"])

@@ -6,9 +6,9 @@ from src.common.application.event_handler import EventHandler
 from src.common.domain.event import DomainEvent
 from src.common.domain.producer import EventProducer
 from src.labour.domain.labour_update.enums import LabourUpdateType
-from src.notification.application.dtos.notification_data import LabourUpdateData
-from src.notification.domain.enums import NotificationTemplate
-from src.notification.domain.events import NotificationRequested
+from src.notification.enums import NotificationTemplate
+from src.notification.events import NotificationRequested
+from src.notification.notification_data import LabourUpdateData
 from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )

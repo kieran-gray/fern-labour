@@ -10,8 +10,8 @@ from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.labour.enums import LabourPaymentPlan
-from src.notification.domain.enums import NotificationType
-from src.notification.domain.events import NotificationRequested
+from src.notification.enums import NotificationType
+from src.notification.events import NotificationRequested
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )

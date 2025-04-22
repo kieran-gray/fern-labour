@@ -3,9 +3,9 @@ from dataclasses import dataclass
 
 from src.common.domain.producer import EventProducer
 from src.labour.application.security.token_generator import TokenGenerator
-from src.notification.application.dtos.notification_data import LabourInviteData
-from src.notification.domain.enums import NotificationTemplate
-from src.notification.domain.events import NotificationRequested
+from src.notification.enums import NotificationTemplate
+from src.notification.events import NotificationRequested
+from src.notification.notification_data import LabourInviteData
 from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )

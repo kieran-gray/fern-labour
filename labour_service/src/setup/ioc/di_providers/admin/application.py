@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from src.common.application.services.contact_service import ContactService
+from src.admin.application.services.contact_service import ContactService
 from src.common.domain.producer import EventProducer
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import Settings
