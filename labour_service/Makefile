@@ -56,6 +56,16 @@ SRC_DIR=src
 TEST_DIR=tests
 PYPROJECT_TOML=pyproject.toml
 
+add: ensure-token
+	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
+	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
+	uv add $(dep)
+
+remove: ensure-token
+	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
+	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
+	uv remove $(dep)
+
 deps: ensure-token
 	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
 	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
