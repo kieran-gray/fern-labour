@@ -9,9 +9,9 @@ from fastapi.requests import Request
 from fastapi.responses import ORJSONResponse
 from pydantic_core import ErrorDetails
 
-from src.common.application.exceptions import ApplicationError
-from src.common.domain.exceptions import DomainError
-from src.common.infrastructure.security.interfaces.exceptions import (
+from src.core.application.exceptions import ApplicationError
+from src.core.domain.exceptions import DomainError
+from src.core.infrastructure.security.interfaces.exceptions import (
     InvalidVerificationTokenException,
     RequestVerificationError,
     VerificationTokenAlreadyUsedException,

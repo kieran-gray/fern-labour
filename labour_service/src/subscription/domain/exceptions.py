@@ -1,6 +1,6 @@
 from typing import Any
 
-from src.common.domain.exceptions import DomainError, DomainValidationError
+from src.core.domain.exceptions import DomainError, DomainValidationError
 
 
 class SubscriptionIdInvalid(DomainValidationError):

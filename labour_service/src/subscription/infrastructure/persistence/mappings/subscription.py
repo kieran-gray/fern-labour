@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite
 
-from src.common.infrastructure.persistence.orm_registry import mapper_registry
+from src.core.infrastructure.persistence.orm_registry import mapper_registry
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.subscription.domain.entity import Subscription
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId

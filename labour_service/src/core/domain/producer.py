@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from src.common.domain.event import DomainEvent
+from src.core.domain.event import DomainEvent
 
 
 class EventProducer(Protocol):

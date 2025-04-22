@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from uuid import UUID
 
-from src.common.domain.producer import EventProducer
+from src.core.domain.producer import EventProducer
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.domain.contraction.exceptions import ContractionIdInvalid
 from src.labour.domain.contraction.services.delete_contraction import DeleteContractionService

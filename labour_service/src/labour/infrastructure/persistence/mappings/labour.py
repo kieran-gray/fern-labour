@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import event
 from sqlalchemy.orm import composite, relationship
 
-from src.common.infrastructure.persistence.orm_registry import mapper_registry
+from src.core.infrastructure.persistence.orm_registry import mapper_registry
 from src.labour.domain.contraction.entity import Contraction
 from src.labour.domain.contraction.value_objects.contraction_duration import Duration
 from src.labour.domain.contraction.value_objects.contraction_id import ContractionId

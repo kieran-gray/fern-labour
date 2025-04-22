@@ -2,7 +2,7 @@ import asyncio
 import signal
 from unittest.mock import AsyncMock, patch
 
-from src.common.infrastructure.events.interfaces.consumer import EventConsumer
+from src.core.infrastructure.events.interfaces.consumer import EventConsumer
 from src.run_consumer import ConsumerRunner, TaskManager
 
 

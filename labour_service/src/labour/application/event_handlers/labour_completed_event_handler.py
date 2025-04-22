@@ -2,9 +2,9 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from src.common.application.event_handler import EventHandler
-from src.common.domain.event import DomainEvent
-from src.common.domain.producer import EventProducer
+from src.core.application.event_handler import EventHandler
+from src.core.domain.event import DomainEvent
+from src.core.domain.producer import EventProducer
 from src.notification.enums import NotificationTemplate
 from src.notification.events import NotificationRequested
 from src.notification.notification_data import LabourUpdateData

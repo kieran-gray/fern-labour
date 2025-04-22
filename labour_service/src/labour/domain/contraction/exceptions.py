@@ -1,6 +1,6 @@
 from typing import Any
 
-from src.common.domain.exceptions import DomainError, DomainValidationError
+from src.core.domain.exceptions import DomainError, DomainValidationError
 from src.labour.domain.contraction.constants import (
     CONTRACTION_MAX_INTENSITY,
     CONTRACTION_MIN_INTENSITY,

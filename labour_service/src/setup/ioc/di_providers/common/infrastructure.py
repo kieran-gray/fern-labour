@@ -10,10 +10,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from src.common.infrastructure.security.cloudflare.turnstile_request_verification_service import (
+from src.core.infrastructure.security.cloudflare.turnstile_request_verification_service import (
     TurnstileRequestVerificationService,
 )
-from src.common.infrastructure.security.interfaces.request_verification_service import (
+from src.core.infrastructure.security.interfaces.request_verification_service import (
     RequestVerificationService,
 )
 from src.setup.ioc.di_component_enum import ComponentEnum

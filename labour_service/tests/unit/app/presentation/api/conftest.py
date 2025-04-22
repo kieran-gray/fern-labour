@@ -18,7 +18,7 @@ from src.api.exception_handler import (
     ExceptionMessageProvider,
 )
 from src.api.routes.router_root import root_router
-from src.common.infrastructure.security.interfaces.request_verification_service import (
+from src.core.infrastructure.security.interfaces.request_verification_service import (
     RequestVerificationService,
 )
 from src.labour.application.dtos.labour import LabourDTO

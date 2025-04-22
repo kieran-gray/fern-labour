@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 import pytest
 
-from src.common.domain.exceptions import DomainValidationError
-from src.common.domain.value_object import ValueObject
+from src.core.domain.exceptions import DomainValidationError
+from src.core.domain.value_object import ValueObject
 
 
 def test_empty_value_object_raises_error():

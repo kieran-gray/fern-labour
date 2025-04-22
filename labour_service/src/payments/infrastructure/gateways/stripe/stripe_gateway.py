@@ -4,7 +4,7 @@ from collections.abc import Mapping
 import stripe
 from stripe.checkout import Session
 
-from src.common.application.event_handler import EventHandler
+from src.core.application.event_handler import EventHandler
 from src.payments.application.exceptions import (
     StripeProductNotFound,
     WebhookHasInvalidPayload,

@@ -1,6 +1,6 @@
 from typing import Any
 
-from src.common.domain.exceptions import DomainError
+from src.core.domain.exceptions import DomainError
 
 
 class UserNotFoundById(DomainError):

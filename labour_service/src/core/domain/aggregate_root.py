@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
-from src.common.domain.entity import Entity
-from src.common.domain.event import DomainEvent
-from src.common.domain.value_object import ValueObject
+from src.core.domain.entity import Entity
+from src.core.domain.event import DomainEvent
+from src.core.domain.value_object import ValueObject
 
 T = TypeVar("T", bound=ValueObject)
 

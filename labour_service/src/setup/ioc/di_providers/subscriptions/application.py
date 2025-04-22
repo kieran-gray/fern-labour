@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from src.common.domain.producer import EventProducer
+from src.core.domain.producer import EventProducer
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.setup.ioc.di_component_enum import ComponentEnum

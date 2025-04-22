@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 
-from src.common.domain.producer import EventProducer
+from src.core.domain.producer import EventProducer
 from src.labour.application.security.token_generator import TokenGenerator
 from src.notification.enums import NotificationTemplate
 from src.notification.events import NotificationRequested

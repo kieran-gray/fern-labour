@@ -7,7 +7,7 @@ from fastapi import APIRouter, Request, status
 from src.admin.application.services.contact_service import ContactService
 from src.admin.presentation.api.schemas.requests.contact import ContactUsRequest
 from src.api.exception_handler import ExceptionSchema
-from src.common.infrastructure.security.interfaces.request_verification_service import (
+from src.core.infrastructure.security.interfaces.request_verification_service import (
     RequestVerificationService,
 )
 from src.setup.ioc.di_component_enum import ComponentEnum

@@ -4,8 +4,8 @@ from dishka import FromComponent, Provider, Scope, provide
 from gcp_pub_sub_dishka.consumer import PubSubEventConsumer
 from gcp_pub_sub_dishka.producer import PubSubEventProducer
 
-from src.common.domain.producer import EventProducer
-from src.common.infrastructure.events.interfaces.consumer import EventConsumer
+from src.core.domain.producer import EventProducer
+from src.core.infrastructure.events.interfaces.consumer import EventConsumer
 from src.labour.application.event_handlers.mapping import LABOUR_EVENT_HANDLER_MAPPING
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import GCPSettings, Settings

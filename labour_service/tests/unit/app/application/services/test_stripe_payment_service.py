@@ -6,7 +6,7 @@ import pytest_asyncio
 import stripe
 from stripe import SignatureVerificationError
 
-from src.common.application.event_handler import EventHandler
+from src.core.application.event_handler import EventHandler
 from src.payments.application.exceptions import (
     StripeProductNotFound,
     WebhookHasInvalidPayload,

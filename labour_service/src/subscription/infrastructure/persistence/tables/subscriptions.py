@@ -1,7 +1,7 @@
 from sqlalchemy import ARRAY, Column, Enum, ForeignKey, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 
-from src.common.infrastructure.persistence.orm_registry import mapper_registry
+from src.core.infrastructure.persistence.orm_registry import mapper_registry
 from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 
 subscriptions_table = Table(

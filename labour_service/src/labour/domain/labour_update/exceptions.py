@@ -1,4 +1,4 @@
-from src.common.domain.exceptions import DomainError
+from src.core.domain.exceptions import DomainError
 from src.labour.domain.labour_update.constants import ANNOUNCEMENT_COOLDOWN_SECONDS
 
 

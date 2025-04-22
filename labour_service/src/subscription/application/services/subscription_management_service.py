@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from src.common.domain.producer import EventProducer
+from src.core.domain.producer import EventProducer
 from src.subscription.application.dtos.subscription import SubscriptionDTO
 from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
