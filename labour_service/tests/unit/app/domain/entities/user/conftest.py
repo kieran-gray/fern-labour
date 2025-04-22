@@ -1,6 +1,6 @@
 import pytest
 
-from app.user.domain.entity import User
+from src.user.domain.entity import User
 
 
 @pytest.fixture

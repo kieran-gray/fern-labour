@@ -2,10 +2,10 @@ import json
 
 import pytest
 
-from app.subscription.domain.enums import ContactMethod
-from app.user.application.dtos.user import UserDTO
-from app.user.domain.entity import User
-from app.user.domain.value_objects.user_id import UserId
+from src.subscription.domain.enums import ContactMethod
+from src.user.application.dtos.user import UserDTO
+from src.user.domain.entity import User
+from src.user.domain.value_objects.user_id import UserId
 
 
 @pytest.fixture

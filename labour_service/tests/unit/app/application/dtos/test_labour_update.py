@@ -3,10 +3,10 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from app.labour.application.dtos.labour_update import LabourUpdateDTO
-from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.labour.domain.labour_update.entity import LabourUpdate
-from app.labour.domain.labour_update.enums import LabourUpdateType
+from src.labour.application.dtos.labour_update import LabourUpdateDTO
+from src.labour.domain.labour.value_objects.labour_id import LabourId
+from src.labour.domain.labour_update.entity import LabourUpdate
+from src.labour.domain.labour_update.enums import LabourUpdateType
 
 
 @pytest.fixture

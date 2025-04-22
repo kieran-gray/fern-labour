@@ -3,11 +3,11 @@ from uuid import uuid4
 
 import pytest
 
-from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.subscription.application.dtos.subscription import SubscriptionDTO
-from app.subscription.domain.entity import Subscription
-from app.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
-from app.user.domain.value_objects.user_id import UserId
+from src.labour.domain.labour.value_objects.labour_id import LabourId
+from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.domain.entity import Subscription
+from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from src.user.domain.value_objects.user_id import UserId
 
 
 @pytest.fixture

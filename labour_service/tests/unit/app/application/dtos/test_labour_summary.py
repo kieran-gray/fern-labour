@@ -1,7 +1,7 @@
 import json
 
-from app.labour.application.dtos.labour_summary import LabourSummaryDTO
-from app.labour.domain.labour.entity import Labour
+from src.labour.application.dtos.labour_summary import LabourSummaryDTO
+from src.labour.domain.labour.entity import Labour
 
 
 def test_can_convert_to_labour_summary_dto(sample_labour: Labour) -> None:

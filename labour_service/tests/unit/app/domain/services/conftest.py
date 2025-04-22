@@ -3,11 +3,11 @@ from uuid import uuid4
 
 import pytest
 
-from app.labour.domain.contraction.entity import Contraction
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.user.domain.entity import User
-from app.user.domain.value_objects.user_id import UserId
+from src.labour.domain.contraction.entity import Contraction
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.value_objects.labour_id import LabourId
+from src.user.domain.entity import User
+from src.user.domain.value_objects.user_id import UserId
 
 
 @pytest.fixture

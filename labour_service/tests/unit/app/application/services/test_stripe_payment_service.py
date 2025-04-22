@@ -6,16 +6,16 @@ import pytest_asyncio
 import stripe
 from stripe import SignatureVerificationError
 
-from app.common.application.event_handler import EventHandler
-from app.payments.application.exceptions import (
+from src.common.application.event_handler import EventHandler
+from src.payments.application.exceptions import (
     StripeProductNotFound,
     WebhookHasInvalidPayload,
     WebhookHasInvalidSignature,
     WebhookMissingSignatureHeader,
 )
-from app.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
+from src.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
 
-MODULE = "app.payments.infrastructure.gateways.stripe.stripe_gateway"
+MODULE = "src.payments.infrastructure.gateways.stripe.stripe_gateway"
 
 
 class MockEventHandler(EventHandler):

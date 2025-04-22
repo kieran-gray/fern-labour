@@ -4,15 +4,15 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.subscription.application.dtos.subscription import SubscriptionDTO
-from app.subscription.application.services.subscription_query_service import (
+from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.subscription.application.services.subscription_service import SubscriptionService
-from app.subscription.domain.exceptions import (
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.domain.exceptions import (
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
     UnauthorizedSubscriptionRequest,

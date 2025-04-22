@@ -52,7 +52,7 @@ ensure-token:
 		echo "TOKEN variable appears to be set."; \
 	fi
 
-SRC_DIR=app
+SRC_DIR=src
 TEST_DIR=tests
 PYPROJECT_TOML=pyproject.toml
 

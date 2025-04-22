@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest_asyncio
 
-from app.common.application.services.contact_service import ContactService
+from src.common.application.services.contact_service import ContactService
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"

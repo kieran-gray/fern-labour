@@ -2,12 +2,12 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.services.begin_labour import BeginLabourService
-from app.labour.domain.labour_update.constants import ANNOUNCEMENT_COOLDOWN_SECONDS
-from app.labour.domain.labour_update.enums import LabourUpdateType
-from app.labour.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
-from app.labour.domain.labour_update.services.post_labour_update import PostLabourUpdateService
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.services.begin_labour import BeginLabourService
+from src.labour.domain.labour_update.constants import ANNOUNCEMENT_COOLDOWN_SECONDS
+from src.labour.domain.labour_update.enums import LabourUpdateType
+from src.labour.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
+from src.labour.domain.labour_update.services.post_labour_update import PostLabourUpdateService
 
 
 def test_can_post_labour_update(sample_labour: Labour):

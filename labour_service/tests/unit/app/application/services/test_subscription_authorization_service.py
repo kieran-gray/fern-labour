@@ -3,24 +3,24 @@ from datetime import UTC, datetime
 import pytest
 import pytest_asyncio
 
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.labour.domain.labour.exceptions import (
+from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.labour.domain.labour.exceptions import (
     InvalidLabourId,
     UnauthorizedLabourRequest,
 )
-from app.subscription.application.security.subscription_authorization_service import (
+from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
 )
-from app.subscription.application.services.subscription_management_service import (
+from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
-from app.subscription.application.services.subscription_service import SubscriptionService
-from app.subscription.domain.repository import SubscriptionRepository
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.value_objects.user_id import UserId
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.domain.repository import SubscriptionRepository
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"

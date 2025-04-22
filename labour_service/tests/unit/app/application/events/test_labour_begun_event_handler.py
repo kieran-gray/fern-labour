@@ -5,25 +5,25 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 
-from app.common.domain.event import DomainEvent
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.notification.domain.enums import NotificationType
-from app.notification.domain.events import NotificationRequested
-from app.subscription.application.services.subscription_management_service import (
+from src.common.domain.event import DomainEvent
+from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.notification.domain.enums import NotificationType
+from src.notification.domain.events import NotificationRequested
+from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
-from app.subscription.application.services.subscription_query_service import (
+from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.subscription.application.services.subscription_service import SubscriptionService
-from app.subscription.domain.enums import ContactMethod
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.exceptions import UserNotFoundById
-from app.user.domain.value_objects.user_id import UserId
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.domain.enums import ContactMethod
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.exceptions import UserNotFoundById
+from src.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"
@@ -125,7 +125,7 @@ async def test_labour_begun_event_non_existent_subscriber(
     )
     labour_begun_event_handler._user_service._user_repository._data.pop(SUBSCRIBER)
     event = generate_domain_event(birthing_person_id=BIRTHING_PERSON, labour_id=labour.id)
-    module = "app.application.events.event_handlers.labour_begun_event_handler"
+    module = "src.application.events.event_handlers.labour_begun_event_handler"
     with caplog.at_level(logging.ERROR, logger=module):
         await labour_begun_event_handler.handle(event.to_dict())
         assert len(caplog.records) == 1

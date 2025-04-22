@@ -4,16 +4,16 @@ from uuid import UUID, uuid4
 import pytest
 import pytest_asyncio
 
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.services.labour_query_service import LabourQueryService
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.labour.domain.labour.exceptions import InvalidLabourId, LabourNotFoundById
-from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.user.domain.exceptions import (
+from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.services.labour_query_service import LabourQueryService
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.labour.domain.labour.exceptions import InvalidLabourId, LabourNotFoundById
+from src.labour.domain.labour.value_objects.labour_id import LabourId
+from src.user.domain.exceptions import (
     UserDoesNotHaveActiveLabour,
 )
-from app.user.domain.value_objects.user_id import UserId
+from src.user.domain.value_objects.user_id import UserId
 from tests.unit.app.application.conftest import MockLabourRepository
 
 BIRTHING_PERSON = "bp_id"

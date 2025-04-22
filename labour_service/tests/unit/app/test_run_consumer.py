@@ -2,8 +2,8 @@ import asyncio
 import signal
 from unittest.mock import AsyncMock, patch
 
-from app.common.infrastructure.events.interfaces.consumer import EventConsumer
-from app.run_consumer import ConsumerRunner, TaskManager
+from src.common.infrastructure.events.interfaces.consumer import EventConsumer
+from src.run_consumer import ConsumerRunner, TaskManager
 
 
 async def test_task_manager():

@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from app.labour.application.dtos.labour import LabourDTO
+from src.labour.application.dtos.labour import LabourDTO
 
 
 def test_webhook(client: TestClient) -> None:

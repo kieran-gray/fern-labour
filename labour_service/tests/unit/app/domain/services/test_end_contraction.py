@@ -1,11 +1,11 @@
 import pytest
 
-from app.labour.domain.contraction.constants import CONTRACTION_MAX_INTENSITY
-from app.labour.domain.contraction.services.end_contraction import EndContractionService
-from app.labour.domain.contraction.services.start_contraction import StartContractionService
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.exceptions import LabourHasNoActiveContraction
-from app.labour.domain.labour.services.begin_labour import BeginLabourService
+from src.labour.domain.contraction.constants import CONTRACTION_MAX_INTENSITY
+from src.labour.domain.contraction.services.end_contraction import EndContractionService
+from src.labour.domain.contraction.services.start_contraction import StartContractionService
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.exceptions import LabourHasNoActiveContraction
+from src.labour.domain.labour.services.begin_labour import BeginLabourService
 
 
 def test_can_end_contraction(sample_labour: Labour):

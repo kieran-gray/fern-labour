@@ -1,9 +1,9 @@
 import pytest
 
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.enums import LabourPhase
-from app.labour.domain.labour.exceptions import LabourAlreadyBegun
-from app.labour.domain.labour.services.begin_labour import BeginLabourService
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.enums import LabourPhase
+from src.labour.domain.labour.exceptions import LabourAlreadyBegun
+from src.labour.domain.labour.services.begin_labour import BeginLabourService
 
 
 def test_can_begin_labour(sample_labour: Labour):

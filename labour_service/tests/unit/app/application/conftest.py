@@ -3,30 +3,30 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 
-from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.application.services.labour_query_service import LabourQueryService
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.repository import LabourRepository
-from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.subscription.application.security.subscription_authorization_service import (
+from src.labour.application.security.token_generator import TokenGenerator
+from src.labour.application.services.labour_query_service import LabourQueryService
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.repository import LabourRepository
+from src.labour.domain.labour.value_objects.labour_id import LabourId
+from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
 )
-from app.subscription.application.services.subscription_management_service import (
+from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
-from app.subscription.application.services.subscription_query_service import (
+from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.subscription.application.services.subscription_service import SubscriptionService
-from app.subscription.domain.entity import Subscription
-from app.subscription.domain.enums import SubscriptionStatus
-from app.subscription.domain.repository import SubscriptionRepository
-from app.subscription.domain.value_objects.subscription_id import SubscriptionId
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.repository import UserRepository
-from app.user.domain.value_objects.user_id import UserId
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.domain.entity import Subscription
+from src.subscription.domain.enums import SubscriptionStatus
+from src.subscription.domain.repository import SubscriptionRepository
+from src.subscription.domain.value_objects.subscription_id import SubscriptionId
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.repository import UserRepository
+from src.user.domain.value_objects.user_id import UserId
 
 
 class MockUserRepository(UserRepository):

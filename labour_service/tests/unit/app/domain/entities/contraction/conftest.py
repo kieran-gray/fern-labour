@@ -2,8 +2,8 @@ from uuid import UUID
 
 import pytest
 
-from app.labour.domain.contraction.entity import Contraction
-from app.labour.domain.labour.value_objects.labour_id import LabourId
+from src.labour.domain.contraction.entity import Contraction
+from src.labour.domain.labour.value_objects.labour_id import LabourId
 
 
 @pytest.fixture

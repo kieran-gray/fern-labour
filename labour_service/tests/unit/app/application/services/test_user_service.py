@@ -1,13 +1,13 @@
 import pytest
 
-from app.user.application.dtos.user import UserDTO
-from app.user.application.dtos.user_summary import UserSummaryDTO
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.exceptions import (
+from src.user.application.dtos.user import UserDTO
+from src.user.application.dtos.user_summary import UserSummaryDTO
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.exceptions import (
     UserNotFoundById,
 )
-from app.user.domain.value_objects.user_id import UserId
+from src.user.domain.value_objects.user_id import UserId
 
 
 async def register(user_service: UserQueryService, ids: list[str]):
