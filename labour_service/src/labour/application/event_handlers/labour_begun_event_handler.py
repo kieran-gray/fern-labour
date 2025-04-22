@@ -1,0 +1,97 @@
+import logging
+from dataclasses import dataclass
+from typing import Any
+
+from src.core.application.event_handler import EventHandler
+from src.core.domain.event import DomainEvent
+from src.core.domain.producer import EventProducer
+from src.notification.enums import NotificationTemplate
+from src.notification.events import NotificationRequested
+from src.notification.notification_data import LabourUpdateData
+from src.subscription.application.services.subscription_query_service import (
+    SubscriptionQueryService,
+)
+from src.user.application.dtos.user import UserDTO
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.exceptions import UserNotFoundById
+
+log = logging.getLogger(__name__)
+
+
+@dataclass
+class LabourBegunNotificationMetadata:
+    labour_id: str
+    from_user_id: str
+    to_user_id: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "labour_id": self.labour_id,
+            "from_user_id": self.from_user_id,
+            "to_user_id": self.to_user_id,
+        }
+
+
+class LabourBegunEventHandler(EventHandler):
+    def __init__(
+        self,
+        user_service: UserQueryService,
+        subscription_query_service: SubscriptionQueryService,
+        event_producer: EventProducer,
+        tracking_link: str,
+    ):
+        self._user_service = user_service
+        self._subscription_query_service = subscription_query_service
+        self._event_producer = event_producer
+        self._tracking_link = tracking_link
+        self._template = NotificationTemplate.LABOUR_UPDATE
+
+    def _generate_notification_data(
+        self, birthing_person: UserDTO, subscriber: UserDTO
+    ) -> LabourUpdateData:
+        return LabourUpdateData(
+            birthing_person_name=f"{birthing_person.first_name} {birthing_person.last_name}",
+            subscriber_first_name=subscriber.first_name,
+            update=f"{birthing_person.first_name} is going into labour!",
+            link=self._tracking_link,
+        )
+
+    async def handle(self, event: dict[str, Any]) -> None:
+        domain_event = DomainEvent.from_dict(event=event)
+        birthing_person_id = domain_event.data["birthing_person_id"]
+        labour_id = domain_event.data["labour_id"]
+
+        birthing_person = await self._user_service.get(user_id=birthing_person_id)
+
+        subscriptions = await self._subscription_query_service.get_labour_subscriptions(
+            requester_id=birthing_person_id, labour_id=labour_id
+        )
+
+        for subscription in subscriptions:
+            try:
+                subscriber = await self._user_service.get(subscription.subscriber_id)
+            except UserNotFoundById as err:
+                log.error(err)
+                continue
+
+            for method in subscription.contact_methods:
+                destination = subscriber.destination(method)
+                if not destination:
+                    continue
+
+                notification_data = self._generate_notification_data(birthing_person, subscriber)
+                notification_metadata = LabourBegunNotificationMetadata(
+                    labour_id=subscription.labour_id,
+                    from_user_id=subscription.birthing_person_id,
+                    to_user_id=subscriber.id,
+                )
+                notification_event = NotificationRequested.create(
+                    data={
+                        "type": method,
+                        "destination": destination,
+                        "template": self._template.value,
+                        "data": notification_data.to_dict(),
+                        "metadata": notification_metadata.to_dict(),
+                    }
+                )
+                await self._event_producer.publish(event=notification_event)

@@ -1,4 +1,4 @@
-from app.labour.infrastructure.security.sha256_token_generator import SHA256TokenGenerator
+from src.labour.infrastructure.security.sha256_token_generator import SHA256TokenGenerator
 
 
 def test_can_generate_token() -> None:

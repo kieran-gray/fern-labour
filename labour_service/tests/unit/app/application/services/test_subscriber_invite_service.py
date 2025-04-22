@@ -2,10 +2,10 @@ from unittest.mock import AsyncMock
 
 import pytest_asyncio
 
-from app.subscription.application.services.subscriber_invite_service import SubscriberInviteService
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.value_objects.user_id import UserId
+from src.subscription.application.services.subscriber_invite_service import SubscriberInviteService
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person"
 SUBSCRIBER = "test_subscriber"

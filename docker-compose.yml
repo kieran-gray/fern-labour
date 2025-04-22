@@ -25,10 +25,7 @@ services:
     ports:
       - "8000:8000"
       - "5678:5678"
-    volumes:
-      - ./labour_service/app:/app/app
-      - ./labour_service/config.toml/:/app/config.toml
-    command: [ "debugpy", "--listen", "0.0.0.0:5678", "-m", "app.run" ]
+    command: [ "debugpy", "--listen", "0.0.0.0:5678", "-m", "src.run" ]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
       interval: 30s
@@ -134,7 +131,7 @@ services:
       - ./labour_service/.env
     environment:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
-    command: [ "python", "-m", "app.run_consumer" ]
+    command: [ "python", "-m", "src.run_consumer" ]
     networks:
       - default
 

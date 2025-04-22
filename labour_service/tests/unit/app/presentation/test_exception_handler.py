@@ -1,8 +1,8 @@
 from fastapi import status
 
-from app.api.exception_handler import ExceptionHeaderMapper, ExceptionMapper
-from app.user.domain.exceptions import UserNotFoundById
-from app.user.infrastructure.auth.interfaces.exceptions import InvalidTokenError
+from src.api.exception_handler import ExceptionHeaderMapper, ExceptionMapper
+from src.user.domain.exceptions import UserNotFoundById
+from src.user.infrastructure.auth.interfaces.exceptions import InvalidTokenError
 
 
 def test_domain_exception_raises_http_error():

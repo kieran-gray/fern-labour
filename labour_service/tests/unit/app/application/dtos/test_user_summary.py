@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from app.user.application.dtos.user_summary import UserSummaryDTO
-from app.user.domain.entity import User
-from app.user.domain.value_objects.user_id import UserId
+from src.user.application.dtos.user_summary import UserSummaryDTO
+from src.user.domain.entity import User
+from src.user.domain.value_objects.user_id import UserId
 
 
 @pytest.fixture

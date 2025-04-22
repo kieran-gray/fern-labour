@@ -13,7 +13,7 @@ from src.notification.infrastructure.templates.email.subject_templates import (
 
 class Jinja2EmailTemplateEngine(EmailTemplateEngine):
     def __init__(self) -> None:
-        self.directory = Path(__file__).parent / "templates" / "build"
+        self.directory = Path(__file__).parent.parent / "templates" / "email" / "build"
 
     def generate_subject(
         self, template_name: NotificationTemplate, data: BaseNotificationData

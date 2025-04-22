@@ -3,9 +3,9 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from app.labour.application.dtos.contraction import ContractionDTO
-from app.labour.domain.contraction.entity import Contraction
-from app.labour.domain.labour.value_objects.labour_id import LabourId
+from src.labour.application.dtos.contraction import ContractionDTO
+from src.labour.domain.contraction.entity import Contraction
+from src.labour.domain.labour.value_objects.labour_id import LabourId
 
 
 @pytest.fixture

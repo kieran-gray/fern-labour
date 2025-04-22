@@ -1,15 +1,15 @@
 import pytest
 
-from app.labour.domain.labour.constants import INNER_CIRCLE_MAX_SUBSCRIBERS
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.labour.domain.labour.exceptions import (
+from src.labour.domain.labour.constants import INNER_CIRCLE_MAX_SUBSCRIBERS
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.labour.domain.labour.exceptions import (
     CannotSubscribeToOwnLabour,
     InsufficientLabourPaymentPlan,
     MaximumNumberOfSubscribersReached,
 )
-from app.labour.domain.labour.services.can_accept_subscriber import CanAcceptSubscriberService
-from app.user.domain.value_objects.user_id import UserId
+from src.labour.domain.labour.services.can_accept_subscriber import CanAcceptSubscriberService
+from src.user.domain.value_objects.user_id import UserId
 
 
 def test_cannot_subscribe_to_own_labour(sample_labour: Labour):

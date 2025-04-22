@@ -5,16 +5,16 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 import pytest_asyncio
 
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.payments.application.event_handlers.checkout_session_completed_event_handler import (
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.payments.application.event_handlers.checkout_session_completed_event_handler import (
     CheckoutSessionCompletedEventHandler,
 )
-from app.payments.infrastructure.gateways.stripe.product_mapping import Product
-from app.user.domain.value_objects.user_id import UserId
+from src.payments.infrastructure.gateways.stripe.product_mapping import Product
+from src.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
-MODULE = "app.payments.application.event_handlers.checkout_session_completed_event_handler"
+MODULE = "src.payments.application.event_handlers.checkout_session_completed_event_handler"
 
 
 @pytest_asyncio.fixture

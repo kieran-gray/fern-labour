@@ -5,36 +5,36 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.application.services.labour_query_service import LabourQueryService
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.labour.domain.labour.exceptions import (
+from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.security.token_generator import TokenGenerator
+from src.labour.application.services.labour_query_service import LabourQueryService
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.labour.domain.labour.exceptions import (
     CannotSubscribeToOwnLabour,
     InsufficientLabourPaymentPlan,
     InvalidLabourId,
     LabourNotFoundById,
     MaximumNumberOfSubscribersReached,
 )
-from app.subscription.application.services.subscription_management_service import (
+from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
-from app.subscription.application.services.subscription_query_service import (
+from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.subscription.application.services.subscription_service import SubscriptionService
-from app.subscription.domain.enums import SubscriptionStatus
-from app.subscription.domain.exceptions import (
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.domain.enums import SubscriptionStatus
+from src.subscription.domain.exceptions import (
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
     SubscriberNotSubscribed,
     SubscriptionTokenIncorrect,
 )
-from app.subscription.domain.repository import SubscriptionRepository
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.value_objects.user_id import UserId
+from src.subscription.domain.repository import SubscriptionRepository
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "subscriber_id"

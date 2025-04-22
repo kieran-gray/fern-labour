@@ -5,12 +5,12 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.common.domain.producer import EventProducer
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.contraction.exceptions import ContractionIdInvalid
-from app.labour.domain.labour.enums import LabourPaymentPlan, LabourPhase
-from app.labour.domain.labour.exceptions import (
+from src.core.domain.producer import EventProducer
+from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.contraction.exceptions import ContractionIdInvalid
+from src.labour.domain.labour.enums import LabourPaymentPlan, LabourPhase
+from src.labour.domain.labour.exceptions import (
     CannotDeleteActiveLabour,
     InsufficientLabourPaymentPlan,
     InvalidLabourId,
@@ -21,15 +21,15 @@ from app.labour.domain.labour.exceptions import (
     LabourUpdateNotFoundById,
     UnauthorizedLabourRequest,
 )
-from app.labour.domain.labour.repository import LabourRepository
-from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.exceptions import (
+from src.labour.domain.labour.repository import LabourRepository
+from src.labour.domain.labour.value_objects.labour_id import LabourId
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.exceptions import (
     UserDoesNotHaveActiveLabour,
     UserHasActiveLabour,
 )
-from app.user.domain.value_objects.user_id import UserId
+from src.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "bp_id"
 OTHER_USER = "test_id"

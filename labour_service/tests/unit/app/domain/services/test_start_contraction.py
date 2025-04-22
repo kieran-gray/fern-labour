@@ -1,10 +1,10 @@
 import pytest
 
-from app.labour.domain.contraction.services.start_contraction import StartContractionService
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.exceptions import LabourAlreadyCompleted, LabourHasActiveContraction
-from app.labour.domain.labour.services.begin_labour import BeginLabourService
-from app.labour.domain.labour.services.complete_labour import CompleteLabourService
+from src.labour.domain.contraction.services.start_contraction import StartContractionService
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.exceptions import LabourAlreadyCompleted, LabourHasActiveContraction
+from src.labour.domain.labour.services.begin_labour import BeginLabourService
+from src.labour.domain.labour.services.complete_labour import CompleteLabourService
 
 
 def test_can_start_contraction(sample_labour: Labour):

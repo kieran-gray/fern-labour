@@ -3,10 +3,10 @@ from datetime import UTC, datetime
 import pytest
 import pytest_asyncio
 
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.security.labour_authorization_service import LabourAuthorizationService
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.labour.exceptions import UnauthorizedLabourRequest
+from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.labour.exceptions import UnauthorizedLabourRequest
 
 BIRTHING_PERSON = "bp_id"
 

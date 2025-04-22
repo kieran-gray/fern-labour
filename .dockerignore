@@ -36,3 +36,6 @@
 **/custom/
 **/logs/
 **/media/
+
+# GCP
+.artifact-registry-token

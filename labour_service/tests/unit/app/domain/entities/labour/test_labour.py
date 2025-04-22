@@ -1,9 +1,9 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from app.labour.domain.labour.entity import Labour
-from app.labour.domain.labour.value_objects.labour_id import LabourId
-from app.user.domain.value_objects.user_id import UserId
+from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.value_objects.labour_id import LabourId
+from src.user.domain.value_objects.user_id import UserId
 
 
 def test_labour_init():

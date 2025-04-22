@@ -10,41 +10,41 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.api.exception_handler import (
+from src.admin.application.services.contact_service import ContactService
+from src.api.exception_handler import (
     ExceptionHandler,
     ExceptionHeaderMapper,
     ExceptionMapper,
     ExceptionMessageProvider,
 )
-from app.api.routes.router_root import root_router
-from app.common.application.services.contact_service import ContactService
-from app.common.infrastructure.security.interfaces.request_verification_service import (
+from src.api.routes.router_root import root_router
+from src.core.infrastructure.security.interfaces.request_verification_service import (
     RequestVerificationService,
 )
-from app.labour.application.dtos.labour import LabourDTO
-from app.labour.application.security.labour_authorization_service import LabourAuthorizationService
-from app.labour.application.services.labour_query_service import LabourQueryService
-from app.labour.application.services.labour_service import LabourService
-from app.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
-from app.setup.ioc.di_component_enum import ComponentEnum
-from app.subscription.application.dtos.subscription import SubscriptionDTO
-from app.subscription.application.security.subscription_authorization_service import (
+from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
+from src.labour.application.services.labour_query_service import LabourQueryService
+from src.labour.application.services.labour_service import LabourService
+from src.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
+from src.setup.ioc.di_component_enum import ComponentEnum
+from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
 )
-from app.subscription.application.services.subscription_management_service import (
+from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
-from app.subscription.application.services.subscription_query_service import (
+from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.subscription.application.services.subscription_service import SubscriptionService
-from app.user.application.dtos.user import UserDTO
-from app.user.application.dtos.user_summary import UserSummaryDTO
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.infrastructure.auth.interfaces.controller import AuthController
-from app.user.infrastructure.auth.interfaces.exceptions import AuthorizationError
-from app.user.infrastructure.auth.interfaces.models import AuthorizationCredentials
-from app.user.infrastructure.auth.interfaces.schemas import TokenResponse
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.user.application.dtos.user import UserDTO
+from src.user.application.dtos.user_summary import UserSummaryDTO
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.infrastructure.auth.interfaces.controller import AuthController
+from src.user.infrastructure.auth.interfaces.exceptions import AuthorizationError
+from src.user.infrastructure.auth.interfaces.models import AuthorizationCredentials
+from src.user.infrastructure.auth.interfaces.schemas import TokenResponse
 
 
 @pytest.fixture(scope="session")

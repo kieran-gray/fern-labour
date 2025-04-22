@@ -52,9 +52,19 @@ ensure-token:
 		echo "TOKEN variable appears to be set."; \
 	fi
 
-SRC_DIR=app
+SRC_DIR=src
 TEST_DIR=tests
 PYPROJECT_TOML=pyproject.toml
+
+add: ensure-token
+	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
+	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
+	uv add $(dep)
+
+remove: ensure-token
+	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
+	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
+	uv remove $(dep)
 
 deps: ensure-token
 	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
@@ -100,6 +110,9 @@ check: lint test
 
 plot-data:
 	PYTHONPATH="." python scripts/plot_dependencies.py
+
+tree:
+	PYTHONPATH="." python scripts/print_tree.py
 
 # clean
 

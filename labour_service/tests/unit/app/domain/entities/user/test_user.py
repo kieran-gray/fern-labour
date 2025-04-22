@@ -1,5 +1,5 @@
-from app.user.domain.entity import User
-from app.user.domain.value_objects.user_id import UserId
+from src.user.domain.entity import User
+from src.user.domain.value_objects.user_id import UserId
 
 
 def test_user_init():

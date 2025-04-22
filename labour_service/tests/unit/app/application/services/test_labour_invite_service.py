@@ -5,22 +5,22 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.labour.application.security.token_generator import TokenGenerator
-from app.labour.application.services.labour_invite_service import (
+from src.labour.application.security.token_generator import TokenGenerator
+from src.labour.application.services.labour_invite_service import (
     LabourInviteService,
 )
-from app.labour.application.services.labour_service import LabourService
-from app.labour.domain.labour.enums import LabourPaymentPlan
-from app.labour.domain.labour.exceptions import InvalidLabourId
-from app.subscription.application.services.subscription_query_service import (
+from src.labour.application.services.labour_service import LabourService
+from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.labour.domain.labour.exceptions import InvalidLabourId
+from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
-from app.subscription.application.services.subscription_service import SubscriptionService
-from app.subscription.domain.exceptions import SubscriberAlreadySubscribed
-from app.user.application.services.user_query_service import UserQueryService
-from app.user.domain.entity import User
-from app.user.domain.exceptions import UserNotFoundById
-from app.user.domain.value_objects.user_id import UserId
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.domain.exceptions import SubscriberAlreadySubscribed
+from src.user.application.services.user_query_service import UserQueryService
+from src.user.domain.entity import User
+from src.user.domain.exceptions import UserNotFoundById
+from src.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person"
 SUBSCRIBER = "test_subscriber"

@@ -89,7 +89,7 @@ services:
     restart: always
     env_file:
       - ./labour_service/.env
-    command: [ "python", "-m", "app.run_consumer" ]
+    command: [ "python", "-m", "src.run_consumer" ]
     networks:
       - default
     environment:
