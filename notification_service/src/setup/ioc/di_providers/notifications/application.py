@@ -25,6 +25,12 @@ from src.notification.infrastructure.gateways.smtp_email_gateway import (
 from src.notification.infrastructure.gateways.twilio_sms_gateway import (
     TwilioSMSNotificationGateway,
 )
+from src.notification.infrastructure.security.request_verification_service import (
+    RequestVerificationService,
+)
+from src.notification.infrastructure.twilio.twilio_request_verification_service import (
+    TwilioRequestVerificationService,
+)
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import EmailSettings, Settings, TwilioSettings
 
@@ -77,6 +83,12 @@ class NotificationsApplicationProvider(Provider):
             )
         else:
             return LogNotificationGateway()
+
+    @provide(scope=Scope.APP)
+    def provide_request_verification_service(
+        self, settings: TwilioSettings
+    ) -> RequestVerificationService:
+        return TwilioRequestVerificationService(auth_token=settings.auth_token or "")
 
     @provide
     def get_notification_generation_service(

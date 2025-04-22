@@ -11,6 +11,7 @@ from pydantic_core import ErrorDetails
 
 from src.core.application.exceptions import ApplicationError
 from src.core.domain.exceptions import DomainError
+from src.notification.application.exceptions import UnauthorizedWebhookRequest
 from src.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
@@ -53,6 +54,7 @@ class ExceptionMapper:
             NotificationNotFoundById: status.HTTP_404_NOT_FOUND,
             NotificationNotFoundByExternalId: status.HTTP_404_NOT_FOUND,
             UserNotFoundById: status.HTTP_404_NOT_FOUND,
+            UnauthorizedWebhookRequest: status.HTTP_403_FORBIDDEN,
         }
 
     def get_status_code(self, exc: Exception) -> int:
