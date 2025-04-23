@@ -1,7 +1,4 @@
-__all__ = (
-    "alembic_postgresql_enum",
-    "initialize_mapping",
-)
+__all__ = ("alembic_postgresql_enum",)
 import asyncio
 import os
 from logging.config import fileConfig
@@ -12,7 +9,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from src.core.infrastructure.persistence import initialize_mapping
+from src.core.infrastructure.persistence.initialize_mapping import map_all
 from src.core.infrastructure.persistence.orm_registry import mapper_registry
 
 # this is the Alembic Config object, which provides
@@ -28,6 +25,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
+map_all()
 target_metadata = mapper_registry.metadata
 
 # other values from the config, defined by the needs of env.py,

@@ -1,3 +1,7 @@
-__all__ = "notification"
-# When adding new mappings, ensure you add to top of file ^
-from src.notification.infrastructure.persistence.mappings import notification  # noqa: F401
+from src.notification.infrastructure.persistence.mappings.notification import (
+    map_notifications_table,
+)
+
+
+def map_all() -> None:
+    map_notifications_table()
