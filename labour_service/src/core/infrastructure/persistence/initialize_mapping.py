@@ -1,5 +1,15 @@
-__all__ = ("labour", "subscription")
-# When adding new mappings, ensure you add to top of file ^
+from src.labour.infrastructure.persistence.mappings.labour import (
+    map_contractions_table,
+    map_labour_updates_table,
+    map_labours_table,
+)
+from src.subscription.infrastructure.persistence.mappings.subscription import (
+    map_subscriptions_table,
+)
 
-from src.labour.infrastructure.persistence.mappings import labour
-from src.subscription.infrastructure.persistence.mappings import subscription
+
+def map_all() -> None:
+    map_labour_updates_table()
+    map_contractions_table()
+    map_labours_table()
+    map_subscriptions_table()

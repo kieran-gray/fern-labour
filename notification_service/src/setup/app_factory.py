@@ -1,4 +1,4 @@
-__all__ = ("initialize_mapping", "create_app_with_container")
+__all__ = "create_app_with_container"
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -17,13 +17,14 @@ from src.api.exception_handler import (
     ExceptionMessageProvider,
 )
 from src.api.routes.router_root import root_router
-from src.core.infrastructure.persistence import initialize_mapping
+from src.core.infrastructure.persistence.initialize_mapping import map_all
 from src.setup.ioc.ioc_registry import get_providers
 from src.setup.settings import Settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    map_all()
     yield None
     await app.state.dishka_container.close()  # noqa; app.state is the place where dishka_container lives
 
