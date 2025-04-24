@@ -13,7 +13,7 @@ class Notification(AggregateRoot[NotificationId]):
     status: NotificationStatus
     type: NotificationType
     destination: str
-    template: str
+    template: NotificationTemplate
     data: dict[str, Any]
     metadata: dict[str, Any] | None = None
     external_id: str | None = None
