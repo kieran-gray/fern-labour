@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 from twilio.request_validator import RequestValidator
@@ -7,12 +8,15 @@ from src.notification.infrastructure.security.request_verification_service impor
     RequestVerificationService,
 )
 
+log = logging.getLogger(__name__)
+
 
 class TwilioRequestVerificationService(RequestVerificationService):
     def __init__(self, auth_token: str):
         self._request_validator = RequestValidator(token=auth_token)
 
     def verify(self, uri: Any, params: Any, signature: Any) -> None:
+        log.debug(f"Twilio Request Verification for ({uri=}, {params=}, {signature=})")
         verified = self._request_validator.validate(uri=uri, params=params, signature=signature)
         if not verified:
             raise UnauthorizedWebhookRequest()
