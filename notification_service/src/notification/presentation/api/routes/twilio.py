@@ -38,8 +38,11 @@ async def twilio_webhook(
     MessageStatus: str | None = Form(None),
 ) -> None:
     form_data = await request.form()
+    # Traefik seems to redirect from https -> http, which causes the request verification
+    # to fail as twilio expects (and does use) the https url.
+    request_url = str(request.url).replace("http://", "https://")
     request_verification_service.verify(
-        uri=str(request.url),
+        uri=request_url,
         params=form_data,
         signature=request.headers.get("X-Twilio-Signature", ""),
     )
