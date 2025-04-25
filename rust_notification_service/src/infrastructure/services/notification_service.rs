@@ -1,13 +1,37 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::HashMap, str::FromStr, sync::Arc};
 
-use crate::{application::{dtos::NotificationDTO, exceptions::AppError}, domain::{
-    entity::Notification, enums::{NotificationStatus, NotificationTemplate, NotificationType}, exceptions::InvalidNotificationStatus
-}};
+use async_trait::async_trait;
+use sqlx::PgPool;
 
-pub struct NotificationService;
+use crate::{
+    application::{
+        dtos::NotificationDTO, exceptions::AppError,
+        services::notification_service::NotificationServiceTrait,
+    },
+    domain::{
+        entity::Notification,
+        enums::{NotificationStatus, NotificationTemplate, NotificationType},
+        exceptions::InvalidNotificationStatus,
+        repository::NotificationRepository as NotificationRepositoryInterface,
+    },
+    infrastructure::notification_repository::NotificationRepository,
+};
+
+pub struct NotificationService {
+    pub repo: Arc<dyn NotificationRepositoryInterface + Send + Sync>,
+}
 
 impl NotificationService {
-    pub async fn create_notification(
+    pub fn create(pool: PgPool) -> Arc<dyn NotificationServiceTrait> {
+        Arc::new(Self {
+            repo: Arc::new(NotificationRepository::create(pool)),
+        })
+    }
+}
+
+#[async_trait]
+impl NotificationServiceTrait for NotificationService {
+    async fn create_notification(
         &self,
         notification_type: String,
         destination: String,
@@ -18,23 +42,23 @@ impl NotificationService {
     ) -> Result<NotificationDTO, AppError> {
         let notification_type = NotificationType::from_str(&notification_type);
         if let Err(error) = notification_type {
-            return Err(AppError::ValidationError(error.to_string()))
+            return Err(AppError::ValidationError(error.to_string()));
         }
         let notification_type = notification_type.unwrap();
-        
+
         let notification_status: Result<Option<NotificationStatus>, InvalidNotificationStatus> =
             Ok(None);
         if status.is_some() {
             let notification_status = NotificationStatus::from_str(&status.unwrap());
             if let Err(error) = notification_status {
-                return Err(AppError::ValidationError(error.to_string()))
+                return Err(AppError::ValidationError(error.to_string()));
             }
         }
         let notification_status = notification_status.unwrap();
 
         let notification_template = NotificationTemplate::from_str(&template);
         if let Err(error) = notification_template {
-            return Err(AppError::ValidationError(error.to_string()))
+            return Err(AppError::ValidationError(error.to_string()));
         }
         let notification_template = notification_template.unwrap();
 
@@ -47,7 +71,13 @@ impl NotificationService {
             metadata,
         );
 
-        // save in repo
+        match self.repo.save(&notification).await {
+            Err(err) => {
+                tracing::error!("Error creating notification: {err}");
+                return Err(AppError::DatabaseError(err));
+            }
+            _ => (),
+        }
 
         Ok(NotificationDTO::from(notification))
     }

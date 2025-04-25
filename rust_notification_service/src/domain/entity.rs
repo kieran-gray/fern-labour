@@ -37,4 +37,12 @@ impl Notification {
             external_id: None,
         };
     }
+
+    pub fn set_external_id(&mut self, external_id: String) {
+        self.external_id = Some(external_id);
+    }
+
+    pub fn set_status(&mut self, status: NotificationStatus) {
+        self.status = status;
+    }
 }

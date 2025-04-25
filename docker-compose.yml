@@ -255,6 +255,30 @@ services:
       - "1080:1080"
       - "1025:1025"
 
+  rust-notification-service:
+    image: 'rust-${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
+    build:
+      context: ./rust_notification_service
+      target: production
+    restart: "no"
+    networks:
+      - traefik-public
+      - default
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    env_file:
+      - ./rust_notification_service/.env
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8002/api/v1/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+  
+
 volumes:
   app-db-data:
 

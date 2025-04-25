@@ -14,6 +14,10 @@ pub enum AppError {
     InternalError,
     #[error("Validation error: {0}")]
     ValidationError(String),
+    #[error("Invalid Subscription: {0}")]
+    InvalidSubscription(String),
+    #[error("Invalid Event Body: {0}")]
+    InvalidEventBody(String),
 
     /// Used for authentication-related errors
     #[error("Wrong credentials")]

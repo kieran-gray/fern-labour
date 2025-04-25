@@ -10,11 +10,7 @@ use std::{env, str::FromStr};
 pub struct Config {
     pub environment: String,
 
-    pub database_username: String,
-    pub database_password: String,
-    pub database_host: String,
-    pub database_port: String,
-    pub database_path: String,
+    pub database_url: String,
 
     pub database_max_connections: u32,
     pub database_min_connections: u32,
@@ -52,11 +48,7 @@ impl Config {
         Ok(Self {
             environment: env::var("ENVIRONMENT")?,
 
-            database_username: env::var("POSTGRES_USER")?,
-            database_password: env::var("POSTGRES_PASSWORD")?,
-            database_host: env::var("POSTGRES_HOST")?,
-            database_port: env::var("POSTGRES_PORT")?,
-            database_path: env::var("POSTGRES_DB")?,
+            database_url: env::var("DATABASE_URL")?,
 
             database_max_connections: env::var("DATABASE_MAX_CONNECTIONS")
                 .map(|s| s.parse::<u32>().unwrap_or(5))
@@ -109,22 +101,11 @@ impl Config {
                 .unwrap_or(3),
         })
     }
-
-    pub fn postgres_dsn(&self) -> String {
-        return format!(
-            "postgres://{username}:{password}@{host}:{port}/{path}",
-            username = self.database_username,
-            password = self.database_password,
-            host = self.database_host,
-            port = self.database_port,
-            path = self.database_path,
-        );
-    }
 }
 
 pub async fn setup_database(config: &Config) -> Result<PgPool, sqlx::Error> {
     // Create connection options
-    let connect_options = PgConnectOptions::from_str(&config.postgres_dsn())
+    let connect_options = PgConnectOptions::from_str(&config.database_url)
         .map_err(|e| {
             tracing::error!("Failed to parse database URL: {}", e);
             e
@@ -136,6 +117,6 @@ pub async fn setup_database(config: &Config) -> Result<PgPool, sqlx::Error> {
         .min_connections(config.database_min_connections)
         .connect_with(connect_options)
         .await?;
-    
+
     Ok(pool)
 }

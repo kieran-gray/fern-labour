@@ -1,8 +1,4 @@
-use axum::{Json, response::IntoResponse};
-
+pub mod exception_handler;
 pub mod router;
-
-async fn health_check_handler() -> impl IntoResponse {
-    let response = serde_json::json!({"status": "ok"});
-    Json(response)
-}
+pub mod routes;
+pub mod schemas;
