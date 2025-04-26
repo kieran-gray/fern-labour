@@ -1,9 +1,9 @@
 from src.core.domain.exceptions import DomainError, DomainValidationError
 
 
-class InvalidNotificationType(DomainValidationError):
-    def __init__(self, notification_type: str | None) -> None:
-        super().__init__(f"Notification type '{notification_type}' is not valid.")
+class InvalidNotificationChannel(DomainValidationError):
+    def __init__(self, notification_channel: str | None) -> None:
+        super().__init__(f"Notification channel '{notification_channel}' is not valid.")
 
 
 class InvalidNotificationStatus(DomainValidationError):

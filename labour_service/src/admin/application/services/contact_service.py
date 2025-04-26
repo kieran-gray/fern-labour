@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 
 from src.core.domain.producer import EventProducer
-from src.notification.enums import NotificationTemplate, NotificationType
+from src.notification.enums import NotificationChannel, NotificationTemplate
 from src.notification.events import NotificationRequested
 from src.notification.notification_data import ContactUsData
 
@@ -42,7 +42,7 @@ class ContactService:
         notification_metadata = ContactNotificationMetadata(from_user_id=user_id or "null")
         notification_event = NotificationRequested.create(
             data={
-                "type": NotificationType.EMAIL,
+                "channel": NotificationChannel.EMAIL,
                 "destination": self._contact_email,
                 "template": self._template.value,
                 "data": notification_data.to_dict(),

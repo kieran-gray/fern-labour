@@ -3,7 +3,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from src.notification.application.dtos.notification import NotificationDTO
-from src.notification.domain.enums import NotificationStatus, NotificationType
+from src.notification.domain.enums import NotificationChannel, NotificationStatus
 from src.notification.infrastructure.gateways.smtp_email_gateway import (
     SMTPEmailNotificationGateway,
 )
@@ -49,7 +49,7 @@ async def test_send_email_notification(mock_send):
     notification = NotificationDTO(
         id=str(uuid4()),
         status=NotificationStatus.CREATED.value,
-        type=NotificationType.EMAIL.value,
+        type=NotificationChannel.EMAIL.value,
         template="template.html",
         data={"test": "test"},
         destination="test@example.com",
@@ -85,7 +85,7 @@ async def test_send_email_notification_error(mock_send, caplog):  # noqa
     notification = NotificationDTO(
         id=str(uuid4()),
         status=NotificationStatus.CREATED.value,
-        type=NotificationType.EMAIL.value,
+        type=NotificationChannel.EMAIL.value,
         template="template.html",
         data={"test": "test"},
         destination="test@example.com",

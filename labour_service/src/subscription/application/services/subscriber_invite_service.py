@@ -45,7 +45,7 @@ class SubscriberInviteService:
         notification_metadata = SubscriberInviteNotificationMetadata(from_user_id=subscriber_id)
         notification_event = NotificationRequested.create(
             data={
-                "type": ContactMethod.EMAIL.value,
+                "channel": ContactMethod.EMAIL.value,
                 "destination": invite_email,
                 "template": self._template.value,
                 "data": notification_data.to_dict(),

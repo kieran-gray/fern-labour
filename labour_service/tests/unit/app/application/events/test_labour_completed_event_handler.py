@@ -12,7 +12,7 @@ from src.labour.application.event_handlers.labour_completed_event_handler import
 )
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.labour.enums import LabourPaymentPlan
-from src.notification.enums import NotificationType
+from src.notification.enums import NotificationChannel
 from src.notification.events import NotificationRequested
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
@@ -43,7 +43,7 @@ def generate_domain_event(birthing_person_id: str, labour_id: str, notes: str = 
 def has_sent_email(event_handler: LabourCompletedEventHandler) -> bool:
     for call in event_handler._event_producer.publish.mock_calls:
         event: NotificationRequested = call.kwargs["event"]
-        if event.data["type"] == NotificationType.EMAIL.value:
+        if event.data["channel"] == NotificationChannel.EMAIL.value:
             return True
     return False
 
@@ -51,7 +51,7 @@ def has_sent_email(event_handler: LabourCompletedEventHandler) -> bool:
 def has_sent_sms(event_handler: LabourCompletedEventHandler) -> bool:
     for call in event_handler._event_producer.publish.mock_calls:
         event: NotificationRequested = call.kwargs["event"]
-        if event.data["type"] == NotificationType.SMS.value:
+        if event.data["channel"] == NotificationChannel.SMS.value:
             return True
     return False
 

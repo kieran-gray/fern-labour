@@ -14,7 +14,7 @@ from src.labour.application.event_handlers.labour_update_posted_event_handler im
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.labour.enums import LabourPaymentPlan
 from src.labour.domain.labour_update.enums import LabourUpdateType
-from src.notification.enums import NotificationType
+from src.notification.enums import NotificationChannel
 from src.notification.events import NotificationRequested
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
@@ -98,7 +98,7 @@ async def labour(labour_service: LabourService) -> LabourDTO:
 def has_sent_email(event_handler: LabourUpdatePostedEventHandler) -> bool:
     for call in event_handler._event_producer.publish.mock_calls:
         event: NotificationRequested = call.kwargs["event"]
-        if event.data["type"] == NotificationType.EMAIL.value:
+        if event.data["channel"] == NotificationChannel.EMAIL.value:
             return True
     return False
 
@@ -106,7 +106,7 @@ def has_sent_email(event_handler: LabourUpdatePostedEventHandler) -> bool:
 def has_sent_sms(event_handler: LabourUpdatePostedEventHandler) -> bool:
     for call in event_handler._event_producer.publish.mock_calls:
         event: NotificationRequested = call.kwargs["event"]
-        if event.data["type"] == NotificationType.SMS.value:
+        if event.data["channel"] == NotificationChannel.SMS.value:
             return True
     return False
 

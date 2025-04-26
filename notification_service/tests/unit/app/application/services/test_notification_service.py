@@ -15,12 +15,16 @@ from src.notification.application.services.notification_generation_service impor
     NotificationGenerationService,
 )
 from src.notification.application.services.notification_service import NotificationService
-from src.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
+from src.notification.domain.enums import (
+    NotificationChannel,
+    NotificationStatus,
+    NotificationTemplate,
+)
 from src.notification.domain.exceptions import (
+    InvalidNotificationChannel,
     InvalidNotificationId,
     InvalidNotificationStatus,
     InvalidNotificationTemplate,
-    InvalidNotificationType,
     NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
@@ -78,7 +82,7 @@ async def notification_service(
 
 async def test_can_create_notification(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=NotificationType.EMAIL.value,
+        channel=NotificationChannel.EMAIL.value,
         destination="test",
         template="labour_update",
         data={"test": "test"},
@@ -92,12 +96,12 @@ async def test_can_create_notification(notification_service: NotificationService
     assert stored_notification.status is NotificationStatus.CREATED
 
 
-async def test_cannot_create_notification_invalid_notification_type(
+async def test_cannot_create_notification_invalid_notification_channel(
     notification_service: NotificationService,
 ) -> None:
-    with pytest.raises(InvalidNotificationType):
+    with pytest.raises(InvalidNotificationChannel):
         await notification_service.create_notification(
-            type="fail",
+            channel="fail",
             destination="test",
             template="labour_update",
             data={"test": "test"},
@@ -109,7 +113,7 @@ async def test_cannot_create_notification_invalid_notification_status(
 ) -> None:
     with pytest.raises(InvalidNotificationStatus):
         await notification_service.create_notification(
-            type=NotificationType.SMS.value,
+            channel=NotificationChannel.SMS.value,
             destination="test",
             template="labour_update",
             data={"test": "test"},
@@ -122,7 +126,7 @@ async def test_cannot_create_notification_invalid_template(
 ) -> None:
     with pytest.raises(InvalidNotificationTemplate):
         await notification_service.create_notification(
-            type=NotificationType.SMS.value,
+            channel=NotificationChannel.SMS.value,
             destination="test",
             template="invalid",
             data={"test": "test"},
@@ -131,7 +135,7 @@ async def test_cannot_create_notification_invalid_template(
 
 async def test_can_update_notification(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=NotificationType.EMAIL.value,
+        channel=NotificationChannel.EMAIL.value,
         destination="test",
         template="labour_update",
         data={"test": "test"},
@@ -146,7 +150,7 @@ async def test_can_update_notification_with_external_id(
     notification_service: NotificationService,
 ) -> None:
     notification = await notification_service.create_notification(
-        type=NotificationType.EMAIL.value,
+        channel=NotificationChannel.EMAIL.value,
         destination="test",
         template="labour_update",
         data={"test": "test"},
@@ -185,7 +189,7 @@ async def test_cannot_update_notification_notification_not_found(
 
 async def test_can_send_email(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=NotificationType.EMAIL.value,
+        channel=NotificationChannel.EMAIL.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(
@@ -199,7 +203,7 @@ async def test_can_send_email(notification_service: NotificationService) -> None
     )
     assert stored_notification
     assert stored_notification.status is NotificationStatus.SENT
-    assert stored_notification.type is NotificationType.EMAIL
+    assert stored_notification.channel is NotificationChannel.EMAIL
 
     assert notification_service._sms_notification_gateway.sent_notifications == []
     sent_email = notification_service._email_notification_gateway.sent_notifications[0]
@@ -218,7 +222,7 @@ async def test_can_send_email(notification_service: NotificationService) -> None
 
 async def test_can_send_sms(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=NotificationType.SMS.value,
+        channel=NotificationChannel.SMS.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(
@@ -232,7 +236,7 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
     )
     assert stored_notification
     assert stored_notification.status is NotificationStatus.SENT
-    assert stored_notification.type is NotificationType.SMS
+    assert stored_notification.channel is NotificationChannel.SMS
 
     sent_sms = notification_service._sms_notification_gateway.sent_notifications[0]
     assert notification_service._email_notification_gateway.sent_notifications == []
@@ -271,7 +275,7 @@ async def test_invalid_type_raises_not_implemented(
 
 async def test_status_callback_updates_status(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
-        type=NotificationType.EMAIL.value,
+        channel=NotificationChannel.EMAIL.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(
@@ -296,7 +300,7 @@ async def test_status_callback_error_invalid_status(
     notification_service: NotificationService,
 ) -> None:
     notification = await notification_service.create_notification(
-        type=NotificationType.EMAIL.value,
+        channel=NotificationChannel.EMAIL.value,
         destination="test",
         template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
         data=ContactUsData(

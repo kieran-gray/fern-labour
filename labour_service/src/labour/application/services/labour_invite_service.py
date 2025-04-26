@@ -74,7 +74,7 @@ class LabourInviteService:
         )
         notification_event = NotificationRequested.create(
             data={
-                "type": ContactMethod.EMAIL,
+                "channel": ContactMethod.EMAIL,
                 "destination": invite_email,
                 "template": self._template.value,
                 "data": notification_data.to_dict(),

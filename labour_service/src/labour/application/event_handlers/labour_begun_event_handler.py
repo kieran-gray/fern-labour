@@ -87,7 +87,7 @@ class LabourBegunEventHandler(EventHandler):
                 )
                 notification_event = NotificationRequested.create(
                     data={
-                        "type": method,
+                        "channel": method,
                         "destination": destination,
                         "template": self._template.value,
                         "data": notification_data.to_dict(),

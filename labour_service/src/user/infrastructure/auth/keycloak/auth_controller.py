@@ -1,5 +1,4 @@
 from src.user.application.dtos.user import UserDTO
-from src.user.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
 from src.user.infrastructure.auth.interfaces.models import AuthorizationCredentials
 from src.user.infrastructure.auth.interfaces.schemas import TokenResponse
 from src.user.infrastructure.auth.interfaces.service import AuthService
@@ -29,9 +28,6 @@ class KeycloakAuthController:
         """
         access_token = self._auth_service.authenticate_user(username, password)
 
-        if not access_token:
-            raise AuthorizationError("Invalid username or password")
-
         return TokenResponse(access_token=access_token)
 
     def get_authenticated_user(self, credentials: AuthorizationCredentials) -> UserDTO:
@@ -50,9 +46,4 @@ class KeycloakAuthController:
         """
         token = credentials.credentials
 
-        user_info = self._auth_service.verify_token(token)
-
-        if not user_info:
-            raise InvalidTokenError("Invalid token")
-
-        return user_info
+        return self._auth_service.verify_token(token)

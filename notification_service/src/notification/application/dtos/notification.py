@@ -44,7 +44,7 @@ class NotificationDTO:
         return cls(
             id=str(notification.id_.value),
             status=notification.status,
-            type=notification.type,
+            type=notification.channel,
             destination=notification.destination,
             template=notification.template,
             data=notification.data,

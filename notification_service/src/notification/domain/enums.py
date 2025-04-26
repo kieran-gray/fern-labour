@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class NotificationType(StrEnum):
+class NotificationChannel(StrEnum):
     EMAIL = "email"
     SMS = "sms"
 

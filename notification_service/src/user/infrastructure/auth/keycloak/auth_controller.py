@@ -1,5 +1,4 @@
 from src.user.application.dtos.user import UserDTO
-from src.user.infrastructure.auth.interfaces.exceptions import AuthorizationError, InvalidTokenError
 from src.user.infrastructure.auth.interfaces.models import AuthorizationCredentials
 from src.user.infrastructure.auth.interfaces.schemas import TokenResponse
 from src.user.infrastructure.auth.interfaces.service import AuthService
@@ -21,16 +20,10 @@ class KeycloakAuthController:
             username (str): The username of the user attempting to log in.
             password (str): The password of the user.
 
-        Raises:
-            HTTPException: If the authentication fails (wrong credentials).
-
         Returns:
             TokenResponse: Contains the access token upon successful authentication.
         """
         access_token = self._auth_service.authenticate_user(username, password)
-
-        if not access_token:
-            raise AuthorizationError("Invalid username or password")
 
         return TokenResponse(access_token=access_token)
 
@@ -42,17 +35,9 @@ class KeycloakAuthController:
             credentials (AuthorizationCredentials):
                 Bearer token provided via HTTP Authorization header.
 
-        Raises:
-            HTTPException: If the token is invalid or not provided.
-
         Returns:
             User: Information about the authenticated user.
         """
         token = credentials.credentials
 
-        user_info = self._auth_service.verify_token(token)
-
-        if not user_info:
-            raise InvalidTokenError("Invalid token")
-
-        return user_info
+        return self._auth_service.verify_token(token)

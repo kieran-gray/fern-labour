@@ -16,7 +16,7 @@ def map_notifications_table() -> None:
         properties={
             "id_": composite(NotificationId, notifications_table.c.id),
             "status": notifications_table.c.status,
-            "type": notifications_table.c.type,
+            "channel": notifications_table.c.channel,
             "destination": notifications_table.c.destination,
             "template": notifications_table.c.template,
             "data": notifications_table.c.data,

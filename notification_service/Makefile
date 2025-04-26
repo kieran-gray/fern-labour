@@ -56,6 +56,10 @@ SRC_DIR=src
 TEST_DIR=tests
 PYPROJECT_TOML=pyproject.toml
 
+generate-revision:
+	POSTGRES_DB=notification_service POSTGRES_HOST=0.0.0.0 PYTHONPATH=. \
+	uv run alembic revision --autogenerate
+
 deps: ensure-token
 	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
 	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
