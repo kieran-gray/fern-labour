@@ -1,6 +1,6 @@
 use crate::domain::{
     entity::Notification,
-    enums::{NotificationStatus, NotificationTemplate, NotificationType},
+    enums::{NotificationChannel, NotificationStatus, NotificationTemplate},
 };
 use sqlx::{FromRow, types::Json};
 use std::{collections::HashMap, str::FromStr};
@@ -12,7 +12,7 @@ use super::exceptions::InfrastructureError;
 pub struct NotificationModel {
     id: Uuid,
     status: String,
-    notification_type: String,
+    channel: String,
     destination: String,
     template: String,
     data: Json<HashMap<String, String>>,
@@ -24,7 +24,7 @@ impl NotificationModel {
     pub fn create(
         id: Uuid,
         status: String,
-        notification_type: String,
+        channel: String,
         destination: String,
         template: String,
         data: Json<HashMap<String, String>>,
@@ -34,7 +34,7 @@ impl NotificationModel {
         return Self {
             id,
             status,
-            notification_type,
+            channel,
             destination,
             template,
             data,
@@ -56,10 +56,10 @@ impl TryFrom<NotificationModel> for Notification {
                     row.status, e
                 ))
             })?,
-            notification_type: NotificationType::from_str(&row.notification_type).map_err(|e| {
+            channel: NotificationChannel::from_str(&row.channel).map_err(|e| {
                 InfrastructureError::DatabaseRowToDomainConversionError(format!(
                     "Failed to parse type '{}': {}",
-                    row.notification_type, e
+                    row.channel, e
                 ))
             })?,
             destination: row.destination,

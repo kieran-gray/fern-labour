@@ -18,6 +18,8 @@ pub enum AppError {
     InvalidSubscription(String),
     #[error("Invalid Event Body: {0}")]
     InvalidEventBody(String),
+    #[error("Invalid Notification ID: {0}")]
+    InvalidNotificationId(String),
 
     /// Used for authentication-related errors
     #[error("Wrong credentials")]

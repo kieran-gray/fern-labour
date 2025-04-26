@@ -1,6 +1,12 @@
 use sqlx::PgPool;
 
-use crate::infrastructure::services::notification_service::NotificationService;
+use crate::infrastructure::services::notification_generation_service::NotificationGenerationService;
+use crate::infrastructure::template_engines::email_template_engine::EmailTemplateEngine;
+use crate::infrastructure::template_engines::sms_template_engine::SMSTemplateEngine;
+use crate::infrastructure::{
+    notification_repository::NotificationRepository,
+    services::notification_service::NotificationService,
+};
 use crate::setup::app_state::AppState;
 use crate::setup::config::Config;
 
@@ -8,7 +14,19 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 /// Constructs and wires all application services and returns a configured AppState.
 pub fn build_app_state(pool: PgPool, config: Config) -> AppState {
-    let notification_service = NotificationService::create(pool.clone());
+    let notification_repository = NotificationRepository::create(pool.clone());
+    let email_template_engine = EmailTemplateEngine::create();
+    let sms_template_engine = SMSTemplateEngine::create();
+
+    let notification_generation_service = NotificationGenerationService::create(
+        notification_repository.clone(),
+        email_template_engine,
+        sms_template_engine,
+    );
+    let notification_service = NotificationService::create(
+        notification_repository.clone(),
+        notification_generation_service.clone(),
+    );
 
     AppState::new(config, notification_service)
 }

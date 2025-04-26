@@ -1,46 +1,56 @@
-use std::collections::HashMap;
-use base64::prelude::*;
 use axum::{Json, Router, extract::State, response::IntoResponse, routing::post};
+use base64::prelude::*;
 
 use crate::{
-    api::schemas::requests::PubSubEvent, application::exceptions::AppError,
+    api::schemas::requests::PubSubEvent,
+    application::{dtos::event::Event, exceptions::AppError},
     setup::app_state::AppState,
 };
+
+pub fn extract_subscription_key(subscription_path: &str) -> Result<&str, AppError> {
+    match subscription_path.split('/').collect::<Vec<&str>>().last() {
+        Some(key) => return Ok(*key),
+        _ => return Err(AppError::InvalidSubscription(subscription_path.to_string())),
+    }
+}
+
+pub fn serialize_pub_sub_event(payload: PubSubEvent) -> Result<Event, AppError> {
+    let event_data = match BASE64_STANDARD.decode(payload.message.data) {
+        Ok(event_data_bytes) => match String::from_utf8(event_data_bytes) {
+            Ok(event_data) => event_data,
+            Err(_) => return Err(AppError::InvalidEventBody(payload.message.message_id)),
+        },
+        Err(_) => return Err(AppError::InvalidEventBody(payload.message.message_id)),
+    };
+
+    match serde_json::from_str(&event_data) {
+        Ok(data) => return Ok(data),
+        Err(err) => return Err(AppError::InvalidEventBody(err.to_string())),
+    };
+}
 
 pub async fn event_handler(
     State(state): State<AppState>,
     Json(payload): Json<PubSubEvent>,
 ) -> Result<impl IntoResponse, AppError> {
-    let subscription: &str = payload
-        .subscription
-        .split('/')
-        .collect::<Vec<&str>>()
-        .last()
-        .expect("Invalid subscription key");
-    if subscription != "notification.requested.sub" {
-        return Err(AppError::InvalidSubscription(String::from(subscription)));
+    let subscription_key = extract_subscription_key(&payload.subscription)?;
+    if subscription_key != "notification.requested.sub" {
+        return Err(AppError::InvalidSubscription(String::from(
+            subscription_key,
+        )));
     }
 
-    let event_data = match BASE64_STANDARD.decode(payload.message.data) {
-        Ok(event_data_bytes) => {
-            match String::from_utf8(event_data_bytes) {
-                Ok(event_data) => event_data,
-                Err(_) => return Err(AppError::InvalidEventBody(payload.message.message_id))
-            }
-        },
-        Err(_) => return Err(AppError::InvalidEventBody(payload.message.message_id))
-    };
+    let event_data = serialize_pub_sub_event(payload)?;
+    let event_body = event_data.data;
 
-    let mut data = HashMap::new();
-    data.insert(String::from("update"), String::from("Baby on the way"));
     let notification = state
         .notification_service
         .create_notification(
-            String::from("sms"),
-            String::from("07123123123"),
-            String::from("labour_update"),
-            data,
-            None,
+            event_body.channel,
+            event_body.destination,
+            event_body.template,
+            event_body.data,
+            event_body.metadata,
             None,
         )
         .await?;

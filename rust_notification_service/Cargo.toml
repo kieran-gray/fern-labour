@@ -31,3 +31,4 @@ uuid = { version = "1.16.0" , features = ["v7", "serde"] }
 strum = { version = "0.27.1" }
 strum_macros = { version = "0.27" }
 base64 = { version = "0.22.1" }
+minijinja = "=2.9.0"

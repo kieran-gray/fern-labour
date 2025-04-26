@@ -11,7 +11,7 @@ pub trait NotificationRepository: Send + Sync {
 
     async fn get_by_external_id(
         &self,
-        external_id: String,
+        external_id: &str,
     ) -> Result<Option<Notification>, sqlx::Error>;
 
     async fn save(&self, notification: &Notification) -> Result<bool, sqlx::Error>;

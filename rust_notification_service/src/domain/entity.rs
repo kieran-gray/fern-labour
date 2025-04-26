@@ -3,13 +3,13 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::enums::{NotificationStatus, NotificationTemplate, NotificationType};
+use super::enums::{NotificationChannel, NotificationStatus, NotificationTemplate};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Notification {
     pub id: Uuid,
     pub status: NotificationStatus,
-    pub notification_type: NotificationType,
+    pub channel: NotificationChannel,
     pub destination: String,
     pub template: NotificationTemplate,
     pub data: HashMap<String, String>,
@@ -19,7 +19,7 @@ pub struct Notification {
 
 impl Notification {
     pub fn create(
-        notification_type: NotificationType,
+        channel: NotificationChannel,
         destination: String,
         template: NotificationTemplate,
         data: HashMap<String, String>,
@@ -29,7 +29,7 @@ impl Notification {
         return Self {
             id: Uuid::now_v7(),
             status: status.unwrap_or(NotificationStatus::CREATED),
-            notification_type,
+            channel,
             destination,
             template,
             data,

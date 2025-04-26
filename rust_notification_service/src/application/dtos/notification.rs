@@ -1,14 +1,13 @@
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
-
 use crate::domain::entity::Notification;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NotificationDTO {
     pub id: String,
     pub status: String,
-    pub notification_type: String,
+    pub channel: String,
     pub destination: String,
     pub template: String,
     pub data: HashMap<String, String>,
@@ -21,7 +20,7 @@ impl From<Notification> for NotificationDTO {
         Self {
             id: notification.id.to_string(),
             status: notification.status.to_string(),
-            notification_type: notification.notification_type.to_string(),
+            channel: notification.channel.to_string(),
             destination: notification.destination,
             template: notification.template.to_string(),
             data: notification.data,

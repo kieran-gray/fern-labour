@@ -24,6 +24,7 @@ impl IntoResponse for AppError {
             AppError::InvalidToken => StatusCode::UNAUTHORIZED,
             AppError::TokenCreation => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::UserNotFound => StatusCode::NOT_FOUND,
+            AppError::InvalidNotificationId(_) => StatusCode::BAD_REQUEST,
         };
         let body = axum::Json(ApiResponse::<()> {
             status: status.as_u16(),

@@ -4,18 +4,18 @@ use strum_macros::EnumString;
 
 #[derive(Debug, Clone, Deserialize, Serialize, EnumString, Type, PartialEq)]
 #[sqlx(type_name = "notification_type", rename_all = "lowercase")]
-pub enum NotificationType {
+pub enum NotificationChannel {
     #[strum(serialize = "EMAIL", serialize = "email")]
     EMAIL,
     #[strum(serialize = "SMS", serialize = "sms")]
     SMS,
 }
 
-impl std::fmt::Display for NotificationType {
+impl std::fmt::Display for NotificationChannel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            NotificationType::EMAIL => write!(f, "EMAIL"),
-            NotificationType::SMS => write!(f, "SMS"),
+            NotificationChannel::EMAIL => write!(f, "EMAIL"),
+            NotificationChannel::SMS => write!(f, "SMS"),
         }
     }
 }

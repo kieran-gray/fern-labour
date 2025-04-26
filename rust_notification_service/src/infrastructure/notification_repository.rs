@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use crate::domain::{
     entity::Notification, repository::NotificationRepository as NotificationRepositoryInterface,
@@ -14,8 +15,8 @@ pub struct NotificationRepository {
 }
 
 impl NotificationRepository {
-    pub fn create(pool: Pool<Postgres>) -> Self {
-        Self { pool }
+    pub fn create(pool: Pool<Postgres>) -> Arc<dyn NotificationRepositoryInterface> {
+        Arc::new(Self { pool })
     }
 
     fn serialize_data(data: &HashMap<String, String>) -> Result<serde_json::Value, sqlx::Error> {
@@ -39,7 +40,7 @@ impl NotificationRepositoryInterface for NotificationRepository {
             r#"SELECT 
                 id,
                 status,
-                notification_type,
+                channel,
                 destination,
                 template,
                 data as "data: serde_json::Value",
@@ -68,7 +69,7 @@ impl NotificationRepositoryInterface for NotificationRepository {
                 let model = NotificationModel::create(
                     row.id,
                     row.status,
-                    row.notification_type,
+                    row.channel,
                     row.destination,
                     row.template,
                     sqlx::types::Json(data),
@@ -87,13 +88,13 @@ impl NotificationRepositoryInterface for NotificationRepository {
 
     async fn get_by_external_id(
         &self,
-        external_id: String,
+        external_id: &str,
     ) -> Result<Option<Notification>, sqlx::Error> {
         let row = sqlx::query!(
             r#"SELECT
                 id,
                 status,
-                notification_type,
+                channel,
                 destination,
                 template,
                 data,
@@ -122,7 +123,7 @@ impl NotificationRepositoryInterface for NotificationRepository {
                 let model = NotificationModel::create(
                     row.id,
                     row.status,
-                    row.notification_type,
+                    row.channel,
                     row.destination,
                     row.template,
                     sqlx::types::Json(data),
@@ -146,13 +147,13 @@ impl NotificationRepositoryInterface for NotificationRepository {
         let res = sqlx::query!(
             r#"
             INSERT INTO notifications (
-                id, status, notification_type, destination, template, data, metadata, external_id
+                id, status, channel, destination, template, data, metadata, external_id
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8
             )
             ON CONFLICT (id) DO UPDATE SET
                 status = EXCLUDED.status,
-                notification_type = EXCLUDED.notification_type,
+                channel = EXCLUDED.channel,
                 destination = EXCLUDED.destination,
                 template = EXCLUDED.template,
                 data = EXCLUDED.data,
@@ -161,7 +162,7 @@ impl NotificationRepositoryInterface for NotificationRepository {
             "#,
             notification.id,
             notification.status.to_string(),
-            notification.notification_type.to_string(),
+            notification.channel.to_string(),
             notification.destination,
             notification.template.to_string(),
             data_json,
