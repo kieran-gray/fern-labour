@@ -10,7 +10,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from src.admin.application.services.contact_service import ContactService
+from src.admin.application.contact_service import ContactService
 from src.api.exception_handler import (
     ExceptionHandler,
     ExceptionHeaderMapper,
