@@ -54,6 +54,8 @@ class NotificationService:
             return self._email_notification_gateway
         elif notification_channel is NotificationChannel.SMS:
             return self._sms_notification_gateway
+        elif notification_channel is NotificationChannel.WHATSAPP:
+            return self._sms_notification_gateway
         else:
             raise NotImplementedError(
                 f"Notification gateway for type {notification_channel.value} not implemented"

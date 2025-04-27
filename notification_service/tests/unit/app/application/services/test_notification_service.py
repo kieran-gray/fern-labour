@@ -253,6 +253,40 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
     assert sent_sms.message != notification.message
 
 
+async def test_can_send_whatsapp(notification_service: NotificationService) -> None:
+    notification = await notification_service.create_notification(
+        channel=NotificationChannel.WHATSAPP.value,
+        destination="whatsapp:+44123123123",
+        template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
+        data=ContactUsData(
+            email="test@email.com", name="test", message="test", user_id="abc123"
+        ).to_dict(),
+        metadata={"test": "abc", "more_data": "test123"},
+    )
+    await notification_service.send(notification_id=notification.id)
+    stored_notification = await notification_service._notification_repository.get_by_id(
+        notification_id=NotificationId(UUID(notification.id))
+    )
+    assert stored_notification
+    assert stored_notification.status is NotificationStatus.SENT
+    assert stored_notification.channel is NotificationChannel.WHATSAPP
+
+    sent_sms = notification_service._sms_notification_gateway.sent_notifications[0]
+    assert notification_service._email_notification_gateway.sent_notifications == []
+
+    assert sent_sms.destination == notification.destination
+    assert sent_sms.destination.startswith("whatsapp")
+    assert sent_sms.data == notification.data
+
+    assert sent_sms.id == notification.id
+    assert sent_sms.channel == notification.channel
+    assert sent_sms.template == notification.template
+    assert sent_sms.metadata == notification.metadata
+
+    assert sent_sms.external_id != stored_notification.external_id
+    assert sent_sms.message != notification.message
+
+
 async def test_cannot_send_with_invalid_id(notification_service: NotificationService) -> None:
     with pytest.raises(InvalidNotificationId):
         await notification_service.send(notification_id="invalid")

@@ -32,3 +32,4 @@ def test_can_serialize_user_dto():
 def test_can_get_destinations(user_dto: UserDTO):
     assert user_dto.destination("sms") == user_dto.phone_number
     assert user_dto.destination("email") == user_dto.email
+    assert isinstance(user_dto.destination("whatsapp"), str)
