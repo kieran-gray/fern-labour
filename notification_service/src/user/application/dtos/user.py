@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Self
 
-from src.notification.domain.enums import NotificationType
+from src.notification.domain.enums import NotificationChannel
 from src.user.application.dtos.user_summary import UserSummaryDTO
 from src.user.domain.entity import User
 
@@ -44,8 +44,8 @@ class UserDTO:
         return UserSummaryDTO(id=self.id, first_name=self.first_name, last_name=self.last_name)
 
     def destination(self, contact_method: str) -> str | None:
-        contact_method_enum = NotificationType(contact_method)
-        if contact_method_enum is NotificationType.SMS:
+        contact_method_enum = NotificationChannel(contact_method)
+        if contact_method_enum is NotificationChannel.SMS:
             return self.phone_number
-        if contact_method_enum is NotificationType.EMAIL:
+        if contact_method_enum is NotificationChannel.EMAIL:
             return self.email

@@ -13,12 +13,16 @@ from src.notification.application.services.notification_generation_service impor
     NotificationGenerationService,
 )
 from src.notification.domain.entity import Notification
-from src.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
+from src.notification.domain.enums import (
+    NotificationChannel,
+    NotificationStatus,
+    NotificationTemplate,
+)
 from src.notification.domain.exceptions import (
+    InvalidNotificationChannel,
     InvalidNotificationId,
     InvalidNotificationStatus,
     InvalidNotificationTemplate,
-    InvalidNotificationType,
     NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
@@ -43,14 +47,16 @@ class NotificationService:
         self._notification_repository = notification_repository
         self._event_producer = event_producer
 
-    def _get_notification_gateway(self, notification_type: NotificationType) -> NotificationGateway:
-        if notification_type is NotificationType.EMAIL:
+    def _get_notification_gateway(
+        self, notification_channel: NotificationChannel
+    ) -> NotificationGateway:
+        if notification_channel is NotificationChannel.EMAIL:
             return self._email_notification_gateway
-        elif notification_type is NotificationType.SMS:
+        elif notification_channel is NotificationChannel.SMS:
             return self._sms_notification_gateway
         else:
             raise NotImplementedError(
-                f"Notification gateway for type {notification_type.value} not implemented"
+                f"Notification gateway for type {notification_channel.value} not implemented"
             )
 
     async def _get_notification(self, notification_id: str) -> Notification:
@@ -69,7 +75,7 @@ class NotificationService:
 
     async def create_notification(
         self,
-        type: str,
+        channel: str,
         destination: str,
         template: str,
         data: dict[str, Any],
@@ -77,9 +83,9 @@ class NotificationService:
         metadata: dict[str, Any] | None = None,
     ) -> NotificationDTO:
         try:
-            notification_type = NotificationType(type)
+            notification_channel = NotificationChannel(channel)
         except ValueError:
-            raise InvalidNotificationType(notification_type=type)
+            raise InvalidNotificationChannel(notification_channel=channel)
 
         try:
             notification_status = NotificationStatus(status) if status else None
@@ -92,7 +98,7 @@ class NotificationService:
             raise InvalidNotificationTemplate(template=template)
 
         notification = Notification.create(
-            type=notification_type,
+            channel=notification_channel,
             destination=destination,
             template=notification_template,
             data=data,
@@ -148,7 +154,7 @@ class NotificationService:
         notification_dto = NotificationDTO.from_domain(notification=notification)
         notification_dto.add_notification_content(content=notification_content)
 
-        notification_gateway = self._get_notification_gateway(notification.type)
+        notification_gateway = self._get_notification_gateway(notification.channel)
         result = await notification_gateway.send(notification_dto)
 
         if result.external_id:

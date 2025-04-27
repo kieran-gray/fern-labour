@@ -8,7 +8,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src.api.routes.router_api_v1 import api_v1_router
-from src.setup.settings import Settings
+from src.core.infrastructure.custom_types import Environment
 
 root_router = APIRouter()
 
@@ -20,24 +20,24 @@ async def redirect_to_docs() -> RedirectResponse:
 
 @root_router.get("/docs", tags=["General"])
 @inject
-async def docs(settings: Annotated[Settings, FromComponent()]) -> HTMLResponse:
-    if settings.base.environment != "production":
+async def docs(environment: Annotated[Environment, FromComponent()]) -> HTMLResponse:
+    if environment != "production":
         return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
     return HTMLResponse(content="Forbidden", status_code=403)
 
 
 @root_router.get("/openapi.json", tags=["General"])
 @inject
-async def openapi(settings: Annotated[Settings, FromComponent()]) -> dict[str, Any]:
-    if settings.base.environment != "production":
+async def openapi(environment: Annotated[Environment, FromComponent()]) -> dict[str, Any]:
+    if environment != "production":
         return get_openapi(title="Notification Service", version="0.1.0", routes=root_router.routes)
     return {"status": "Forbidden"}
 
 
 @root_router.get("/redoc", tags=["General"])
 @inject
-async def redoc(settings: Annotated[Settings, FromComponent()]) -> HTMLResponse:
-    if settings.base.environment != "production":
+async def redoc(environment: Annotated[Environment, FromComponent()]) -> HTMLResponse:
+    if environment != "production":
         return get_redoc_html(openapi_url="/openapi.json", title="docs")
     return HTMLResponse(content="Forbidden", status_code=403)
 

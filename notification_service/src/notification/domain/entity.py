@@ -3,7 +3,11 @@ from typing import Any, Self
 from uuid import UUID, uuid4
 
 from src.core.domain.aggregate_root import AggregateRoot
-from src.notification.domain.enums import NotificationStatus, NotificationTemplate, NotificationType
+from src.notification.domain.enums import (
+    NotificationChannel,
+    NotificationStatus,
+    NotificationTemplate,
+)
 from src.notification.domain.events import NotificationStatusUpdated
 from src.notification.domain.value_objects.notification_id import NotificationId
 
@@ -11,7 +15,7 @@ from src.notification.domain.value_objects.notification_id import NotificationId
 @dataclass(eq=False, kw_only=True)
 class Notification(AggregateRoot[NotificationId]):
     status: NotificationStatus
-    type: NotificationType
+    channel: NotificationChannel
     destination: str
     template: NotificationTemplate
     data: dict[str, Any]
@@ -22,7 +26,7 @@ class Notification(AggregateRoot[NotificationId]):
     def create(
         cls,
         *,
-        type: NotificationType,
+        channel: NotificationChannel,
         destination: str,
         template: NotificationTemplate,
         data: dict[str, Any],
@@ -35,7 +39,7 @@ class Notification(AggregateRoot[NotificationId]):
         return cls(
             id_=NotificationId(notification_id),
             status=status or NotificationStatus.CREATED,
-            type=type,
+            channel=channel,
             destination=destination,
             template=template,
             data=data,

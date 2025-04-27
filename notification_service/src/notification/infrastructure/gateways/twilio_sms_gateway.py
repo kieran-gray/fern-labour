@@ -18,8 +18,9 @@ class TwilioSMSNotificationGateway(SMSNotificationGateway):
         auth_token: str,
         sms_from_number: str | None = None,
         messaging_service_sid: str | None = None,
+        client: Client | None = None,
     ):
-        self._client = Client(username=account_sid, password=auth_token)
+        self._client = client or Client(username=account_sid, password=auth_token)
         self._sms_from_number = sms_from_number
         self._messaging_service_sid = messaging_service_sid
 

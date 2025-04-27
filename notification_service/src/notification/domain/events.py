@@ -6,7 +6,7 @@ from src.core.domain.event import DomainEvent
 
 @dataclass
 class NotificationRequestedData:
-    type: str
+    channel: str
     destination: str
     template: str
     data: dict[str, Any]
@@ -15,7 +15,7 @@ class NotificationRequestedData:
     @classmethod
     def from_dict(cls, event_data: dict[str, Any]) -> Self:
         return cls(
-            type=event_data["type"],
+            channel=event_data["channel"],
             destination=event_data["destination"],
             template=event_data["template"],
             data=event_data["data"],
@@ -24,7 +24,7 @@ class NotificationRequestedData:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "type": self.type,
+            "channel": self.channel,
             "destination": self.destination,
             "template": self.template,
             "data": self.data,

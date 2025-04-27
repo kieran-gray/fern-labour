@@ -10,7 +10,7 @@ from sqlalchemy_utils import StringEncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
 from src.core.infrastructure.persistence.orm_registry import mapper_registry
-from src.notification.domain.enums import NotificationStatus, NotificationType
+from src.notification.domain.enums import NotificationChannel, NotificationStatus
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ notifications_table = Table(
     mapper_registry.metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
     Column("status", Enum(NotificationStatus, name="notification_status"), nullable=False),
-    Column("type", Enum(NotificationType, name="notification_type"), nullable=False),
+    Column("channel", Enum(NotificationChannel, name="notification_channel"), nullable=False),
     Column("destination", String, nullable=False),
     Column("template", String, nullable=False),
     Column(

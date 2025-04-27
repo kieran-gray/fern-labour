@@ -14,10 +14,9 @@ from src.notification.application.interfaces.template_engine import (
     EmailTemplateEngine,
     SMSTemplateEngine,
 )
-from src.notification.domain.enums import NotificationTemplate, NotificationType
+from src.notification.domain.enums import NotificationChannel, NotificationTemplate
 from src.notification.domain.exceptions import (
     InvalidNotificationId,
-    InvalidNotificationTemplate,
     NotificationNotFoundById,
     NotificationProcessingError,
 )
@@ -66,12 +65,7 @@ class NotificationGenerationService:
         if not notification:
             raise NotificationNotFoundById(notification_id=notification_id)
 
-        try:
-            template = NotificationTemplate(notification.template)
-        except ValueError:
-            raise InvalidNotificationTemplate(template=notification.template)
-
-        payload_data_type = self._get_payload_type(template)
+        payload_data_type = self._get_payload_type(notification.template)
 
         try:
             data = payload_data_type.from_dict(notification.data)
@@ -79,15 +73,19 @@ class NotificationGenerationService:
             raise NotificationProcessingError(
                 f"Failed to convert data to payload data type for notification {notification_id}"
             )
-
-        notification_content_generator = self._get_notification_content_generator(notification.type)
-        generated_content = notification_content_generator(template=template, data=data)
-        log.info(f"Successfully generated {notification.type.value} content for {notification_id}")
+        notification_content_generator = self._get_notification_content_generator(
+            notification.channel
+        )
+        generated_content = notification_content_generator(
+            template=notification.template, data=data
+        )
+        log.info(
+            f"Successfully generated {notification.channel.value} content for {notification_id}"
+        )
         return generated_content
 
     def _get_payload_type(self, template: NotificationTemplate) -> type[BaseNotificationData]:
         """Gets the required data payload type for the given template."""
-
         payload_type = TEMPLATE_TO_PAYLOAD.get(template)
         if not payload_type:
             raise NotificationProcessingError(f"No payload data type found for template {template}")
@@ -107,10 +105,9 @@ class NotificationGenerationService:
         return NotificationContent(message=message)
 
     def _get_notification_content_generator(
-        self, notification_type: NotificationType
+        self, channel: NotificationChannel
     ) -> NotificationContentGenerator:
-        if notification_type is NotificationType.EMAIL:
+        if channel is NotificationChannel.EMAIL:
             return self._generate_email
-        if notification_type is NotificationType.SMS:
+        if channel is NotificationChannel.SMS:
             return self._generate_sms
-        raise NotImplementedError(f"Notification generator for {notification_type} not implemented")

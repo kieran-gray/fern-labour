@@ -17,7 +17,7 @@ class NotificationRequestedEventHandler(EventHandler):
         event_data = NotificationRequestedData.from_dict(domain_event.data)
 
         notification = await self._notification_service.create_notification(
-            type=event_data.type,
+            channel=event_data.channel,
             destination=event_data.destination,
             template=event_data.template,
             data=event_data.data,
