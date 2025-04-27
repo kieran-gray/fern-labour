@@ -24,7 +24,7 @@ class NotificationDTO:
 
     id: str
     status: str
-    type: str
+    channel: str
     destination: str
     template: str
     data: dict[str, Any]
@@ -44,7 +44,7 @@ class NotificationDTO:
         return cls(
             id=str(notification.id_.value),
             status=notification.status,
-            type=notification.channel,
+            channel=notification.channel,
             destination=notification.destination,
             template=notification.template,
             data=notification.data,
@@ -57,7 +57,7 @@ class NotificationDTO:
         return {
             "id": self.id,
             "status": self.status,
-            "type": self.type,
+            "channel": self.channel,
             "destination": self.destination,
             "template": self.template,
             "data": self.data,

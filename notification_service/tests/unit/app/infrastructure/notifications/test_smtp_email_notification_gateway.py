@@ -49,7 +49,7 @@ async def test_send_email_notification(mock_send):
     notification = NotificationDTO(
         id=str(uuid4()),
         status=NotificationStatus.CREATED.value,
-        type=NotificationChannel.EMAIL.value,
+        channel=NotificationChannel.EMAIL.value,
         template="template.html",
         data={"test": "test"},
         destination="test@example.com",
@@ -85,7 +85,7 @@ async def test_send_email_notification_error(mock_send, caplog):  # noqa
     notification = NotificationDTO(
         id=str(uuid4()),
         status=NotificationStatus.CREATED.value,
-        type=NotificationChannel.EMAIL.value,
+        channel=NotificationChannel.EMAIL.value,
         template="template.html",
         data={"test": "test"},
         destination="test@example.com",

@@ -211,7 +211,7 @@ async def test_can_send_email(notification_service: NotificationService) -> None
     assert sent_email.data == notification.data
 
     assert sent_email.id == notification.id
-    assert sent_email.type == notification.type
+    assert sent_email.channel == notification.channel
     assert sent_email.template == notification.template
     assert sent_email.metadata == notification.metadata
 
@@ -245,7 +245,7 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
     assert sent_sms.data == notification.data
 
     assert sent_sms.id == notification.id
-    assert sent_sms.type == notification.type
+    assert sent_sms.channel == notification.channel
     assert sent_sms.template == notification.template
     assert sent_sms.metadata == notification.metadata
 

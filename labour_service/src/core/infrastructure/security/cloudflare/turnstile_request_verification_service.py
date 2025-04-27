@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import uuid4
 
 import httpx
@@ -23,12 +24,8 @@ class TurnstileRequestVerificationService(RequestVerificationService):
             "timeout-or-duplicate",
         ]
 
-    async def verify(self, token: str, ip: str) -> None:
-        """
-        Verify the given token and return bool indicating success or failure.
-        """
+    async def _call_cloudflare_api(self, token: str, ip: str) -> Any:
         idempotency_key = uuid4()  # TODO is this really doing anything?
-
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 url=self._cloudflare_url,
@@ -40,10 +37,16 @@ class TurnstileRequestVerificationService(RequestVerificationService):
                 },
                 headers={"Content-Type": "application/json"},
             )
-            result = response.json()
-            if not result["success"]:
-                if "timeout-or-duplicate" in result["error-codes"]:
-                    raise VerificationTokenAlreadyUsedException()
-                if "invalid-input-response" in result["error-codes"]:
-                    raise InvalidVerificationTokenException()
-                raise RequestVerificationError("Request verification with turnstile failed.")
+            return response.json()
+
+    async def verify(self, token: str, ip: str) -> None:
+        """
+        Verify the given token and return bool indicating success or failure.
+        """
+        result = await self._call_cloudflare_api(token, ip)
+        if not result["success"]:
+            if "timeout-or-duplicate" in result["error-codes"]:
+                raise VerificationTokenAlreadyUsedException()
+            if "invalid-input-response" in result["error-codes"]:
+                raise InvalidVerificationTokenException()
+            raise RequestVerificationError("Request verification with turnstile failed.")

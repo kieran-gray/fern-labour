@@ -19,7 +19,7 @@ async def test_log_notification_gateway(caplog):
     notification = NotificationDTO(
         id=str(uuid4()),
         status=NotificationStatus.CREATED.value,
-        type="sms",
+        channel="sms",
         template="template.html",
         data={"test": "test"},
         destination="+44123123123",

@@ -37,11 +37,11 @@
             "justMyCode": false,
         },
         {
-            "name": "Debug Tests",
+            "name": "Debug Tests: Notification Service",
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",
-            "args": ["backend/"],
+            "args": ["notification_service/"],
             "justMyCode": false,
         }
     ]
