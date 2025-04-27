@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from unittest.mock import Mock
+
 import pytest
 
-from src.notification.domain.enums import NotificationStatus
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
+from src.notification.domain.enums import NotificationStatus
 from src.notification.infrastructure.gateways.twilio_sms_gateway import TwilioSMSNotificationGateway
 
 
@@ -33,4 +34,6 @@ async def test_can_send_sms(gateway: TwilioSMSNotificationGateway) -> None:
         data={},
     )
     result = await gateway.send(notification)
-    assert result == NotificationSendResult(success=True, status=NotificationStatus.SENT, external_id="ext123")
+    assert result == NotificationSendResult(
+        success=True, status=NotificationStatus.SENT, external_id="ext123"
+    )

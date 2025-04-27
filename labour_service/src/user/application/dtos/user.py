@@ -49,3 +49,5 @@ class UserDTO:
             return self.phone_number
         if contact_method_enum is ContactMethod.EMAIL:
             return self.email
+        if contact_method_enum is ContactMethod.WHATSAPP:
+            return f"whatsapp:{self.phone_number}" if self.phone_number else None

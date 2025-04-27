@@ -111,3 +111,5 @@ class NotificationGenerationService:
             return self._generate_email
         if channel is NotificationChannel.SMS:
             return self._generate_sms
+        if channel is NotificationChannel.WHATSAPP:
+            return self._generate_sms

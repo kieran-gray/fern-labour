@@ -16,6 +16,7 @@ def user() -> User:
         first_name="User",
         last_name="Name",
         email="test@email.com",
+        phone_number="+44123123123",
     )
 
 
@@ -45,6 +46,7 @@ def test_user_destination(user: User) -> None:
     dto = UserDTO.from_domain(user)
     assert dto.destination(ContactMethod.SMS.value) == user.phone_number
     assert dto.destination(ContactMethod.EMAIL.value) == user.email
+    assert isinstance(dto.destination(ContactMethod.WHATSAPP.value), str)
 
 
 def test_user_destination_returns_none(user: User) -> None:
@@ -53,6 +55,7 @@ def test_user_destination_returns_none(user: User) -> None:
     dto.phone_number = None
     assert dto.destination(ContactMethod.SMS.value) is None
     assert dto.destination(ContactMethod.EMAIL.value) is None
+    assert dto.destination(ContactMethod.WHATSAPP.value) is None
 
 
 def test_user_destination_invalid_contact_method(user: User) -> None:

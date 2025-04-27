@@ -15,6 +15,9 @@ from src.subscription.domain.exceptions import (
     SubscriptionNotFoundById,
 )
 from src.subscription.domain.repository import SubscriptionRepository
+from src.subscription.domain.services.update_contact_methods import (
+    UpdateContactMethodsService,
+)
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
 
 log = logging.getLogger(__name__)
@@ -111,7 +114,9 @@ class SubscriptionManagementService:
             except ValueError:
                 raise SubscriptionContactMethodInvalid(contact_method=contact_method)
 
-        subscription.update_contact_methods(new_contact_methods)
+        subscription = UpdateContactMethodsService().update_contact_methods(
+            subscription=subscription, contact_methods=new_contact_methods
+        )
 
         await self._subscription_repository.save(subscription)
 
