@@ -73,8 +73,7 @@ def mock_labour_dto() -> LabourDTO:
         labour_name="Test Labour",
         current_phase="PLANNED",
         contractions=[],
-        announcements=[],
-        status_updates=[],
+        labour_updates=[],
         recommendations={},
         notes=None,
     )
@@ -261,8 +260,7 @@ class MockLabourProvider(Provider):
             labour_name="Test Labour",
             current_phase="PLANNED",
             contractions=[],
-            announcements=[],
-            status_updates=[],
+            labour_updates=[],
             recommendations={},
             notes=None,
         )

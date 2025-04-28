@@ -258,7 +258,7 @@ async def test_can_delete_labour_update(labour_service: LabourService) -> None:
     labour = await labour_service.post_labour_update(
         BIRTHING_PERSON, labour_update_type="announcement", message="Test message"
     )
-    labour_update = labour.announcements[0]
+    labour_update = labour.labour_updates[0]
     await labour_service.delete_labour_update(BIRTHING_PERSON, labour_update_id=labour_update.id)
 
 

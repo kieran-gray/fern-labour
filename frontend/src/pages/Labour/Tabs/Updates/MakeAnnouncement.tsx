@@ -3,7 +3,7 @@ import { IconSpeakerphone } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { useAuth } from 'react-oidc-context';
-import { Button, Tooltip } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
   ApiError,
@@ -12,8 +12,8 @@ import {
   LabourUpdateRequest,
   LabourUpdatesService,
   OpenAPI,
-} from '../../../../../client';
-import { useLabour } from '../../../LabourContext';
+} from '../../../../client';
+import { useLabour } from '../../LabourContext';
 import ConfirmAnnouncementModal from './ConfirmAnnouncement';
 
 export default function MakeAnnouncementButton({
@@ -65,7 +65,7 @@ export default function MakeAnnouncementButton({
       ]);
       if (previousLabourState != null) {
         const newLabourState = _.cloneDeep(previousLabourState);
-        newLabourState.announcements.push(labourUpdate);
+        newLabourState.labour_updates.push(labourUpdate);
         queryClient.setQueryData(['labour', auth.user?.profile.sub], newLabourState);
       }
       return { previousLabourState };
@@ -116,28 +116,44 @@ export default function MakeAnnouncementButton({
     }
   }
 
-  const button = (
-    <Button
-      rightSection={<IconSpeakerphone size={18} stroke={1.5} />}
-      radius="xl"
-      size="lg"
-      color="var(--mantine-color-pink-4)"
-      variant="filled"
-      style={{ minWidth: '200px' }}
-      disabled={!message}
-      loading={mutationInProgress}
-      onClick={() => {
-        if (message !== '') {
-          setGetConfimation(true);
-        }
-      }}
-    >
-      Make Announcement
-    </Button>
+  return (
+    <>
+      <Button
+        rightSection={<IconSpeakerphone size={18} stroke={1.5} />}
+        radius="xl"
+        size="lg"
+        color="var(--mantine-color-pink-4)"
+        variant="filled"
+        visibleFrom="sm"
+        style={{ minWidth: '200px' }}
+        disabled={!message}
+        loading={mutationInProgress}
+        onClick={() => {
+          if (message !== '') {
+            setGetConfimation(true);
+          }
+        }}
+      >
+        Make Announcement
+      </Button>
+      <Button
+        rightSection={<IconSpeakerphone size={18} stroke={1.5} />}
+        radius="xl"
+        size="md"
+        color="var(--mantine-color-pink-4)"
+        variant="filled"
+        hiddenFrom="sm"
+        style={{ minWidth: '200px' }}
+        disabled={!message}
+        loading={mutationInProgress}
+        onClick={() => {
+          if (message !== '') {
+            setGetConfimation(true);
+          }
+        }}
+      >
+        Make Announcement
+      </Button>
+    </>
   );
-
-  if (!message) {
-    return <Tooltip label="Enter a message first">{button}</Tooltip>;
-  }
-  return button;
 }

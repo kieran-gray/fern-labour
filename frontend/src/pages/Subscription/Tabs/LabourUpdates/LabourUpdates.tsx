@@ -5,7 +5,7 @@ import { ImportantText } from '../../../../shared-components/ImportantText/Impor
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '../../../../shared-components/utils';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from '../../../Labour/Tabs/Updates/StatusUpdates/StatusUpdates.module.css';
+import classes from '../../../Labour/Tabs/Updates/LabourUpdates.module.css';
 
 export function StatusUpdates({
   labour,
@@ -14,12 +14,12 @@ export function StatusUpdates({
   labour: LabourDTO;
   birthingPerson: UserSummaryDTO;
 }) {
-  const statusUpdates = labour.status_updates;
+  const labourUpdates = labour.labour_updates;
   const viewport = useRef<HTMLDivElement>(null);
   const birthingPersonName = `${birthingPerson.first_name} ${birthingPerson.last_name}`;
   const pluralisedBirthingPersonName = pluraliseName(birthingPerson.first_name);
 
-  const statusUpdateDisplay = statusUpdates.map((data) => {
+  const statusUpdateDisplay = labourUpdates.map((data) => {
     return (
       <div className={classes.statusUpdatePanel} id={data.id}>
         <Group>
@@ -44,11 +44,11 @@ export function StatusUpdates({
     if (viewport.current) {
       viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'auto' });
     }
-  }, [statusUpdates]);
+  }, [labourUpdates]);
 
   const completed = labour.end_time !== null;
-  const activeDescription = `Curious about how things are going? ${birthingPerson.first_name} can update her status here, giving you a glimpse into her progress. These updates won’t send alerts, so check in regularly to stay informed without needing to reach out directly.`;
-  const completedDescription = `Here's where Jess kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`;
+  const activeDescription = `Curious about how things are going? ${birthingPerson.first_name} can update her status here, giving you a glimpse into her progress. Check in regularly to stay informed without needing to reach out directly.`;
+  const completedDescription = `Here's where ${birthingPerson.first_name} kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`;
 
   return (
     <div className={baseClasses.root}>
@@ -65,7 +65,7 @@ export function StatusUpdates({
               </ScrollArea.Autosize>
             )) || (
               <ImportantText
-                message={`${birthingPerson.first_name} hasn't posted any status updates yet.`}
+                message={`${birthingPerson.first_name} hasn't posted any updates yet.`}
               />
             )}
           </div>

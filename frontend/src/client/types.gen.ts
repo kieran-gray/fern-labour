@@ -82,8 +82,7 @@ export type LabourDTO = {
     [key: string]: boolean;
   };
   contractions: Array<ContractionDTO>;
-  announcements: Array<LabourUpdateDTO>;
-  status_updates: Array<LabourUpdateDTO>;
+  labour_updates: Array<LabourUpdateDTO>;
 };
 
 export type LabourListResponse = {
