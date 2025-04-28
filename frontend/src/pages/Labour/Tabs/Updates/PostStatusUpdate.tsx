@@ -3,7 +3,7 @@ import { IconSend } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { useAuth } from 'react-oidc-context';
-import { Button, Tooltip } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
   LabourDTO,
@@ -11,8 +11,9 @@ import {
   LabourUpdateRequest,
   LabourUpdatesService,
   OpenAPI,
-} from '../../../../../client';
-import { useLabour } from '../../../LabourContext';
+} from '../../../../client';
+import { useLabour } from '../../LabourContext';
+import classes from './LabourUpdates.module.css';
 
 export function PostStatusUpdateButton({
   message,
@@ -61,7 +62,7 @@ export function PostStatusUpdateButton({
       ]);
       if (previousLabourState != null) {
         const newLabourState = _.cloneDeep(previousLabourState);
-        newLabourState.status_updates.push(labourUpdate);
+        newLabourState.labour_updates.push(labourUpdate);
         queryClient.setQueryData(['labour', auth.user?.profile.sub], newLabourState);
       }
       return { previousLabourState };
@@ -87,25 +88,40 @@ export function PostStatusUpdateButton({
     },
   });
 
-  const button = (
-    <Button
-      color="var(--mantine-color-pink-4)"
-      rightSection={<IconSend size={18} stroke={1.5} />}
-      variant="filled"
-      radius="xl"
-      size="lg"
-      style={{ minWidth: '200px' }}
-      type="submit"
-      disabled={!message}
-      loading={mutationInProgress}
-      onClick={() => mutation.mutate(createLabourUpdate(message))}
-    >
-      Post Update
-    </Button>
+  return (
+    <>
+      <Button
+        color="var(--mantine-color-pink-4)"
+        rightSection={<IconSend size={18} stroke={1.5} />}
+        variant="filled"
+        radius="xl"
+        size="lg"
+        style={{ minWidth: '200px' }}
+        type="submit"
+        visibleFrom="sm"
+        disabled={!message}
+        loading={mutationInProgress}
+        className={classes.statusUpdateButton}
+        onClick={() => mutation.mutate(createLabourUpdate(message))}
+      >
+        Post Status Update
+      </Button>
+      <Button
+        color="var(--mantine-color-pink-4)"
+        rightSection={<IconSend size={18} stroke={1.5} />}
+        variant="filled"
+        radius="xl"
+        size="md"
+        hiddenFrom="sm"
+        style={{ minWidth: '200px' }}
+        type="submit"
+        disabled={!message}
+        loading={mutationInProgress}
+        className={classes.statusUpdateButton}
+        onClick={() => mutation.mutate(createLabourUpdate(message))}
+      >
+        Post Status Update
+      </Button>
+    </>
   );
-
-  if (!message) {
-    return <Tooltip label="Enter a message first">{button}</Tooltip>;
-  }
-  return button;
 }

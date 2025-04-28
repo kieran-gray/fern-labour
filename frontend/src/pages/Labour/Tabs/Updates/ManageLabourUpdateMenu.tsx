@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { DeleteLabourUpdateRequest, LabourUpdatesService, OpenAPI } from '../../../../../client';
+import { DeleteLabourUpdateRequest, LabourUpdatesService, OpenAPI } from '../../../../client';
 
-export function ManageStatusUpdateMenu({ statusUpdateId }: { statusUpdateId: string }) {
+export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: string }) {
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';

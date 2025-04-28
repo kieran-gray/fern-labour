@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  IconChartHistogram,
-  IconMessage,
-  IconPencil,
-  IconSpeakerphone,
-  IconUsers,
-} from '@tabler/icons-react';
+import { IconChartHistogram, IconMessage, IconPencil, IconUsers } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
@@ -19,18 +13,16 @@ import { pluraliseName } from '../../shared-components/utils.tsx';
 import { InviteContainer } from '../Subscriptions/Components/InviteContainer/InviteContainer.tsx';
 import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions.tsx';
 import { useSubscription } from './SubscriptionContext.tsx';
-import { Announcements } from './Tabs/Announcements/Announcements.tsx';
 import ContactMethods from './Tabs/LabourDetails/ContactMethods.tsx';
 import LabourDetails from './Tabs/LabourDetails/LabourDetails.tsx';
+import { StatusUpdates } from './Tabs/LabourUpdates/LabourUpdates.tsx';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
-import { StatusUpdates } from './Tabs/StatusUpdates/StatusUpdates.tsx';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 
 const TABS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
   { id: 'details', label: 'Details', icon: IconPencil },
   { id: 'updates', label: 'Updates', icon: IconMessage },
-  { id: 'announcements', label: 'Announcements', icon: IconSpeakerphone },
   { id: 'stats', label: 'Stats', icon: IconChartHistogram },
 ] as const;
 
@@ -141,14 +133,6 @@ export const SubscriptionPage = () => {
         );
       case 'updates':
         return <StatusUpdates labour={data.labour} birthingPerson={data.birthing_person} />;
-      case 'announcements':
-        return (
-          <Announcements
-            labour={data.labour}
-            birthingPersonName={pluralisedBirthingPersonName}
-            birthingPerson={data.birthing_person}
-          />
-        );
       default:
         return null;
     }

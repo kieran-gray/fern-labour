@@ -31,10 +31,17 @@
   position: relative;
 }
 
+.announcementPanel{
+  background-color: color-mix(in srgb, var(--mantine-color-pink-1), red 10%);
+  padding: 10px 20px;
+  width: 100%;
+  border-radius: var(--mantine-radius-lg);
+  position: relative;
+}
 
-.backButton {
+.statusUpdateButton {
   @media (max-width: $mantine-breakpoint-sm) {
-    margin-top: 10px
+    margin-bottom: 10px
   }
 }
 
@@ -47,7 +54,7 @@
   flex-wrap: wrap;
 
   @media (max-width: $mantine-breakpoint-sm) {
-      flex-direction: column-reverse;
+      flex-direction: column;
   }
 }
 

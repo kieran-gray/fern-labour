@@ -44,8 +44,7 @@ class LabourDTO:
     notes: str | None
     recommendations: dict[str, bool]
     contractions: list[ContractionDTO]
-    announcements: list[LabourUpdateDTO]
-    status_updates: list[LabourUpdateDTO]
+    labour_updates: list[LabourUpdateDTO]
 
     @classmethod
     def from_domain(cls, labour: Labour) -> Self:
@@ -67,8 +66,7 @@ class LabourDTO:
             notes=labour.notes,
             recommendations=recommendations,
             contractions=[ContractionDTO.from_domain(c) for c in labour.contractions],
-            announcements=[LabourUpdateDTO.from_domain(a) for a in labour.announcements],
-            status_updates=[LabourUpdateDTO.from_domain(s) for s in labour.status_updates],
+            labour_updates=[LabourUpdateDTO.from_domain(s) for s in labour.labour_updates],
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -86,6 +84,5 @@ class LabourDTO:
             "notes": self.notes,
             "recommendations": self.recommendations,
             "contractions": [c.to_dict() for c in self.contractions],
-            "announcements": [a.to_dict() for a in self.announcements],
-            "status_updates": [s.to_dict() for s in self.status_updates],
+            "labour_updates": [u.to_dict() for u in self.labour_updates],
         }
