@@ -14,6 +14,7 @@ import {
   UserService,
 } from '../../../../client';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
+import { warnNonUKNumber, warnNoNumberSet } from './ContactMethods';
 import modalClasses from '../../../../shared-components/Modal.module.css';
 import classes from './ContactMethodsForm.module.css';
 
@@ -55,19 +56,13 @@ export default function ContactMethodsForm({
 
   let contactMethodsWarning = null;
   if (status === 'success') {
-    if (subscription.contact_methods.includes('sms')) {
-      if (data.user.phone_number == null) {
-        contactMethodsWarning =
-          "You have selected to receive text message alerts but you don't have a phone number set on your profile. Set one by clicking 'Update Profile' in the app menu.";
-      } else if (!data.user.phone_number?.startsWith('+44')) {
-        contactMethodsWarning =
-          "Your mobile number isn't from the UK (it doesn't start with +44). Unfortunately we can only send text messages to UK numbers at this time.";
-      }
-    }
+    contactMethodsWarning =
+      warnNoNumberSet(subscription.contact_methods, data.user.phone_number) ||
+      warnNonUKNumber(subscription.contact_methods, data.user.phone_number);
   }
 
   const form = useForm({
-    mode: 'uncontrolled',
+    mode: 'controlled',
     initialValues: {
       contactMethods: subscription.contact_methods,
     },
@@ -127,7 +122,8 @@ export default function ContactMethodsForm({
   });
 
   const options = [
-    { value: 'sms', label: 'Text' },
+    { value: 'whatsapp', label: 'WhatsApp', disabled: form.values.contactMethods.includes('sms') },
+    { value: 'sms', label: 'Text', disabled: form.values.contactMethods.includes('whatsapp') },
     { value: 'email', label: 'Email' },
   ];
 
@@ -178,6 +174,7 @@ export default function ContactMethodsForm({
                 wrapper: classes.input,
                 pill: classes.pill,
                 description: classes.description,
+                inputField: classes.input,
               }}
               comboboxProps={{
                 transitionProps: { transition: 'pop', duration: 200 },
