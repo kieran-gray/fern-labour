@@ -129,3 +129,9 @@
 .description {
   color: var(--mantine-color-gray-7);
 }
+
+.input {
+  &:not(:only-child)::placeholder {
+    color: transparent;
+  }
+}

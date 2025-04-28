@@ -10,6 +10,33 @@ import ContactMethodsForm from './ContactMethodsForm';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './ContactMethodsForm.module.css';
 
+export function warnNoNumberSet(
+  contactMethods: string[],
+  phone_number: string | null
+): string | null {
+  let warning = null;
+  if (
+    (contactMethods.includes('sms') || contactMethods.includes('whatsapp')) &&
+    phone_number === null
+  ) {
+    warning =
+      "You have selected to receive text message alerts but you don't have a phone number set on your profile. Set one by clicking 'Update Profile' in the app menu.";
+  }
+  return warning;
+}
+
+export function warnNonUKNumber(
+  contactMethods: string[],
+  phone_number: string | null
+): string | null {
+  let warning = null;
+  if (contactMethods.includes('sms') && phone_number !== null && !phone_number.startsWith('+44')) {
+    warning =
+      "Your mobile number isn't from the UK (it doesn't start with +44). Unfortunately we can only send SMS messages to UK numbers at this time, please select WhatsApp for international messaging.";
+  }
+  return warning;
+}
+
 export default function ContactMethods({ subscription }: { subscription: SubscriptionDTO }) {
   const auth = useAuth();
   const [searchParams] = useSearchParams();
@@ -30,15 +57,9 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
 
   let contactMethodsWarning = null;
   if (status === 'success') {
-    if (subscription.contact_methods.includes('sms')) {
-      if (data.user.phone_number == null) {
-        contactMethodsWarning =
-          "You have selected to receive text message alerts but you don't have a phone number set on your profile. Set one by clicking 'Update Profile' in the app menu.";
-      } else if (!data.user.phone_number?.startsWith('+44')) {
-        contactMethodsWarning =
-          "Your mobile number isn't from the UK (it doesn't start with +44). Unfortunately we can only send text messages to UK numbers at this time.";
-      }
-    }
+    contactMethodsWarning =
+      warnNoNumberSet(subscription.contact_methods, data.user.phone_number) ||
+      warnNonUKNumber(subscription.contact_methods, data.user.phone_number);
   }
 
   const selectedContactMethods = subscription.contact_methods.map((method) => (
