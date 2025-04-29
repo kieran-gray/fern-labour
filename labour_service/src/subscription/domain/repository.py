@@ -51,7 +51,7 @@ class SubscriptionRepository(Protocol):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
-        status: SubscriptionStatus | None = None,
+        subscription_status: SubscriptionStatus | None = None,
     ) -> Subscription | None:
         """
         Filter subscriptions based on inputs.
