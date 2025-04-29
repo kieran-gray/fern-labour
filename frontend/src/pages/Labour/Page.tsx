@@ -12,7 +12,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space, Tabs, Text } from '@mantine/core';
 import { ApiError, LabourQueriesService, OpenAPI } from '../../client';
-import { NotFoundError } from '../../Errors';
+import { NotFoundError, PermissionDenied } from '../../Errors';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
@@ -42,13 +42,9 @@ export const LabourPage = () => {
   const auth = useAuth();
   const navigate = useNavigate();
   const { labourId, setLabourId } = useLabour();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const labourIdParam = searchParams.get('labourId');
   const [activeTab, setActiveTab] = useState<string | null>('track');
-
-  if (labourIdParam !== null) {
-    setLabourId(labourIdParam);
-  }
 
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
@@ -75,6 +71,13 @@ export const LabourPage = () => {
 
   OpenAPI.TOKEN = async () => auth.user?.access_token || '';
 
+  const getLabourId = (labourId: string | null, labourIdParam: string | null): string | null => {
+    if (labourId !== null && labourId !== '') {
+      return labourId
+    }
+    return labourIdParam;
+  }
+
   const {
     isPending,
     isError,
@@ -85,16 +88,23 @@ export const LabourPage = () => {
     queryFn: async () => {
       try {
         let response;
-        if (labourId !== null) {
-          response = await LabourQueriesService.getLabourById({ labourId });
+        const id = getLabourId(labourId, labourIdParam);
+        if (id !== null) {
+          response = await LabourQueriesService.getLabourById({ labourId: id });
         } else {
           response = await LabourQueriesService.getActiveLabour();
           setLabourId(response.labour.id);
         }
         return response.labour;
       } catch (err) {
-        if (err instanceof ApiError && err.status === 404) {
-          throw new NotFoundError();
+        if (err instanceof ApiError) {
+          if (err.status === 404) {
+            throw new NotFoundError();
+          } else if (err.status === 403) {
+            searchParams.delete('labourId');
+            setSearchParams(searchParams);
+            throw new PermissionDenied();
+          }
         }
         throw new Error('Failed to load labour. Please try again later.');
       }

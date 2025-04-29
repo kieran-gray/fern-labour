@@ -4,3 +4,11 @@ export class NotFoundError extends Error {
     this.name = 'NotFoundError';
   }
 }
+
+
+export class PermissionDenied extends Error {
+  constructor(message = 'You do not have permission to access this resource') {
+    super(message);
+    this.name = 'PermissionDenied';
+  }
+}
