@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { IconChartHistogram, IconMessage, IconPencil, IconUsers } from '@tabler/icons-react';
+import {
+  IconChartHistogram,
+  IconMessage,
+  IconPencil,
+  IconShoppingBag,
+  IconUsers,
+} from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +19,7 @@ import { pluraliseName } from '../../shared-components/utils.tsx';
 import { InviteContainer } from '../Subscriptions/Components/InviteContainer/InviteContainer.tsx';
 import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions.tsx';
 import { useSubscription } from './SubscriptionContext.tsx';
+import Gifts from './Tabs/Gifts/Gifts.tsx';
 import ContactMethods from './Tabs/LabourDetails/ContactMethods.tsx';
 import LabourDetails from './Tabs/LabourDetails/LabourDetails.tsx';
 import { StatusUpdates } from './Tabs/LabourUpdates/LabourUpdates.tsx';
@@ -24,6 +31,7 @@ const TABS = [
   { id: 'details', label: 'Details', icon: IconPencil },
   { id: 'updates', label: 'Updates', icon: IconMessage },
   { id: 'stats', label: 'Stats', icon: IconChartHistogram },
+  { id: 'gifts', label: 'Gifts', icon: IconShoppingBag },
 ] as const;
 
 const tabOrder = TABS.map((tab) => tab.id);
@@ -58,7 +66,6 @@ export const SubscriptionPage = () => {
     },
     delta: 10,
     swipeDuration: 250,
-    trackMouse: true,
     trackTouch: true,
     preventScrollOnSwipe: true,
   });
@@ -133,6 +140,8 @@ export const SubscriptionPage = () => {
         );
       case 'updates':
         return <StatusUpdates labour={data.labour} birthingPerson={data.birthing_person} />;
+      case 'gifts':
+        return <Gifts birthingPersonName={data.birthing_person.first_name} />;
       default:
         return null;
     }
