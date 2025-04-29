@@ -14,11 +14,7 @@ from src.labour.api.schemas.responses.labour import (
 )
 from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
 from src.labour.application.services.labour_query_service import LabourQueryService
-from src.labour.domain.labour.exceptions import UnauthorizedLabourRequest
 from src.setup.ioc.di_component_enum import ComponentEnum
-from src.subscription.application.security.subscription_authorization_service import (
-    SubscriptionAuthorizationService,
-)
 from src.user.infrastructure.auth.interfaces.controller import AuthController
 
 labour_query_router = APIRouter(prefix="/labour", tags=["Labour Queries"])
@@ -63,9 +59,6 @@ async def get_all_labours(
 async def get_labour_by_id(
     labour_id: str,
     service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
-    subscription_authorization_service: Annotated[
-        SubscriptionAuthorizationService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
-    ],
     labour_authorization_service: Annotated[
         LabourAuthorizationService, FromComponent(ComponentEnum.LABOUR)
     ],
@@ -74,15 +67,7 @@ async def get_labour_by_id(
 ) -> LabourResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
     labour = await service.get_labour_by_id(labour_id=labour_id)
-    try:
-        await labour_authorization_service.ensure_can_access_labour(
-            requester_id=user.id, labour=labour
-        )
-    except UnauthorizedLabourRequest:
-        await subscription_authorization_service.ensure_can_access_labour(
-            requester_id=user.id, labour_id=labour.id
-        )
-
+    await labour_authorization_service.ensure_can_access_labour(requester_id=user.id, labour=labour)
     return LabourResponse(labour=labour)
 
 
