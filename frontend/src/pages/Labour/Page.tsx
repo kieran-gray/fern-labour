@@ -73,10 +73,10 @@ export const LabourPage = () => {
 
   const getLabourId = (labourId: string | null, labourIdParam: string | null): string | null => {
     if (labourId !== null && labourId !== '') {
-      return labourId
+      return labourId;
     }
     return labourIdParam;
-  }
+  };
 
   const {
     isPending,

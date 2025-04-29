@@ -5,7 +5,6 @@ export class NotFoundError extends Error {
   }
 }
 
-
 export class PermissionDenied extends Error {
   constructor(message = 'You do not have permission to access this resource') {
     super(message);
