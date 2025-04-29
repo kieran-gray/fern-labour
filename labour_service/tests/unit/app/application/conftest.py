@@ -123,7 +123,7 @@ class MockSubscriptionRepository(SubscriptionRepository):
         labour_id: LabourId | None = None,
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
-        status: SubscriptionStatus | None = None,
+        subscription_status: SubscriptionStatus | None = None,
     ) -> Subscription | None:
         found_subscription = None
         for subscription in self._data.values():
@@ -133,7 +133,7 @@ class MockSubscriptionRepository(SubscriptionRepository):
                 continue
             if birthing_person_id and subscription.birthing_person_id != birthing_person_id:
                 continue
-            if status and subscription.status is not status:
+            if subscription_status and subscription.status is not subscription_status:
                 continue
             if found_subscription:
                 raise ValueError("Multiple results found")

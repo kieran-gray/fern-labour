@@ -88,7 +88,7 @@ class SubscriptionAuthorizationService:
         subscription = await self._subscription_repository.filter_one_or_none(
             labour_id=self._to_labour_id(labour_id=labour_id),
             subscriber_id=self._to_user_id(user_id=requester_id),
-            status=SubscriptionStatus.SUBSCRIBED,
+            subscription_status=SubscriptionStatus.SUBSCRIBED,
         )
 
         if not subscription:
