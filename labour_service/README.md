@@ -2,6 +2,15 @@
 
 A FastAPI-based backend service for tracking labour-related data, built as a first attempt to use Domain-Driven Design principles and clean architecture.
 
+## Setup
+
+To install the necessary dependencies, run the command:
+`make deps`
+
+
+Test that all of the dependencies have been install correctly by running the tests with the command:
+`make test`
+
 ## Features
 
 - REST API built with FastAPI
@@ -90,14 +99,3 @@ The flow for a subscriber is as follows:
 5. Now if the Birthing Person Begins or Completes Labour a notification will be sent to that user
 6. You will see the event handled in the consumer logs
 7. The email can be viewed in MailCatcher here: http://localhost:1080/
-
-
-## Acknowledgements
-
-This project's structure was inspired by and built upon the following template repositories:
-
-[fastapi-clean-example by Ivan Borovets](https://github.com/ivan-borovets/fastapi-clean-example)
-
-[full-stack-fastapi-template by FastAPI](https://github.com/fastapi/full-stack-fastapi-template)
-
-Please checkout the first repo, firstly for the brilliant README, but mainly for a better example of using clean architecture and DDD than this repo.
