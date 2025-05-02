@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Image, Text } from '@mantine/core';
+import { PageContainerContentBottom } from '../../../../shared-components/PageContainer/PageContainer';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '../../../../shared-components/utils';
 import dbhf_main from './ads/dbhf/main.jpg';
@@ -6,6 +7,7 @@ import my1styears_desktop from './ads/my1styears/desktop.jpg';
 import my1styears_main from './ads/my1styears/main.webp';
 import powfood_main from './ads/powfood/main.jpg';
 import wildly_tasty_main from './ads/wildlytasty/main.webp';
+import image from './Gifts.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Updates/LabourUpdates.module.css';
 
@@ -116,18 +118,12 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
 
   return (
     <>
-      <div className={baseClasses.root}>
-        <div className={baseClasses.body}>
-          <div className={classes.inner}>
-            <div className={classes.content}>
-              <ResponsiveTitle title="Thoughtful Gifts for New Parents" />
-              <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
-                {description}
-              </Text>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageContainerContentBottom
+        title="Thoughtful Gifts for New Parents"
+        description={description}
+        image={image}
+        mobileImage={image}
+      />
       {gifts.map((gift, index) => (
         <div className={baseClasses.root} style={{ marginTop: '20px' }}>
           <div className={baseClasses.body}>
