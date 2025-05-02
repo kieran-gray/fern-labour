@@ -8,7 +8,7 @@ interface PageContainerProps {
   description: string;
   image?: string;
   mobileImage?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   mobileTitle?: string;
 }
 
