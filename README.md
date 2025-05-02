@@ -6,21 +6,36 @@
 
 Docker and Docker Compose
 
+### Environment variable setup
+
+cp .env.example .env
+
+in root, labour_service, and notification_service.
+
 ### Installation
 
-Installation on mac/linux is as follows:
+First we need to login to GCP and setup some application-default credentials for pulling project dependencies from the private package repository.
 
-```bash
-make build
-```
+1. Login
 
-This command builds all of the necessary images.
+    `gcloud auth login`
+
+2. Initialise (follow all steps in terminal)
+
+    `gcloud init`
+
+3. Login to application-default
+
+    `gcloud auth application-default login`
+
+
+Add 127.0.0.1 keycloak to `/etc/hosts` to enable keycloak to work properl on the frontend.
 
 ```bash
 make run
 ```
 
-This command runs the full stack
+This command builds and runs the full stack.
 
 The frontend is available at http://localhost:5173
 The backend is avaliable at http://localhost:8000

@@ -103,7 +103,7 @@ services:
       timeout: 10s
     volumes:
       - app-db-data:/var/lib/postgresql/data/pgdata
-      - ./keycloak/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     env_file:
       - .env
     ports:
@@ -212,7 +212,6 @@ services:
       args:
         - VITE_API_URL=http://localhost:8000
         - NODE_ENV=development
-        - VITE_API_URL=${VITE_API_URL}
         - VITE_KEYCLOAK_AUTHORITY=${VITE_KEYCLOAK_AUTHORITY}
         - VITE_KEYCLOAK_METADATA_URL=${VITE_KEYCLOAK_METADATA_URL}
         - VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}
