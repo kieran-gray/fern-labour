@@ -24,7 +24,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           hiddenFrom="md"
           src={my1styears_main}
           alt="My 1st Years"
-          style={{ maxHeight: '300px', width: '100%', margin: 'auto' }}
+          style={{ maxHeight: '250px', width: '100%', margin: 'auto' }}
         />
       ),
       desktopImage: (
@@ -32,7 +32,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           visibleFrom="md"
           src={my1styears_desktop}
           alt="My 1st Years"
-          style={{ maxWidth: '300px', width: '100%' }}
+          style={{ maxWidth: '250px', width: '100%' }}
         />
       ),
       url: 'https://tidd.ly/3EL2r6X',
@@ -144,7 +144,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
                   align="center"
                   mt="xl"
                 >
-                  {gift.desktopImage}
+                  <Box style={{ flexGrow: 1, width: '100%' }}>{gift.desktopImage}</Box>
                   <Box>
                     {gift.mobileImage}
                     <Text mb="sm" mt="md">
