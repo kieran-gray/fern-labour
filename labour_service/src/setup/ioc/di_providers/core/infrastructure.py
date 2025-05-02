@@ -3,6 +3,7 @@ from collections.abc import AsyncIterable
 
 from dishka import Provider, Scope, provide
 from keycloak import KeycloakOpenID
+from redis import Redis
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -10,14 +11,16 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from src.core.infrastructure.security.cloudflare.turnstile_request_verification_service import (
-    TurnstileRequestVerificationService,
-)
-from src.core.infrastructure.security.interfaces.request_verification_service import (
+from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
+from src.core.infrastructure.security.rate_limiting.redis import RedisRateLimiter
+from src.core.infrastructure.security.request_verification.interface import (
     RequestVerificationService,
 )
+from src.core.infrastructure.security.request_verification.turnstile import (
+    TurnstileRequestVerificationService,
+)
 from src.setup.ioc.di_component_enum import ComponentEnum
-from src.setup.ioc.di_providers.common.settings import PostgresDsn
+from src.setup.ioc.di_providers.core.settings import PostgresDsn
 from src.setup.settings import Settings, SqlaEngineSettings
 from src.user.infrastructure.auth.interfaces.controller import AuthController
 from src.user.infrastructure.auth.interfaces.service import AuthService
@@ -103,3 +106,10 @@ class CommonInfrastructureProvider(Provider):
             cloudflare_url=settings.security.cloudflare.cloudflare_url,
             cloudflare_secret_key=settings.security.cloudflare.cloudflare_secret_key,
         )
+
+    @provide
+    def provide_rate_limiter(self, settings: Settings) -> RateLimiter:
+        redis = Redis(
+            host=settings.redis.host, port=settings.redis.port, password=settings.redis.password
+        )
+        return RedisRateLimiter(redis=redis)

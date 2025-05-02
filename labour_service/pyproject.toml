@@ -30,6 +30,7 @@ http = [
     "fastapi<1.0.0,>=0.115.0",
     "uvicorn<1.0.0,>=0.32.0",
     "uvloop<1.0.0,>=0.21.0",
+    "redis[hiredis]>=6.0.0",
 ]
 migrations = [
     "alembic<2.0.0,>=1.13.2",

@@ -2,9 +2,11 @@ import logging
 from dataclasses import dataclass
 
 from src.core.domain.producer import EventProducer
+from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
 from src.notification.enums import NotificationTemplate
 from src.notification.events import NotificationRequested
 from src.notification.notification_data import SubscriberInviteData
+from src.subscription.application.exceptions import SubscriberInviteRateLimitExceeded
 from src.subscription.domain.enums import ContactMethod
 from src.user.application.dtos.user import UserDTO
 from src.user.application.services.user_query_service import UserQueryService
@@ -27,9 +29,15 @@ class SubscriberInviteService:
         self,
         user_service: UserQueryService,
         event_producer: EventProducer,
+        rate_limiter: RateLimiter,
+        rate_limit: int,
+        rate_limit_expiry: int,
     ):
         self._user_service = user_service
         self._event_producer = event_producer
+        self._rate_limiter = rate_limiter
+        self._rate_limit = rate_limit
+        self._rate_limit_expiry = rate_limit_expiry
         self._template = NotificationTemplate.SUBSCRIBER_INVITE
 
     def _generate_notification_data(self, subscriber: UserDTO) -> SubscriberInviteData:
@@ -38,7 +46,16 @@ class SubscriberInviteService:
             link="https://fernlabour.com",
         )
 
+    def _get_rate_limit_key(self, subscriber_id: str) -> str:
+        return f"subscriber-invite:{subscriber_id}"
+
     async def send_invite(self, subscriber_id: str, invite_email: str) -> None:
+        key = self._get_rate_limit_key(subscriber_id=subscriber_id)
+        if not self._rate_limiter.is_allowed(
+            key=key, limit=self._rate_limit, expiry=self._rate_limit_expiry
+        ):
+            raise SubscriberInviteRateLimitExceeded()
+
         subscriber = await self._user_service.get(subscriber_id)
 
         notification_data = self._generate_notification_data(subscriber=subscriber)

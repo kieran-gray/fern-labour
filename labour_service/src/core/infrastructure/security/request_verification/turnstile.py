@@ -3,12 +3,12 @@ from uuid import uuid4
 
 import httpx
 
-from src.core.infrastructure.security.interfaces.exceptions import (
+from src.core.infrastructure.security.request_verification.exceptions import (
     InvalidVerificationTokenException,
     RequestVerificationError,
     VerificationTokenAlreadyUsedException,
 )
-from src.core.infrastructure.security.interfaces.request_verification_service import (
+from src.core.infrastructure.security.request_verification.interface import (
     RequestVerificationService,
 )
 

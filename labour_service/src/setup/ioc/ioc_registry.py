@@ -3,8 +3,8 @@ from collections.abc import Iterable
 from dishka import Provider
 
 from src.setup.ioc.di_providers.admin.application import AdminApplicationProvider
-from src.setup.ioc.di_providers.common.infrastructure import CommonInfrastructureProvider
-from src.setup.ioc.di_providers.common.settings import CommonSettingsProvider
+from src.setup.ioc.di_providers.core.infrastructure import CommonInfrastructureProvider
+from src.setup.ioc.di_providers.core.settings import CommonSettingsProvider
 from src.setup.ioc.di_providers.events.infrastructure import EventsInfrastructureProvider
 from src.setup.ioc.di_providers.invites.application import InvitesApplicationProvider
 from src.setup.ioc.di_providers.labour.application import LabourApplicationProvider

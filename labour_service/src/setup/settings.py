@@ -57,11 +57,21 @@ class CloudflareSettings(BaseModel):
     cloudflare_secret_key: str = Field(alias="CLOUDFLARE_SECRET_KEY")
 
 
+class RateLimitSettings(BaseModel):
+    labour_invite_limit: int = Field(alias="LABOUR_INVITE_RATE_LIMIT", default=20)
+    labour_invite_expiry: int = Field(alias="LABOUR_INVITE_RATE_LIMIT_EXPIRY", default=86400)
+    subscriber_invite_limit: int = Field(alias="SUBSCRIBER_INVITE_RATE_LIMIT", default=20)
+    subscriber_invite_expiry: int = Field(
+        alias="SUBSCRIBER_INVITE_RATE_LIMIT_EXPIRY", default=86400
+    )
+
+
 class SecuritySettings(BaseModel):
     cors: CORSSettings
     keycloak: KeycloakSettings
     subscriber_token: SubscriberTokenSettings
     cloudflare: CloudflareSettings
+    rate_limits: RateLimitSettings
 
 
 class LoggingSettings(BaseModel):
@@ -135,6 +145,12 @@ class PaymentSettings(BaseModel):
     stripe: StripeSettings
 
 
+class RedisSettings(BaseModel):
+    host: str = Field(alias="REDIS_HOST")
+    port: int = Field(alias="REDIS_PORT")
+    password: str = Field(alias="REDIS_PASSWORD")
+
+
 class Settings(BaseModel):
     base: BaseSettings
     security: SecuritySettings
@@ -143,6 +159,7 @@ class Settings(BaseModel):
     events: EventSettings
     db: DbSettings
     payments: PaymentSettings
+    redis: RedisSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"
 

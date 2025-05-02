@@ -5,7 +5,7 @@ import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { LabourService, OpenAPI, SendInviteRequest } from '../../../../../client';
+import { ApiError, LabourService, OpenAPI, SendInviteRequest } from '../../../../../client';
 import { useLabour } from '../../../LabourContext';
 import image from './invite.svg';
 import classes from './InviteContainer.module.css';
@@ -44,13 +44,22 @@ export function InviteContainer() {
       });
       form.reset();
     },
-    onError: () => {
-      notifications.show({
-        title: 'Error sending invite',
-        message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
-      });
+    onError: (err) => {
+      if (err instanceof ApiError && err.status === 429) {
+        notifications.show({
+          title: 'Slow down!',
+          message: 'You have sent too many invites today. Wait until tomorrow to send more.',
+          radius: 'lg',
+          color: 'var(--mantine-color-pink-7)',
+        })
+      } else {
+        notifications.show({
+          title: 'Error sending invite',
+          message: 'Something went wrong. Please try again.',
+          radius: 'lg',
+          color: 'var(--mantine-color-pink-7)',
+        });
+      }
     },
     onSettled: () => {
       setMutationInProgress(false);

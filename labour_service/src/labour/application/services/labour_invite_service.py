@@ -2,6 +2,8 @@ import logging
 from dataclasses import dataclass
 
 from src.core.domain.producer import EventProducer
+from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
+from src.labour.application.exceptions import LabourInviteRateLimitExceeded
 from src.labour.application.security.token_generator import TokenGenerator
 from src.notification.enums import NotificationTemplate
 from src.notification.events import NotificationRequested
@@ -36,11 +38,17 @@ class LabourInviteService:
         event_producer: EventProducer,
         subscription_query_service: SubscriptionQueryService,
         token_generator: TokenGenerator,
+        rate_limiter: RateLimiter,
+        rate_limit: int,
+        rate_limit_expiry: int,
     ):
         self._user_service = user_service
         self._event_producer = event_producer
         self._subscription_query_service = subscription_query_service
         self._token_generator = token_generator
+        self._rate_limiter = rate_limiter
+        self._rate_limit = rate_limit
+        self._rate_limit_expiry = rate_limit_expiry
         self._template = NotificationTemplate.LABOUR_INVITE
 
     def _generate_notification_data(
@@ -53,7 +61,16 @@ class LabourInviteService:
             link=f"https://track.fernlabour.com/subscribe/{labour_id}?token={token}",
         )
 
+    def _get_rate_limit_key(self, birthing_person_id: str) -> str:
+        return f"labour-invite:{birthing_person_id}"
+
     async def send_invite(self, birthing_person_id: str, labour_id: str, invite_email: str) -> None:
+        key = self._get_rate_limit_key(birthing_person_id=birthing_person_id)
+        if not self._rate_limiter.is_allowed(
+            key=key, limit=self._rate_limit, expiry=self._rate_limit_expiry
+        ):
+            raise LabourInviteRateLimitExceeded()
+
         birthing_person = await self._user_service.get(birthing_person_id)
         subscriptions = await self._subscription_query_service.get_labour_subscriptions(
             requester_id=birthing_person_id, labour_id=labour_id
