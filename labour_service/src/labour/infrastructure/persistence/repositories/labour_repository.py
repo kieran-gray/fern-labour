@@ -84,3 +84,21 @@ class SQLAlchemyLabourRepository(LabourRepository):
 
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_birthing_person_id_for_labour(self, labour_id: LabourId) -> UserId | None:
+        """
+        Retrieve a the birthing person who owns the labour associated with the provided labour id
+
+        Args:
+            labour_id: The ID of the labour
+
+        Returns:
+            The UserId of the birthing person if found, None otherwise
+        """
+        stmt = select(labours_table.c.birthing_person_id).where(
+            labours_table.c.id == labour_id.value
+        )
+
+        result = await self._session.execute(stmt)
+        user_id_str = result.scalar_one_or_none()
+        return UserId(user_id_str) if user_id_str else None

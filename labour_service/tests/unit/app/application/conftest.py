@@ -52,11 +52,11 @@ class MockUserRepository(UserRepository):
 class MockLabourRepository(LabourRepository):
     _data = {}
 
-    async def save(self, labour_id: Labour) -> None:
-        self._data[labour_id.id_.value] = labour_id
+    async def save(self, labour: Labour) -> None:
+        self._data[labour.id_.value] = labour
 
-    async def delete(self, labour_id: Labour) -> None:
-        self._data.pop(labour_id.id_.value)
+    async def delete(self, labour: Labour) -> None:
+        self._data.pop(labour.id_.value)
 
     async def get_by_id(self, labour_id: LabourId) -> Labour | None:
         return self._data.get(labour_id.value, None)
@@ -77,6 +77,12 @@ class MockLabourRepository(LabourRepository):
             ),
             None,
         )
+
+    async def get_birthing_person_id_for_labour(self, labour_id: LabourId) -> UserId | None:
+        labour = self._data.get(labour_id.value, None)
+        if not labour:
+            return labour
+        return labour.birthing_person_id
 
 
 class MockSubscriptionRepository(SubscriptionRepository):

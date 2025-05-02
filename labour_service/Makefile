@@ -112,11 +112,11 @@ check: lint test
 
 # Dishka
 
-plot-data:
-	PYTHONPATH="." python scripts/plot_dependencies.py
+plot:
+	PYTHONPATH="." uv run python scripts/plot_dependencies.py
 
 tree:
-	PYTHONPATH="." python scripts/print_tree.py
+	PYTHONPATH="." uv run python scripts/print_tree.py
 
 # clean
 
