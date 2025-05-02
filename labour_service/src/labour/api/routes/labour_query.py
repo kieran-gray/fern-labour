@@ -66,8 +66,10 @@ async def get_labour_by_id(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
+    await labour_authorization_service.ensure_can_access_labour(
+        requester_id=user.id, labour_id=labour_id
+    )
     labour = await service.get_labour_by_id(labour_id=labour_id)
-    await labour_authorization_service.ensure_can_access_labour(requester_id=user.id, labour=labour)
     return LabourResponse(labour=labour)
 
 

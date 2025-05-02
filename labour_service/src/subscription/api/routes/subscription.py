@@ -7,6 +7,9 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from src.api.dependencies import bearer_scheme
 from src.api.exception_handler import ExceptionSchema
+from src.labour.application.security.labour_authorization_service import (
+    LabourAuthorizationService,
+)
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.subscription.api.requests import (
@@ -185,11 +188,17 @@ async def get_labour_subscriptions(
     subscription_query_service: Annotated[
         SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
     ],
+    labour_authorization_service: Annotated[
+        LabourAuthorizationService, FromComponent(ComponentEnum.LABOUR)
+    ],
     user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionsResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
+    await labour_authorization_service.ensure_can_access_labour(
+        requester_id=user.id, labour_id=labour_id
+    )
     subscriptions = await subscription_query_service.get_labour_subscriptions(
         requester_id=user.id, labour_id=labour_id
     )

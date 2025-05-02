@@ -58,3 +58,14 @@ class LabourRepository(Protocol):
         Returns:
             The labour if found, None otherwise
         """
+
+    async def get_birthing_person_id_for_labour(self, labour_id: LabourId) -> UserId | None:
+        """
+        Retrieve a the birthing person who owns the labour associated with the provided labour id
+
+        Args:
+            labour_id: The ID of the labour
+
+        Returns:
+            The UserId of the birthing person if found, None otherwise
+        """

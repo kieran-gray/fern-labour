@@ -32,5 +32,7 @@ class LabourApplicationProvider(Provider):
         return LabourQueryService(labour_repository=labour_repository)
 
     @provide
-    def provide_labour_authorization_service(self) -> LabourAuthorizationService:
-        return LabourAuthorizationService()
+    def provide_labour_authorization_service(
+        self, labour_repository: LabourRepository
+    ) -> LabourAuthorizationService:
+        return LabourAuthorizationService(labour_repository=labour_repository)
