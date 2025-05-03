@@ -5,7 +5,12 @@ import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { ApiError, OpenAPI, SendSubscriberInviteRequest, SubscriberService } from '../../../../client';
+import {
+  ApiError,
+  OpenAPI,
+  SendSubscriberInviteRequest,
+  SubscriberService,
+} from '../../../../client';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from '../../../Labour/Tabs/Invites/InviteContainer/invite.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
@@ -51,7 +56,7 @@ export function InviteContainer() {
           message: 'You have sent too many invites today. Wait until tomorrow to send more.',
           radius: 'lg',
           color: 'var(--mantine-color-pink-7)',
-        })
+        });
       } else {
         notifications.show({
           title: 'Error Sending Invite',

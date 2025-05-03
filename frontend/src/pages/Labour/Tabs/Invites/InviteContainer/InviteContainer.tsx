@@ -51,7 +51,7 @@ export function InviteContainer() {
           message: 'You have sent too many invites today. Wait until tomorrow to send more.',
           radius: 'lg',
           color: 'var(--mantine-color-pink-7)',
-        })
+        });
       } else {
         notifications.show({
           title: 'Error sending invite',
