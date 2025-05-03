@@ -37,7 +37,7 @@ class MockConfigReader(ConfigReader):
                     "LABOUR_INVITE_RATE_LIMIT_EXPIRY": 86400,
                     "SUBSCRIBER_INVITE_RATE_LIMIT": 20,
                     "SUBSCRIBER_INVITE_RATE_LIMIT_EXPIRY": 86400,
-                }
+                },
             },
             "logging": {
                 "LOG_LEVEL": "WARNING",
@@ -79,7 +79,7 @@ class MockConfigReader(ConfigReader):
                 "REDIS_HOST": "localhost",
                 "REDIS_PORT": 1234,
                 "REDIS_PASSWORD": "password",
-            }
+            },
         }
 
 
