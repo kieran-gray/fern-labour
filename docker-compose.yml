@@ -1,7 +1,7 @@
 services:
 
   labour-service:
-    image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_LABOUR_SERVICE?unset}:latest'
     build:
       context: ./labour_service
       target: development
@@ -33,7 +33,7 @@ services:
       retries: 5
 
   labour-service-pre-start:
-    image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}-alembic:latest'
+    image: '${DOCKER_IMAGE_LABOUR_SERVICE?unset}-alembic:latest'
     build:
       context: ./labour_service
       target: migrations
@@ -48,7 +48,7 @@ services:
       - ./labour_service/.env
 
   notification-service:
-    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?unset}:latest'
     build:
       context: ./notification_service
       target: http
@@ -78,7 +78,7 @@ services:
       retries: 5
 
   notification-service-pre-start:
-    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}-alembic:latest'
+    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?unset}-alembic:latest'
     build:
       context: ./notification_service
       target: migrations
@@ -110,9 +110,9 @@ services:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
-      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
-      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?unset}
+      - POSTGRES_USER=${POSTGRES_USER?unset}
+      - POSTGRES_DB=${POSTGRES_DB?unset}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
     command: 
@@ -125,7 +125,7 @@ services:
       - "max_replication_slots=1"
 
   labour-consumer:
-    image: '${DOCKER_IMAGE_LABOUR_SERVICE?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_LABOUR_SERVICE?unset}:latest'
     restart: "no"
     env_file:
       - ./labour_service/.env
@@ -136,7 +136,7 @@ services:
       - default
 
   notification-consumer:
-    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?unset}:latest'
     restart: "no"
     env_file:
       - ./notification_service/.env
@@ -147,7 +147,7 @@ services:
       - default
 
   keycloak:
-    image: '${STACK_NAME?Variable not set}-keycloak:latest'
+    image: '${STACK_NAME?unset}-keycloak:latest'
     build:
       context: ./keycloak
     restart: "no"
@@ -204,8 +204,14 @@ services:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
       - PUBSUB_PROJECT_ID=test
 
+  valkey:
+    image: valkey/valkey:latest
+    command: valkey-server --port ${REDIS_PORT?unset} --requirepass ${REDIS_PASSWORD?unset} --save
+    volumes:
+      - valkey-cache:/data
+
   frontend:
-    image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_FRONTEND?unset}:latest'
     build:
       context: ./frontend
       target: build-stage
@@ -227,15 +233,15 @@ services:
     command: [ "npm", "run", "dev" ]
 
   marketing:
-    image: '${DOCKER_IMAGE_MARKETING?Variable not set}:latest'
+    image: '${DOCKER_IMAGE_MARKETING?unset}:latest'
     build:
       context: ./marketing
       target: build-stage
       args:
         - NODE_ENV=development
-        - BACKEND_API_URL=${BACKEND_API_URL?variable not set}
-        - INSTAGRAM_URL=${INSTAGRAM_URL?variable not set}
-        - FRONTEND_URL=${FRONTEND_HOST?variable not set}
+        - BACKEND_API_URL=${BACKEND_API_URL?unset}
+        - INSTAGRAM_URL=${INSTAGRAM_URL?unset}
+        - FRONTEND_URL=${FRONTEND_HOST?unset}
     restart: "no"
     networks:
       - traefik-public
@@ -243,9 +249,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL?variable not set}
-      - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_HOST?variable not set}
-      - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?variable not set}
+      - NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL?unset}
+      - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_HOST?unset}
+      - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
     command: [ "npm", "run", "dev" ]
 
   mailcatcher:
@@ -256,6 +262,7 @@ services:
 
 volumes:
   app-db-data:
+  valkey-cache:
 
 networks:
   traefik-public:

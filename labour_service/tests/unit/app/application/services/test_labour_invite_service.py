@@ -5,6 +5,8 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
+from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
+from src.labour.application.exceptions import LabourInviteRateLimitExceeded
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_invite_service import (
     LabourInviteService,
@@ -24,6 +26,7 @@ from src.user.domain.value_objects.user_id import UserId
 
 BIRTHING_PERSON = "test_birthing_person"
 SUBSCRIBER = "test_subscriber"
+RATE_LIMIT = 2
 
 
 @pytest_asyncio.fixture
@@ -31,6 +34,7 @@ async def labour_invite_service(
     user_service: UserQueryService,
     subscription_query_service: SubscriptionQueryService,
     token_generator: TokenGenerator,
+    rate_limiter: RateLimiter,
 ) -> LabourInviteService:
     await user_service._user_repository.save(
         User(
@@ -56,6 +60,9 @@ async def labour_invite_service(
         event_producer=AsyncMock(),
         subscription_query_service=subscription_query_service,
         token_generator=token_generator,
+        rate_limiter=rate_limiter,
+        rate_limit=RATE_LIMIT,
+        rate_limit_expiry=60,
     )
 
 
@@ -118,4 +125,21 @@ async def test_cannnot_send_invite_for_email_already_subscribed(
             birthing_person_id=BIRTHING_PERSON,
             labour_id=labour.id,
             invite_email="test@subscriber.com",
+        )
+
+
+async def test_error_raised_after_exceeding_rate_limit(
+    labour_service: LabourService,
+    labour_invite_service: LabourInviteService,
+) -> None:
+    labour = await labour_service.plan_labour(
+        birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
+    )
+    for _ in range(RATE_LIMIT):
+        await labour_invite_service.send_invite(
+            birthing_person_id=BIRTHING_PERSON, labour_id=labour.id, invite_email="test@email.com"
+        )
+    with pytest.raises(LabourInviteRateLimitExceeded):
+        await labour_invite_service.send_invite(
+            birthing_person_id=BIRTHING_PERSON, labour_id=labour.id, invite_email="test@email.com"
         )

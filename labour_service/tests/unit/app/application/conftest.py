@@ -2,7 +2,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
+from fakeredis import FakeValkey
 
+from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
+from src.core.infrastructure.security.rate_limiting.redis import RedisRateLimiter
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.labour.application.services.labour_service import LabourService
@@ -179,6 +182,11 @@ class MockTokenGenerator(TokenGenerator):
 @pytest.fixture
 def token_generator() -> TokenGenerator:
     return MockTokenGenerator()
+
+
+@pytest.fixture
+def rate_limiter() -> RateLimiter:
+    return RedisRateLimiter(redis=FakeValkey())
 
 
 @pytest_asyncio.fixture

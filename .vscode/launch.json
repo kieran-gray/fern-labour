@@ -43,6 +43,14 @@
             "module": "pytest",
             "args": ["notification_service/"],
             "justMyCode": false,
+        },
+        {
+            "name": "Debug Tests: Labour Service",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["labour_service/"],
+            "justMyCode": false,
         }
     ]
 }

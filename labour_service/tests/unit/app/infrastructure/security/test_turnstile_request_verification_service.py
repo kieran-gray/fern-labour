@@ -2,13 +2,13 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from src.core.infrastructure.security.cloudflare.turnstile_request_verification_service import (
-    TurnstileRequestVerificationService,
-)
-from src.core.infrastructure.security.interfaces.exceptions import (
+from src.core.infrastructure.security.request_verification.exceptions import (
     InvalidVerificationTokenException,
     RequestVerificationError,
     VerificationTokenAlreadyUsedException,
+)
+from src.core.infrastructure.security.request_verification.turnstile import (
+    TurnstileRequestVerificationService,
 )
 
 
