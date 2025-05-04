@@ -15,7 +15,7 @@ export PUBSUB_EMULATOR_HOST="pub-sub-emulator:8085"
 export PUBSUB_PROJECT_ID="test"
 
 # Create topics
-topics="labour.begun labour.completed labour.update-posted notification.requested notification.status-updated contraction.started contraction.ended"
+topics="labour.begun labour.completed labour.update-posted notification.requested notification.status-updated contraction.started contraction.ended subscriber.requested subscriber.approved"
 
 for topic in $topics; do
   # Create topic using curl to the emulator REST API

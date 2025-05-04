@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 from src.core.domain.aggregate_root import AggregateRoot
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from src.subscription.domain.events import SubscriberApproved, SubscriberRequested
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
 from src.user.domain.value_objects.user_id import UserId
 
@@ -31,7 +32,7 @@ class Subscription(AggregateRoot[SubscriptionId]):
         subscription_id: UUID | None = None,
     ) -> Self:
         subscription_id = subscription_id or uuid4()
-        return cls(
+        subscription = cls(
             id_=SubscriptionId(subscription_id),
             labour_id=labour_id,
             birthing_person_id=birthing_person_id,
@@ -40,6 +41,43 @@ class Subscription(AggregateRoot[SubscriptionId]):
             contact_methods=contact_methods or [],
             status=status,
         )
+        subscription.add_domain_event(
+            SubscriberRequested.create(
+                data={
+                    "labour_id": str(labour_id.value),
+                    "birthing_person_id": birthing_person_id.value,
+                    "subscriber_id": subscriber_id.value,
+                    "subscription_id": str(subscription.id_),
+                }
+            )
+        )
+        return subscription
+
+    def request(self) -> None:
+        self.add_domain_event(
+            SubscriberRequested.create(
+                data={
+                    "labour_id": str(self.labour_id.value),
+                    "birthing_person_id": self.birthing_person_id.value,
+                    "subscriber_id": self.subscriber_id.value,
+                    "subscription_id": str(self.id_),
+                }
+            )
+        )
+        self.status = SubscriptionStatus.REQUESTED
+
+    def approve(self) -> None:
+        self.add_domain_event(
+            SubscriberApproved.create(
+                data={
+                    "labour_id": str(self.labour_id.value),
+                    "birthing_person_id": self.birthing_person_id.value,
+                    "subscriber_id": self.subscriber_id.value,
+                    "subscription_id": str(self.id_),
+                }
+            )
+        )
+        self.status = SubscriptionStatus.SUBSCRIBED
 
     def update_role(self, role: SubscriberRole) -> None:
         self.role = role
