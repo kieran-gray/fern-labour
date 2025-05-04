@@ -45,8 +45,11 @@ from src.labour.domain.labour_update.exceptions import TooSoonSinceLastAnnouncem
 from src.payments.application.exceptions import StripeProductNotFound
 from src.subscription.application.exceptions import SubscriberInviteRateLimitExceeded
 from src.subscription.domain.exceptions import (
+    SubscriberAlreadyRequested,
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
+    SubscriberIsNotBlocked,
+    SubscriberIsRemoved,
     SubscriberNotSubscribed,
     SubscriptionNotFoundById,
     SubscriptionTokenIncorrect,
@@ -125,6 +128,9 @@ class ExceptionMapper:
             StripeProductNotFound: status.HTTP_404_NOT_FOUND,
             LabourInviteRateLimitExceeded: status.HTTP_429_TOO_MANY_REQUESTS,
             SubscriberInviteRateLimitExceeded: status.HTTP_429_TOO_MANY_REQUESTS,
+            SubscriberIsNotBlocked: status.HTTP_400_BAD_REQUEST,
+            SubscriberIsRemoved: status.HTTP_400_BAD_REQUEST,
+            SubscriberAlreadyRequested: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

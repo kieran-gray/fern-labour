@@ -1,6 +1,6 @@
 import { PageContainerContentBottom } from '../../../../../shared-components/PageContainer/PageContainer';
 import image from '../../../../Subscribe/Components/protected.svg';
-import { SubscribersTable } from './SubscribersTable/SubscribersTable';
+import { ManageSubscribersTabs } from './ManageSubscriberTabs/ManageSubscriberTabs';
 
 export function SubscribersContainer() {
   return (
@@ -11,7 +11,7 @@ export function SubscribersContainer() {
       mobileImage={image}
       mobileTitle="Manage your subscribers"
     >
-      <SubscribersTable />
+      <ManageSubscribersTabs />
     </PageContainerContentBottom>
   );
 }

@@ -26,6 +26,7 @@ from src.subscription.application.services.subscription_query_service import (
 from src.subscription.application.services.subscription_service import SubscriptionService
 from src.subscription.domain.enums import SubscriptionStatus
 from src.subscription.domain.exceptions import (
+    SubscriberAlreadyRequested,
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
     SubscriberNotSubscribed,
@@ -102,12 +103,12 @@ async def test_can_subscribe_to_labour(
     assert subscription.birthing_person_id == BIRTHING_PERSON
     assert subscription.labour_id == labour.id
     assert subscription.subscriber_id == SUBSCRIBER
-    assert subscription.status == SubscriptionStatus.SUBSCRIBED.value
+    assert subscription.status == SubscriptionStatus.REQUESTED.value
 
     subscriptions = await subscription_query_service.get_subscriber_subscriptions(
         subscriber_id=SUBSCRIBER
     )
-    assert subscriptions == [subscription]
+    assert subscriptions == []
 
 
 async def test_cannot_subscribe_to_labour_without_payment_plan(
@@ -141,6 +142,7 @@ async def test_cannot_subscribe_to_labour_with_solo_payment_plan(
 
 async def test_cannot_subscribe_to_labour_with_solo_payment_plan_sub_limit_reached(
     subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
     labour_service: LabourService,
     user_service: UserQueryService,
 ) -> None:
@@ -165,8 +167,11 @@ async def test_cannot_subscribe_to_labour_with_solo_payment_plan_sub_limit_reach
     token = subscription_service._token_generator.generate(labour.id)
 
     for user_id in user_ids:
-        await subscription_service.subscribe_to(
+        subscription = await subscription_service.subscribe_to(
             subscriber_id=user_id, labour_id=labour.id, token=token
+        )
+        await subscription_management_service.approve_subscriber(
+            requester_id=BIRTHING_PERSON, subscription_id=subscription.id
         )
 
     with pytest.raises(MaximumNumberOfSubscribersReached):
@@ -175,13 +180,33 @@ async def test_cannot_subscribe_to_labour_with_solo_payment_plan_sub_limit_reach
         )
 
 
-async def test_cannot_subscribe_to_labour_more_than_once(
+async def test_cannot_request_access_to_labour_more_than_once(
     subscription_service: SubscriptionService, labour: LabourDTO
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
 
     await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+
+    with pytest.raises(SubscriberAlreadyRequested):
+        await subscription_service.subscribe_to(
+            subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+        )
+
+
+async def test_cannot_request_access_to_subscribed_labour(
+    subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
+    labour: LabourDTO,
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
 
     with pytest.raises(SubscriberAlreadySubscribed):
@@ -211,6 +236,13 @@ async def test_can_subscribe_to_labour_when_removed(
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
+    assert subscription.status == SubscriptionStatus.REQUESTED
+
+    subscription = await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    assert subscription.status == SubscriptionStatus.SUBSCRIBED
+
     subscription = await subscription_management_service.remove_subscriber(
         requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
@@ -219,11 +251,17 @@ async def test_can_subscribe_to_labour_when_removed(
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
+    assert subscription.status == SubscriptionStatus.REQUESTED
+
+    subscription = await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
     assert subscription.status == SubscriptionStatus.SUBSCRIBED
 
 
 async def test_can_subscribe_to_labour_when_unsubscribed(
     subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
     labour: LabourDTO,
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
@@ -231,6 +269,13 @@ async def test_can_subscribe_to_labour_when_unsubscribed(
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
+    assert subscription.status == SubscriptionStatus.REQUESTED
+
+    subscription = await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    assert subscription.status == SubscriptionStatus.SUBSCRIBED
+
     subscription = await subscription_service.unsubscribe_from(
         subscriber_id=SUBSCRIBER, labour_id=labour.id
     )
@@ -238,6 +283,11 @@ async def test_can_subscribe_to_labour_when_unsubscribed(
 
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    assert subscription.status == SubscriptionStatus.REQUESTED
+
+    subscription = await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
     assert subscription.status == SubscriptionStatus.SUBSCRIBED
 
@@ -295,12 +345,16 @@ async def test_cannot_subscribe_to_with_incorrect_token(
 
 async def test_can_unsubscribe_from_labour(
     subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
     subscription_query_service: SubscriptionQueryService,
     labour: LabourDTO,
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    subscription = await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
     subscriptions = await subscription_query_service.get_subscriber_subscriptions(
         subscriber_id=SUBSCRIBER
@@ -315,12 +369,16 @@ async def test_can_unsubscribe_from_labour(
 
 async def test_cannot_unsubscribe_from_labour_twice(
     subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
     subscription_query_service: SubscriptionQueryService,
     labour: LabourDTO,
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    subscription = await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
     subscriptions = await subscription_query_service.get_subscriber_subscriptions(
         subscriber_id=SUBSCRIBER

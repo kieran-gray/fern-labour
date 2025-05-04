@@ -9,8 +9,10 @@ from src.api.dependencies import bearer_scheme
 from src.api.exception_handler import ExceptionSchema
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.subscription.api.requests import (
+    ApproveSubscriberRequest,
     BlockSubscriberRequest,
     RemoveSubscriberRequest,
+    UnblockSubscriberRequest,
     UpdateContactMethodsRequest,
     UpdateRoleRequest,
 )
@@ -23,6 +25,32 @@ from src.user.infrastructure.auth.interfaces.controller import AuthController
 subscription_management_router = APIRouter(
     prefix="/subscription-management", tags=["Subscription Management"]
 )
+
+
+@subscription_management_router.put(
+    "/approve-subscriber",
+    responses={
+        status.HTTP_200_OK: {"model": SubscriptionResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def approve_subscriber(
+    request_data: ApproveSubscriberRequest,
+    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> SubscriptionResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    subscription = await service.approve_subscriber(
+        requester_id=user.id, subscription_id=request_data.subscription_id
+    )
+    return SubscriptionResponse(subscription=subscription)
 
 
 @subscription_management_router.put(
@@ -72,6 +100,32 @@ async def block_subscriber(
 ) -> SubscriptionResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
     subscription = await service.block_subscriber(
+        requester_id=user.id, subscription_id=request_data.subscription_id
+    )
+    return SubscriptionResponse(subscription=subscription)
+
+
+@subscription_management_router.put(
+    "/unblock-subscriber",
+    responses={
+        status.HTTP_200_OK: {"model": SubscriptionResponse},
+        status.HTTP_400_BAD_REQUEST: {"model": ExceptionSchema},
+        status.HTTP_401_UNAUTHORIZED: {"model": ExceptionSchema},
+        status.HTTP_403_FORBIDDEN: {"model": ExceptionSchema},
+        status.HTTP_404_NOT_FOUND: {"model": ExceptionSchema},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ExceptionSchema},
+    },
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def unblock_subscriber(
+    request_data: UnblockSubscriberRequest,
+    service: Annotated[SubscriptionManagementService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
+    auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> SubscriptionResponse:
+    user = auth_controller.get_authenticated_user(credentials=credentials)
+    subscription = await service.unblock_subscriber(
         requester_id=user.id, subscription_id=request_data.subscription_id
     )
     return SubscriptionResponse(subscription=subscription)

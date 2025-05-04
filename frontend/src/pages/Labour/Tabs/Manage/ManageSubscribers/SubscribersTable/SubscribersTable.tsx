@@ -1,52 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Avatar, Group, Table, Text } from '@mantine/core';
-import { OpenAPI, SubscriptionService } from '../../../../../../client';
-import { ImportantText } from '../../../../../../shared-components/ImportantText/ImportantText';
-import { PageLoadingIcon } from '../../../../../../shared-components/PageLoading/Loading';
-import { useLabour } from '../../../../LabourContext';
+import { SubscriptionDTO, UserSummaryDTO } from '../../../../../../client';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
+import baseClasses from '../../../../../../shared-components/shared-styles.module.css';
 import classes from './SubscribersTable.module.css';
 
-export function SubscribersTable() {
-  const auth = useAuth();
-  const { labourId } = useLabour();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
-
-  const { isPending, isError, data, error } = useQuery({
-    queryKey: ['labour_subscriptions', auth.user?.profile.sub],
-    queryFn: async () => {
-      const response = await SubscriptionService.getLabourSubscriptions({ labourId: labourId! });
-      return response;
-    },
-    enabled: !!labourId,
-  });
-
-  if (isPending) {
-    return (
-      <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
-        <PageLoadingIcon />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
-        <Text>Something went wrong... {error ? error.message : ''}</Text>
-      </div>
-    );
-  }
-
-  const subscriberById = Object.fromEntries(
-    data.subscribers.map((subscriber) => [subscriber.id, subscriber])
-  );
-  const activeSubscriptions = data.subscriptions.filter(
-    (subscription) => subscription.status === 'subscribed'
-  );
-  const rows = activeSubscriptions.map((subscription) => {
+export function SubscribersTable({
+  subscriptions,
+  subscriberById,
+  status,
+}: {
+  subscriptions: SubscriptionDTO[];
+  subscriberById: { [k: string]: UserSummaryDTO };
+  status: string;
+}) {
+  const rows = subscriptions.map((subscription) => {
     const subscriber = subscriberById[subscription.subscriber_id];
     return (
       <Table.Tr key={subscription.id}>
@@ -60,9 +27,9 @@ export function SubscribersTable() {
             </div>
           </Group>
         </Table.Td>
-        <Table.Td>Friend/Family</Table.Td>
+        <Table.Td>{subscription.status}</Table.Td>
         <Table.Td>
-          <ManageSubscriptionMenu subscription_id={subscription.id} />
+          <ManageSubscriptionMenu subscription_id={subscription.id} status={status} />
         </Table.Td>
       </Table.Tr>
     );
@@ -75,7 +42,7 @@ export function SubscribersTable() {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Subscriber</Table.Th>
-              <Table.Th>Role</Table.Th>
+              <Table.Th>Status</Table.Th>
               <Table.Th>Manage</Table.Th>
             </Table.Tr>
           </Table.Thead>
@@ -84,7 +51,19 @@ export function SubscribersTable() {
       </Table.ScrollContainer>
     );
   }
+  let message = undefined;
+  if (status === 'subscribed') {
+    message =
+      "You don't have any subscribers yet, share invites with loved ones in the invite tab.";
+  } else if (status === 'requested') {
+    message = "You don't have any subscriber requests.";
+  } else if (status === 'blocked') {
+    message = "You don't have any blocked subscribers.";
+  }
+
   return (
-    <ImportantText message="You don't have any subscribers yet, share invites with loved ones in the invite tab." />
+    <Text className={baseClasses.importantText} bg="var(--mantine-color-pink-0)" mt={10}>
+      {message}
+    </Text>
   );
 }

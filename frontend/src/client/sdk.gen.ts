@@ -4,6 +4,8 @@ import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
 import type {
+  ApproveSubscriberApiV1SubscriptionManagementApproveSubscriberPutData,
+  ApproveSubscriberApiV1SubscriptionManagementApproveSubscriberPutResponse,
   BeginLabourApiV1LabourBeginPostResponse,
   BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutData,
   BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutResponse,
@@ -58,6 +60,8 @@ import type {
   StripeWebhookApiV1PaymentsWebhookPostResponse,
   SubscribeToApiV1SubscriptionSubscribeLabourIdPostData,
   SubscribeToApiV1SubscriptionSubscribeLabourIdPostResponse,
+  UnblockSubscriberApiV1SubscriptionManagementUnblockSubscriberPutData,
+  UnblockSubscriberApiV1SubscriptionManagementUnblockSubscriberPutResponse,
   UnsubscribeFromApiV1SubscriptionUnsubscribePostData,
   UnsubscribeFromApiV1SubscriptionUnsubscribePostResponse,
   UpdateContactMethodsApiV1SubscriptionManagementUpdateContactMethodsPutData,
@@ -859,6 +863,32 @@ export class SubscriptionService {
 
 export class SubscriptionManagementService {
   /**
+   * Approve Subscriber
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns SubscriptionResponse Successful Response
+   * @throws ApiError
+   */
+  public static approveSubscriber(
+    data: ApproveSubscriberApiV1SubscriptionManagementApproveSubscriberPutData
+  ): CancelablePromise<ApproveSubscriberApiV1SubscriptionManagementApproveSubscriberPutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/subscription-management/approve-subscriber',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
    * Remove Subscriber
    * @param data The data for the request.
    * @param data.requestBody
@@ -897,6 +927,32 @@ export class SubscriptionManagementService {
     return __request(OpenAPI, {
       method: 'PUT',
       url: '/api/v1/subscription-management/block-subscriber',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Unblock Subscriber
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns SubscriptionResponse Successful Response
+   * @throws ApiError
+   */
+  public static unblockSubscriber(
+    data: UnblockSubscriberApiV1SubscriptionManagementUnblockSubscriberPutData
+  ): CancelablePromise<UnblockSubscriberApiV1SubscriptionManagementUnblockSubscriberPutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/subscription-management/unblock-subscriber',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {

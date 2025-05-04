@@ -25,7 +25,7 @@ class Subscription(AggregateRoot[SubscriptionId]):
         labour_id: LabourId,
         birthing_person_id: UserId,
         subscriber_id: UserId,
-        status: SubscriptionStatus = SubscriptionStatus.SUBSCRIBED,
+        status: SubscriptionStatus = SubscriptionStatus.REQUESTED,
         role: SubscriberRole = SubscriberRole.FRIENDS_AND_FAMILY,
         contact_methods: list[ContactMethod] | None = None,
         subscription_id: UUID | None = None,
