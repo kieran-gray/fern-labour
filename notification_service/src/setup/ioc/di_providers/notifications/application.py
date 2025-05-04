@@ -6,10 +6,12 @@ from src.core.domain.producer import EventProducer
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,
+    WhatsAppNotificationGateway,
 )
 from src.notification.application.interfaces.template_engine import (
     EmailTemplateEngine,
     SMSTemplateEngine,
+    WhatsAppTemplateEngine,
 )
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
@@ -24,6 +26,9 @@ from src.notification.infrastructure.gateways.smtp_email_gateway import (
 )
 from src.notification.infrastructure.gateways.twilio_sms_gateway import (
     TwilioSMSNotificationGateway,
+)
+from src.notification.infrastructure.gateways.twilio_whatsapp_gateway import (
+    TwilioWhatsAppNotificationGateway,
 )
 from src.notification.infrastructure.security.request_verification_service import (
     RequestVerificationService,
@@ -85,6 +90,21 @@ class NotificationsApplicationProvider(Provider):
             return LogNotificationGateway()
 
     @provide(scope=Scope.APP)
+    def get_whatsapp_notification_gateway(
+        self, settings: TwilioSettings
+    ) -> WhatsAppNotificationGateway:
+        if settings.twilio_enabled:
+            assert settings.account_sid
+            assert settings.auth_token
+            return TwilioWhatsAppNotificationGateway(
+                account_sid=settings.account_sid,
+                auth_token=settings.auth_token,
+                messaging_service_sid=settings.messaging_service_sid,
+            )
+        else:
+            return LogNotificationGateway()
+
+    @provide(scope=Scope.APP)
     def provide_request_verification_service(
         self, settings: TwilioSettings
     ) -> RequestVerificationService:
@@ -99,12 +119,16 @@ class NotificationsApplicationProvider(Provider):
         sms_template_engine: Annotated[
             SMSTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
         ],
+        whatsapp_template_engine: Annotated[
+            WhatsAppTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
+        ],
         notification_repository: NotificationRepository,
     ) -> NotificationGenerationService:
         return NotificationGenerationService(
+            notification_repo=notification_repository,
             email_template_engine=email_template_engine,
             sms_template_engine=sms_template_engine,
-            notification_repo=notification_repository,
+            whatsapp_template_engine=whatsapp_template_engine,
         )
 
     @provide
@@ -112,6 +136,7 @@ class NotificationsApplicationProvider(Provider):
         self,
         email_notification_gateway: EmailNotificationGateway,
         sms_notification_gateway: SMSNotificationGateway,
+        whatsapp_notification_gateway: WhatsAppNotificationGateway,
         notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
@@ -119,6 +144,7 @@ class NotificationsApplicationProvider(Provider):
         return NotificationService(
             email_notification_gateway=email_notification_gateway,
             sms_notification_gateway=sms_notification_gateway,
+            whatsapp_notification_gateway=whatsapp_notification_gateway,
             notification_generation_service=notification_generation_service,
             notification_repository=notification_repository,
             event_producer=event_producer,

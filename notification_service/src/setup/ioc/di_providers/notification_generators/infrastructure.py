@@ -4,11 +4,17 @@ from src.notification.application.interfaces.template_engine import EmailTemplat
 from src.notification.application.interfaces.template_engine import (
     SMSTemplateEngine as SMSTemplateEngineInterface,
 )
+from src.notification.application.interfaces.template_engine import (
+    WhatsAppTemplateEngine as WhatsAppTemplateEngineInterface,
+)
 from src.notification.infrastructure.template_engines.jinja2_email_template_engine import (
     Jinja2EmailTemplateEngine,
 )
 from src.notification.infrastructure.template_engines.sms_template_engine import (
     SMSTemplateEngine,
+)
+from src.notification.infrastructure.template_engines.whatsapp_template_engine import (
+    WhatsAppTemplateEngine,
 )
 from src.setup.ioc.di_component_enum import ComponentEnum
 
@@ -24,3 +30,7 @@ class NotificationGeneratorsInfrastructureProvider(Provider):
     @provide
     def get_sms_template_engine(self) -> SMSTemplateEngineInterface:
         return SMSTemplateEngine()
+
+    @provide
+    def get_whatsapp_template_engine(self) -> WhatsAppTemplateEngineInterface:
+        return WhatsAppTemplateEngine()

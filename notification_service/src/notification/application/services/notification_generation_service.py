@@ -10,6 +10,7 @@ from src.notification.application.dtos.notification_data import (
 from src.notification.application.interfaces.template_engine import (
     EmailTemplateEngine,
     SMSTemplateEngine,
+    WhatsAppTemplateEngine,
 )
 from src.notification.domain.enums import NotificationChannel, NotificationTemplate
 from src.notification.domain.exceptions import (
@@ -39,10 +40,12 @@ class NotificationGenerationService:
         notification_repo: NotificationRepository,
         email_template_engine: EmailTemplateEngine,
         sms_template_engine: SMSTemplateEngine,
+        whatsapp_template_engine: WhatsAppTemplateEngine,
     ):
         self._notification_repository = notification_repo
         self._email_template_engine = email_template_engine
         self._sms_template_engine = sms_template_engine
+        self._whatsapp_template_engine = whatsapp_template_engine
 
     async def generate_content(self, notification_id: str) -> NotificationContent:
         try:
@@ -93,6 +96,13 @@ class NotificationGenerationService:
         message = self._sms_template_engine.generate_message(template_name=template, data=data)
         return NotificationContent(message=message)
 
+    def _generate_whatsapp(
+        self, template: NotificationTemplate, data: BaseNotificationData
+    ) -> NotificationContent:
+        subject = self._whatsapp_template_engine.generate_subject(template_name=template, data=data)
+        message = self._whatsapp_template_engine.generate_message(template_name=template, data=data)
+        return NotificationContent(message=message, subject=subject)
+
     def _get_notification_content_generator(
         self, channel: NotificationChannel
     ) -> NotificationContentGenerator:
@@ -101,4 +111,4 @@ class NotificationGenerationService:
         if channel is NotificationChannel.SMS:
             return self._generate_sms
         if channel is NotificationChannel.WHATSAPP:
-            return self._generate_sms
+            return self._generate_whatsapp

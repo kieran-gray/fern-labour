@@ -1,20 +1,25 @@
 import json
 from pathlib import Path
-from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
 
-from src.notification.application.dtos.notification import NotificationSendResult
+from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
 from src.notification.application.dtos.notification_data import BaseNotificationData
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,
+    WhatsAppNotificationGateway,
 )
 from src.notification.application.interfaces.template_engine import (
     EmailTemplateEngine,
-    SMSTemplateEngine,
+)
+from src.notification.application.interfaces.template_engine import (
+    SMSTemplateEngine as SMSTemplateEngineInterface,
+)
+from src.notification.application.interfaces.template_engine import (
+    WhatsAppTemplateEngine as WhatsAppTemplateEngineInterface,
 )
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
@@ -24,6 +29,10 @@ from src.notification.domain.entity import Notification
 from src.notification.domain.enums import NotificationStatus, NotificationTemplate
 from src.notification.domain.repository import NotificationRepository
 from src.notification.domain.value_objects.notification_id import NotificationId
+from src.notification.infrastructure.template_engines.sms_template_engine import SMSTemplateEngine
+from src.notification.infrastructure.template_engines.whatsapp_template_engine import (
+    WhatsAppTemplateEngine,
+)
 from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.entity import User
 from src.user.domain.repository import UserRepository
@@ -100,7 +109,7 @@ async def notification_repo() -> NotificationRepository:
 class MockEmailNotificationGateway(EmailNotificationGateway):
     sent_notifications = []
 
-    async def send(self, data: dict[str, Any]) -> NotificationSendResult:
+    async def send(self, data: NotificationDTO) -> NotificationSendResult:
         self.sent_notifications.append(data)
         return NotificationSendResult(success=True, status=NotificationStatus.SENT)
 
@@ -108,7 +117,15 @@ class MockEmailNotificationGateway(EmailNotificationGateway):
 class MockSMSNotificationGateway(SMSNotificationGateway):
     sent_notifications = []
 
-    async def send(self, data: dict[str, Any]) -> NotificationSendResult:
+    async def send(self, data: NotificationDTO) -> NotificationSendResult:
+        self.sent_notifications.append(data)
+        return NotificationSendResult(success=True, status=NotificationStatus.SENT)
+
+
+class MockWhatsAppNotificationGateway(WhatsAppNotificationGateway):
+    sent_notifications = []
+
+    async def send(self, data: NotificationDTO) -> NotificationSendResult:
         self.sent_notifications.append(data)
         return NotificationSendResult(success=True, status=NotificationStatus.SENT)
 
@@ -127,18 +144,6 @@ class MockEmailTemplateEngine(EmailTemplateEngine):
         return f"Mock HTML email: {template_name} {json.dumps(data.to_dict())}"
 
 
-class MockSMSTemplateEngine(SMSTemplateEngine):
-    def generate_subject(
-        self, template_name: NotificationTemplate, data: BaseNotificationData
-    ) -> str:
-        raise NotImplementedError()
-
-    def generate_message(
-        self, template_name: NotificationTemplate, data: BaseNotificationData
-    ) -> str:
-        return f"Mock sms: {template_name} {json.dumps(data.to_dict())}"
-
-
 @pytest_asyncio.fixture
 async def user_service(user_repo: UserRepository) -> UserQueryService:
     return UserQueryService(user_repository=user_repo)
@@ -150,8 +155,13 @@ def email_template_engine() -> EmailTemplateEngine:
 
 
 @pytest.fixture
-def sms_template_engine() -> EmailTemplateEngine:
-    return MockSMSTemplateEngine()
+def sms_template_engine() -> SMSTemplateEngineInterface:
+    return SMSTemplateEngine()
+
+
+@pytest.fixture
+def whatsapp_template_engine() -> WhatsAppTemplateEngineInterface:
+    return WhatsAppTemplateEngine()
 
 
 @pytest_asyncio.fixture
@@ -159,11 +169,13 @@ async def notification_generation_service(
     notification_repo: NotificationRepository,
     email_template_engine: EmailTemplateEngine,
     sms_template_engine: SMSTemplateEngine,
+    whatsapp_template_engine: WhatsAppTemplateEngine,
 ) -> NotificationGenerationService:
     return NotificationGenerationService(
         notification_repo=notification_repo,
         email_template_engine=email_template_engine,
         sms_template_engine=sms_template_engine,
+        whatsapp_template_engine=whatsapp_template_engine,
     )
 
 
@@ -174,11 +186,13 @@ async def notification_service(
 ) -> NotificationService:
     email_notification_gateway = MockEmailNotificationGateway()
     sms_notification_gateway = MockSMSNotificationGateway()
+    whatsapp_notification_gateway = MockWhatsAppNotificationGateway()
     email_notification_gateway.sent_notifications = []
     sms_notification_gateway.sent_notifications = []
     return NotificationService(
         email_notification_gateway=email_notification_gateway,
         sms_notification_gateway=sms_notification_gateway,
+        whatsapp_notification_gateway=whatsapp_notification_gateway,
         notification_generation_service=notification_generation_service,
         notification_repository=notification_repo,
         event_producer=AsyncMock(),

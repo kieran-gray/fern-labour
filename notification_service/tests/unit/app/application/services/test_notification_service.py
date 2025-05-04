@@ -6,10 +6,11 @@ import pytest
 import pytest_asyncio
 
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
-from src.notification.application.dtos.notification_data import ContactUsData
+from src.notification.application.dtos.notification_data import ContactUsData, LabourBegunData
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,
+    WhatsAppNotificationGateway,
 )
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
@@ -52,6 +53,16 @@ class MockSMSNotificationGateway(SMSNotificationGateway):
         )
 
 
+class MockWhatsAppNotificationGateway(WhatsAppNotificationGateway):
+    sent_notifications = []
+
+    async def send(self, data: NotificationDTO) -> NotificationSendResult:
+        self.sent_notifications.append(data)
+        return NotificationSendResult(
+            success=True, status=NotificationStatus.SENT, external_id="TESTABC123"
+        )
+
+
 @pytest_asyncio.fixture
 def email_notification_gateway():
     return MockEmailNotificationGateway()
@@ -63,9 +74,15 @@ def sms_notification_gateway():
 
 
 @pytest_asyncio.fixture
+def whatsapp_notification_gateway():
+    return MockWhatsAppNotificationGateway()
+
+
+@pytest_asyncio.fixture
 async def notification_service(
     email_notification_gateway: EmailNotificationGateway,
     sms_notification_gateway: SMSNotificationGateway,
+    whatsapp_notification_gateway: WhatsAppNotificationGateway,
     notification_generation_service: NotificationGenerationService,
     notification_repo: NotificationRepository,
 ) -> NotificationService:
@@ -74,6 +91,7 @@ async def notification_service(
     return NotificationService(
         email_notification_gateway=email_notification_gateway,
         sms_notification_gateway=sms_notification_gateway,
+        whatsapp_notification_gateway=whatsapp_notification_gateway,
         notification_generation_service=notification_generation_service,
         notification_repository=notification_repo,
         event_producer=AsyncMock(),
@@ -224,9 +242,12 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
         channel=NotificationChannel.SMS.value,
         destination="test",
-        template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
-        data=ContactUsData(
-            email="test@email.com", name="test", message="test", user_id="abc123"
+        template=NotificationTemplate.LABOUR_BEGUN.value,
+        data=LabourBegunData(
+            birthing_person_name="John Jones",
+            birthing_person_first_name="John",
+            subscriber_first_name="Jane",
+            link="abc123",
         ).to_dict(),
         metadata={"test": "abc", "more_data": "test123"},
     )
@@ -257,9 +278,12 @@ async def test_can_send_whatsapp(notification_service: NotificationService) -> N
     notification = await notification_service.create_notification(
         channel=NotificationChannel.WHATSAPP.value,
         destination="whatsapp:+44123123123",
-        template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
-        data=ContactUsData(
-            email="test@email.com", name="test", message="test", user_id="abc123"
+        template=NotificationTemplate.LABOUR_BEGUN.value,
+        data=LabourBegunData(
+            birthing_person_name="John Jones",
+            birthing_person_first_name="John",
+            subscriber_first_name="Jane",
+            link="abc123",
         ).to_dict(),
         metadata={"test": "abc", "more_data": "test123"},
     )
@@ -271,20 +295,20 @@ async def test_can_send_whatsapp(notification_service: NotificationService) -> N
     assert stored_notification.status is NotificationStatus.SENT
     assert stored_notification.channel is NotificationChannel.WHATSAPP
 
-    sent_sms = notification_service._sms_notification_gateway.sent_notifications[0]
+    sent_whatsapp = notification_service._whatsapp_notification_gateway.sent_notifications[0]
     assert notification_service._email_notification_gateway.sent_notifications == []
 
-    assert sent_sms.destination == notification.destination
-    assert sent_sms.destination.startswith("whatsapp")
-    assert sent_sms.data == notification.data
+    assert sent_whatsapp.destination == notification.destination
+    assert sent_whatsapp.destination.startswith("whatsapp")
+    assert sent_whatsapp.data == notification.data
 
-    assert sent_sms.id == notification.id
-    assert sent_sms.channel == notification.channel
-    assert sent_sms.template == notification.template
-    assert sent_sms.metadata == notification.metadata
+    assert sent_whatsapp.id == notification.id
+    assert sent_whatsapp.channel == notification.channel
+    assert sent_whatsapp.template == notification.template
+    assert sent_whatsapp.metadata == notification.metadata
 
-    assert sent_sms.external_id != stored_notification.external_id
-    assert sent_sms.message != notification.message
+    assert sent_whatsapp.external_id != stored_notification.external_id
+    assert sent_whatsapp.message != notification.message
 
 
 async def test_cannot_send_with_invalid_id(notification_service: NotificationService) -> None:
