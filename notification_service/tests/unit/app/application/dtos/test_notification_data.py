@@ -6,7 +6,9 @@ from src.notification.application.dtos.notification_data import (
     LabourCompletedWithNoteData,
     LabourInviteData,
     LabourUpdateData,
+    SubscriberApprovedData,
     SubscriberInviteData,
+    SubscriberRequestedData,
 )
 
 
@@ -103,4 +105,26 @@ def test_can_serialize_and_deserialize_subscriber_invite_data():
     }
     subscriber_invite_data = SubscriberInviteData.from_dict(data=data_dict)
     assert isinstance(subscriber_invite_data, SubscriberInviteData)
+    assert data_dict == subscriber_invite_data.to_dict()
+
+
+def test_can_serialize_and_deserialize_subscriber_requested_data():
+    data_dict = {
+        "birthing_person_first_name": "user",
+        "subscriber_name": "test name",
+        "link": "http://test.com",
+    }
+    subscriber_invite_data = SubscriberRequestedData.from_dict(data=data_dict)
+    assert isinstance(subscriber_invite_data, SubscriberRequestedData)
+    assert data_dict == subscriber_invite_data.to_dict()
+
+
+def test_can_serialize_and_deserialize_subscriber_approved_data():
+    data_dict = {
+        "birthing_person_name": "user name",
+        "subscriber_first_name": "test",
+        "link": "http://test.com",
+    }
+    subscriber_invite_data = SubscriberApprovedData.from_dict(data=data_dict)
+    assert isinstance(subscriber_invite_data, SubscriberApprovedData)
     assert data_dict == subscriber_invite_data.to_dict()

@@ -207,3 +207,47 @@ class SubscriberInviteData(BaseNotificationData):
             "subscriber_name": self.subscriber_name,
             "link": self.link,
         }
+
+
+@dataclass
+class SubscriberRequestedData(BaseNotificationData):
+    birthing_person_first_name: str
+    subscriber_name: str
+    link: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Self:
+        return cls(
+            birthing_person_first_name=data["birthing_person_first_name"],
+            subscriber_name=data["subscriber_name"],
+            link=data["link"],
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "birthing_person_first_name": self.birthing_person_first_name,
+            "subscriber_name": self.subscriber_name,
+            "link": self.link,
+        }
+
+
+@dataclass
+class SubscriberApprovedData(BaseNotificationData):
+    subscriber_first_name: str
+    birthing_person_name: str
+    link: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Self:
+        return cls(
+            subscriber_first_name=data["subscriber_first_name"],
+            birthing_person_name=data["birthing_person_name"],
+            link=data["link"],
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "subscriber_first_name": self.subscriber_first_name,
+            "birthing_person_name": self.birthing_person_name,
+            "link": self.link,
+        }

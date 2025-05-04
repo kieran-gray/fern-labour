@@ -14,6 +14,6 @@ class ApproveSubscriberService:
         if subscription.status is SubscriptionStatus.SUBSCRIBED:
             raise SubscriberAlreadySubscribed()
 
-        subscription.update_status(SubscriptionStatus.SUBSCRIBED)
+        subscription.approve()
 
         return subscription

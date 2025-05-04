@@ -34,6 +34,6 @@ class SubscribeToService:
         if subscription.status is SubscriptionStatus.REQUESTED:
             raise SubscriberAlreadyRequested()
 
-        subscription.update_status(SubscriptionStatus.REQUESTED)
+        subscription.request()
 
         return subscription
