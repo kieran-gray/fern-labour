@@ -131,6 +131,10 @@ services:
       - ./labour_service/.env
     environment:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
+    depends_on:
+      pub-sub-emulator:
+        condition: service_healthy
+        restart: true
     command: [ "python", "-m", "src.run_consumer" ]
     networks:
       - default
@@ -142,6 +146,10 @@ services:
       - ./notification_service/.env
     environment:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
+    depends_on:
+      pub-sub-emulator:
+        condition: service_healthy
+        restart: true
     command: [ "python", "-m", "src.run_consumer" ]
     networks:
       - default
@@ -178,7 +186,7 @@ services:
       - default
     volumes:
       - ./keycloak/labour_tracker_theme:/opt/keycloak/themes/labour_tracker_theme
-      - ./keycloak/realms:/opt/keycloak/data/import:ro
+      - ./keycloak/realms/labour_tracker_realm.json:/opt/keycloak/data/import/realm.json:ro
 
   pub-sub-emulator:
     image: google/cloud-sdk:latest

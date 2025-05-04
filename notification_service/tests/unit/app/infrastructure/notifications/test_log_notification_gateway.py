@@ -29,5 +29,5 @@ async def test_log_notification_gateway(caplog):
         await gateway.send(notification)
 
     assert json.dumps(notification.to_dict()) in caplog.text
-    assert len(caplog.records) == 1
+    assert len(caplog.records) == 2
     assert caplog.records[0].levelname == "INFO"

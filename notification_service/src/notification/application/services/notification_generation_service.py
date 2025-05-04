@@ -4,11 +4,8 @@ from uuid import UUID
 
 from src.notification.application.dtos.notification import NotificationContent
 from src.notification.application.dtos.notification_data import (
+    TEMPLATE_TO_PAYLOAD,
     BaseNotificationData,
-    ContactUsData,
-    LabourInviteData,
-    LabourUpdateData,
-    SubscriberInviteData,
 )
 from src.notification.application.interfaces.template_engine import (
     EmailTemplateEngine,
@@ -24,14 +21,6 @@ from src.notification.domain.repository import NotificationRepository
 from src.notification.domain.value_objects.notification_id import NotificationId
 
 log = logging.getLogger(__name__)
-
-
-TEMPLATE_TO_PAYLOAD: dict[NotificationTemplate, type[BaseNotificationData]] = {
-    NotificationTemplate.LABOUR_UPDATE: LabourUpdateData,
-    NotificationTemplate.LABOUR_INVITE: LabourInviteData,
-    NotificationTemplate.SUBSCRIBER_INVITE: SubscriberInviteData,
-    NotificationTemplate.CONTACT_US_SUBMISSION: ContactUsData,
-}
 
 
 class NotificationContentGenerator(Protocol):

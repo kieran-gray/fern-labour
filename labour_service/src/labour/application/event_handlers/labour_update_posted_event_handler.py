@@ -8,7 +8,7 @@ from src.core.domain.producer import EventProducer
 from src.labour.domain.labour_update.enums import LabourUpdateType
 from src.notification.enums import NotificationTemplate
 from src.notification.events import NotificationRequested
-from src.notification.notification_data import LabourUpdateData
+from src.notification.notification_data import LabourAnnouncementData
 from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
@@ -47,19 +47,19 @@ class LabourUpdatePostedEventHandler(EventHandler):
         self._subscription_query_service = subscription_query_service
         self._event_producer = event_producer
         self._tracking_link = tracking_link
-        self._template = NotificationTemplate.LABOUR_UPDATE
+        self._template = NotificationTemplate.LABOUR_ANNOUNCEMENT
 
     def _generate_notification_data(
         self,
         birthing_person: UserDTO,
         subscriber: UserDTO,
         announcement: str,
-    ) -> LabourUpdateData:
-        return LabourUpdateData(
+    ) -> LabourAnnouncementData:
+        return LabourAnnouncementData(
             birthing_person_name=f"{birthing_person.first_name} {birthing_person.last_name}",
+            birthing_person_first_name=birthing_person.first_name,
             subscriber_first_name=subscriber.first_name,
-            update=f"{birthing_person.first_name} has just made an announcement:\n\n{announcement}",
-            notes=announcement,
+            announcement=announcement,
             link=self._tracking_link,
         )
 
