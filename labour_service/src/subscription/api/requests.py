@@ -1,11 +1,19 @@
 from pydantic import BaseModel
 
 
+class ApproveSubscriberRequest(BaseModel):
+    subscription_id: str
+
+
 class RemoveSubscriberRequest(BaseModel):
     subscription_id: str
 
 
 class BlockSubscriberRequest(BaseModel):
+    subscription_id: str
+
+
+class UnblockSubscriberRequest(BaseModel):
     subscription_id: str
 
 

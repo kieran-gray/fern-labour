@@ -7,7 +7,7 @@ from src.subscription.application.security.subscription_authorization_service im
     SubscriptionAuthorizationService,
 )
 from src.subscription.domain.entity import Subscription
-from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from src.subscription.domain.enums import ContactMethod, SubscriberRole
 from src.subscription.domain.exceptions import (
     SubscriberRoleInvalid,
     SubscriptionContactMethodInvalid,
@@ -15,6 +15,10 @@ from src.subscription.domain.exceptions import (
     SubscriptionNotFoundById,
 )
 from src.subscription.domain.repository import SubscriptionRepository
+from src.subscription.domain.services.approve_subscriber import ApproveSubscriberService
+from src.subscription.domain.services.block_subscriber import BlockSubscriberService
+from src.subscription.domain.services.remove_subscriber import RemoveSubscriberService
+from src.subscription.domain.services.unblock_subscriber import UnblockSubscriberService
 from src.subscription.domain.services.update_contact_methods import (
     UpdateContactMethodsService,
 )
@@ -46,6 +50,21 @@ class SubscriptionManagementService:
             raise SubscriptionNotFoundById(subscription_id=subscription_id)
         return subscription
 
+    async def approve_subscriber(self, requester_id: str, subscription_id: str) -> SubscriptionDTO:
+        subscription = await self._get_subscription(subscription_id=subscription_id)
+
+        await self._subscription_authorization_service.ensure_can_manage_as_birthing_person(
+            requester_id=requester_id, subscription=subscription
+        )
+
+        subscription = ApproveSubscriberService().approve_subscriber(subscription=subscription)
+
+        await self._subscription_repository.save(subscription)
+
+        await self._event_producer.publish_batch(subscription.clear_domain_events())
+
+        return SubscriptionDTO.from_domain(subscription)
+
     async def remove_subscriber(self, requester_id: str, subscription_id: str) -> SubscriptionDTO:
         subscription = await self._get_subscription(subscription_id=subscription_id)
 
@@ -53,7 +72,7 @@ class SubscriptionManagementService:
             requester_id=requester_id, subscription=subscription
         )
 
-        subscription.update_status(SubscriptionStatus.REMOVED)
+        subscription = RemoveSubscriberService().remove_subscriber(subscription=subscription)
 
         await self._subscription_repository.save(subscription)
 
@@ -68,7 +87,22 @@ class SubscriptionManagementService:
             requester_id=requester_id, subscription=subscription
         )
 
-        subscription.update_status(SubscriptionStatus.BLOCKED)
+        subscription = BlockSubscriberService().block_subscriber(subscription=subscription)
+
+        await self._subscription_repository.save(subscription)
+
+        await self._event_producer.publish_batch(subscription.clear_domain_events())
+
+        return SubscriptionDTO.from_domain(subscription)
+
+    async def unblock_subscriber(self, requester_id: str, subscription_id: str) -> SubscriptionDTO:
+        subscription = await self._get_subscription(subscription_id=subscription_id)
+
+        await self._subscription_authorization_service.ensure_can_manage_as_birthing_person(
+            requester_id=requester_id, subscription=subscription
+        )
+
+        subscription = UnblockSubscriberService().unblock_subscriber(subscription=subscription)
 
         await self._subscription_repository.save(subscription)
 

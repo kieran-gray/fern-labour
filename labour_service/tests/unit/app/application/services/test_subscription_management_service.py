@@ -14,6 +14,10 @@ from src.subscription.application.services.subscription_management_service impor
 from src.subscription.application.services.subscription_service import SubscriptionService
 from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from src.subscription.domain.exceptions import (
+    SubscriberAlreadySubscribed,
+    SubscriberIsBlocked,
+    SubscriberIsNotBlocked,
+    SubscriberIsRemoved,
     SubscriberRoleInvalid,
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,
@@ -66,6 +70,39 @@ async def subscription(
     )
 
 
+async def test_can_approve_subscriber(
+    subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
+) -> None:
+    subscription = await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    assert subscription.status == SubscriptionStatus.SUBSCRIBED
+
+
+async def test_cannot_approve_blocked_subscriber(
+    subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
+) -> None:
+    subscription = await subscription_management_service.block_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    with pytest.raises(SubscriberIsBlocked):
+        await subscription_management_service.approve_subscriber(
+            requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+        )
+
+
+async def test_cannot_approve_subscriber_already_approved(
+    subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
+) -> None:
+    subscription = await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    with pytest.raises(SubscriberAlreadySubscribed):
+        await subscription_management_service.approve_subscriber(
+            requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+        )
+
+
 async def test_can_remove_subscriber(
     subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
 ) -> None:
@@ -75,7 +112,7 @@ async def test_can_remove_subscriber(
     assert subscription.status == SubscriptionStatus.REMOVED
 
 
-async def test_can_remove_subscriber_twice(
+async def test_cannot_remove_subscriber_twice(
     subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
 ) -> None:
     subscription = await subscription_management_service.remove_subscriber(
@@ -83,10 +120,10 @@ async def test_can_remove_subscriber_twice(
     )
     assert subscription.status == SubscriptionStatus.REMOVED
 
-    subscription = await subscription_management_service.remove_subscriber(
-        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
-    )
-    assert subscription.status == SubscriptionStatus.REMOVED
+    with pytest.raises(SubscriberIsRemoved):
+        await subscription_management_service.remove_subscriber(
+            requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+        )
 
 
 async def test_only_birthing_person_can_remove_subscriber(
@@ -125,7 +162,7 @@ async def test_can_block_subscriber(
     assert subscription.status == SubscriptionStatus.BLOCKED
 
 
-async def test_can_block_subscriber_twice(
+async def test_cannot_block_subscriber_twice(
     subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
 ) -> None:
     subscription = await subscription_management_service.block_subscriber(
@@ -133,10 +170,55 @@ async def test_can_block_subscriber_twice(
     )
     assert subscription.status == SubscriptionStatus.BLOCKED
 
+    with pytest.raises(SubscriberIsBlocked):
+        await subscription_management_service.block_subscriber(
+            requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+        )
+
+
+async def test_cannot_remove_blocked_subscriber(
+    subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
+) -> None:
     subscription = await subscription_management_service.block_subscriber(
         requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
     assert subscription.status == SubscriptionStatus.BLOCKED
+
+    with pytest.raises(SubscriberIsBlocked):
+        await subscription_management_service.remove_subscriber(
+            requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+        )
+
+
+async def test_can_unblock_subscriber(
+    subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
+) -> None:
+    subscription = await subscription_management_service.block_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    assert subscription.status == SubscriptionStatus.BLOCKED
+    subscription = await subscription_management_service.unblock_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    assert subscription.status == SubscriptionStatus.REMOVED
+
+
+async def test_cannot_unblock_subscriber_twice(
+    subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
+) -> None:
+    subscription = await subscription_management_service.block_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    assert subscription.status == SubscriptionStatus.BLOCKED
+    subscription = await subscription_management_service.unblock_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    assert subscription.status == SubscriptionStatus.REMOVED
+
+    with pytest.raises(SubscriberIsNotBlocked):
+        await subscription_management_service.unblock_subscriber(
+            requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+        )
 
 
 async def test_only_birthing_person_can_block_subscriber(

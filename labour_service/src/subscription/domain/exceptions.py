@@ -23,6 +23,11 @@ class SubscriberAlreadySubscribed(DomainError):
         super().__init__("Subscriber already subscribed to labour.")
 
 
+class SubscriberAlreadyRequested(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Subscriber already requested access to labour.")
+
+
 class SubscriberNotSubscribed(DomainError):
     def __init__(self) -> None:
         super().__init__("Subscriber is not subscribed to labour.")
@@ -30,7 +35,17 @@ class SubscriberNotSubscribed(DomainError):
 
 class SubscriberIsBlocked(DomainError):
     def __init__(self) -> None:
-        super().__init__("Subscriber cannot subscribe to labour, blocked.")
+        super().__init__("Subscriber is blocked.")
+
+
+class SubscriberIsNotBlocked(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Subscriber is not blocked.")
+
+
+class SubscriberIsRemoved(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Subscriber is removed.")
 
 
 class SubscriptionTokenIncorrect(DomainError):

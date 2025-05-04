@@ -45,7 +45,6 @@ class SubscriptionService:
         birthing_person_domain_id = UserId(labour.birthing_person_id)
         subscriber_domain_id = UserId(subscriber_id)
 
-        # TODO get a count from the DB instead
         active_subscriptions = await self._subscription_repository.filter(
             labour_id=labour_domain_id, subscription_status=SubscriptionStatus.SUBSCRIBED
         )

@@ -68,11 +68,15 @@ async def labour(labour_service: LabourService) -> LabourDTO:
 async def test_can_user_access_labour_subscriber(
     auth_service: SubscriptionAuthorizationService,
     subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
     labour: LabourDTO,
 ) -> None:
     token = subscription_service._token_generator.generate(labour.id)
-    await subscription_service.subscribe_to(
+    subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
     assert (
         await auth_service.ensure_can_access_labour(requester_id=SUBSCRIBER, labour_id=labour.id)
@@ -94,7 +98,7 @@ async def test_cannot_access_labour_invalid_id(
         await auth_service.ensure_can_access_labour(requester_id=SUBSCRIBER, labour_id="test")
 
 
-async def test_cannot_access_labour_when_subscription_status_unsubscribed(
+async def test_cannot_access_labour_when_subscription_status_requested(
     auth_service: SubscriptionAuthorizationService,
     subscription_service: SubscriptionService,
     labour: LabourDTO,
@@ -102,6 +106,23 @@ async def test_cannot_access_labour_when_subscription_status_unsubscribed(
     token = subscription_service._token_generator.generate(labour.id)
     await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    with pytest.raises(UnauthorizedLabourRequest):
+        await auth_service.ensure_can_access_labour(requester_id=SUBSCRIBER, labour_id=labour.id)
+
+
+async def test_cannot_access_labour_when_subscription_status_unsubscribed(
+    auth_service: SubscriptionAuthorizationService,
+    subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
+    labour: LabourDTO,
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
     await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
 

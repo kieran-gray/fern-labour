@@ -15,5 +15,6 @@ class SubscriberRole(StrEnum):
 class SubscriptionStatus(StrEnum):
     SUBSCRIBED = "subscribed"
     UNSUBSCRIBED = "unsubscribed"
+    REQUESTED = "requested"
     REMOVED = "removed"
     BLOCKED = "blocked"
