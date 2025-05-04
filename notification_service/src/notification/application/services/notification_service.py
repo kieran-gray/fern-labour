@@ -8,6 +8,7 @@ from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
     NotificationGateway,
     SMSNotificationGateway,
+    WhatsAppNotificationGateway,
 )
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
@@ -37,12 +38,14 @@ class NotificationService:
         self,
         email_notification_gateway: EmailNotificationGateway,
         sms_notification_gateway: SMSNotificationGateway,
+        whatsapp_notification_gateway: WhatsAppNotificationGateway,
         notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
         event_producer: EventProducer,
     ):
         self._email_notification_gateway = email_notification_gateway
         self._sms_notification_gateway = sms_notification_gateway
+        self._whatsapp_notification_gateway = whatsapp_notification_gateway
         self._notification_generation_service = notification_generation_service
         self._notification_repository = notification_repository
         self._event_producer = event_producer
@@ -55,7 +58,7 @@ class NotificationService:
         elif notification_channel is NotificationChannel.SMS:
             return self._sms_notification_gateway
         elif notification_channel is NotificationChannel.WHATSAPP:
-            return self._sms_notification_gateway
+            return self._whatsapp_notification_gateway
         else:
             raise NotImplementedError(
                 f"Notification gateway for type {notification_channel.value} not implemented"
