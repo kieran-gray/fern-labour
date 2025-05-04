@@ -13,4 +13,5 @@ class LogNotificationGateway(NotificationGateway):
 
     async def send(self, notification: NotificationDTO) -> NotificationSendResult:
         log.info(json.dumps(notification.to_dict()))
+        log.info(f"{notification.subject=}, {notification.message=}")
         return NotificationSendResult(True, NotificationStatus.SENT)

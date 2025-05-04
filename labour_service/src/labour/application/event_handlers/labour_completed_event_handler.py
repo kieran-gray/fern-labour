@@ -7,7 +7,7 @@ from src.core.domain.event import DomainEvent
 from src.core.domain.producer import EventProducer
 from src.notification.enums import NotificationTemplate
 from src.notification.events import NotificationRequested
-from src.notification.notification_data import LabourUpdateData
+from src.notification.notification_data import LabourCompletedData, LabourCompletedWithNoteData
 from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
@@ -44,24 +44,28 @@ class LabourCompletedEventHandler(EventHandler):
         self._subscription_query_service = subscription_query_service
         self._event_producer = event_producer
         self._tracking_link = tracking_link
-        self._template = NotificationTemplate.LABOUR_UPDATE
 
     def _generate_notification_data(
         self,
         birthing_person: UserDTO,
         subscriber: UserDTO,
         notes: str,
-    ) -> LabourUpdateData:
-        update = f"{birthing_person.first_name} has completed labour!"
+    ) -> LabourCompletedData | LabourCompletedWithNoteData:
         if notes:
-            update += f"\n\nThey added the following note:\n\n{notes}"
-        return LabourUpdateData(
-            birthing_person_name=f"{birthing_person.first_name} {birthing_person.last_name}",
-            subscriber_first_name=subscriber.first_name,
-            update=update,
-            link=self._tracking_link,
-            notes=notes,
-        )
+            return LabourCompletedWithNoteData(
+                birthing_person_name=f"{birthing_person.first_name} {birthing_person.last_name}",
+                birthing_person_first_name=birthing_person.first_name,
+                subscriber_first_name=subscriber.first_name,
+                update=notes,
+                link=self._tracking_link,
+            )
+        else:
+            return LabourCompletedData(
+                birthing_person_name=f"{birthing_person.first_name} {birthing_person.last_name}",
+                birthing_person_first_name=birthing_person.first_name,
+                subscriber_first_name=subscriber.first_name,
+                link=self._tracking_link,
+            )
 
     async def handle(self, event: dict[str, Any]) -> None:
         domain_event = DomainEvent.from_dict(event=event)
@@ -85,10 +89,17 @@ class LabourCompletedEventHandler(EventHandler):
                 if not destination:
                     continue
 
+                notes = domain_event.data["notes"]
+
+                template = (
+                    NotificationTemplate.LABOUR_COMPLETED_WITH_NOTE
+                    if notes
+                    else NotificationTemplate.LABOUR_COMPLETED
+                )
                 notification_data = self._generate_notification_data(
                     birthing_person=birthing_person,
                     subscriber=subscriber,
-                    notes=domain_event.data["notes"],
+                    notes=notes,
                 )
                 notification_metadata = LabourCompletedNotificationMetadata(
                     labour_id=subscription.labour_id,
@@ -99,7 +110,7 @@ class LabourCompletedEventHandler(EventHandler):
                     data={
                         "channel": method,
                         "destination": destination,
-                        "template": self._template.value,
+                        "template": template,
                         "data": notification_data.to_dict(),
                         "metadata": notification_metadata.to_dict(),
                     }
