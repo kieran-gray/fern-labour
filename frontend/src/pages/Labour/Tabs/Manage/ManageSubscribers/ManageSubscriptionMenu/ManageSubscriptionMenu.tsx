@@ -5,6 +5,7 @@ import {
   IconCircleCheck,
   IconCircleMinus,
   IconDots,
+  IconX,
 } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -137,13 +138,22 @@ export function ManageSubscriptionMenu({
       <Menu.Dropdown>
         <Menu.Label>Manage Subscriber</Menu.Label>
         {status === 'requested' && (
-          <Menu.Item
-            color="green"
-            leftSection={<IconCheck size={20} stroke={1.5} />}
-            onClick={() => approveSubscriberMutation.mutate()}
-          >
-            Approve
-          </Menu.Item>
+          <>
+            <Menu.Item
+              color="green"
+              leftSection={<IconCheck size={20} stroke={1.5} />}
+              onClick={() => approveSubscriberMutation.mutate()}
+            >
+              Approve
+            </Menu.Item>
+            <Menu.Item
+              color="red"
+              leftSection={<IconX size={20} stroke={1.5} />}
+              onClick={() => removeSubscriberMutation.mutate()}
+            >
+              Reject
+            </Menu.Item>
+          </>
         )}
         {status === 'subscribed' && (
           <Menu.Item
