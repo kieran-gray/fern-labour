@@ -2,7 +2,6 @@ from collections.abc import Iterable
 
 from dishka import Provider
 
-from src.setup.ioc.di_providers.subscription_events.application import SubscriptionEventsApplicationProvider
 from src.setup.ioc.di_providers.admin.application import AdminApplicationProvider
 from src.setup.ioc.di_providers.core.infrastructure import CommonInfrastructureProvider
 from src.setup.ioc.di_providers.core.settings import CommonSettingsProvider
@@ -16,6 +15,9 @@ from src.setup.ioc.di_providers.payments.infrastructure import PaymentsInfrastru
 from src.setup.ioc.di_providers.subscription.application import SubscriptionApplicationProvider
 from src.setup.ioc.di_providers.subscription.infrastructure import (
     SubscriptionInfrastructureProvider,
+)
+from src.setup.ioc.di_providers.subscription_events.application import (
+    SubscriptionEventsApplicationProvider,
 )
 from src.setup.ioc.di_providers.user.application import UserApplicationProvider
 from src.setup.ioc.di_providers.user.infrastructure import UserInfrastructureProvider

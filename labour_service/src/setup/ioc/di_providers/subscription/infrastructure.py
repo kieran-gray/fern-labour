@@ -5,7 +5,6 @@ from dishka import FromComponent, Provider, Scope, provide
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.setup.ioc.di_component_enum import ComponentEnum
-from src.setup.settings import Settings
 from src.subscription.domain.repository import SubscriptionRepository
 from src.subscription.infrastructure.persistence.repositories.subscription_repository import (
     SQLAlchemySubscriptionRepository,
