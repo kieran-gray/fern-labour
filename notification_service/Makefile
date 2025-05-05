@@ -102,10 +102,10 @@ check: lint test
 
 # Dishka
 
-plot-data:
+plot:
 	PYTHONPATH="." python scripts/plot_dependencies.py
 
-print-tree:
+tree:
 	PYTHONPATH="." python scripts/print_tree.py
 
 # clean

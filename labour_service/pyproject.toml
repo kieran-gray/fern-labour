@@ -12,6 +12,7 @@ requires-python = "<3.13,>=3.12"
 app = [
     "dishka<2.0.0,>=1.4.0",
     "orjson<4.0.0,>=3.10.7",
+    "fern-labour-notifications-shared>=0.1.0",
     "gcp-pub-sub-dishka>=0.1.1",
     "pydantic[email]<3.0.0,>=2.9.0",
     "python-keycloak>=5.1.1",
@@ -52,6 +53,7 @@ default-groups = ["db"]
 
 [tool.uv.sources]
 gcp-pub-sub-dishka = { index = "fern-labour-packages" }
+fern-labour-notifications-shared = { index = "fern-labour-packages" }
 
 [[tool.uv.index]]
 name = "fern-labour-packages"

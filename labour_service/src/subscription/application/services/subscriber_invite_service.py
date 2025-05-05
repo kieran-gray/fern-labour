@@ -1,11 +1,12 @@
 import logging
 from dataclasses import dataclass
 
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.events import NotificationRequested
+from fern_labour_notifications_shared.notification_data import SubscriberInviteData
+
 from src.core.domain.producer import EventProducer
 from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
-from src.notification.enums import NotificationTemplate
-from src.notification.events import NotificationRequested
-from src.notification.notification_data import SubscriberInviteData
 from src.subscription.application.exceptions import SubscriberInviteRateLimitExceeded
 from src.subscription.domain.enums import ContactMethod
 from src.user.application.dtos.user import UserDTO
