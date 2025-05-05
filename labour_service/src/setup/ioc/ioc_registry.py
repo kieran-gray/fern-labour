@@ -12,9 +12,12 @@ from src.setup.ioc.di_providers.labour.infrastructure import LabourInfrastructur
 from src.setup.ioc.di_providers.labour_events.application import LabourEventsApplicationProvider
 from src.setup.ioc.di_providers.payment_events.application import PaymentEventsApplicationProvider
 from src.setup.ioc.di_providers.payments.infrastructure import PaymentsInfrastructureProvider
-from src.setup.ioc.di_providers.subscriptions.application import SubscriptionsApplicationProvider
-from src.setup.ioc.di_providers.subscriptions.infrastructure import (
-    SubscriptionsInfrastructureProvider,
+from src.setup.ioc.di_providers.subscription.application import SubscriptionApplicationProvider
+from src.setup.ioc.di_providers.subscription.infrastructure import (
+    SubscriptionInfrastructureProvider,
+)
+from src.setup.ioc.di_providers.subscription_events.application import (
+    SubscriptionEventsApplicationProvider,
 )
 from src.setup.ioc.di_providers.user.application import UserApplicationProvider
 from src.setup.ioc.di_providers.user.infrastructure import UserInfrastructureProvider
@@ -33,8 +36,9 @@ def get_providers() -> Iterable[Provider]:
         PaymentsInfrastructureProvider(),
         PaymentEventsApplicationProvider(),
         InvitesApplicationProvider(),
-        SubscriptionsApplicationProvider(),
-        SubscriptionsInfrastructureProvider(),
+        SubscriptionApplicationProvider(),
+        SubscriptionInfrastructureProvider(),
+        SubscriptionEventsApplicationProvider(),
         UserApplicationProvider(),
         UserInfrastructureProvider(),
     )

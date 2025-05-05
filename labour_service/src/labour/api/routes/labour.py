@@ -192,7 +192,7 @@ async def delete_labour(
 @inject
 async def get_subscription_token(
     service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
-    token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
+    token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionTokenResponse:

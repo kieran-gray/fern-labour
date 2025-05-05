@@ -9,7 +9,8 @@ class ComponentEnum(StrEnum):
     EVENTS = "events"
     USER = "user"
     INVITES = "invites"
-    SUBSCRIPTIONS = "subscriptions"
+    SUBSCRIPTION = "subscription"
+    SUBSCRIPTION_EVENTS = "subscription_events"
     PAYMENTS = "payments"
     PAYMENT_EVENTS = "payment_events"
 

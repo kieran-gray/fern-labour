@@ -48,7 +48,7 @@ subscription_router = APIRouter(prefix="/subscription", tags=["Subscription"])
 async def subscribe_to(
     labour_id: str,
     request_data: SubscribeToRequest,
-    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
+    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTION)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionResponse:
@@ -73,7 +73,7 @@ async def subscribe_to(
 @inject
 async def unsubscribe_from(
     request_data: UnsubscribeFromRequest,
-    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
+    service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTION)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionResponse:
@@ -97,7 +97,7 @@ async def unsubscribe_from(
 )
 @inject
 async def get_subscriptions(
-    service: Annotated[SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
+    service: Annotated[SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTION)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> SubscriptionsResponse:
@@ -120,7 +120,7 @@ async def get_subscriptions(
 @inject
 async def get_subscriber_subscriptions(
     subscription_query_service: Annotated[
-        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTION)
     ],
     user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
@@ -153,7 +153,7 @@ async def get_subscriber_subscriptions(
 async def get_subscription_by_id(
     subscription_id: str,
     subscription_query_service: Annotated[
-        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTION)
     ],
     user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
     labour_query_service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
@@ -186,7 +186,7 @@ async def get_subscription_by_id(
 async def get_labour_subscriptions(
     labour_id: str,
     subscription_query_service: Annotated[
-        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+        SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTION)
     ],
     labour_authorization_service: Annotated[
         LabourAuthorizationService, FromComponent(ComponentEnum.LABOUR)

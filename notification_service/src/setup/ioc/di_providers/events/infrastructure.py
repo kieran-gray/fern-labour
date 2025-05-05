@@ -2,6 +2,7 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 from gcp_pub_sub_dishka.consumer import PubSubEventConsumer
+from gcp_pub_sub_dishka.event_handler import TopicHandler
 from gcp_pub_sub_dishka.producer import PubSubEventProducer
 
 from src.core.domain.producer import EventProducer
@@ -27,6 +28,8 @@ class EventsInfrastructureProvider(Provider):
 
     @provide
     def get_gcp_pub_sub_event_consumer(self, settings: GCPSettings) -> EventConsumer:
-        return PubSubEventConsumer(
-            project_id=settings.project_id, topic_handlers=NOTIFICATION_EVENT_HANDLER_MAPPING
-        )
+        topic_handlers = [
+            TopicHandler(topic, handler, ComponentEnum.NOTIFICATION_EVENTS)
+            for topic, handler in NOTIFICATION_EVENT_HANDLER_MAPPING.items()
+        ]
+        return PubSubEventConsumer(project_id=settings.project_id, topic_handlers=topic_handlers)

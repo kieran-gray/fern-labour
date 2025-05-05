@@ -27,7 +27,7 @@ class LabourEventsApplicationProvider(Provider):
         self,
         user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         subscription_query_service: Annotated[
-            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTION)
         ],
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
@@ -44,7 +44,7 @@ class LabourEventsApplicationProvider(Provider):
         self,
         user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         subscription_query_service: Annotated[
-            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTION)
         ],
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
@@ -61,7 +61,7 @@ class LabourEventsApplicationProvider(Provider):
         self,
         user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         subscription_query_service: Annotated[
-            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTION)
         ],
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
