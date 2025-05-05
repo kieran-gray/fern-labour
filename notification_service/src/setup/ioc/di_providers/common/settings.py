@@ -8,7 +8,6 @@ from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import Settings, SqlaEngineSettings
 
 PostgresDsn = NewType("PostgresDsn", str)
-Environment = NewType("Environment", str)
 
 log = logging.getLogger(__name__)
 
@@ -21,10 +20,6 @@ class CommonSettingsProvider(Provider):
     @provide(scope=Scope.APP)
     def provide_postgres_dsn(self, settings: Settings) -> PostgresDsn:
         return PostgresDsn(settings.db.postgres.dsn)
-
-    @provide(scope=Scope.APP)
-    def provide_environment(self, settings: Settings) -> Environment:
-        return Environment(settings.base.environment)
 
     @provide(scope=Scope.APP)
     def provide_sqla_engine_settings(self, settings: Settings) -> SqlaEngineSettings:

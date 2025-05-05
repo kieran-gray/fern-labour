@@ -19,8 +19,8 @@ from src.subscription.application.services.subscription_service import Subscript
 from src.subscription.domain.repository import SubscriptionRepository
 
 
-class SubscriptionsApplicationProvider(Provider):
-    component = ComponentEnum.SUBSCRIPTIONS
+class SubscriptionApplicationProvider(Provider):
+    component = ComponentEnum.SUBSCRIPTION
     scope = Scope.REQUEST
 
     @provide
@@ -35,7 +35,7 @@ class SubscriptionsApplicationProvider(Provider):
         self,
         subscription_repository: SubscriptionRepository,
         labour_query_service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
-        token_generator: TokenGenerator,
+        token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.LABOUR)],
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
     ) -> SubscriptionService:
         return SubscriptionService(

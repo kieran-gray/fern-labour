@@ -262,6 +262,8 @@ TEMPLATE_TO_PAYLOAD: dict[NotificationTemplate, type[BaseNotificationData]] = {
     NotificationTemplate.LABOUR_COMPLETED_WITH_NOTE: LabourCompletedWithNoteData,
     NotificationTemplate.LABOUR_UPDATE: LabourUpdateData,
     NotificationTemplate.LABOUR_INVITE: LabourInviteData,
-    NotificationTemplate.SUBSCRIBER_INVITE: SubscriberInviteData,
     NotificationTemplate.CONTACT_US_SUBMISSION: ContactUsData,
+    NotificationTemplate.SUBSCRIBER_APPROVED: SubscriberApprovedData,
+    NotificationTemplate.SUBSCRIBER_INVITE: SubscriberInviteData,
+    NotificationTemplate.SUBSCRIBER_REQUESTED: SubscriberRequestedData,
 }

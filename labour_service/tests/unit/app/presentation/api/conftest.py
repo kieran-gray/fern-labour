@@ -169,7 +169,7 @@ class TestAuthController(AuthController):
 
 class MockSubscriptionProvider(Provider):
     scope = Scope.REQUEST
-    component = ComponentEnum.SUBSCRIPTIONS
+    component = ComponentEnum.SUBSCRIPTION
 
     def get_mock_subscription(
         self,

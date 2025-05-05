@@ -25,9 +25,9 @@ class InvitesApplicationProvider(Provider):
         user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
         subscription_query_service: Annotated[
-            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTIONS)
+            SubscriptionQueryService, FromComponent(ComponentEnum.SUBSCRIPTION)
         ],
-        token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.SUBSCRIPTIONS)],
+        token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.LABOUR)],
         rate_limiter: Annotated[RateLimiter, FromComponent(ComponentEnum.DEFAULT)],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> LabourInviteService:
