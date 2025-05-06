@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from typing import Any, Self
 from uuid import UUID, uuid4
 
-from src.core.domain.aggregate_root import AggregateRoot
+from fern_labour_core.aggregate_root import AggregateRoot
+
 from src.notification.domain.enums import (
     NotificationChannel,
     NotificationStatus,
-    NotificationTemplate,
 )
 from src.notification.domain.events import NotificationStatusUpdated
 from src.notification.domain.value_objects.notification_id import NotificationId
@@ -17,7 +17,7 @@ class Notification(AggregateRoot[NotificationId]):
     status: NotificationStatus
     channel: NotificationChannel
     destination: str
-    template: NotificationTemplate
+    template: str
     data: dict[str, Any]
     metadata: dict[str, Any] | None = None
     external_id: str | None = None
@@ -28,7 +28,7 @@ class Notification(AggregateRoot[NotificationId]):
         *,
         channel: NotificationChannel,
         destination: str,
-        template: NotificationTemplate,
+        template: str,
         data: dict[str, Any],
         status: NotificationStatus | None = None,
         metadata: dict[str, Any] | None = None,

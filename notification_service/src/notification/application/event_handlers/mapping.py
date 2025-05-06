@@ -1,4 +1,5 @@
-from src.core.application.event_handler import EventHandler
+from fern_labour_core.events.event_handler import EventHandler
+
 from src.notification.application.event_handlers.notification_requested_event_handler import (
     NotificationRequestedEventHandler,
 )

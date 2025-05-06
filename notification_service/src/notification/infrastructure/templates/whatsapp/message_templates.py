@@ -1,4 +1,4 @@
-from src.notification.domain.enums import NotificationTemplate
+from fern_labour_notifications_shared.enums import NotificationTemplate
 
 TEMPLATE_TO_TWILIO_TEMPLATE_SID = {
     NotificationTemplate.LABOUR_ANNOUNCEMENT: "HX41e6683ac06893d80af526ed09c2171a",

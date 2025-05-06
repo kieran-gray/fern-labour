@@ -1,10 +1,11 @@
 import pytest
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import ContactUsData
 
-from src.notification.application.dtos.notification_data import ContactUsData
 from src.notification.application.event_handlers.notification_requested_event_handler import (
     NotificationRequestedEventHandler,
 )
-from src.notification.domain.enums import NotificationChannel, NotificationTemplate
+from src.notification.domain.enums import NotificationChannel
 from src.notification.domain.events import NotificationRequested, NotificationRequestedData
 
 

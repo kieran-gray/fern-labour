@@ -1,8 +1,8 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
+from fern_labour_core.events.producer import EventProducer
 
-from src.core.domain.producer import EventProducer
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,

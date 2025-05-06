@@ -7,6 +7,10 @@ authors = [
     {name = "Kieran Gray", email = "gray.kieran@protonmail.com"},
 ]
 requires-python = "<3.13,>=3.12"
+dependencies = [
+    "fern-labour-core>=0.1.0",
+    "fern-labour-notifications-shared>=0.1.2",
+]
 
 [dependency-groups]
 app = [
@@ -51,6 +55,8 @@ dev = [
 default-groups = ["db"]
 
 [tool.uv.sources]
+fern-labour-core = { index = "fern-labour-packages" }
+fern-labour-notifications-shared = { index = "fern-labour-packages" }
 gcp-pub-sub-dishka = { index = "fern-labour-packages" }
 
 [[tool.uv.index]]

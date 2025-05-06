@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from src.notification.application.dtos.notification_data import BaseNotificationData
-from src.notification.domain.enums import NotificationTemplate
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import BaseNotificationData
 
 
 class NotificationTemplateEngine(Protocol):

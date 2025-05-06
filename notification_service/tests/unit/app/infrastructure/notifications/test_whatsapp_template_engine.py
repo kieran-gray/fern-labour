@@ -1,12 +1,12 @@
 import json
 
 import pytest
-
-from src.notification.application.dtos.notification_data import (
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import (
     LabourAnnouncementData,
     SubscriberInviteData,
 )
-from src.notification.domain.enums import NotificationTemplate
+
 from src.notification.domain.exceptions import GenerationTemplateNotFound
 from src.notification.infrastructure.template_engines.whatsapp_template_engine import (
     WhatsAppTemplateEngine,

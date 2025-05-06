@@ -60,16 +60,20 @@ generate-revision:
 	POSTGRES_DB=notification_service POSTGRES_HOST=0.0.0.0 PYTHONPATH=. \
 	uv run alembic revision --autogenerate
 
+add: ensure-token
+	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
+	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
+	uv add $(dep)
+
 deps: ensure-token
 	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
 	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
 	uv sync --all-groups --frozen
 
-update-deps: ensure-token
+update: ensure-token
 	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
 	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
 	uv lock --upgrade
-	uv sync --all-groups --frozen
 
 # Source code formatting and linting
 .PHONY: format \

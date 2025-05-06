@@ -2,7 +2,9 @@ import logging
 from typing import Any
 from uuid import UUID
 
-from src.core.domain.producer import EventProducer
+from fern_labour_core.events.producer import EventProducer
+from fern_labour_notifications_shared.enums import NotificationTemplate
+
 from src.notification.application.dtos.notification import NotificationDTO
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
@@ -17,7 +19,6 @@ from src.notification.domain.entity import Notification
 from src.notification.domain.enums import (
     NotificationChannel,
     NotificationStatus,
-    NotificationTemplate,
 )
 from src.notification.domain.exceptions import (
     InvalidNotificationChannel,

@@ -1,10 +1,11 @@
 import json
 
-from src.notification.application.dtos.notification_data import BaseNotificationData
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import BaseNotificationData
+
 from src.notification.application.interfaces.template_engine import (
     WhatsAppTemplateEngine as WhatsAppTemplateEngineInterface,
 )
-from src.notification.domain.enums import NotificationTemplate
 from src.notification.domain.exceptions import GenerationTemplateNotFound
 from src.notification.infrastructure.templates.whatsapp.message_templates import (
     TEMPLATE_TO_MESSAGE_CONTENT_VARIABLES,

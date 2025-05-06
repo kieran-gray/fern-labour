@@ -1,20 +1,23 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import ContactUsData
 
 from src.notification.application.dtos.notification import NotificationContent, NotificationDTO
-from src.notification.application.dtos.notification_data import ContactUsData
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
 from src.notification.application.services.notification_service import NotificationService
-from src.notification.domain.enums import NotificationChannel, NotificationTemplate
+from src.notification.domain.enums import NotificationChannel
 from src.notification.domain.exceptions import (
     InvalidNotificationId,
+    InvalidNotificationTemplate,
     NotificationNotFoundById,
     NotificationProcessingError,
 )
+from src.notification.domain.value_objects.notification_id import NotificationId
 
 
 @pytest_asyncio.fixture
@@ -65,6 +68,21 @@ async def test_cannot_generate_notification_content_invalid_data(
         data={"test": "test"},
     )
     with pytest.raises(NotificationProcessingError):
+        await notification_generation_service.generate_content(notification.id)
+
+
+async def test_cannot_generate_notification_content_invalid_template(
+    notification_generation_service: NotificationGenerationService,
+    notification: NotificationDTO,
+) -> None:
+    notification_id = NotificationId(UUID(notification.id))
+    domain_notification = await notification_generation_service._notification_repository.get_by_id(
+        notification_id
+    )
+    domain_notification.template = "test"
+    await notification_generation_service._notification_repository.save(domain_notification)
+
+    with pytest.raises(InvalidNotificationTemplate):
         await notification_generation_service.generate_content(notification.id)
 
 
