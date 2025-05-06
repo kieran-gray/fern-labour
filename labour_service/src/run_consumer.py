@@ -7,8 +7,8 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 from dishka import AsyncContainer, make_async_container
-
 from fern_labour_core.events.consumer import EventConsumer
+
 from src.core.infrastructure.persistence.initialize_mapping import map_all
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.ioc.ioc_registry import get_providers

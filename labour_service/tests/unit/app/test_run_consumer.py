@@ -3,6 +3,7 @@ import signal
 from unittest.mock import AsyncMock, patch
 
 from fern_labour_core.events.consumer import EventConsumer
+
 from src.run_consumer import ConsumerRunner, TaskManager
 
 
