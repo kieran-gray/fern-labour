@@ -9,15 +9,17 @@ from src.labour.domain.labour.exceptions import (
     InvalidLabourId,
 )
 from src.labour.domain.labour.value_objects.labour_id import LabourId
-from src.subscription.application.dtos.subscription import SubscriptionDTO
-from src.subscription.domain.enums import SubscriptionStatus
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.domain.exceptions import (
     SubscriberNotSubscribed,
+    SubscriptionIdInvalid,
+    SubscriptionNotFoundById,
     SubscriptionTokenIncorrect,
 )
 from src.subscription.domain.repository import SubscriptionRepository
 from src.subscription.domain.services.subscribe_to import SubscribeToService
 from src.subscription.domain.services.unsubscribe_from import UnsubscribeFromService
+from src.subscription.domain.value_objects.subscription_id import SubscriptionId
 from src.user.domain.value_objects.user_id import UserId
 
 log = logging.getLogger(__name__)
@@ -46,14 +48,9 @@ class SubscriptionService:
         birthing_person_domain_id = UserId(labour.birthing_person_id)
         subscriber_domain_id = UserId(subscriber_id)
 
-        active_subscriptions = await self._subscription_repository.filter(
-            labour_id=labour_domain_id, subscription_status=SubscriptionStatus.SUBSCRIBED
-        )
-
         await self._labour_query_service.can_accept_subscriber(
             subscriber_id=subscriber_id,
             labour_id=labour_id,
-            current_active_subscriptions=len(active_subscriptions),
         )
 
         subscription = await self._subscription_repository.filter_one_or_none(
@@ -98,3 +95,18 @@ class SubscriptionService:
         await self._event_producer.publish_batch(subscription.clear_domain_events())
 
         return SubscriptionDTO.from_domain(subscription)
+
+    async def ensure_can_update_access_level(self, subscription_id: str) -> None:
+        try:
+            subscription_domain_id = SubscriptionId(UUID(subscription_id))
+        except ValueError:
+            raise SubscriptionIdInvalid()
+        subscription = await self._subscription_repository.get_by_id(
+            subscription_id=subscription_domain_id
+        )
+        if not subscription:
+            raise SubscriptionNotFoundById(subscription_id=subscription_id)
+
+        return await self._labour_query_service.ensure_labour_is_active(
+            labour_id=str(subscription.labour_id.value)
+        )

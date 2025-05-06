@@ -9,13 +9,10 @@ from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.labour.application.services.labour_service import LabourService
-from src.labour.domain.labour.enums import LabourPaymentPlan
 from src.labour.domain.labour.exceptions import (
     CannotSubscribeToOwnLabour,
-    InsufficientLabourPaymentPlan,
     InvalidLabourId,
     LabourNotFoundById,
-    MaximumNumberOfSubscribersReached,
 )
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
@@ -30,6 +27,8 @@ from src.subscription.domain.exceptions import (
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
     SubscriberNotSubscribed,
+    SubscriptionIdInvalid,
+    SubscriptionNotFoundById,
     SubscriptionTokenIncorrect,
 )
 from src.subscription.domain.repository import SubscriptionRepository
@@ -77,11 +76,8 @@ async def subscription_service(
 
 @pytest_asyncio.fixture
 async def labour(labour_service: LabourService) -> LabourDTO:
-    await labour_service.plan_labour(
+    return await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
-    )
-    return await labour_service.update_labour_payment_plan(
-        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY.value
     )
 
 
@@ -109,75 +105,6 @@ async def test_can_subscribe_to_labour(
         subscriber_id=SUBSCRIBER
     )
     assert subscriptions == []
-
-
-async def test_cannot_subscribe_to_labour_without_payment_plan(
-    subscription_service: SubscriptionService, labour_service: LabourService
-) -> None:
-    labour = await labour_service.plan_labour(
-        birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
-    )
-    token = subscription_service._token_generator.generate(labour.id)
-    with pytest.raises(InsufficientLabourPaymentPlan):
-        await subscription_service.subscribe_to(
-            subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-        )
-
-
-async def test_cannot_subscribe_to_labour_with_solo_payment_plan(
-    subscription_service: SubscriptionService, labour_service: LabourService
-) -> None:
-    labour = await labour_service.plan_labour(
-        birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
-    )
-    await labour_service.update_labour_payment_plan(
-        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.SOLO.value
-    )
-    token = subscription_service._token_generator.generate(labour.id)
-    with pytest.raises(InsufficientLabourPaymentPlan):
-        await subscription_service.subscribe_to(
-            subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-        )
-
-
-async def test_cannot_subscribe_to_labour_with_solo_payment_plan_sub_limit_reached(
-    subscription_service: SubscriptionService,
-    subscription_management_service: SubscriptionManagementService,
-    labour_service: LabourService,
-    user_service: UserQueryService,
-) -> None:
-    user_ids = [str(uuid4()) for _ in range(5)]
-    for user_id in user_ids:
-        await user_service._user_repository.save(
-            User(
-                id_=UserId(user_id),
-                username=user_id,
-                first_name="user",
-                last_name="name",
-                email=f"{user_id}@sub.com",
-            )
-        )
-
-    labour = await labour_service.plan_labour(
-        birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
-    )
-    await labour_service.update_labour_payment_plan(
-        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.INNER_CIRCLE.value
-    )
-    token = subscription_service._token_generator.generate(labour.id)
-
-    for user_id in user_ids:
-        subscription = await subscription_service.subscribe_to(
-            subscriber_id=user_id, labour_id=labour.id, token=token
-        )
-        await subscription_management_service.approve_subscriber(
-            requester_id=BIRTHING_PERSON, subscription_id=subscription.id
-        )
-
-    with pytest.raises(MaximumNumberOfSubscribersReached):
-        await subscription_service.subscribe_to(
-            subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-        )
 
 
 async def test_cannot_request_access_to_labour_more_than_once(
@@ -406,3 +333,27 @@ async def test_cannot_unsubscribed_from_labour_not_subscribed_to(
 ) -> None:
     with pytest.raises(SubscriberNotSubscribed):
         await subscription_service.unsubscribe_from(subscriber_id=SUBSCRIBER, labour_id=labour.id)
+
+
+async def test_ensure_can_update_access_level_success(
+    subscription_service: SubscriptionService, labour: LabourDTO
+):
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_service.ensure_can_update_access_level(subscription_id=subscription.id)
+
+
+async def test_ensure_can_update_access_level_invalid_subscription_id(
+    subscription_service: SubscriptionService,
+):
+    with pytest.raises(SubscriptionIdInvalid):
+        await subscription_service.ensure_can_update_access_level(subscription_id="test")
+
+
+async def test_ensure_can_update_access_level_subscription_not_found(
+    subscription_service: SubscriptionService,
+):
+    with pytest.raises(SubscriptionNotFoundById):
+        await subscription_service.ensure_can_update_access_level(subscription_id=str(uuid4()))

@@ -12,7 +12,6 @@ from src.labour.application.services.labour_invite_service import (
     LabourInviteService,
 )
 from src.labour.application.services.labour_service import LabourService
-from src.labour.domain.labour.enums import LabourPaymentPlan
 from src.labour.domain.labour.exceptions import InvalidLabourId
 from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
@@ -110,9 +109,6 @@ async def test_cannnot_send_invite_for_email_already_subscribed(
 ) -> None:
     labour = await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
-    )
-    await labour_service.update_labour_payment_plan(
-        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.INNER_CIRCLE.value
     )
     token = labour_invite_service._token_generator.generate(labour.id)
 

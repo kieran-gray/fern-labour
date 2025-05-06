@@ -13,11 +13,6 @@ class InvalidLabourUpdateId(DomainValidationError):
         super().__init__("Invalid Labour Update ID.")
 
 
-class InvalidLabourPaymentPlan(DomainValidationError):
-    def __init__(self) -> None:
-        super().__init__("Invalid Labour Payment Plan.")
-
-
 class LabourHasActiveContraction(DomainError):
     def __init__(self) -> None:
         super().__init__("Cannot start a new contraction while one is active")
@@ -61,23 +56,6 @@ class UnauthorizedLabourRequest(DomainError):
 class CannotDeleteActiveLabour(DomainError):
     def __init__(self) -> None:
         super().__init__("Cannot delete active labour.")
-
-
-class CannotDowngradeLabourPlan(DomainError):
-    def __init__(self) -> None:
-        super().__init__("Cannot downgrade labour payment plan. Contact support.")
-
-
-class InsufficientLabourPaymentPlan(DomainError):
-    def __init__(self) -> None:
-        super().__init__("Requested action is not supported with current payment plan.")
-
-
-class MaximumNumberOfSubscribersReached(DomainError):
-    def __init__(self) -> None:
-        super().__init__(
-            "Maximum number of subscribers reached for plan. Upgrade for more subscribers."
-        )
 
 
 class CannotSubscribeToOwnLabour(DomainError):

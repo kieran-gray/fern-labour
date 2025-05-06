@@ -60,7 +60,6 @@ def map_labours_table() -> None:
             "first_labour": labours_table.c.first_labour,
             "due_date": labours_table.c.due_date,
             "labour_name": labours_table.c.labour_name,
-            "payment_plan": labours_table.c.payment_plan,
             "contractions": relationship(
                 Contraction,
                 order_by=contractions_table.c.start_time,

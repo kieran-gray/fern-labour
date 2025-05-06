@@ -6,8 +6,7 @@ import pytest_asyncio
 
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.services.labour_service import LabourService
-from src.labour.domain.labour.enums import LabourPaymentPlan
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
@@ -27,11 +26,8 @@ SUBSCRIBER = "subscriber_id"
 
 @pytest_asyncio.fixture
 async def labour(labour_service: LabourService) -> LabourDTO:
-    await labour_service.plan_labour(
+    return await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
-    )
-    return await labour_service.update_labour_payment_plan(
-        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY.value
     )
 
 

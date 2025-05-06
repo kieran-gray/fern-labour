@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from src.labour.application.dtos.labour import LabourDTO
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 from src.user.application.dtos.user_summary import UserSummaryDTO
 
 

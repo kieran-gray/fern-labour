@@ -5,7 +5,7 @@ from src.labour.domain.labour.exceptions import (
     InvalidLabourId,
 )
 from src.labour.domain.labour.value_objects.labour_id import LabourId
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
 )

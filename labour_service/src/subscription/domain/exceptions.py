@@ -18,6 +18,11 @@ class SubscriptionContactMethodInvalid(DomainValidationError):
         super().__init__(f"Contact method '{contact_method}' is invalid.")
 
 
+class SubscriptionAccessLevelInvalid(DomainValidationError):
+    def __init__(self, access_level: str) -> None:
+        super().__init__(f"Subscription Access Level '{access_level}' is invalid.")
+
+
 class SubscriberAlreadySubscribed(DomainError):
     def __init__(self) -> None:
         super().__init__("Subscriber already subscribed to labour.")

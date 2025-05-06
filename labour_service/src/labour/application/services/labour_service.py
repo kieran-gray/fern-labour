@@ -12,23 +12,16 @@ from src.labour.domain.contraction.services.start_contraction import StartContra
 from src.labour.domain.contraction.services.update_contraction import UpdateContractionService
 from src.labour.domain.contraction.value_objects.contraction_id import ContractionId
 from src.labour.domain.labour.entity import Labour
-from src.labour.domain.labour.enums import LabourPaymentPlan
 from src.labour.domain.labour.exceptions import (
     CannotDeleteActiveLabour,
-    InsufficientLabourPaymentPlan,
     InvalidLabourId,
-    InvalidLabourPaymentPlan,
     InvalidLabourUpdateId,
     LabourNotFoundById,
     UnauthorizedLabourRequest,
 )
 from src.labour.domain.labour.repository import LabourRepository
 from src.labour.domain.labour.services.begin_labour import BeginLabourService
-from src.labour.domain.labour.services.can_update_labour_plan import CanUpdateLabourPlanService
 from src.labour.domain.labour.services.complete_labour import CompleteLabourService
-from src.labour.domain.labour.services.update_labour_payment_plan import (
-    UpdateLabourPaymentPlanService,
-)
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.labour.domain.labour_update.enums import LabourUpdateType
 from src.labour.domain.labour_update.services.post_labour_update import PostLabourUpdateService
@@ -84,59 +77,6 @@ class LabourService:
             raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
 
         labour.update_plan(first_labour=first_labour, due_date=due_date, labour_name=labour_name)
-
-        await self._labour_repository.save(labour)
-
-        await self._event_producer.publish_batch(labour.clear_domain_events())
-
-        return LabourDTO.from_domain(labour)
-
-    async def can_update_labour_payment_plan(
-        self,
-        requester_id: str,
-        labour_id: str,
-        payment_plan: str,
-    ) -> LabourDTO:
-        try:
-            labour_domain_id = LabourId(UUID(labour_id))
-        except ValueError:
-            raise InvalidLabourId()
-
-        try:
-            labour_payment_plan = LabourPaymentPlan(payment_plan)
-        except ValueError:
-            raise InvalidLabourPaymentPlan()
-
-        labour = await self._labour_repository.get_by_id(labour_id=labour_domain_id)
-        if not labour:
-            raise LabourNotFoundById(labour_id=labour_id)
-
-        if labour.birthing_person_id.value != requester_id:
-            raise UnauthorizedLabourRequest()
-
-        CanUpdateLabourPlanService().can_update_labour_plan(
-            labour=labour, payment_plan=labour_payment_plan
-        )
-        return LabourDTO.from_domain(labour)
-
-    async def update_labour_payment_plan(
-        self,
-        birthing_person_id: str,
-        payment_plan: str,
-    ) -> LabourDTO:
-        domain_id = UserId(birthing_person_id)
-        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
-        if not labour:
-            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
-
-        try:
-            payment_plan_enum = LabourPaymentPlan(payment_plan)
-        except ValueError:
-            raise InvalidLabourPaymentPlan()
-
-        labour = UpdateLabourPaymentPlanService().update_payment_plan(
-            labour=labour, payment_plan=payment_plan_enum
-        )
 
         await self._labour_repository.save(labour)
 
@@ -284,9 +224,6 @@ class LabourService:
         labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
         if not labour:
             raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
-
-        if not labour.payment_plan or labour.payment_plan == LabourPaymentPlan.SOLO.value:
-            raise InsufficientLabourPaymentPlan()
 
         labour_update_type_enum = LabourUpdateType(labour_update_type)
         labour = PostLabourUpdateService().post_labour_update(

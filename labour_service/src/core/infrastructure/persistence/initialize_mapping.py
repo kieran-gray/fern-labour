@@ -3,7 +3,7 @@ from src.labour.infrastructure.persistence.mappings.labour import (
     map_labour_updates_table,
     map_labours_table,
 )
-from src.subscription.infrastructure.persistence.mappings.subscription import (
+from src.subscription.infrastructure.persistence.mapping import (
     map_subscriptions_table,
 )
 

@@ -18,3 +18,8 @@ class SubscriptionStatus(StrEnum):
     REQUESTED = "requested"
     REMOVED = "removed"
     BLOCKED = "blocked"
+
+
+class SubscriptionAccessLevel(StrEnum):
+    BASIC = "basic"
+    SUPPORTER = "supporter"

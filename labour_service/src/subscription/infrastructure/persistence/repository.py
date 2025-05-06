@@ -6,7 +6,7 @@ from src.subscription.domain.entity import Subscription
 from src.subscription.domain.enums import SubscriptionStatus
 from src.subscription.domain.repository import SubscriptionRepository
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
-from src.subscription.infrastructure.persistence.tables.subscriptions import subscriptions_table
+from src.subscription.infrastructure.persistence.table import subscriptions_table
 from src.user.domain.value_objects.user_id import UserId
 
 

@@ -1,53 +1,95 @@
 import logging
-from unittest.mock import MagicMock, patch
+from datetime import UTC, datetime
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from uuid import UUID
 
 import pytest
 import pytest_asyncio
 import stripe
-from fern_labour_core.events.event_handler import EventHandler
 from stripe import SignatureVerificationError
 
-from src.payments.application.exceptions import (
+from src.labour.application.security.token_generator import TokenGenerator
+from src.labour.application.services.labour_service import LabourService
+from src.payments.infrastructure.stripe.exceptions import (
     StripeProductNotFound,
     WebhookHasInvalidPayload,
     WebhookHasInvalidSignature,
     WebhookMissingSignatureHeader,
 )
-from src.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
+from src.payments.infrastructure.stripe.product_mapping import Product
+from src.payments.infrastructure.stripe.stripe_payment_service import StripePaymentService
+from src.subscription.application.dtos import SubscriptionDTO
+from src.subscription.application.services.subscription_management_service import (
+    SubscriptionManagementService,
+)
+from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.domain.enums import SubscriptionAccessLevel
+from src.subscription.domain.value_objects.subscription_id import SubscriptionId
+from src.user.domain.entity import User
+from src.user.domain.repository import UserRepository
+from src.user.domain.value_objects.user_id import UserId
 
-MODULE = "src.payments.infrastructure.gateways.stripe.stripe_gateway"
-
-
-class MockEventHandler(EventHandler):
-    async def handle(self, event):
-        pass
+MODULE = "src.payments.infrastructure.stripe.stripe_payment_service"
+BIRTHING_PERSON = "bp_id"
+SUBSCRIBER = "sub_id"
 
 
 @pytest_asyncio.fixture
-def mock_event_handlers():
-    return {"test.event": MockEventHandler()}
-
-
-@pytest_asyncio.fixture
-async def stripe_service(mock_event_handlers: dict[str, EventHandler]):
+async def stripe_service(subscription_management_service: SubscriptionManagementService):
     return StripePaymentService(
         api_key="test_key",
         webhook_endpoint_secret="test_secret",
-        event_handlers=mock_event_handlers,
+        subscription_management_service=subscription_management_service,
     )
 
 
-def test_stripe_payment_service_initialization(mock_event_handlers: dict[str, EventHandler]):
+@pytest_asyncio.fixture
+async def subscription(
+    user_repo: UserRepository,
+    labour_service: LabourService,
+    subscription_service: SubscriptionService,
+    token_generator: TokenGenerator,
+) -> SubscriptionDTO:
+    await user_repo.save(
+        User(
+            id_=UserId(BIRTHING_PERSON),
+            username="test789",
+            first_name="user",
+            last_name="name",
+            email="test@birthing.com",
+        )
+    )
+    await user_repo.save(
+        User(
+            id_=UserId(SUBSCRIBER),
+            username="test456",
+            first_name="sub",
+            last_name="scriber",
+            email="test@subscriber.com",
+            phone_number="07123123123",
+        )
+    )
+    labour = await labour_service.plan_labour(
+        birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
+    )
+    token = token_generator.generate(labour.id)
+    return await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+
+
+def test_stripe_payment_service_initialization(
+    subscription_management_service: SubscriptionManagementService,
+):
     """Test the initialization of StripePaymentService"""
     service = StripePaymentService(
         api_key="test_key",
         webhook_endpoint_secret="test_secret",
-        event_handlers=mock_event_handlers,
+        subscription_management_service=subscription_management_service,
     )
 
     assert service._api_key == "test_key"
     assert service._webhook_endpoint_secret == "test_secret"
-    assert service._event_handlers == mock_event_handlers
     assert service._stripe.api_key == "test_key"
 
 
@@ -110,9 +152,7 @@ async def test_handle_webhook_valid_event_without_handler(
             await stripe_service.handle_webhook(
                 payload=b"test_payload", signature_header="valid_signature"
             )
-            assert (
-                "Received unknown.event event. Ignoring: No Event Handler Defined." in caplog.text
-            )
+            assert "Received unknown.event event. Ignoring." in caplog.text
 
 
 async def test_generate_line_item_success(stripe_service: StripePaymentService):
@@ -127,3 +167,236 @@ async def test_generate_line_item_success(stripe_service: StripePaymentService):
     with patch("stripe.Product.list_async", return_value=mock_products):
         line_item = await stripe_service.generate_line_item("test_item")
         assert line_item == {"price": "price_123", "quantity": 1}
+
+
+async def test_handle_successful_checkout_session_webhook(
+    stripe_service: StripePaymentService,
+    subscription: SubscriptionDTO,
+):
+    event = {
+        "data": {
+            "object": {
+                "id": "session_123",
+                "metadata": {"subscription_id": subscription.id},
+            }
+        },
+        "type": "checkout.session.completed",
+    }
+
+    mock_stripe = MagicMock()
+    mock_stripe.Webhook.construct_event = Mock(return_value=event)
+    mock_stripe.checkout.Session.retrieve.return_value = MagicMock(
+        payment_status="paid",
+        line_items=MagicMock(data=[MagicMock(price=MagicMock(product="prod_123"))]),
+    )
+    mock_stripe.Product.retrieve_async = AsyncMock(
+        return_value=MagicMock(metadata={"product": Product.UPGRADE_TO_SUPPORTER.value})
+    )
+    stripe_service._stripe = mock_stripe
+
+    await stripe_service.handle_webhook(payload=b"test_payload", signature_header="valid_signature")
+    sub_mgmt_service = stripe_service._subscription_management_service
+    domain_subscription = await sub_mgmt_service._subscription_repository.get_by_id(
+        SubscriptionId(UUID(subscription.id))
+    )
+    assert domain_subscription.access_level is SubscriptionAccessLevel.SUPPORTER
+
+
+async def test_handle_successful_checkout_session(
+    stripe_service: StripePaymentService,
+    subscription: SubscriptionDTO,
+):
+    mock_stripe = MagicMock()
+    mock_stripe.checkout.Session.retrieve.return_value = MagicMock(
+        payment_status="paid",
+        line_items=MagicMock(data=[MagicMock(price=MagicMock(product="prod_123"))]),
+    )
+    mock_stripe.Product.retrieve_async = AsyncMock(
+        return_value=MagicMock(metadata={"product": Product.UPGRADE_TO_SUPPORTER.value})
+    )
+
+    stripe_service._stripe = mock_stripe
+
+    event = {
+        "data": {
+            "object": {
+                "id": "session_123",
+                "metadata": {"subscription_id": subscription.id},
+            }
+        }
+    }
+
+    await stripe_service.complete_checkout_session(event)
+    sub_mgmt_service = stripe_service._subscription_management_service
+    domain_subscription = await sub_mgmt_service._subscription_repository.get_by_id(
+        SubscriptionId(UUID(subscription.id))
+    )
+    assert domain_subscription.access_level is SubscriptionAccessLevel.SUPPORTER
+
+
+async def test_handle_no_line_items(
+    stripe_service: StripePaymentService,
+    subscription: SubscriptionDTO,
+    caplog: pytest.LogCaptureFixture,
+):
+    mock_stripe = MagicMock()
+    mock_stripe.checkout.Session.retrieve.return_value = MagicMock(
+        payment_status="paid", line_items=None
+    )
+
+    stripe_service._stripe = mock_stripe
+
+    event = {
+        "data": {
+            "object": {
+                "id": "session_123",
+                "metadata": {"subscription_id": subscription.id},
+            }
+        }
+    }
+    with caplog.at_level(logging.ERROR, MODULE):
+        await stripe_service.complete_checkout_session(event)
+        assert len(caplog.records) == 1
+        assert "No line items found" in caplog.messages[0]
+
+
+async def test_handle_multiple_line_items(
+    stripe_service: StripePaymentService,
+    subscription: SubscriptionDTO,
+    caplog: pytest.LogCaptureFixture,
+):
+    mock_stripe = MagicMock()
+    mock_stripe.checkout.Session.retrieve.return_value = MagicMock(
+        payment_status="paid",
+        line_items=MagicMock(
+            data=[
+                MagicMock(price=MagicMock(product="prod_123")),
+                MagicMock(price=MagicMock(product="prod_abc")),
+                MagicMock(price=MagicMock(product="prod_999")),
+            ]
+        ),
+    )
+
+    mock_stripe.Product.retrieve_async = AsyncMock(
+        return_value=MagicMock(metadata={"product": Product.UPGRADE_TO_SUPPORTER.value})
+    )
+
+    stripe_service._stripe = mock_stripe
+
+    event = {
+        "data": {
+            "object": {
+                "id": "session_123",
+                "metadata": {"subscription_id": subscription.id},
+            }
+        }
+    }
+    with caplog.at_level(logging.ERROR, MODULE):
+        await stripe_service.complete_checkout_session(event)
+        assert len(caplog.records) == 1
+        assert "Multiple line items found" in caplog.messages[0]
+
+    sub_mgmt_service = stripe_service._subscription_management_service
+    domain_subscription = await sub_mgmt_service._subscription_repository.get_by_id(
+        SubscriptionId(UUID(subscription.id))
+    )
+    assert domain_subscription.access_level is SubscriptionAccessLevel.SUPPORTER
+
+
+async def test_handle_no_price_in_line_item(
+    stripe_service: StripePaymentService,
+    subscription: SubscriptionDTO,
+    caplog: pytest.LogCaptureFixture,
+):
+    mock_stripe = MagicMock()
+    mock_stripe.checkout.Session.retrieve.return_value = MagicMock(
+        payment_status="paid",
+        line_items=MagicMock(data=[MagicMock(price=None)]),
+    )
+
+    stripe_service._stripe = mock_stripe
+
+    event = {
+        "data": {
+            "object": {
+                "id": "session_123",
+                "metadata": {"subscription_id": subscription.id},
+            }
+        }
+    }
+
+    with caplog.at_level(logging.ERROR, MODULE):
+        await stripe_service.complete_checkout_session(event)
+        assert len(caplog.records) == 1
+        assert "No price ID found" in caplog.messages[0]
+
+
+async def test_handle_no_product_metadata(
+    stripe_service: StripePaymentService,
+    subscription: SubscriptionDTO,
+    caplog: pytest.LogCaptureFixture,
+):
+    mock_stripe = MagicMock()
+    mock_stripe.checkout.Session.retrieve.return_value = MagicMock(
+        payment_status="paid",
+        line_items=MagicMock(data=[MagicMock(price=MagicMock(product="prod_123"))]),
+    )
+    mock_stripe.Product.retrieve_async = AsyncMock(return_value=MagicMock(metadata={}))
+
+    stripe_service._stripe = mock_stripe
+
+    event = {
+        "data": {
+            "object": {
+                "id": "session_123",
+                "metadata": {"subscription_id": subscription.id},
+            }
+        }
+    }
+    with caplog.at_level(logging.ERROR, MODULE):
+        await stripe_service.complete_checkout_session(event)
+        assert len(caplog.records) == 1
+        assert "No product metadata for price" in caplog.messages[0]
+
+    sub_mgmt_service = stripe_service._subscription_management_service
+    domain_subscription = await sub_mgmt_service._subscription_repository.get_by_id(
+        SubscriptionId(UUID(subscription.id))
+    )
+    assert domain_subscription.access_level is SubscriptionAccessLevel.SUPPORTER
+
+
+async def test_checkout_session_product_not_in_mapping(
+    stripe_service: StripePaymentService,
+    subscription: SubscriptionDTO,
+    caplog: pytest.LogCaptureFixture,
+):
+    mock_stripe = MagicMock()
+    mock_stripe.checkout.Session.retrieve.return_value = MagicMock(
+        payment_status="paid",
+        line_items=MagicMock(data=[MagicMock(price=MagicMock(product="prod_123"))]),
+    )
+    mock_stripe.Product.retrieve_async = AsyncMock(
+        return_value=MagicMock(metadata={"product": "test_product"})
+    )
+
+    stripe_service._stripe = mock_stripe
+
+    event = {
+        "data": {
+            "object": {
+                "id": "session_123",
+                "metadata": {"subscription_id": subscription.id},
+            }
+        }
+    }
+
+    with caplog.at_level(logging.ERROR, MODULE):
+        await stripe_service.complete_checkout_session(event)
+        assert len(caplog.records) == 1
+        assert "No access level found for test_product" in caplog.messages[0]
+
+    sub_mgmt_service = stripe_service._subscription_management_service
+    domain_subscription = await sub_mgmt_service._subscription_repository.get_by_id(
+        SubscriptionId(UUID(subscription.id))
+    )
+    assert domain_subscription.access_level is SubscriptionAccessLevel.SUPPORTER
