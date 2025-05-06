@@ -4,9 +4,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 import pytest_asyncio
 import stripe
+from fern_labour_core.events.event_handler import EventHandler
 from stripe import SignatureVerificationError
 
-from src.core.application.event_handler import EventHandler
 from src.payments.application.exceptions import (
     StripeProductNotFound,
     WebhookHasInvalidPayload,

@@ -1,9 +1,9 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
+from fern_labour_core.events.producer import EventProducer
 
 from src.admin.application.contact_service import ContactService
-from src.core.domain.producer import EventProducer
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import Settings
 

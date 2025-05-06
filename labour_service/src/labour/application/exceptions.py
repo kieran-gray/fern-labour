@@ -1,4 +1,4 @@
-from src.core.application.exceptions import ApplicationError
+from fern_labour_core.exceptions.application import ApplicationError
 
 
 class LabourInviteRateLimitExceeded(ApplicationError):

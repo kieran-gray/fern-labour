@@ -1,8 +1,8 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
+from fern_labour_core.events.producer import EventProducer
 
-from src.core.domain.producer import EventProducer
 from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_invite_service import LabourInviteService

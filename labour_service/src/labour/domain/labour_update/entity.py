@@ -3,7 +3,8 @@ from datetime import UTC, datetime
 from typing import Self
 from uuid import UUID, uuid4
 
-from src.core.domain.entity import Entity
+from fern_labour_core.entity import Entity
+
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.labour.domain.labour_update.enums import LabourUpdateType
 from src.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId

@@ -1,4 +1,5 @@
-from src.core.domain.exceptions import DomainError
+from fern_labour_core.exceptions.domain import DomainError
+
 from src.labour.domain.labour_update.constants import ANNOUNCEMENT_COOLDOWN_SECONDS
 
 

@@ -2,13 +2,14 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from src.core.application.event_handler import EventHandler
-from src.core.domain.event import DomainEvent
-from src.core.domain.producer import EventProducer
+from fern_labour_core.events.event import DomainEvent
+from fern_labour_core.events.event_handler import EventHandler
+from fern_labour_core.events.producer import EventProducer
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.events import NotificationRequested
+from fern_labour_notifications_shared.notification_data import LabourAnnouncementData
+
 from src.labour.domain.labour_update.enums import LabourUpdateType
-from src.notification.enums import NotificationTemplate
-from src.notification.events import NotificationRequested
-from src.notification.notification_data import LabourAnnouncementData
 from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )

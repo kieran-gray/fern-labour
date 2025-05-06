@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Self
 
-from src.core.domain.event import DomainEvent
+from fern_labour_core.events.event import DomainEvent
+
 from src.labour.domain.contraction.entity import Contraction
 
 

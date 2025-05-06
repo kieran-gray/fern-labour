@@ -7,10 +7,10 @@ from fastapi import FastAPI, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.requests import Request
 from fastapi.responses import ORJSONResponse
+from fern_labour_core.exceptions.application import ApplicationError
+from fern_labour_core.exceptions.domain import DomainError
 from pydantic_core import ErrorDetails
 
-from src.core.application.exceptions import ApplicationError
-from src.core.domain.exceptions import DomainError
 from src.core.infrastructure.security.request_verification.exceptions import (
     InvalidVerificationTokenException,
     RequestVerificationError,

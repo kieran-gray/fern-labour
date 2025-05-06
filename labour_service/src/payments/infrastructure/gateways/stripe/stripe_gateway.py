@@ -2,9 +2,9 @@ import logging
 from collections.abc import Mapping
 
 import stripe
+from fern_labour_core.events.event_handler import EventHandler
 from stripe.checkout import Session
 
-from src.core.application.event_handler import EventHandler
 from src.payments.application.exceptions import (
     StripeProductNotFound,
     WebhookHasInvalidPayload,

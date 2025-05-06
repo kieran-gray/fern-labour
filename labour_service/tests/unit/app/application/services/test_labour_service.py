@@ -4,8 +4,8 @@ from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from fern_labour_core.events.producer import EventProducer
 
-from src.core.domain.producer import EventProducer
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.contraction.exceptions import ContractionIdInvalid

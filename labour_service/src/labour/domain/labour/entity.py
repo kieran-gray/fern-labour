@@ -3,7 +3,8 @@ from datetime import UTC, datetime
 from typing import Self
 from uuid import UUID, uuid4
 
-from src.core.domain.aggregate_root import AggregateRoot
+from fern_labour_core.aggregate_root import AggregateRoot
+
 from src.labour.domain.contraction.entity import Contraction
 from src.labour.domain.contraction.events import ContractionEnded, ContractionStarted
 from src.labour.domain.labour.enums import LabourPaymentPlan, LabourPhase

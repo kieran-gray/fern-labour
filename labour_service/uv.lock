@@ -318,16 +318,37 @@ wheels = [
 ]
 
 [[package]]
+name = "fern-labour-core"
+version = "0.1.0"
+source = { registry = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" }
+sdist = { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/fern-labour-core/fern_labour_core-0.1.0.tar.gz", hash = "sha256:df5a9c7575c3bccbd086562d913c4b5048c8741c7776b301d100c7fd6c1cfee2" }
+wheels = [
+    { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/fern-labour-core/fern_labour_core-0.1.0-py3-none-any.whl", hash = "sha256:e04457544fb83d159162940877fc4f13a2c87256298d60311aa0470cf5e55f84" },
+]
+
+[[package]]
+name = "fern-labour-notifications-shared"
+version = "0.1.2"
+source = { registry = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" }
+dependencies = [
+    { name = "fern-labour-core" },
+]
+sdist = { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/fern-labour-notifications-shared/fern_labour_notifications_shared-0.1.2.tar.gz", hash = "sha256:7bdf8ca0de66a903fa07d1e8fe0bfbc5bb7b510aa60c10b5d3f70ab2802760b4" }
+wheels = [
+    { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/fern-labour-notifications-shared/fern_labour_notifications_shared-0.1.2-py3-none-any.whl", hash = "sha256:6aee8abeaedf815fa0b21e8d0d534cbbbf37e75a6bfdedd814da23c8619c2171" },
+]
+
+[[package]]
 name = "gcp-pub-sub-dishka"
-version = "0.2.0"
+version = "0.2.1"
 source = { registry = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" }
 dependencies = [
     { name = "dishka" },
     { name = "google-cloud-pubsub" },
 ]
-sdist = { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/gcp-pub-sub-dishka/gcp_pub_sub_dishka-0.2.0.tar.gz", hash = "sha256:6cfe63a5a289323e3470fe43f99ebceb975395a81fd6dde6b9c478036b6ff8d6" }
+sdist = { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/gcp-pub-sub-dishka/gcp_pub_sub_dishka-0.2.1.tar.gz", hash = "sha256:d6760b230f65c73f95231bbb19d684718104e6c92b5a48af9ed519c905d8e98c" }
 wheels = [
-    { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/gcp-pub-sub-dishka/gcp_pub_sub_dishka-0.2.0-py3-none-any.whl", hash = "sha256:66acbf052d8e4ae2993631324e1cc49a893fd5c29222df9a41a228b7817b23d2" },
+    { url = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/gcp-pub-sub-dishka/gcp_pub_sub_dishka-0.2.1-py3-none-any.whl", hash = "sha256:9366b7fe1e639309574a103d783bf9e7d16b72f1793f14b074eac1b15110658b" },
 ]
 
 [[package]]
@@ -354,16 +375,16 @@ grpc = [
 
 [[package]]
 name = "google-auth"
-version = "2.39.0"
+version = "2.40.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cachetools" },
     { name = "pyasn1-modules" },
     { name = "rsa" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cb/8e/8f45c9a32f73e786e954b8f9761c61422955d23c45d1e8c347f9b4b59e8e/google_auth-2.39.0.tar.gz", hash = "sha256:73222d43cdc35a3aeacbfdcaf73142a97839f10de930550d89ebfe1d0a00cde7", size = 274834, upload-time = "2025-04-14T17:44:49.402Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/03/6b824ef961fb2ab74f3b54adf2a357f742d88e0667a3471621cb9477da96/google_auth-2.40.0.tar.gz", hash = "sha256:c277cf39f7c192d8540eb6331c08b5a0796e8041af8343ae73dd6b269732ca6c", size = 280934, upload-time = "2025-05-05T18:24:54.79Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/12/ad37a1ef86006d0a0117fc06a4a00bd461c775356b534b425f00dde208ea/google_auth-2.39.0-py2.py3-none-any.whl", hash = "sha256:0150b6711e97fb9f52fe599f55648950cc4540015565d8fbb31be2ad6e1548a2", size = 212319, upload-time = "2025-04-14T17:44:47.699Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/40/02101ed0fd0af369558db30f5a90c7d843d5747343bb55f35cb96cd2112b/google_auth-2.40.0-py2.py3-none-any.whl", hash = "sha256:dc3a5078acb1043c3e43685c22d628afe40af8559cf561de388e0c939280fcc8", size = 216004, upload-time = "2025-05-05T18:24:53.115Z" },
 ]
 
 [[package]]
@@ -573,10 +594,14 @@ wheels = [
 name = "labour-service"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "fern-labour-core" },
+]
 
 [package.dev-dependencies]
 app = [
     { name = "dishka" },
+    { name = "fern-labour-notifications-shared" },
     { name = "gcp-pub-sub-dishka" },
     { name = "orjson" },
     { name = "pydantic", extra = ["email"] },
@@ -614,10 +639,12 @@ migrations = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "fern-labour-core", specifier = ">=0.1.0", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" }]
 
 [package.metadata.requires-dev]
 app = [
     { name = "dishka", specifier = ">=1.4.0,<2.0.0" },
+    { name = "fern-labour-notifications-shared", specifier = ">=0.1.0", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" },
     { name = "gcp-pub-sub-dishka", specifier = ">=0.1.1", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" },
     { name = "orjson", specifier = ">=3.10.7,<4.0.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.9.0,<3.0.0" },

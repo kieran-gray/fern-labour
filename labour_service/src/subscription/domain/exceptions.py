@@ -1,6 +1,6 @@
 from typing import Any
 
-from src.core.domain.exceptions import DomainError, DomainValidationError
+from fern_labour_core.exceptions.domain import DomainError, DomainValidationError
 
 
 class SubscriptionIdInvalid(DomainValidationError):

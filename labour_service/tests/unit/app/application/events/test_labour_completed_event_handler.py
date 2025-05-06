@@ -4,16 +4,16 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
+from fern_labour_core.events.event import DomainEvent
+from fern_labour_notifications_shared.enums import NotificationChannel
+from fern_labour_notifications_shared.events import NotificationRequested
 
-from src.core.domain.event import DomainEvent
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.event_handlers.labour_completed_event_handler import (
     LabourCompletedEventHandler,
 )
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.labour.enums import LabourPaymentPlan
-from src.notification.enums import NotificationChannel
-from src.notification.events import NotificationRequested
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )

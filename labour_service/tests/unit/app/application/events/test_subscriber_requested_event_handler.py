@@ -2,10 +2,10 @@ from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest_asyncio
+from fern_labour_core.events.event import DomainEvent
+from fern_labour_notifications_shared.enums import NotificationChannel
+from fern_labour_notifications_shared.events import NotificationRequested
 
-from src.core.domain.event import DomainEvent
-from src.notification.enums import NotificationChannel
-from src.notification.events import NotificationRequested
 from src.subscription.application.event_handlers.mapping import SUBSCRIPTION_EVENT_HANDLER_MAPPING
 from src.subscription.application.event_handlers.subscriber_requested_event_handler import (
     SubscriberRequestedEventHandler,

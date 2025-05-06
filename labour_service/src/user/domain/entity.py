@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from src.core.domain.entity import Entity
+from fern_labour_core.entity import Entity
+
 from src.user.domain.value_objects.user_id import UserId
 
 
