@@ -3,9 +3,9 @@ from typing import Annotated
 from dishka import FromComponent, Provider, Scope, provide
 from fern_labour_core.events.consumer import EventConsumer
 from fern_labour_core.events.producer import EventProducer
-from gcp_pub_sub_dishka.consumer import PubSubEventConsumer
-from gcp_pub_sub_dishka.event_handler import TopicHandler
-from gcp_pub_sub_dishka.producer import PubSubEventProducer
+from fern_labour_pub_sub.consumer import PubSubEventConsumer
+from fern_labour_pub_sub.producer import PubSubEventProducer
+from fern_labour_pub_sub.topic_handler import TopicHandler
 
 from src.labour.application.event_handlers.mapping import LABOUR_EVENT_HANDLER_MAPPING
 from src.setup.ioc.di_component_enum import ComponentEnum

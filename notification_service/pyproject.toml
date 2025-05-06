@@ -16,7 +16,7 @@ dependencies = [
 app = [
     "dishka<2.0.0,>=1.4.0",
     "emails>=0.6",
-    "gcp-pub-sub-dishka>=0.1.1",
+    "fern-labour-pub-sub>=0.3.0",
     "jinja2>=3.1.5",
     "orjson<4.0.0,>=3.10.7",
     "pydantic[email]<3.0.0,>=2.9.0",
@@ -57,7 +57,7 @@ default-groups = ["db"]
 [tool.uv.sources]
 fern-labour-core = { index = "fern-labour-packages" }
 fern-labour-notifications-shared = { index = "fern-labour-packages" }
-gcp-pub-sub-dishka = { index = "fern-labour-packages" }
+fern-labour-pub-sub = { index = "fern-labour-packages" }
 
 [[tool.uv.index]]
 name = "fern-labour-packages"
