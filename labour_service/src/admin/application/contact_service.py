@@ -1,11 +1,10 @@
 import logging
 from dataclasses import dataclass
 
+from fern_labour_core.events.producer import EventProducer
 from fern_labour_notifications_shared.enums import NotificationChannel, NotificationTemplate
 from fern_labour_notifications_shared.events import NotificationRequested
 from fern_labour_notifications_shared.notification_data import ContactUsData
-
-from src.core.domain.producer import EventProducer
 
 log = logging.getLogger(__name__)
 

@@ -1,8 +1,8 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
+from fern_labour_core.events.producer import EventProducer
 
-from src.core.domain.producer import EventProducer
 from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.labour.application.services.labour_service import LabourService

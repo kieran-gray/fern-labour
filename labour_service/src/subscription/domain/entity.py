@@ -2,7 +2,8 @@ from dataclasses import dataclass, field
 from typing import Self
 from uuid import UUID, uuid4
 
-from src.core.domain.aggregate_root import AggregateRoot
+from fern_labour_core.aggregate_root import AggregateRoot
+
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from src.subscription.domain.events import SubscriberApproved, SubscriberRequested

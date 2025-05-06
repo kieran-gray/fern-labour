@@ -1,4 +1,5 @@
-from src.core.application.event_handler import EventHandler
+from fern_labour_core.events.event_handler import EventHandler
+
 from src.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from src.labour.application.event_handlers.labour_completed_event_handler import (
     LabourCompletedEventHandler,

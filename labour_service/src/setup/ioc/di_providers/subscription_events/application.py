@@ -1,8 +1,8 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
+from fern_labour_core.events.producer import EventProducer
 
-from src.core.domain.producer import EventProducer
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import Settings
 from src.subscription.application.event_handlers.subscriber_approved_event_handler import (

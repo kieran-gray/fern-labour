@@ -1,11 +1,11 @@
 import logging
 from dataclasses import dataclass
 
+from fern_labour_core.events.producer import EventProducer
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.events import NotificationRequested
 from fern_labour_notifications_shared.notification_data import LabourInviteData
 
-from src.core.domain.producer import EventProducer
 from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
 from src.labour.application.exceptions import LabourInviteRateLimitExceeded
 from src.labour.application.security.token_generator import TokenGenerator

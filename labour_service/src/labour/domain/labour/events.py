@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Self
 
-from src.core.domain.event import DomainEvent
+from fern_labour_core.events.event import DomainEvent
 
 
 @dataclass

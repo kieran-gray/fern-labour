@@ -2,8 +2,8 @@ import logging
 from typing import Any
 
 import stripe
+from fern_labour_core.events.event_handler import EventHandler
 
-from src.core.application.event_handler import EventHandler
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.labour.enums import LabourPaymentPlan
 from src.payments.infrastructure.gateways.stripe.product_mapping import (
