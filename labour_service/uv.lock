@@ -594,11 +594,13 @@ wheels = [
 name = "labour-service"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "fern-labour-core" },
+]
 
 [package.dev-dependencies]
 app = [
     { name = "dishka" },
-    { name = "fern-labour-core" },
     { name = "fern-labour-notifications-shared" },
     { name = "gcp-pub-sub-dishka" },
     { name = "orjson" },
@@ -637,11 +639,11 @@ migrations = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "fern-labour-core", specifier = ">=0.1.0", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" }]
 
 [package.metadata.requires-dev]
 app = [
     { name = "dishka", specifier = ">=1.4.0,<2.0.0" },
-    { name = "fern-labour-core", specifier = ">=0.1.0", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" },
     { name = "fern-labour-notifications-shared", specifier = ">=0.1.0", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" },
     { name = "gcp-pub-sub-dishka", specifier = ">=0.1.1", index = "https://europe-west2-python.pkg.dev/valued-vault-446719-t7/fern-labour-packages/simple" },
     { name = "orjson", specifier = ">=3.10.7,<4.0.0" },
