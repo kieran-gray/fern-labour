@@ -1,8 +1,9 @@
-from src.notification.application.dtos.notification_data import BaseNotificationData
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import BaseNotificationData
+
 from src.notification.application.interfaces.template_engine import (
     SMSTemplateEngine as SMSTemplateEngineInterface,
 )
-from src.notification.domain.enums import NotificationTemplate
 from src.notification.domain.exceptions import GenerationTemplateNotFound
 from src.notification.infrastructure.templates.sms.message_templates import (
     TEMPLATE_TO_MESSAGE_STRING_TEMPLATE,

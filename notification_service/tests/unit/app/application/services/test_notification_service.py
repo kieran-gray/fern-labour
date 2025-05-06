@@ -4,9 +4,10 @@ from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import ContactUsData, LabourBegunData
 
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
-from src.notification.application.dtos.notification_data import ContactUsData, LabourBegunData
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,
@@ -19,7 +20,6 @@ from src.notification.application.services.notification_service import Notificat
 from src.notification.domain.enums import (
     NotificationChannel,
     NotificationStatus,
-    NotificationTemplate,
 )
 from src.notification.domain.exceptions import (
     InvalidNotificationChannel,

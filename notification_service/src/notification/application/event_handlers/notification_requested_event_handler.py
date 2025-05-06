@@ -1,7 +1,8 @@
 import logging
 from typing import Any
 
-from src.core.application.event_handler import EventHandler
+from fern_labour_core.events.event_handler import EventHandler
+
 from src.notification.application.services.notification_service import NotificationService
 from src.notification.domain.events import NotificationRequested, NotificationRequestedData
 

@@ -2,19 +2,20 @@ import logging
 from typing import Protocol
 from uuid import UUID
 
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import BaseNotificationData
+from fern_labour_notifications_shared.template_data_mapping import TEMPLATE_TO_PAYLOAD
+
 from src.notification.application.dtos.notification import NotificationContent
-from src.notification.application.dtos.notification_data import (
-    TEMPLATE_TO_PAYLOAD,
-    BaseNotificationData,
-)
 from src.notification.application.interfaces.template_engine import (
     EmailTemplateEngine,
     SMSTemplateEngine,
     WhatsAppTemplateEngine,
 )
-from src.notification.domain.enums import NotificationChannel, NotificationTemplate
+from src.notification.domain.enums import NotificationChannel
 from src.notification.domain.exceptions import (
     InvalidNotificationId,
+    InvalidNotificationTemplate,
     NotificationNotFoundById,
     NotificationProcessingError,
 )
@@ -57,7 +58,12 @@ class NotificationGenerationService:
         if not notification:
             raise NotificationNotFoundById(notification_id=notification_id)
 
-        payload_data_type = self._get_payload_type(notification.template)
+        try:
+            template = NotificationTemplate(notification.template)
+        except ValueError:
+            raise InvalidNotificationTemplate(notification.template)
+
+        payload_data_type = self._get_payload_type(template=template)
 
         try:
             data = payload_data_type.from_dict(notification.data)
@@ -68,9 +74,7 @@ class NotificationGenerationService:
         notification_content_generator = self._get_notification_content_generator(
             notification.channel
         )
-        generated_content = notification_content_generator(
-            template=notification.template, data=data
-        )
+        generated_content = notification_content_generator(template=template, data=data)
         log.info(
             f"Successfully generated {notification.channel.value} content for {notification_id}"
         )

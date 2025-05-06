@@ -1,10 +1,10 @@
 import pytest
-
-from src.notification.application.dtos.notification_data import (
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import (
     LabourUpdateData,
     SubscriberInviteData,
 )
-from src.notification.domain.enums import NotificationTemplate
+
 from src.notification.domain.exceptions import GenerationTemplateNotFound
 from src.notification.infrastructure.template_engines.jinja2_email_template_engine import (
     Jinja2EmailTemplateEngine,

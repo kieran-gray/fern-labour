@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.domain.value_object import ValueObject
+from fern_labour_core.value_object import ValueObject
 
 
 @dataclass(frozen=True, repr=False)

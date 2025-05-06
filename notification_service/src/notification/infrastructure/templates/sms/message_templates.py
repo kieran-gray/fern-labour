@@ -1,4 +1,4 @@
-from src.notification.domain.enums import NotificationTemplate
+from fern_labour_notifications_shared.enums import NotificationTemplate
 
 TEMPLATE_TO_MESSAGE_STRING_TEMPLATE = {
     NotificationTemplate.LABOUR_ANNOUNCEMENT: (

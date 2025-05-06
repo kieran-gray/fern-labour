@@ -4,9 +4,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import BaseNotificationData
 
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
-from src.notification.application.dtos.notification_data import BaseNotificationData
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,
@@ -26,7 +27,7 @@ from src.notification.application.services.notification_generation_service impor
 )
 from src.notification.application.services.notification_service import NotificationService
 from src.notification.domain.entity import Notification
-from src.notification.domain.enums import NotificationStatus, NotificationTemplate
+from src.notification.domain.enums import NotificationStatus
 from src.notification.domain.repository import NotificationRepository
 from src.notification.domain.value_objects.notification_id import NotificationId
 from src.notification.infrastructure.template_engines.sms_template_engine import SMSTemplateEngine
