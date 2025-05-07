@@ -44,6 +44,7 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
         </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
+        <Menu.Label>Manage Update</Menu.Label>
         <Menu.Item
           color="red"
           leftSection={<IconTrash size={20} stroke={1.5} />}
