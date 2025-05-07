@@ -260,6 +260,8 @@ services:
       - NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL?unset}
       - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_HOST?unset}
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
+    volumes:
+      - ./marketing:/app
     command: [ "npm", "run", "dev" ]
 
   mailcatcher:
