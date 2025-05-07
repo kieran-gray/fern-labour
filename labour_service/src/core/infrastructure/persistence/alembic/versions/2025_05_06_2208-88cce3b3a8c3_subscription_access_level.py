@@ -30,9 +30,11 @@ def upgrade() -> None:
             postgresql.ENUM(
                 "BASIC", "SUPPORTER", name="subscription_access_level", create_type=False
             ),
-            nullable=False,
+            nullable=True,
         ),
     )
+    op.execute("UPDATE subscriptions SET access_level = 'SUPPORTER'")
+    op.alter_column("subscriptions", "access_level", nullable=False)
     # ### end Alembic commands ###
 
 
