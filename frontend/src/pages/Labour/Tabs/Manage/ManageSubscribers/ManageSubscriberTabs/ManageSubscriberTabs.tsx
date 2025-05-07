@@ -29,6 +29,7 @@ export const ManageSubscribersTabs = () => {
       return response;
     },
     enabled: !!labourId,
+    refetchInterval: 30000,
   });
 
   if (isPending) {

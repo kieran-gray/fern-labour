@@ -9,10 +9,6 @@ class PlanLabourRequest(BaseModel):
     labour_name: str | None = None
 
 
-class PaymentPlanLabourRequest(BaseModel):
-    payment_plan: str
-
-
 class CompleteLabourRequest(BaseModel):
     end_time: datetime | None = None
     notes: str | None = None

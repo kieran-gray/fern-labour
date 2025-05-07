@@ -1,25 +1,16 @@
-from src.labour.domain.labour.constants import INNER_CIRCLE_MAX_SUBSCRIBERS
 from src.labour.domain.labour.entity import Labour
-from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.labour.domain.labour.enums import LabourPhase
 from src.labour.domain.labour.exceptions import (
     CannotSubscribeToOwnLabour,
-    InsufficientLabourPaymentPlan,
-    MaximumNumberOfSubscribersReached,
+    LabourAlreadyCompleted,
 )
 from src.user.domain.value_objects.user_id import UserId
 
 
 class CanAcceptSubscriberService:
-    def can_accept_subscriber(
-        self, labour: Labour, subscriber_id: UserId, current_active_subscriptions: int
-    ) -> None:
+    def can_accept_subscriber(self, labour: Labour, subscriber_id: UserId) -> None:
         if labour.birthing_person_id == subscriber_id:
             raise CannotSubscribeToOwnLabour()
-        if labour.payment_plan == LabourPaymentPlan.INNER_CIRCLE.value:
-            if current_active_subscriptions >= INNER_CIRCLE_MAX_SUBSCRIBERS:
-                raise MaximumNumberOfSubscribersReached()
-            return
-        elif labour.payment_plan == LabourPaymentPlan.COMMUNITY.value:
-            return
-        else:
-            raise InsufficientLabourPaymentPlan()
+        if labour.current_phase is LabourPhase.COMPLETE:
+            raise LabourAlreadyCompleted()
+        return

@@ -44,7 +44,7 @@ export type ContractionDTO = {
 
 export type CreateCheckoutRequest = {
   upgrade: string;
-  labour_id: string;
+  subscription_id: string;
   success_url: string;
   cancel_url: string;
 };
@@ -78,7 +78,6 @@ export type LabourDTO = {
   due_date: string;
   first_labour: boolean;
   labour_name: string | null;
-  payment_plan: string | null;
   start_time: string | null;
   end_time: string | null;
   notes: string | null;
@@ -137,10 +136,6 @@ export type LabourUpdateRequest = {
  */
 export type LabourUpdateType = 'announcement' | 'status_update';
 
-export type PaymentPlanLabourRequest = {
-  payment_plan: string;
-};
-
 export type PlanLabourRequest = {
   first_labour: boolean;
   due_date: string;
@@ -188,6 +183,7 @@ export type SubscriptionDTO = {
   subscriber_id: string;
   role: string;
   status: string;
+  access_level: string;
   contact_methods: Array<string>;
 };
 
@@ -322,12 +318,6 @@ export type PlanLabourApiV1LabourPlanPostData = {
 };
 
 export type PlanLabourApiV1LabourPlanPostResponse = LabourResponse;
-
-export type UpdateLabourPaymentPlanApiV1LabourPaymentPlanPutData = {
-  requestBody: PaymentPlanLabourRequest;
-};
-
-export type UpdateLabourPaymentPlanApiV1LabourPaymentPlanPutResponse = LabourResponse;
 
 export type BeginLabourApiV1LabourBeginPostResponse = LabourResponse;
 

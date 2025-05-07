@@ -15,6 +15,7 @@ from fern_labour_notifications_shared.notification_data import (
 from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
+from src.subscription.domain.enums import SubscriptionAccessLevel
 from src.user.application.dtos.user import UserDTO
 from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.exceptions import UserNotFoundById
@@ -78,7 +79,9 @@ class LabourCompletedEventHandler(EventHandler):
 
         birthing_person = await self._user_service.get(user_id=birthing_person_id)
         subscriptions = await self._subscription_query_service.get_labour_subscriptions(
-            requester_id=birthing_person_id, labour_id=labour_id
+            requester_id=birthing_person_id,
+            labour_id=labour_id,
+            access_level=SubscriptionAccessLevel.SUPPORTER.value,
         )
 
         for subscription in subscriptions:

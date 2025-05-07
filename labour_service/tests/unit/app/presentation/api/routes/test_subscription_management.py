@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 
 
 def test_remove_subscriber(client: TestClient, mock_subscription_dto: SubscriptionDTO) -> None:

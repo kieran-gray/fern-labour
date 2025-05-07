@@ -60,7 +60,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
     const title = data.labour_name ? data.labour_name : 'Your Labour';
     const completed = data.end_time !== null;
     const activeDescription =
-      'Take a deep breath—you’ve got this! Here, you can check your labour details. Use the tabs above to navigate through the app.';
+      'Take a deep breath, you’ve got this! Here, you can check your labour details. Use the tabs above to navigate through the app.';
     const completedDescription =
       'Welcome back! You’re viewing your completed labour journey. All details are preserved for your reference, though editing is no longer available. Browse through the tabs above to revisit each part of your experience.';
     const currentPhase = completed
@@ -107,9 +107,6 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
               <Badge variant="filled" className={classes.labourBadge} size="lg">
                 {!data.first_labour ? 'Not ' : ''}first time mother
               </Badge>
-              <Badge variant="filled" className={classes.labourBadge} size="lg">
-                Plan: {data.payment_plan?.replace('_', ' ')}
-              </Badge>
             </div>
             {data.notes && (
               <>
@@ -129,7 +126,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                   size="md"
                   h={48}
                   className={classes.backButton}
-                  onClick={() => navigate('/onboarding?step=plan')}
+                  onClick={() => navigate('/onboarding')}
                   type="submit"
                 >
                   Go back to planning

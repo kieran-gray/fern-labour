@@ -13,8 +13,7 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import { motion } from 'motion/react';
-import { Box, Card, Container, Flex, Grid, Space, Stack, Text } from '@mantine/core';
-import { FeaturesCarousel } from '../FeaturesCarousel/FeaturesCarousel';
+import { Box, Card, Container, Flex, Grid, Stack, Text } from '@mantine/core';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesMotion.module.css';
 
@@ -71,7 +70,7 @@ const FEATURES: Feature[] = [
     icon: <IconUsers color="var(--mantine-color-pink-6)" />,
     title: 'Manage Your Subscribers',
     description:
-      'Only people you invite can see your labour, and you can remove or block any unwanted subscribers.',
+      'Only people you approve can see your labour, and you can remove or block any unwanted subscribers.',
   },
 ] as const;
 
@@ -93,7 +92,7 @@ const FeatureCell = ({
     style={{ height: '100%' }}
   >
     <motion.div
-      whileHover={{ scale: 1.05, boxShadow: 'var(--mantine-shadow-xl)' }}
+      whileHover={{ scale: 1.01, boxShadow: 'var(--mantine-shadow-md)' }}
       transition={{ type: 'spring' }}
       style={{
         borderRadius: 'var(--mantine-radius-lg)',
@@ -145,8 +144,6 @@ export const Feature02 = ({
       </JumboTitle>
     </Container>
     <Container size="lg" p={0} mt="xl">
-      <FeaturesCarousel />
-      <Space h="xl" />
       <Grid gutter="xl">
         {features.map((feature, index) => (
           <Grid.Col key={feature.title} span={{ base: 12, xs: 6, md: 4 }} mih="100%">

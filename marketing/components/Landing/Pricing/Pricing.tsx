@@ -3,19 +3,16 @@
 import { ReactNode } from 'react';
 import NextLink from 'next/link';
 import {
-  IconAmbulance,
-  IconChartHistogram,
-  IconDots,
+  IconAdjustments,
+  IconBellRinging,
+  IconDeviceMobileMessage,
   IconMessage,
+  IconMoodSmileBeam,
   IconSignLeft,
-  IconSpeakerphone,
-  IconStopwatch,
   IconUser,
   IconUsers,
-  IconUsersGroup,
 } from '@tabler/icons-react';
 import {
-  Badge,
   Box,
   Button,
   Card,
@@ -143,10 +140,10 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
       <Container size="md" id="#pricing" style={{ position: 'relative' }}>
         <Stack align="center" gap="xs">
           <JumboTitle order={2} fz="md" ta="center" style={{ textWrap: 'balance' }}>
-            Simple, per-labour pricing
+            Free for Mums. Flexible for Family.
           </JumboTitle>
           <Text c="var(--mantine-color-gray-7)" ta="center" fz="xl" style={{ textWrap: 'balance' }}>
-            No unnecessary subscriptions, just pay to upgrade your labour.
+            Track labour for free. Let your loved ones stay in the loop, if they want to.
           </Text>
         </Stack>
       </Container>
@@ -159,7 +156,8 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
         gap="xl"
       >
         <PricingCard
-          title="Solo"
+          shadow="sm"
+          title="For Mum"
           description=""
           cta={
             <Button
@@ -182,49 +180,35 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
           pricingPeriod=""
           items={[
             {
-              title: 'Track your contractions',
-              description: 'Access to the contraction tracker',
+              title: 'Peace of mind',
+              description: 'No more constant messages or check-ins',
               icon: (
                 <Icon>
-                  <IconStopwatch size={21} />
+                  <IconMoodSmileBeam size={21} />
                 </Icon>
               ),
             },
             {
-              title: 'Get to the hospital on time',
-              description: 'Contraction based alerts throughout',
+              title: 'You’re in control',
+              description: 'Share updates only when you’re ready',
               icon: (
                 <Icon>
-                  <IconAmbulance size={21} />
-                </Icon>
-              ),
-            },
-            {
-              title: 'Statistics',
-              description: 'See your contraction statistics',
-              icon: (
-                <Icon>
-                  <IconChartHistogram size={21} />
+                  <IconAdjustments size={21} />
                 </Icon>
               ),
             },
           ]}
         />
         <PricingCard
-          shadow="lg"
-          badge={
-            <Badge variant="light" size="lg">
-              Most popular
-            </Badge>
-          }
-          title="Inner-Circle"
+          shadow="sm"
+          title="For loved ones"
           description=""
           cta={
             <Button
-              className={classes.cta}
               component={NextLink}
               radius="xl"
               href={callToActionUrl}
+              variant="light"
               size="lg"
               fullWidth
             >
@@ -236,21 +220,12 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
               <IconUsers size={21} />
             </Icon>
           }
-          price="£10"
+          price="Free"
           pricingPeriod=""
           items={[
             {
-              title: 'Status Updates',
-              description: 'Share updates with loved ones',
-              icon: (
-                <Icon>
-                  <IconMessage size={21} />
-                </Icon>
-              ),
-            },
-            {
-              title: 'Up to 5 Subscribers',
-              description: 'Slots for 5 loved ones to follow you',
+              title: 'Subscribe',
+              description: 'Subscribe to a labour',
               icon: (
                 <Icon>
                   <IconUsers size={21} />
@@ -258,23 +233,19 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
               ),
             },
             {
-              title: 'Make announcements',
-              description: 'Send text messages to loved ones',
+              title: 'See updates in app',
+              description: 'View labour updates in app',
               icon: (
                 <Icon>
-                  <IconSpeakerphone size={21} />
+                  <IconMessage size={21} />
                 </Icon>
               ),
             },
           ]}
         />
         <PricingCard
-          badge={
-            <Badge variant="outline" size="lg">
-              Best Value
-            </Badge>
-          }
-          title="Community"
+          shadow="sm"
+          title="For loved ones"
           description=""
           cta={
             <Button
@@ -290,10 +261,10 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
           }
           icon={
             <Icon>
-              <IconUsersGroup size={21} />
+              <IconDeviceMobileMessage size={21} />
             </Icon>
           }
-          price="£15"
+          price="£2.50"
           pricingPeriod=""
           items={[
             {
@@ -306,20 +277,11 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
               ),
             },
             {
-              title: 'Unlimited Subscribers',
-              description: 'Have unlimited friends and family join',
+              title: 'Live notifications',
+              description: 'Real-time updates via WhatsApp/SMS',
               icon: (
                 <Icon>
-                  <IconUsersGroup size={21} />
-                </Icon>
-              ),
-            },
-            {
-              title: 'Coming soon',
-              description: 'More features in progress',
-              icon: (
-                <Icon>
-                  <IconDots size={21} />
+                  <IconBellRinging size={21} />
                 </Icon>
               ),
             },

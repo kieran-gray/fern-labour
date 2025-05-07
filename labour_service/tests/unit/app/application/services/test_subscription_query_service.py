@@ -6,8 +6,7 @@ import pytest_asyncio
 
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.services.labour_service import LabourService
-from src.labour.domain.labour.enums import LabourPaymentPlan
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
@@ -15,7 +14,9 @@ from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
 from src.subscription.application.services.subscription_service import SubscriptionService
+from src.subscription.domain.enums import SubscriptionAccessLevel
 from src.subscription.domain.exceptions import (
+    SubscriptionAccessLevelInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
     UnauthorizedSubscriptionRequest,
@@ -27,11 +28,8 @@ SUBSCRIBER = "subscriber_id"
 
 @pytest_asyncio.fixture
 async def labour(labour_service: LabourService) -> LabourDTO:
-    await labour_service.plan_labour(
+    return await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
-    )
-    return await labour_service.update_labour_payment_plan(
-        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY.value
     )
 
 
@@ -168,6 +166,79 @@ async def test_can_query_subscriptions_for_own_labour(
     )
     subscriptions = await subscription_query_service.get_labour_subscriptions(
         requester_id=BIRTHING_PERSON, labour_id=labour.id
+    )
+    assert subscriptions == [subscription]
+
+
+async def test_cannot_query_paid_subscriptions_for_own_labour_invalid_access_level(
+    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
+    labour: LabourDTO,
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    with pytest.raises(SubscriptionAccessLevelInvalid):
+        await subscription_query_service.get_labour_subscriptions(
+            requester_id=BIRTHING_PERSON, labour_id=labour.id, access_level="fail"
+        )
+
+
+async def test_query_paid_subscriptions_for_own_labour_none(
+    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
+    labour: LabourDTO,
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    subscriptions = await subscription_query_service.get_labour_subscriptions(
+        requester_id=BIRTHING_PERSON,
+        labour_id=labour.id,
+        access_level=SubscriptionAccessLevel.SUPPORTER,
+    )
+    assert subscriptions == []
+
+
+async def test_query_paid_subscriptions_for_own_labour_some(
+    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
+    subscription_management_service: SubscriptionManagementService,
+    labour: LabourDTO,
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    subscription = await subscription_management_service.update_access_level(
+        subscription_id=subscription.id, access_level=SubscriptionAccessLevel.SUPPORTER
+    )
+    subscriptions = await subscription_query_service.get_labour_subscriptions(
+        requester_id=BIRTHING_PERSON,
+        labour_id=labour.id,
+        access_level=SubscriptionAccessLevel.SUPPORTER,
+    )
+    assert subscriptions == [subscription]
+
+
+async def test_can_query_unpaid_subscriptions_for_own_labour(
+    subscription_service: SubscriptionService,
+    subscription_query_service: SubscriptionQueryService,
+    labour: LabourDTO,
+) -> None:
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    subscriptions = await subscription_query_service.get_labour_subscriptions(
+        requester_id=BIRTHING_PERSON,
+        labour_id=labour.id,
+        access_level=SubscriptionAccessLevel.BASIC,
     )
     assert subscriptions == [subscription]
 

@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 
 from src.labour.domain.labour.value_objects.labour_id import LabourId
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.domain.entity import Subscription
 from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
 from src.user.domain.value_objects.user_id import UserId

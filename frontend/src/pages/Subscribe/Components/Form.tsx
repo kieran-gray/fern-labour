@@ -53,7 +53,7 @@ export default function SubscribeForm({
         subscription
       );
       setMode(AppMode.Subscriber);
-      navigate(`/?subscription=${subscription.id}&prompt=contactMethods`);
+      navigate(`/?prompt=requested`);
     },
     onError: () => {
       notifications.show({

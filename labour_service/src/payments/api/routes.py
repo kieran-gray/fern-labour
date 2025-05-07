@@ -7,12 +7,12 @@ from fastapi.security import HTTPAuthorizationCredentials
 
 from src.api.dependencies import bearer_scheme
 from src.api.exception_handler import ExceptionSchema
-from src.labour.application.services.labour_service import LabourService
 from src.payments.api.requests import CreateCheckoutRequest
 from src.payments.api.responses import CheckoutResponse
-from src.payments.infrastructure.gateways.stripe.product_mapping import Product
-from src.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
+from src.payments.infrastructure.stripe.product_mapping import Product
+from src.payments.infrastructure.stripe.stripe_payment_service import StripePaymentService
 from src.setup.ioc.di_component_enum import ComponentEnum
+from src.subscription.application.services.subscription_service import SubscriptionService
 from src.user.infrastructure.auth.interfaces.controller import AuthController
 
 payments_router = APIRouter(prefix="/payments", tags=["Payments"])
@@ -52,29 +52,19 @@ async def stripe_webhook(
 async def create_checkout_session(
     request_data: CreateCheckoutRequest,
     payment_service: Annotated[StripePaymentService, FromComponent(ComponentEnum.PAYMENTS)],
-    labour_service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    subscription_service: Annotated[SubscriptionService, FromComponent(ComponentEnum.SUBSCRIPTION)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> CheckoutResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await labour_service.can_update_labour_payment_plan(
-        requester_id=user.id, labour_id=request_data.labour_id, payment_plan=request_data.upgrade
+    await subscription_service.ensure_can_update_access_level(
+        subscription_id=request_data.subscription_id
     )
-
-    item = ""
-    if request_data.upgrade == "inner_circle":
-        item = Product.UPGRADE_TO_INNER_CIRCLE.value
-    elif request_data.upgrade == "community":
-        if labour.payment_plan == "inner_circle":
-            item = Product.UPGRADE_TO_COMMUNITY_FROM_INNER_CIRCLE.value
-        else:
-            item = Product.UPGRADE_TO_COMMUNITY.value
-
     checkout = await payment_service.create_checkout_session(
         user=user,
         success_url=request_data.success_url,
         cancel_url=request_data.cancel_url,
-        item=item,
-        labour_id=request_data.labour_id,
+        item=Product.UPGRADE_TO_SUPPORTER.value,
+        subscription_id=request_data.subscription_id,
     )
     return CheckoutResponse(id=checkout.id, url=checkout.url)

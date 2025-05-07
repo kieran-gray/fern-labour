@@ -10,11 +10,3 @@ class LabourPhase(StrEnum):
     TRANSITION = "transition"
     PUSHING = "pushing"
     COMPLETE = "complete"
-
-
-class LabourPaymentPlan(StrEnum):
-    """Represents the different plans available for a labour"""
-
-    SOLO = "solo"
-    INNER_CIRCLE = "inner_circle"
-    COMMUNITY = "community"

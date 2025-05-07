@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
+import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, Radio, Text, TextInput, Title } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
@@ -10,13 +11,8 @@ import { LabourDTO, LabourService, OpenAPI, PlanLabourRequest } from '../../../.
 import image from './plan.svg';
 import classes from './Plan.module.css';
 
-export default function Plan({
-  labour,
-  gotoNextStep,
-}: {
-  labour: LabourDTO | undefined;
-  gotoNextStep: Function;
-}) {
+export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
+  const navigate = useNavigate();
   const auth = useAuth();
   const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
 
@@ -64,7 +60,6 @@ export default function Plan({
     },
     onSuccess: async (labour) => {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-      gotoNextStep();
     },
     onError: async (error) => {
       notifications.show({
@@ -189,9 +184,9 @@ export default function Plan({
             h={48}
             className={classes.backButton}
             styles={{ section: { marginLeft: 22 } }}
-            onClick={() => gotoNextStep()}
+            onClick={() => navigate('/')}
           >
-            Next step
+            Go to app
           </Button>
         </div>
       )}

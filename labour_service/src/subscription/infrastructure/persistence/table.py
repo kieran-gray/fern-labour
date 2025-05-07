@@ -2,7 +2,12 @@ from sqlalchemy import ARRAY, Column, Enum, ForeignKey, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 
 from src.core.infrastructure.persistence.orm_registry import mapper_registry
-from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from src.subscription.domain.enums import (
+    ContactMethod,
+    SubscriberRole,
+    SubscriptionAccessLevel,
+    SubscriptionStatus,
+)
 
 subscriptions_table = Table(
     "subscriptions",
@@ -13,5 +18,10 @@ subscriptions_table = Table(
     Column("subscriber_id", String, nullable=False),
     Column("role", Enum(SubscriberRole, name="subscriber_role"), nullable=False),
     Column("status", Enum(SubscriptionStatus, name="subscription_status"), nullable=False),
+    Column(
+        "access_level",
+        Enum(SubscriptionAccessLevel, name="subscription_access_level"),
+        nullable=False,
+    ),
     Column("contact_methods", ARRAY(Enum(ContactMethod)), default=[]),
 )

@@ -2,7 +2,7 @@ from typing import Protocol
 
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.subscription.domain.entity import Subscription
-from src.subscription.domain.enums import SubscriptionStatus
+from src.subscription.domain.enums import SubscriptionAccessLevel, SubscriptionStatus
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
 from src.user.domain.value_objects.user_id import UserId
 
@@ -32,6 +32,7 @@ class SubscriptionRepository(Protocol):
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
         subscription_status: SubscriptionStatus | None = None,
+        access_level: SubscriptionAccessLevel | None = None,
     ) -> list[Subscription]:
         """
         Filter subscriptions based on inputs.
@@ -41,6 +42,7 @@ class SubscriptionRepository(Protocol):
             subscriber_id: An optional Subscriber ID
             birthing_person_id: An optional Birthing Person ID
             subscription_status: An optional subscription status
+            access_level: An optional SubscriptionAccessLevel
 
         Returns:
             A list of subscriptions
@@ -52,6 +54,7 @@ class SubscriptionRepository(Protocol):
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
         subscription_status: SubscriptionStatus | None = None,
+        access_level: SubscriptionAccessLevel | None = None,
     ) -> Subscription | None:
         """
         Filter subscriptions based on inputs.
@@ -61,6 +64,7 @@ class SubscriptionRepository(Protocol):
             subscriber_id: An optional Subscriber ID
             birthing_person_id: An optional Birthing Person ID
             subscription_status: An optional subscription status
+            access_level: An optional SubscriptionAccessLevel
 
         Returns:
             A subscription if found, else returns None

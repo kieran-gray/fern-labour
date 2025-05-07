@@ -25,9 +25,9 @@ from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.labour.application.services.labour_service import LabourService
-from src.payments.infrastructure.gateways.stripe.stripe_gateway import StripePaymentService
+from src.payments.infrastructure.stripe.stripe_payment_service import StripePaymentService
 from src.setup.ioc.di_component_enum import ComponentEnum
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
 )
@@ -65,7 +65,6 @@ def mock_labour_dto() -> LabourDTO:
     return LabourDTO(
         id="540a35a9-0323-41a6-b96a-334bcf566c5b",
         birthing_person_id="test_id",
-        payment_plan="solo",
         start_time=None,
         end_time=None,
         first_labour=True,
@@ -99,6 +98,7 @@ def mock_subscription_dto(test_user: UserDTO) -> SubscriptionDTO:
         labour_id="test_labour_id",
         role="friends_and_family",
         status="subscribed",
+        access_level="basic",
         contact_methods=[],
     )
 
@@ -184,6 +184,7 @@ class MockSubscriptionProvider(Provider):
             labour_id="test_labour_id",
             role=role,
             status=status,
+            access_level="basic",
             contact_methods=contact_methods or [],
         )
 
@@ -252,7 +253,6 @@ class MockLabourProvider(Provider):
         return LabourDTO(
             id="540a35a9-0323-41a6-b96a-334bcf566c5b",
             birthing_person_id="test_id",
-            payment_plan="solo",
             start_time=None,
             end_time=None,
             first_labour=True,

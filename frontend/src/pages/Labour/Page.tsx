@@ -16,7 +16,6 @@ import { NotFoundError, PermissionDenied } from '../../Errors';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
-import { PayWall } from '../../shared-components/Paywall/PayWall.tsx';
 import { CompletedLabourContainer } from '../CompletedLabour/Page.tsx';
 import { useLabour } from './LabourContext.tsx';
 import { Share } from './Tabs/Invites/Share.tsx';
@@ -122,7 +121,7 @@ export const LabourPage = () => {
 
   if (isError) {
     if (error instanceof NotFoundError) {
-      navigate('/onboarding?step=plan');
+      navigate('/onboarding');
       return null;
     }
     return (
@@ -132,12 +131,6 @@ export const LabourPage = () => {
     );
   }
 
-  if (labour.payment_plan === null) {
-    navigate('/onboarding?step=pay');
-    return null;
-  }
-
-  const paidFeaturesEnabled = labour.payment_plan !== 'solo';
   const completed = labour.end_time !== null;
 
   const renderTabPanel = (tabId: string) => {
@@ -146,12 +139,8 @@ export const LabourPage = () => {
         return (
           <>
             <LabourControls labour={labour} />
-            {paidFeaturesEnabled && (
-              <>
-                <Space h="xl" />
-                <SubscribersContainer />
-              </>
-            )}
+            <Space h="xl" />
+            <SubscribersContainer />
           </>
         );
       case 'track':
@@ -159,21 +148,9 @@ export const LabourPage = () => {
       case 'stats':
         return <LabourStatistics labour={labour} />;
       case 'updates':
-        return paidFeaturesEnabled ? (
-          <LabourUpdates labour={labour} />
-        ) : completed ? (
-          <CompletedLabourContainer />
-        ) : (
-          <PayWall />
-        );
+        return <LabourUpdates labour={labour} />;
       case 'invite':
-        return completed ? (
-          <CompletedLabourContainer />
-        ) : paidFeaturesEnabled ? (
-          <Share />
-        ) : (
-          <PayWall />
-        );
+        return completed ? <CompletedLabourContainer /> : <Share />;
       default:
         return null;
     }

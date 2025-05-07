@@ -29,7 +29,6 @@ from src.labour.domain.labour.exceptions import (
     CannotCompleteLabourWithActiveContraction,
     CannotDeleteActiveLabour,
     CannotSubscribeToOwnLabour,
-    InsufficientLabourPaymentPlan,
     InvalidLabourId,
     InvalidLabourUpdateId,
     LabourAlreadyBegun,
@@ -38,11 +37,10 @@ from src.labour.domain.labour.exceptions import (
     LabourHasNoActiveContraction,
     LabourNotFoundById,
     LabourUpdateNotFoundById,
-    MaximumNumberOfSubscribersReached,
     UnauthorizedLabourRequest,
 )
 from src.labour.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
-from src.payments.application.exceptions import StripeProductNotFound
+from src.payments.infrastructure.stripe.exceptions import StripeProductNotFound
 from src.subscription.application.exceptions import SubscriberInviteRateLimitExceeded
 from src.subscription.domain.exceptions import (
     SubscriberAlreadyRequested,
@@ -51,6 +49,7 @@ from src.subscription.domain.exceptions import (
     SubscriberIsNotBlocked,
     SubscriberIsRemoved,
     SubscriberNotSubscribed,
+    SubscriptionAccessLevelInvalid,
     SubscriptionNotFoundById,
     SubscriptionTokenIncorrect,
     UnauthorizedSubscriptionRequest,
@@ -122,8 +121,6 @@ class ExceptionMapper:
             UnauthorizedLabourRequest: status.HTTP_403_FORBIDDEN,
             CannotDeleteActiveLabour: status.HTTP_400_BAD_REQUEST,
             LabourNotFoundById: status.HTTP_404_NOT_FOUND,
-            InsufficientLabourPaymentPlan: status.HTTP_400_BAD_REQUEST,
-            MaximumNumberOfSubscribersReached: status.HTTP_400_BAD_REQUEST,
             CannotDeleteActiveContraction: status.HTTP_400_BAD_REQUEST,
             StripeProductNotFound: status.HTTP_404_NOT_FOUND,
             LabourInviteRateLimitExceeded: status.HTTP_429_TOO_MANY_REQUESTS,
@@ -131,6 +128,7 @@ class ExceptionMapper:
             SubscriberIsNotBlocked: status.HTTP_400_BAD_REQUEST,
             SubscriberIsRemoved: status.HTTP_400_BAD_REQUEST,
             SubscriberAlreadyRequested: status.HTTP_400_BAD_REQUEST,
+            SubscriptionAccessLevelInvalid: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

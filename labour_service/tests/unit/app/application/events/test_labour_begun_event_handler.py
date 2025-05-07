@@ -11,7 +11,7 @@ from fern_labour_notifications_shared.events import NotificationRequested
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from src.labour.application.services.labour_service import LabourService
-from src.labour.domain.labour.enums import LabourPaymentPlan
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
@@ -19,7 +19,7 @@ from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
 from src.subscription.application.services.subscription_service import SubscriptionService
-from src.subscription.domain.enums import ContactMethod
+from src.subscription.domain.enums import ContactMethod, SubscriptionAccessLevel
 from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.entity import User
 from src.user.domain.exceptions import UserNotFoundById
@@ -88,11 +88,41 @@ async def labour_begun_event_handler(
 
 @pytest_asyncio.fixture
 async def labour(labour_service: LabourService) -> LabourDTO:
-    await labour_service.plan_labour(
+    return await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
     )
-    return await labour_service.update_labour_payment_plan(
-        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY.value
+
+
+@pytest_asyncio.fixture
+async def paid_subscription(
+    labour: LabourDTO,
+    subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
+) -> SubscriptionDTO:
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    return await subscription_management_service.update_access_level(
+        subscription_id=subscription.id, access_level=SubscriptionAccessLevel.SUPPORTER
+    )
+
+
+@pytest_asyncio.fixture
+async def basic_subscription(
+    labour: LabourDTO,
+    subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
+) -> SubscriptionDTO:
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    return await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
     )
 
 
@@ -116,33 +146,32 @@ async def test_labour_begun_event_non_existent_birthing_person(
 async def test_labour_begun_event_non_existent_subscriber(
     caplog: pytest.LogCaptureFixture,
     labour_begun_event_handler: LabourBegunEventHandler,
-    subscription_service: SubscriptionService,
-    labour: LabourDTO,
+    paid_subscription: SubscriptionDTO,
 ) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    labour_begun_event_handler._user_service._user_repository._data.pop(
+        paid_subscription.subscriber_id
     )
-    labour_begun_event_handler._user_service._user_repository._data.pop(SUBSCRIBER)
-    event = generate_domain_event(birthing_person_id=BIRTHING_PERSON, labour_id=labour.id)
+    event = generate_domain_event(
+        birthing_person_id=paid_subscription.birthing_person_id,
+        labour_id=paid_subscription.labour_id,
+    )
     module = "src.application.events.event_handlers.labour_begun_event_handler"
     with caplog.at_level(logging.ERROR, logger=module):
         await labour_begun_event_handler.handle(event.to_dict())
         assert len(caplog.records) == 1
-        assert caplog.messages[0] == f"User with id '{SUBSCRIBER}' is not found."
+        assert (
+            caplog.messages[0] == f"User with id '{paid_subscription.subscriber_id}' is not found."
+        )
 
 
 async def test_labour_begun_event_has_subscriber_no_contact_methods(
     labour_begun_event_handler: LabourBegunEventHandler,
-    subscription_service: SubscriptionService,
-    labour: LabourDTO,
+    paid_subscription: SubscriptionDTO,
 ) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    event = generate_domain_event(
+        birthing_person_id=paid_subscription.birthing_person_id,
+        labour_id=paid_subscription.labour_id,
     )
-
-    event = generate_domain_event(birthing_person_id=BIRTHING_PERSON, labour_id=labour.id)
     await labour_begun_event_handler.handle(event.to_dict())
     assert not has_sent_email(labour_begun_event_handler)
     assert not has_sent_sms(labour_begun_event_handler)
@@ -150,20 +179,18 @@ async def test_labour_begun_event_has_subscriber_no_contact_methods(
 
 async def test_labour_begun_event_has_subscriber_email(
     labour_begun_event_handler: LabourBegunEventHandler,
-    subscription_service: SubscriptionService,
-    labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
+    paid_subscription: SubscriptionDTO,
 ) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
     await subscription_management_service.update_contact_methods(
-        requester_id=SUBSCRIBER,
-        subscription_id=subscription.id,
+        requester_id=paid_subscription.subscriber_id,
+        subscription_id=paid_subscription.id,
         contact_methods=[ContactMethod.EMAIL.value],
     )
-    event = generate_domain_event(birthing_person_id=BIRTHING_PERSON, labour_id=labour.id)
+    event = generate_domain_event(
+        birthing_person_id=paid_subscription.birthing_person_id,
+        labour_id=paid_subscription.labour_id,
+    )
     await labour_begun_event_handler.handle(event.to_dict())
     assert has_sent_email(labour_begun_event_handler)
     assert not has_sent_sms(labour_begun_event_handler)
@@ -171,20 +198,18 @@ async def test_labour_begun_event_has_subscriber_email(
 
 async def test_labour_begun_event_has_subscriber_sms(
     labour_begun_event_handler: LabourBegunEventHandler,
-    subscription_service: SubscriptionService,
-    labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
+    paid_subscription: SubscriptionDTO,
 ) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
     await subscription_management_service.update_contact_methods(
-        requester_id=SUBSCRIBER,
-        subscription_id=subscription.id,
+        requester_id=paid_subscription.subscriber_id,
+        subscription_id=paid_subscription.id,
         contact_methods=[ContactMethod.SMS.value],
     )
-    event = generate_domain_event(birthing_person_id=BIRTHING_PERSON, labour_id=labour.id)
+    event = generate_domain_event(
+        birthing_person_id=paid_subscription.birthing_person_id,
+        labour_id=paid_subscription.labour_id,
+    )
     await labour_begun_event_handler.handle(event.to_dict())
     assert not has_sent_email(labour_begun_event_handler)
     assert has_sent_sms(labour_begun_event_handler)
@@ -192,20 +217,18 @@ async def test_labour_begun_event_has_subscriber_sms(
 
 async def test_labour_begun_event_has_subscriber_all_contact_methods(
     labour_begun_event_handler: LabourBegunEventHandler,
-    subscription_service: SubscriptionService,
-    labour: LabourDTO,
     subscription_management_service: SubscriptionManagementService,
+    paid_subscription: SubscriptionDTO,
 ) -> None:
-    token = subscription_service._token_generator.generate(labour.id)
-    subscription = await subscription_service.subscribe_to(
-        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
-    )
     await subscription_management_service.update_contact_methods(
-        requester_id=SUBSCRIBER,
-        subscription_id=subscription.id,
+        requester_id=paid_subscription.subscriber_id,
+        subscription_id=paid_subscription.id,
         contact_methods=[ContactMethod.SMS.value, ContactMethod.EMAIL.value],
     )
-    event = generate_domain_event(birthing_person_id=BIRTHING_PERSON, labour_id=labour.id)
+    event = generate_domain_event(
+        birthing_person_id=paid_subscription.birthing_person_id,
+        labour_id=paid_subscription.labour_id,
+    )
     await labour_begun_event_handler.handle(event.to_dict())
     assert has_sent_email(labour_begun_event_handler)
     assert has_sent_sms(labour_begun_event_handler)
@@ -230,12 +253,40 @@ async def test_labour_begun_event_has_subscriber_all_contact_methods_no_phone_nu
     subscription = await subscription_service.subscribe_to(
         subscriber_id="new_subscriber", labour_id=labour.id, token=token
     )
+    await subscription_management_service.approve_subscriber(
+        requester_id=labour.birthing_person_id, subscription_id=subscription.id
+    )
+    await subscription_management_service.update_access_level(
+        subscription_id=subscription.id,
+        access_level=SubscriptionAccessLevel.SUPPORTER,
+    )
     await subscription_management_service.update_contact_methods(
         requester_id="new_subscriber",
         subscription_id=subscription.id,
         contact_methods=[ContactMethod.SMS.value, ContactMethod.EMAIL.value],
     )
-    event = generate_domain_event(birthing_person_id=BIRTHING_PERSON, labour_id=labour.id)
+    event = generate_domain_event(
+        birthing_person_id=subscription.birthing_person_id, labour_id=subscription.labour_id
+    )
+    await labour_begun_event_handler.handle(event.to_dict())
+    assert not has_sent_email(labour_begun_event_handler)
+    assert not has_sent_sms(labour_begun_event_handler)
+
+
+async def test_labour_begun_event_basic_subscriber(
+    labour_begun_event_handler: LabourBegunEventHandler,
+    basic_subscription: SubscriptionDTO,
+    subscription_management_service: SubscriptionManagementService,
+) -> None:
+    await subscription_management_service.update_contact_methods(
+        requester_id=basic_subscription.subscriber_id,
+        subscription_id=basic_subscription.id,
+        contact_methods=[ContactMethod.SMS.value, ContactMethod.EMAIL.value],
+    )
+    event = generate_domain_event(
+        birthing_person_id=basic_subscription.birthing_person_id,
+        labour_id=basic_subscription.labour_id,
+    )
     await labour_begun_event_handler.handle(event.to_dict())
     assert not has_sent_email(labour_begun_event_handler)
     assert not has_sent_sms(labour_begun_event_handler)

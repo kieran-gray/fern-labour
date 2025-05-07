@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.subscription.domain.repository import SubscriptionRepository
-from src.subscription.infrastructure.persistence.repositories.subscription_repository import (
+from src.subscription.infrastructure.persistence.repository import (
     SQLAlchemySubscriptionRepository,
 )
 

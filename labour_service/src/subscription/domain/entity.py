@@ -5,7 +5,12 @@ from uuid import UUID, uuid4
 from fern_labour_core.aggregate_root import AggregateRoot
 
 from src.labour.domain.labour.value_objects.labour_id import LabourId
-from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from src.subscription.domain.enums import (
+    ContactMethod,
+    SubscriberRole,
+    SubscriptionAccessLevel,
+    SubscriptionStatus,
+)
 from src.subscription.domain.events import SubscriberApproved, SubscriberRequested
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
 from src.user.domain.value_objects.user_id import UserId
@@ -18,6 +23,7 @@ class Subscription(AggregateRoot[SubscriptionId]):
     subscriber_id: UserId
     role: SubscriberRole
     status: SubscriptionStatus
+    access_level: SubscriptionAccessLevel
     contact_methods: list[ContactMethod] = field(default_factory=list)
 
     @classmethod
@@ -29,6 +35,7 @@ class Subscription(AggregateRoot[SubscriptionId]):
         subscriber_id: UserId,
         status: SubscriptionStatus = SubscriptionStatus.REQUESTED,
         role: SubscriberRole = SubscriberRole.FRIENDS_AND_FAMILY,
+        access_level: SubscriptionAccessLevel = SubscriptionAccessLevel.BASIC,
         contact_methods: list[ContactMethod] | None = None,
         subscription_id: UUID | None = None,
     ) -> Self:
@@ -39,8 +46,9 @@ class Subscription(AggregateRoot[SubscriptionId]):
             birthing_person_id=birthing_person_id,
             subscriber_id=subscriber_id,
             role=role,
-            contact_methods=contact_methods or [],
             status=status,
+            access_level=access_level,
+            contact_methods=contact_methods or [],
         )
         subscription.add_domain_event(
             SubscriberRequested.create(
@@ -85,6 +93,9 @@ class Subscription(AggregateRoot[SubscriptionId]):
 
     def update_status(self, status: SubscriptionStatus) -> None:
         self.status = status
+
+    def update_access_level(self, access_level: SubscriptionAccessLevel) -> None:
+        self.access_level = access_level
 
     def update_contact_methods(self, contact_methods: list[ContactMethod]) -> None:
         self.contact_methods = contact_methods

@@ -56,8 +56,9 @@ SRC_DIR=src
 TEST_DIR=tests
 PYPROJECT_TOML=pyproject.toml
 
-generate-revision:
-	POSTGRES_DB=app POSTGRES_HOST=0.0.0.0 PYTHONPATH=. \
+revision:
+	POSTGRES_DB=app POSTGRES_HOST=0.0.0.0 POSTGRES_PORT=5432 \
+	POSTGRES_USER=postgres POSTGRES_PASSWORD=changeme PYTHONPATH=. \
 	uv run alembic revision --autogenerate
 
 add: ensure-token

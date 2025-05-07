@@ -3,14 +3,15 @@ from uuid import UUID
 
 from fern_labour_core.events.producer import EventProducer
 
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
 )
 from src.subscription.domain.entity import Subscription
-from src.subscription.domain.enums import ContactMethod, SubscriberRole
+from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionAccessLevel
 from src.subscription.domain.exceptions import (
     SubscriberRoleInvalid,
+    SubscriptionAccessLevelInvalid,
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
@@ -152,6 +153,22 @@ class SubscriptionManagementService:
         subscription = UpdateContactMethodsService().update_contact_methods(
             subscription=subscription, contact_methods=new_contact_methods
         )
+
+        await self._subscription_repository.save(subscription)
+
+        await self._event_producer.publish_batch(subscription.clear_domain_events())
+
+        return SubscriptionDTO.from_domain(subscription)
+
+    async def update_access_level(self, subscription_id: str, access_level: str) -> SubscriptionDTO:
+        try:
+            domain_access_level = SubscriptionAccessLevel(access_level)
+        except ValueError:
+            raise SubscriptionAccessLevelInvalid(access_level=access_level)
+
+        subscription = await self._get_subscription(subscription_id=subscription_id)
+
+        subscription.update_access_level(access_level=domain_access_level)
 
         await self._subscription_repository.save(subscription)
 

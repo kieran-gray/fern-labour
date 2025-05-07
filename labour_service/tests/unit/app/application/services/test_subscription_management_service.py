@@ -6,19 +6,24 @@ import pytest_asyncio
 
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_service import LabourService
-from src.labour.domain.labour.enums import LabourPaymentPlan
-from src.subscription.application.dtos.subscription import SubscriptionDTO
+from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.services.subscription_management_service import (
     SubscriptionManagementService,
 )
 from src.subscription.application.services.subscription_service import SubscriptionService
-from src.subscription.domain.enums import ContactMethod, SubscriberRole, SubscriptionStatus
+from src.subscription.domain.enums import (
+    ContactMethod,
+    SubscriberRole,
+    SubscriptionAccessLevel,
+    SubscriptionStatus,
+)
 from src.subscription.domain.exceptions import (
     SubscriberAlreadySubscribed,
     SubscriberIsBlocked,
     SubscriberIsNotBlocked,
     SubscriberIsRemoved,
     SubscriberRoleInvalid,
+    SubscriptionAccessLevelInvalid,
     SubscriptionContactMethodInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
@@ -60,9 +65,6 @@ async def subscription(
     )
     labour = await labour_service.plan_labour(
         birthing_person_id=BIRTHING_PERSON, first_labour=True, due_date=datetime.now(UTC)
-    )
-    await labour_service.update_labour_payment_plan(
-        birthing_person_id=BIRTHING_PERSON, payment_plan=LabourPaymentPlan.COMMUNITY.value
     )
     token = token_generator.generate(labour.id)
     return await subscription_service.subscribe_to(
@@ -393,4 +395,44 @@ async def test_cannot_update_contact_methods_for_non_existent_subscription(
             requester_id=SUBSCRIBER,
             subscription_id=str(uuid4()),
             contact_methods=["sms"],
+        )
+
+
+async def test_can_update_access_level(
+    subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
+) -> None:
+    subscription_dto = await subscription_management_service.update_access_level(
+        subscription_id=subscription.id,
+        access_level=SubscriptionAccessLevel.SUPPORTER,
+    )
+    assert subscription_dto.access_level == SubscriptionAccessLevel.SUPPORTER
+
+
+async def test_cannot_update_access_level_invalid_access_level(
+    subscription_management_service: SubscriptionManagementService, subscription: SubscriptionDTO
+) -> None:
+    with pytest.raises(SubscriptionAccessLevelInvalid):
+        await subscription_management_service.update_access_level(
+            subscription_id=subscription.id,
+            access_level="fail",
+        )
+
+
+async def test_cannot_update_access_level_subscription_not_found(
+    subscription_management_service: SubscriptionManagementService,
+) -> None:
+    with pytest.raises(SubscriptionNotFoundById):
+        await subscription_management_service.update_access_level(
+            subscription_id=str(uuid4()),
+            access_level=SubscriptionAccessLevel.SUPPORTER,
+        )
+
+
+async def test_cannot_update_access_level_invalid_subscription_id(
+    subscription_management_service: SubscriptionManagementService,
+) -> None:
+    with pytest.raises(SubscriptionIdInvalid):
+        await subscription_management_service.update_access_level(
+            subscription_id="test",
+            access_level=SubscriptionAccessLevel.SUPPORTER,
         )

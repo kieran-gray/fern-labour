@@ -7,7 +7,7 @@ from src.core.infrastructure.persistence.orm_registry import mapper_registry
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.subscription.domain.entity import Subscription
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
-from src.subscription.infrastructure.persistence.tables.subscriptions import subscriptions_table
+from src.subscription.infrastructure.persistence.table import subscriptions_table
 from src.user.domain.value_objects.user_id import UserId
 
 
@@ -22,6 +22,7 @@ def map_subscriptions_table() -> None:
             "subscriber_id": composite(UserId, subscriptions_table.c.subscriber_id),
             "role": subscriptions_table.c.role,
             "status": subscriptions_table.c.status,
+            "access_level": subscriptions_table.c.access_level,
             "contact_methods": subscriptions_table.c.contact_methods,
         },
         column_prefix="_",

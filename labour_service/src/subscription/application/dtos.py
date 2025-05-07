@@ -12,6 +12,7 @@ class SubscriptionDTO:
     subscriber_id: str
     role: str
     status: str
+    access_level: str
     contact_methods: list[str]
 
     @classmethod
@@ -24,6 +25,7 @@ class SubscriptionDTO:
             subscriber_id=subscription.subscriber_id.value,
             role=subscription.role.value,
             status=subscription.status.value,
+            access_level=subscription.access_level.value,
             contact_methods=[method.value for method in subscription.contact_methods],
         )
 
@@ -36,5 +38,6 @@ class SubscriptionDTO:
             "subscriber_id": self.subscriber_id,
             "role": self.role,
             "status": self.status,
+            "access_level": self.access_level,
             "contact_methods": self.contact_methods,
         }
