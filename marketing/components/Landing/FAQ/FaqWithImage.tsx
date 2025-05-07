@@ -36,9 +36,11 @@ export function FaqWithImage() {
               <Accordion.Item className={classes.item} value="subscribe">
                 <Accordion.Control>Can I control who subscribes to my labour?</Accordion.Control>
                 <Accordion.Panel>
-                  Yes, absolutely. You have complete control over who receives updates. You can
-                  remove any subscriber at any time through the "Manage Subscribers" controls in the
-                  app, and they'll immediately stop receiving notifications.
+                  Yes, absolutely. You have complete control over who receives updates. You need to
+                  approve anyone who requests to join your labour circle.
+                  <br />
+                  Additionally, you can remove or block any subscriber at any time through the
+                  "Manage Subscribers" controls in the app, and they'll immediately be removed.
                 </Accordion.Panel>
               </Accordion.Item>
 
@@ -75,9 +77,8 @@ export function FaqWithImage() {
                   Is there a limit to how many people can subscribe to my labour?
                 </Accordion.Control>
                 <Accordion.Panel>
-                  There are some limits, on a free plan you cannot have any subscribers. On a Plus
-                  plan, you can have up to 5 subscribers. And finally, on an Advanced plan there's
-                  no limit to the number of subscribers you can add.
+                  There are no limits, you can invite as many loved ones as you want to join in your
+                  labour journey.
                 </Accordion.Panel>
               </Accordion.Item>
             </Accordion>

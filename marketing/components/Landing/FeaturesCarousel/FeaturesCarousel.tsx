@@ -57,7 +57,7 @@ export const FeaturesDemo = () => (
   >
     <Container size="lg" px={0} style={{ position: 'relative' }} id="#features">
       <JumboTitle order={2} fz="md" style={{ textWrap: 'balance' }}>
-        How it works
+        Gallery
       </JumboTitle>
     </Container>
     <Container size="lg" p={0} mt="xl">

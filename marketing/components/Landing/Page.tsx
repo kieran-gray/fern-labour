@@ -1,5 +1,6 @@
 import { Space } from '@mantine/core';
 import { FaqWithImage } from './FAQ/FaqWithImage';
+import { FeaturesDemo } from './FeaturesCarousel/FeaturesCarousel';
 import { Feature02 } from './FeaturesMotion/FeaturesMotion';
 import { Hero03 } from './HeroMotion/HeroMotion';
 import { Pricing01 } from './Pricing/Pricing';
@@ -25,6 +26,7 @@ export const LandingPage = ({ callToActionUrl = '#' }: LandingPageProps) => {
       </div>
       <Feature02 />
       <Pricing01 callToActionUrl={callToActionUrl} />
+      <FeaturesDemo />
       <FaqWithImage />
     </div>
   );
