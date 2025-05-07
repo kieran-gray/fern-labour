@@ -19,7 +19,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
       title: 'My 1st Years',
       subtitle: 'Personalised Baby Gifts to Treasure Forever',
       text: `Celebrate ${pluralisedBirthingPersonName} new arrival with a heartfelt, personalised baby gift.
-  From classic teddy bears and snuggly blankets to tiny trainers and keepsakes, each item is designed to become part of the family story—cherished from their first days and beyond.`,
+  From classic teddy bears and snuggly blankets to tiny trainers and keepsakes, each item is designed to become part of the family story, cherished from their first days and beyond.`,
       note: '👉 Give a gift that says: “Welcome to the world.”',
       mobileImage: (
         <Image
@@ -42,10 +42,10 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
     {
       title: 'Don’t Buy Her Flowers',
       subtitle: 'Thoughtful Hampers for New Mums',
-      text: `Because what most new mums really need isn’t flowers—it’s rest, care, and a little extra support.
+      text: `Because what most new mums really need isn’t flowers, it’s rest, care, and a little extra support.
   
   These beautifully curated gift boxes are packed with practical treats and calming comforts, from snacks and teas to cosy loungewear and skincare. Whether it’s for your partner, daughter, friend or colleague, this is the kind of TLC that truly helps.`,
-      note: '👉 A perfect way to say: “You’ve got this—and I’ve got you.”',
+      note: '👉 A perfect way to say: “You’ve got this, and I’ve got you.”',
       mobileImage: (
         <Image
           hiddenFrom="md"
@@ -68,7 +68,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
       title: 'PowFood',
       subtitle: 'Nourishing Ready Meals for New Parents',
       text: `Make life easier for ${birthingPersonName} with a week of balanced, chef-prepared meals and snacks. 
-  Frozen for freshness and designed for one-handed eating, these meals are faster and healthier than a takeaway—and ready in just 30 minutes. Includes a helpful guide to postpartum nutrition to support recovery and energy.`,
+  Frozen for freshness and designed for one-handed eating, these meals are faster and healthier than a takeaway and ready in just 30 minutes. Includes a helpful guide to postpartum nutrition to support recovery and energy.`,
       note: '👉 A perfect way to say: “Take care of yourself.”',
       mobileImage: (
         <Image
@@ -114,7 +114,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
     },
   ];
 
-  const description = `Help support ${birthingPersonName} with meaningful, practical gifts for the early days of parenthood. From nourishing meals to personal keepsakes, here are a few special ways to show your love—without asking “Do you need anything?”`;
+  const description = `Help support ${birthingPersonName} with meaningful, practical gifts for the early days of parenthood. From nourishing meals to personal keepsakes, here are a few special ways to show your love, without asking “Do you need anything?”`;
 
   return (
     <>

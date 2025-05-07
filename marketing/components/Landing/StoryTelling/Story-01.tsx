@@ -25,7 +25,7 @@ export function Story01() {
               />
             </div>
             <Text mt="md" className={classes.text}>
-              That means a lot of waiting, guessing, and—unfortunately—constant messages asking,
+              That means a lot of waiting, guessing, and unfortunately, constant messages asking:
               "Any news?"
             </Text>
           </div>
