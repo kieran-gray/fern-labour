@@ -40,7 +40,10 @@ from src.labour.domain.labour.exceptions import (
     UnauthorizedLabourRequest,
 )
 from src.labour.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
-from src.payments.infrastructure.stripe.exceptions import StripeProductNotFound
+from src.payments.infrastructure.stripe.exceptions import (
+    StripeProductNotFound,
+    WebhookHasInvalidSignature,
+)
 from src.subscription.application.exceptions import SubscriberInviteRateLimitExceeded
 from src.subscription.domain.exceptions import (
     SubscriberAlreadyRequested,
@@ -129,6 +132,7 @@ class ExceptionMapper:
             SubscriberIsRemoved: status.HTTP_400_BAD_REQUEST,
             SubscriberAlreadyRequested: status.HTTP_400_BAD_REQUEST,
             SubscriptionAccessLevelInvalid: status.HTTP_400_BAD_REQUEST,
+            WebhookHasInvalidSignature: status.HTTP_403_FORBIDDEN,
         }
 
     def get_status_code(self, exc: Exception) -> int:
