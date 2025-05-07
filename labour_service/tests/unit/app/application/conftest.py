@@ -23,7 +23,7 @@ from src.subscription.application.services.subscription_query_service import (
 )
 from src.subscription.application.services.subscription_service import SubscriptionService
 from src.subscription.domain.entity import Subscription
-from src.subscription.domain.enums import SubscriptionStatus
+from src.subscription.domain.enums import SubscriptionAccessLevel, SubscriptionStatus
 from src.subscription.domain.repository import SubscriptionRepository
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
 from src.user.application.services.user_query_service import UserQueryService
@@ -113,6 +113,7 @@ class MockSubscriptionRepository(SubscriptionRepository):
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
         subscription_status: SubscriptionStatus | None = None,
+        access_level: SubscriptionAccessLevel | None = None,
     ) -> list[Subscription]:
         subscriptions = []
         for subscription in self._data.values():
@@ -124,6 +125,8 @@ class MockSubscriptionRepository(SubscriptionRepository):
                 continue
             if subscription_status and subscription.status is not subscription_status:
                 continue
+            if access_level and subscription.access_level is not access_level:
+                continue
             subscriptions.append(subscription)
         return subscriptions
 
@@ -133,6 +136,7 @@ class MockSubscriptionRepository(SubscriptionRepository):
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
         subscription_status: SubscriptionStatus | None = None,
+        access_level: SubscriptionAccessLevel | None = None,
     ) -> Subscription | None:
         found_subscription = None
         for subscription in self._data.values():
@@ -143,6 +147,8 @@ class MockSubscriptionRepository(SubscriptionRepository):
             if birthing_person_id and subscription.birthing_person_id != birthing_person_id:
                 continue
             if subscription_status and subscription.status is not subscription_status:
+                continue
+            if access_level and subscription.access_level is not access_level:
                 continue
             if found_subscription:
                 raise ValueError("Multiple results found")

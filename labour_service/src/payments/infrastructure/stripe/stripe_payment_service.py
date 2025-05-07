@@ -41,7 +41,7 @@ class StripePaymentService:
         }
 
     async def generate_line_item(self, item: str) -> Session.CreateParamsLineItem:
-        products = await stripe.Product.list_async(active=True)
+        products = await self._stripe.Product.list_async(active=True)
         for product in products.data:
             if product.metadata.get("product") == item:
                 # Casting to str for typing, it will be a str unless expanded.
@@ -113,7 +113,7 @@ class StripePaymentService:
         self, user: UserDTO, success_url: str, cancel_url: str, item: str, subscription_id: str
     ) -> Session:
         line_item = await self.generate_line_item(item=item)
-        checkout_session = stripe.checkout.Session.create(
+        checkout_session = self._stripe.checkout.Session.create(
             line_items=[line_item],
             customer_email=user.email,
             metadata={"user_id": user.id, "subscription_id": subscription_id},

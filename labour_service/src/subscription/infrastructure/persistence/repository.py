@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.subscription.domain.entity import Subscription
-from src.subscription.domain.enums import SubscriptionStatus
+from src.subscription.domain.enums import SubscriptionAccessLevel, SubscriptionStatus
 from src.subscription.domain.repository import SubscriptionRepository
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
 from src.subscription.infrastructure.persistence.table import subscriptions_table
@@ -42,6 +42,7 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
         subscription_status: SubscriptionStatus | None = None,
+        access_level: SubscriptionAccessLevel | None = None,
     ) -> list[Subscription]:
         """
         Filter subscriptions based on inputs.
@@ -51,6 +52,7 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             subscriber_id: An optional Subscriber ID
             birthing_person_id: An optional Birthing Person ID
             subscription_status: An optional subscription status
+            access_level: An optional SubscriptionAccessLevel
 
         Returns:
             A list of subscriptions
@@ -64,6 +66,8 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             stmt = stmt.where(subscriptions_table.c.birthing_person_id == birthing_person_id.value)
         if subscription_status:
             stmt = stmt.where(subscriptions_table.c.status == subscription_status.value)
+        if access_level:
+            stmt = stmt.where(subscriptions_table.c.access_level == access_level)
 
         result = await self._session.execute(stmt)
         return list(result.scalars())
@@ -74,6 +78,7 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
         subscriber_id: UserId | None = None,
         birthing_person_id: UserId | None = None,
         subscription_status: SubscriptionStatus | None = None,
+        access_level: SubscriptionAccessLevel | None = None,
     ) -> Subscription | None:
         """
         Filter subscriptions based on inputs.
@@ -83,6 +88,7 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             subscriber_id: An optional Subscriber ID
             birthing_person_id: An optional Birthing Person ID
             subscription_status: An optional subscription status
+            access_level: An optional SubscriptionAccessLevel
 
         Returns:
             A subscription if found, else returns None
@@ -96,6 +102,8 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             stmt = stmt.where(subscriptions_table.c.birthing_person_id == birthing_person_id.value)
         if subscription_status:
             stmt = stmt.where(subscriptions_table.c.status == subscription_status.value)
+        if access_level:
+            stmt = stmt.where(subscriptions_table.c.access_level == access_level)
 
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()

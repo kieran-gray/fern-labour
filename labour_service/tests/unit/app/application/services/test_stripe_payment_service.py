@@ -1,5 +1,7 @@
 import logging
+from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 from uuid import UUID
 
@@ -25,6 +27,7 @@ from src.subscription.application.services.subscription_management_service impor
 from src.subscription.application.services.subscription_service import SubscriptionService
 from src.subscription.domain.enums import SubscriptionAccessLevel
 from src.subscription.domain.value_objects.subscription_id import SubscriptionId
+from src.user.application.dtos.user import UserDTO
 from src.user.domain.entity import User
 from src.user.domain.repository import UserRepository
 from src.user.domain.value_objects.user_id import UserId
@@ -32,6 +35,17 @@ from src.user.domain.value_objects.user_id import UserId
 MODULE = "src.payments.infrastructure.stripe.stripe_payment_service"
 BIRTHING_PERSON = "bp_id"
 SUBSCRIBER = "sub_id"
+
+
+@dataclass
+class MockProduct:
+    metadata: dict[str, Any]
+    default_price: str
+
+
+@dataclass
+class MockProductResponse:
+    data: list[MockProduct]
 
 
 @pytest_asyncio.fixture
@@ -400,3 +414,33 @@ async def test_checkout_session_product_not_in_mapping(
         SubscriptionId(UUID(subscription.id))
     )
     assert domain_subscription.access_level is SubscriptionAccessLevel.SUPPORTER
+
+
+async def test_create_checkout_session(
+    stripe_service: StripePaymentService,
+    subscription: SubscriptionDTO,
+):
+    mock_stripe = MagicMock()
+    checkout_session_mock = Mock()
+    mock_stripe.checkout.Session.create = checkout_session_mock
+    response = MockProductResponse(
+        data=[MockProduct(metadata={"product": "test"}, default_price="$69")]
+    )
+    mock_stripe.Product.list_async = AsyncMock(return_value=response)
+    stripe_service._stripe = mock_stripe
+    user = UserDTO(
+        id="test_id",
+        username="test123",
+        first_name="User",
+        last_name="Name",
+        email="test@email.com",
+        phone_number="+44123123123",
+    )
+    await stripe_service.create_checkout_session(
+        user=user,
+        success_url="https://test.com",
+        cancel_url="https://cancel.com",
+        item="test",
+        subscription_id=subscription.id,
+    )
+    checkout_session_mock.assert_called_once()

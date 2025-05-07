@@ -9,8 +9,9 @@ from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
 )
-from src.subscription.domain.enums import SubscriptionStatus
+from src.subscription.domain.enums import SubscriptionAccessLevel, SubscriptionStatus
 from src.subscription.domain.exceptions import (
+    SubscriptionAccessLevelInvalid,
     SubscriptionIdInvalid,
     SubscriptionNotFoundById,
 )
@@ -55,13 +56,21 @@ class SubscriptionQueryService:
         return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
 
     async def get_labour_subscriptions(
-        self, requester_id: str, labour_id: str
+        self, requester_id: str, labour_id: str, access_level: str | None = None
     ) -> list[SubscriptionDTO]:
         try:
             labour_domain_id = LabourId(UUID(labour_id))
         except ValueError:
             raise InvalidLabourId()
+
+        try:
+            access_level_domain = SubscriptionAccessLevel(access_level) if access_level else None
+        except ValueError:
+            raise SubscriptionAccessLevelInvalid(access_level=access_level or "")
+
         subscriptions = await self._subscription_repository.filter(
-            labour_id=labour_domain_id, birthing_person_id=UserId(requester_id)
+            labour_id=labour_domain_id,
+            birthing_person_id=UserId(requester_id),
+            access_level=access_level_domain,
         )
         return [SubscriptionDTO.from_domain(subscription) for subscription in subscriptions]
