@@ -156,6 +156,7 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
         gap="xl"
       >
         <PricingCard
+          shadow="sm"
           title="For Mum"
           description=""
           cta={
@@ -199,7 +200,7 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
           ]}
         />
         <PricingCard
-          shadow="lg"
+          shadow="sm"
           title="For loved ones"
           description=""
           cta={
@@ -243,6 +244,7 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
           ]}
         />
         <PricingCard
+          shadow="sm"
           title="For loved ones"
           description=""
           cta={

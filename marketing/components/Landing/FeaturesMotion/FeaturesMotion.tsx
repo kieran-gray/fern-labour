@@ -92,7 +92,7 @@ const FeatureCell = ({
     style={{ height: '100%' }}
   >
     <motion.div
-      whileHover={{ scale: 1.05, boxShadow: 'var(--mantine-shadow-xl)' }}
+      whileHover={{ scale: 1.01, boxShadow: 'var(--mantine-shadow-md)' }}
       transition={{ type: 'spring' }}
       style={{
         borderRadius: 'var(--mantine-radius-lg)',
