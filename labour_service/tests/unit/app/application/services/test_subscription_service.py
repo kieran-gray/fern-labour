@@ -336,13 +336,29 @@ async def test_cannot_unsubscribed_from_labour_not_subscribed_to(
 
 
 async def test_ensure_can_update_access_level_success(
+    subscription_service: SubscriptionService,
+    subscription_management_service: SubscriptionManagementService,
+    labour: LabourDTO,
+):
+    token = subscription_service._token_generator.generate(labour.id)
+    subscription = await subscription_service.subscribe_to(
+        subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
+    )
+    await subscription_management_service.approve_subscriber(
+        requester_id=BIRTHING_PERSON, subscription_id=subscription.id
+    )
+    await subscription_service.ensure_can_update_access_level(subscription_id=subscription.id)
+
+
+async def test_ensure_can_update_access_level_not_subscribed(
     subscription_service: SubscriptionService, labour: LabourDTO
 ):
     token = subscription_service._token_generator.generate(labour.id)
     subscription = await subscription_service.subscribe_to(
         subscriber_id=SUBSCRIBER, labour_id=labour.id, token=token
     )
-    await subscription_service.ensure_can_update_access_level(subscription_id=subscription.id)
+    with pytest.raises(SubscriberNotSubscribed):
+        await subscription_service.ensure_can_update_access_level(subscription_id=subscription.id)
 
 
 async def test_ensure_can_update_access_level_invalid_subscription_id(

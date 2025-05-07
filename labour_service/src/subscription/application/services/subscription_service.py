@@ -10,6 +10,7 @@ from src.labour.domain.labour.exceptions import (
 )
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.subscription.application.dtos import SubscriptionDTO
+from src.subscription.domain.enums import SubscriptionStatus
 from src.subscription.domain.exceptions import (
     SubscriberNotSubscribed,
     SubscriptionIdInvalid,
@@ -106,6 +107,9 @@ class SubscriptionService:
         )
         if not subscription:
             raise SubscriptionNotFoundById(subscription_id=subscription_id)
+
+        if subscription.status != SubscriptionStatus.SUBSCRIBED:
+            raise SubscriberNotSubscribed()
 
         return await self._labour_query_service.ensure_labour_is_active(
             labour_id=str(subscription.labour_id.value)
