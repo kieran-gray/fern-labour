@@ -18,6 +18,7 @@ import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx
 import { pluraliseName } from '../../shared-components/utils.tsx';
 import { InviteContainer } from '../Subscriptions/Components/InviteContainer/InviteContainer.tsx';
 import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions.tsx';
+import { PayWall } from './Paywall/PayWall.tsx';
 import { useSubscription } from './SubscriptionContext.tsx';
 import Gifts from './Tabs/Gifts/Gifts.tsx';
 import ContactMethods from './Tabs/LabourDetails/ContactMethods.tsx';
@@ -126,7 +127,9 @@ export const SubscriptionPage = () => {
             {data.labour.end_time == null && (
               <>
                 <Space h="xl" />
-                <ContactMethods subscription={data.subscription} />
+                {(data.subscription.access_level === 'basic' && <PayWall />) || (
+                  <ContactMethods subscription={data.subscription} />
+                )}
               </>
             )}
           </>

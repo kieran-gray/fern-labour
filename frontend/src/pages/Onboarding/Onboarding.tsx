@@ -1,16 +1,7 @@
-import { useEffect, useState } from 'react';
-import {
-  IconArrowLeft,
-  IconArrowRight,
-  IconCurrencyPound,
-  IconPencil,
-  IconReceipt,
-} from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Stepper } from '@mantine/core';
-import { useWindowScroll } from '@mantine/hooks';
+import { Stepper } from '@mantine/core';
 import { ApiError, OpenAPI } from '../../client/index.ts';
 import { LabourQueriesService } from '../../client/sdk.gen.ts';
 import { NotFoundError } from '../../Errors.tsx';
@@ -19,31 +10,12 @@ import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorCont
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
 import { useLabour } from '../Labour/LabourContext.tsx';
 import Plan from './Components/Plan/Plan.tsx';
-import { Pricing01 } from './Components/Pricing/Pricing.tsx';
-import { RecieptContainer } from './Components/Receipt/Receipt.tsx';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 import classes from './Onboarding.module.css';
 
-const stepOrder = ['plan', 'pay', 'receipt'];
-
 export const OnboardingPage = () => {
   const auth = useAuth();
-  const navigate = useNavigate();
-  const { labourId, setLabourId } = useLabour();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const step = searchParams.get('step');
-  const [active, setActive] = useState(step ? stepOrder.indexOf(step) : 0);
-  const [highestStepVisited, setHighestStepVisited] = useState(active);
-  const [_, scrollTo] = useWindowScroll();
-
-  useEffect(() => {
-    const newParams = new URLSearchParams(searchParams);
-    const step = stepOrder[active];
-    if (step != null) {
-      newParams.set('step', step);
-      setSearchParams(newParams);
-    }
-  }, [active]);
+  const { setLabourId } = useLabour();
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -79,42 +51,6 @@ export const OnboardingPage = () => {
   }
 
   const labour = isError && error instanceof NotFoundError ? undefined : data;
-  const nextStepEnabled = labour?.payment_plan != null;
-
-  const handleStepChange = (nextStep: number) => {
-    if (nextStep < 0 || nextStep > stepOrder.length) {
-      return;
-    }
-    if (!shouldAllowSelectStep(nextStep)) {
-      navigate('/');
-      return;
-    }
-    setActive(nextStep);
-    scrollTo({ y: 0 });
-    setHighestStepVisited((hSC) => Math.max(hSC, nextStep));
-  };
-
-  const shouldAllowSelectStep = (step: number) => {
-    const visited = highestStepVisited >= step && active !== step;
-    if (step === 1 && labourId != null && labourId !== '') {
-      return true;
-    }
-    if (step === 2 && labour?.payment_plan != null && labour.payment_plan !== 'solo') {
-      return true;
-    }
-    return visited;
-  };
-
-  const getNextStepButtonText = (step: number) => {
-    if (stepOrder[step] === 'receipt') {
-      return shouldAllowSelectStep(step)
-        ? 'View Receipt'
-        : labour?.payment_plan === 'solo'
-          ? 'Go to app'
-          : 'Please select a plan';
-    }
-    return 'Go to app';
-  };
 
   return (
     <AppShell>
@@ -124,8 +60,7 @@ export const OnboardingPage = () => {
             <div className={baseClasses.inner}>
               <div className={baseClasses.flexColumn} style={{ flexGrow: 1, width: '100%' }}>
                 <Stepper
-                  active={active}
-                  onStepClick={setActive}
+                  active={0}
                   classNames={{
                     step: classes.stepperStep,
                     stepLabel: classes.stepperStepLabel,
@@ -136,60 +71,12 @@ export const OnboardingPage = () => {
                 >
                   <Stepper.Step
                     icon={<IconPencil size={18} />}
-                    label="Step 1"
-                    description="Your Labour Details"
-                    allowStepSelect={shouldAllowSelectStep(0)}
+                    label="Your Labour Details"
+                    description=""
                   >
-                    <Plan labour={labour} gotoNextStep={() => handleStepChange(active + 1)} />
-                  </Stepper.Step>
-                  <Stepper.Step
-                    icon={<IconCurrencyPound size={18} />}
-                    label="Step 2"
-                    description="Payment Options"
-                    allowStepSelect={shouldAllowSelectStep(1)}
-                  >
-                    <div style={{ display: 'flex', flexGrow: 1 }}>
-                      <Pricing01 labour={labour} />
-                    </div>
-                  </Stepper.Step>
-                  <Stepper.Step
-                    icon={<IconReceipt size={18} />}
-                    label="Step 3"
-                    description="Thank you"
-                    allowStepSelect={shouldAllowSelectStep(2)}
-                    onClick={() => handleStepChange(active + 1)}
-                  >
-                    <div style={{ display: 'flex', flexGrow: 1 }}>
-                      <RecieptContainer />
-                    </div>
+                    <Plan labour={labour} />
                   </Stepper.Step>
                 </Stepper>
-                {active !== 0 && (
-                  <div className={classes.submitRow}>
-                    <Button
-                      variant="light"
-                      radius="xl"
-                      size="md"
-                      h={48}
-                      leftSection={<IconArrowLeft size={18} />}
-                      onClick={() => handleStepChange(active - 1)}
-                    >
-                      Back to planning
-                    </Button>
-                    <Button
-                      radius="xl"
-                      size="md"
-                      h={48}
-                      color="var(--mantine-color-pink-4)"
-                      rightSection={<IconArrowRight size={18} />}
-                      onClick={() => handleStepChange(active + 1)}
-                      disabled={!nextStepEnabled}
-                      className={classes.backButton}
-                    >
-                      {getNextStepButtonText(active + 1)}
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
           </div>

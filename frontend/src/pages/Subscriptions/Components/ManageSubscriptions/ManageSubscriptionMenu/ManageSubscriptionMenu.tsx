@@ -5,11 +5,13 @@ import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { OpenAPI, SubscriptionService, UnsubscribeFromRequest } from '../../../../../client';
+import { useSubscription } from '../../../../Subscription/SubscriptionContext';
 import ConfirmActionModal from './ConfirmActionModal';
 
 export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
   const [getConfirmation, setGetConfirmation] = useState<boolean | undefined>(undefined);
   const [confirmed, setConfirmed] = useState<string | undefined>(undefined);
+  const { setSubscriptionId } = useSubscription();
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -25,6 +27,7 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
       queryClient.invalidateQueries({
         queryKey: ['subscriber_subscriptions', auth.user?.profile.sub],
       });
+      setSubscriptionId('');
     },
     onError: () => {
       notifications.show({

@@ -107,9 +107,6 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
               <Badge variant="filled" className={classes.labourBadge} size="lg">
                 {!data.first_labour ? 'Not ' : ''}first time mother
               </Badge>
-              <Badge variant="filled" className={classes.labourBadge} size="lg">
-                Plan: {data.payment_plan?.replace('_', ' ')}
-              </Badge>
             </div>
             {data.notes && (
               <>
@@ -129,7 +126,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                   size="md"
                   h={48}
                   className={classes.backButton}
-                  onClick={() => navigate('/onboarding?step=plan')}
+                  onClick={() => navigate('/onboarding')}
                   type="submit"
                 >
                   Go back to planning

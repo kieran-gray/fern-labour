@@ -29,10 +29,12 @@ export function ActiveContractionControls({
 
   return (
     <div className={classes.controlsBackground}>
-      {stopwatch}
+      <div className={baseClasses.flexRowNoBP} style={{ justifyContent: 'center' }}>
+        {stopwatch}
+      </div>
       <Space h="lg" />
-      <Text className={baseClasses.minorText}>
-        Set your contraction intensity before ending the contraction
+      <Text ta="center" className={baseClasses.minorText}>
+        Your contraction intensity
       </Text>
       <Slider
         classNames={{

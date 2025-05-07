@@ -1,22 +1,19 @@
 import { useSearchParams } from 'react-router-dom';
 import { Space } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { SubscriptionPage } from '../Subscription/Page.tsx';
 import { useSubscription } from '../Subscription/SubscriptionContext.tsx';
 import { InviteContainer } from './Components/InviteContainer/InviteContainer.tsx';
 import { SubscriptionsContainer } from './Components/ManageSubscriptions/ManageSubscriptions.tsx';
+import SubscriptionRequestedModal from './Components/SubscriptionRequestedModal/SubscriptionRequestedModal.tsx';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 
 export const SubscriptionsPage = () => {
-  const { subscriptionId, setSubscriptionId } = useSubscription();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const paramSubscriptionId = searchParams.get('subscription');
-
-  if (paramSubscriptionId) {
-    setSubscriptionId(paramSubscriptionId);
-    searchParams.delete('subscription');
-    setSearchParams(searchParams);
-  }
+  const { subscriptionId } = useSubscription();
+  const [searchParams] = useSearchParams();
+  const [opened, { close }] = useDisclosure(false);
+  const prompt = searchParams.get('prompt');
 
   if (subscriptionId) {
     return <SubscriptionPage />;
@@ -27,6 +24,7 @@ export const SubscriptionsPage = () => {
         <SubscriptionsContainer />
         <Space h="xl" />
         <InviteContainer />
+        <SubscriptionRequestedModal opened={opened || prompt === 'requested'} close={close} />
       </div>
     </AppShell>
   );
