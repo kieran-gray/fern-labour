@@ -60,6 +60,25 @@ def test_can_update_contraction_intensity(sample_labour: Labour):
     assert labour.contractions[0].intensity == 2
 
 
+def test_can_update_contraction_intensity_to_zero(sample_labour: Labour):
+    labour = BeginLabourService().begin_labour(sample_labour)
+    contraction_start_time = datetime(2020, 1, 1, 1, 0)
+    contraction_end_time = datetime(2020, 1, 1, 1, 1)
+    StartContractionService().start_contraction(
+        labour=sample_labour,
+        start_time=contraction_start_time,
+    )
+    EndContractionService().end_contraction(
+        labour=sample_labour,
+        intensity=5,
+        end_time=contraction_end_time,
+    )
+    UpdateContractionService().update_contraction(
+        labour=sample_labour, contraction_id=labour.contractions[0].id_, intensity=0
+    )
+    assert labour.contractions[0].intensity == 0
+
+
 def test_cannot_update_contraction_intensity_invalid(sample_labour: Labour):
     labour = BeginLabourService().begin_labour(sample_labour)
     contraction_start_time = datetime(2020, 1, 1, 1, 0)

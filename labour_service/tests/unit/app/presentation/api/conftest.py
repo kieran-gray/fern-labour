@@ -23,6 +23,7 @@ from src.core.infrastructure.security.request_verification.interface import (
 )
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
+from src.labour.application.services.contraction_service import ContractionService
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.labour.application.services.labour_service import LabourService
 from src.payments.infrastructure.stripe.stripe_payment_service import StripePaymentService
@@ -289,6 +290,13 @@ class MockLabourProvider(Provider):
         service.plan_labour.return_value = mock_labour_dto
         service.update_labour_plan.return_value = mock_labour_dto
         service.begin_labour.return_value = mock_labour_dto
+        return service
+
+    @provide()
+    def get_contraction_service(self) -> ContractionService:
+        """Create a mock contraction service."""
+        service = MagicMock(spec=ContractionService)
+        mock_labour_dto = self.get_mock_labour_dto()
         service.start_contraction.return_value = mock_labour_dto
         service.end_contraction.return_value = mock_labour_dto
         return service
