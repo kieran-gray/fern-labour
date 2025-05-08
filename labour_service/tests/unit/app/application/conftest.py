@@ -7,6 +7,7 @@ from fakeredis import FakeValkey
 from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
 from src.core.infrastructure.security.rate_limiting.redis import RedisRateLimiter
 from src.labour.application.security.token_generator import TokenGenerator
+from src.labour.application.services.contraction_service import ContractionService
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.labour.entity import Labour
@@ -208,6 +209,13 @@ async def labour_service(
         labour_repository=labour_repo,
         event_producer=AsyncMock(),
     )
+
+
+@pytest_asyncio.fixture
+async def contraction_service(
+    labour_repo: LabourRepository,
+) -> ContractionService:
+    return ContractionService(labour_repository=labour_repo)
 
 
 @pytest_asyncio.fixture

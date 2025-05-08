@@ -4,6 +4,7 @@ from dishka import FromComponent, Provider, Scope, provide
 from fern_labour_core.events.producer import EventProducer
 
 from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
+from src.labour.application.services.contraction_service import ContractionService
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.labour.repository import LabourRepository
@@ -24,6 +25,12 @@ class LabourApplicationProvider(Provider):
             labour_repository=labour_repository,
             event_producer=event_producer,
         )
+
+    @provide
+    def provide_contraction_service(
+        self, labour_repository: LabourRepository
+    ) -> ContractionService:
+        return ContractionService(labour_repository=labour_repository)
 
     @provide
     def provide_labour_query_service(

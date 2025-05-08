@@ -51,7 +51,7 @@ class UpdateContractionService:
             if self._check_for_overlapping_contraction_durations(labour=labour):
                 raise ContractionsOverlappingAfterUpdate()
 
-        if intensity:
+        if intensity is not None:
             contraction.update_intensity(intensity=intensity)
 
         if notes:

@@ -16,7 +16,7 @@ from src.labour.api.schemas.requests.contraction import (
 from src.labour.api.schemas.responses.labour import (
     LabourResponse,
 )
-from src.labour.application.services.labour_service import LabourService
+from src.labour.application.services.contraction_service import ContractionService
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.user.infrastructure.auth.interfaces.controller import AuthController
 
@@ -37,7 +37,7 @@ contraction_router = APIRouter(prefix="/labour/contraction", tags=["Contractions
 @inject
 async def start_contraction(
     request_data: StartContractionRequest,
-    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    service: Annotated[ContractionService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
@@ -65,7 +65,7 @@ async def start_contraction(
 @inject
 async def end_contraction(
     request_data: EndContractionRequest,
-    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    service: Annotated[ContractionService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
@@ -93,7 +93,7 @@ async def end_contraction(
 @inject
 async def update_contraction(
     request_data: UpdateContractionRequest,
-    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    service: Annotated[ContractionService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
@@ -123,7 +123,7 @@ async def update_contraction(
 @inject
 async def delete_contraction(
     request_data: DeleteContractionRequest,
-    service: Annotated[LabourService, FromComponent(ComponentEnum.LABOUR)],
+    service: Annotated[ContractionService, FromComponent(ComponentEnum.LABOUR)],
     auth_controller: Annotated[AuthController, FromComponent(ComponentEnum.DEFAULT)],
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourResponse:
