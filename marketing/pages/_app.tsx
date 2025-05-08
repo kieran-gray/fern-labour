@@ -23,7 +23,16 @@ export default function App({ Component, pageProps }: AppProps) {
           name="description"
           content="Fern Labour: Plan your labour, Track your Contractions, and keep friends and family up-to-date in one app"
         />
-        <link rel="shortcut icon" href="/logo/logo.svg" />
+        <meta
+          name="keywords"
+          content="Contraction, Tracker, Labour, Labor, Baby, Timer, Birth, Pregnancy, Pregnant"
+        />
+        <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="Fern Labour" />
+        <link rel="manifest" href="/favicon/site.webmanifest" />
         <script defer data-domain="fernlabour.com" src="https://plausible.io/js/script.js" />
       </Head>
       <ResponsiveParticles />
