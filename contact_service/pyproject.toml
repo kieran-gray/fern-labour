@@ -29,11 +29,9 @@ db = [
     "cryptography>=44.0.2",
 ]
 http = [
-    "sentry-sdk[fastapi]>=2.22.0",
     "fastapi<1.0.0,>=0.115.0",
     "uvicorn<1.0.0,>=0.32.0",
     "uvloop<1.0.0,>=0.21.0",
-    "redis[hiredis]>=6.0.0",
 ]
 migrations = [
     "alembic<2.0.0,>=1.13.2",
@@ -42,7 +40,6 @@ migrations = [
 dev = [
     "bandit<2.0.0,>=1.7.9",
     "debugpy>=1.8.9",
-    "fakeredis>=2.28.1",
     "mypy<2.0.0,>=1.11.2",
     "ruff<1.0.0,>=0.6.3",
     "pytest-cov>=6.0.0",
@@ -57,6 +54,7 @@ default-groups = ["db"]
 fern-labour-pub-sub= { index = "fern-labour-packages" }
 fern-labour-core = { index = "fern-labour-packages" }
 fern-labour-notifications-shared = { index = "fern-labour-packages" }
+fern-labour-rate-limiting = { index = "fern-labour-packages" }
 
 [[tool.uv.index]]
 name = "fern-labour-packages"

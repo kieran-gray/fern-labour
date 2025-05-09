@@ -24,14 +24,6 @@ class KeycloakSettings(BaseModel):
     client_secret: str = Field(alias="KEYCLOAK_CLIENT_SECRET")
     admin_username: str = Field(alias="KEYCLOAK_ADMIN")
     admin_password: str = Field(alias="KEYCLOAK_ADMIN_PASSWORD")
-    jwt_algorithm: Literal[
-        "HS256",
-        "HS384",
-        "HS512",
-        "RS256",
-        "RS384",
-        "RS512",
-    ] = Field(alias="JWT_ALGORITHM")
 
 
 class CORSSettings(BaseModel):
@@ -53,20 +45,10 @@ class CloudflareSettings(BaseModel):
     cloudflare_secret_key: str = Field(alias="CLOUDFLARE_SECRET_KEY")
 
 
-class RateLimitSettings(BaseModel):
-    labour_invite_limit: int = Field(alias="LABOUR_INVITE_RATE_LIMIT", default=20)
-    labour_invite_expiry: int = Field(alias="LABOUR_INVITE_RATE_LIMIT_EXPIRY", default=86400)
-    subscriber_invite_limit: int = Field(alias="SUBSCRIBER_INVITE_RATE_LIMIT", default=20)
-    subscriber_invite_expiry: int = Field(
-        alias="SUBSCRIBER_INVITE_RATE_LIMIT_EXPIRY", default=86400
-    )
-
-
 class SecuritySettings(BaseModel):
     cors: CORSSettings
     keycloak: KeycloakSettings
     cloudflare: CloudflareSettings
-    rate_limits: RateLimitSettings
 
 
 class LoggingSettings(BaseModel):
@@ -127,12 +109,6 @@ class EventSettings(BaseModel):
     gcp: GCPSettings
 
 
-class RedisSettings(BaseModel):
-    host: str = Field(alias="REDIS_HOST")
-    port: int = Field(alias="REDIS_PORT")
-    password: str = Field(alias="REDIS_PASSWORD")
-
-
 class Settings(BaseModel):
     base: BaseSettings
     security: SecuritySettings
@@ -140,7 +116,6 @@ class Settings(BaseModel):
     uvicorn: UvicornSettings
     events: EventSettings
     db: DbSettings
-    redis: RedisSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"
 

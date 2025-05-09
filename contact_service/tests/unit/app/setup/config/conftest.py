@@ -23,17 +23,10 @@ class MockConfigReader(ConfigReader):
                     "KEYCLOAK_CLIENT_SECRET": "ABC123",
                     "KEYCLOAK_ADMIN": "user",
                     "KEYCLOAK_ADMIN_PASSWORD": "pass",
-                    "JWT_ALGORITHM": "RS256",
                 },
                 "cloudflare": {
                     "CLOUDFLARE_URL": "test",
                     "CLOUDFLARE_SECRET_KEY": "secret",
-                },
-                "rate_limits": {
-                    "LABOUR_INVITE_RATE_LIMIT": 20,
-                    "LABOUR_INVITE_RATE_LIMIT_EXPIRY": 86400,
-                    "SUBSCRIBER_INVITE_RATE_LIMIT": 20,
-                    "SUBSCRIBER_INVITE_RATE_LIMIT_EXPIRY": 86400,
                 },
             },
             "logging": {
@@ -61,11 +54,6 @@ class MockConfigReader(ConfigReader):
             },
             "events": {
                 "gcp": {"GCP_PROJECT_ID": "test"},
-            },
-            "redis": {
-                "REDIS_HOST": "localhost",
-                "REDIS_PORT": 1234,
-                "REDIS_PASSWORD": "password",
             },
         }
 

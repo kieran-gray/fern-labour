@@ -1,9 +1,8 @@
-import pytest
 import pytest_asyncio
-from fakeredis import FakeValkey
 
-from src.infrastructure.security.rate_limiting.interface import RateLimiter
-from src.infrastructure.security.rate_limiting.redis import RedisRateLimiter
+from src.domain.contact_message_id import ContactMessageId
+from src.domain.entity import ContactMessage
+from src.domain.repository import ContactMessageRepository
 from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.entity import User
 from src.user.domain.repository import UserRepository
@@ -30,6 +29,26 @@ class MockUserRepository(UserRepository):
         return users
 
 
+class MockContactMessageRepository(ContactMessageRepository):
+    _data = {}
+
+    async def save(self, contact_message: ContactMessage) -> None:
+        self._data[contact_message.id_.value] = contact_message
+
+    async def delete(self, contact_message: ContactMessage) -> None:
+        self._data.pop(contact_message.id_.value)
+
+    async def get_by_id(self, contact_message_id: ContactMessageId) -> ContactMessage | None:
+        return self._data.get(contact_message_id.value, None)
+
+    async def get_by_ids(self, contact_message_ids: list[ContactMessageId]) -> list[ContactMessage]:
+        contact_messages = []
+        for contact_message_id in contact_message_ids:
+            if contact_message := self._data.get(contact_message_id.value, None):
+                contact_messages.append(contact_message)
+        return contact_messages
+
+
 @pytest_asyncio.fixture
 async def user_repo() -> UserRepository:
     repo = MockUserRepository()
@@ -37,9 +56,11 @@ async def user_repo() -> UserRepository:
     return repo
 
 
-@pytest.fixture
-def rate_limiter() -> RateLimiter:
-    return RedisRateLimiter(redis=FakeValkey())
+@pytest_asyncio.fixture
+async def contact_message_repo() -> ContactMessageRepository:
+    repo = MockContactMessageRepository()
+    repo._data = {}
+    return repo
 
 
 @pytest_asyncio.fixture

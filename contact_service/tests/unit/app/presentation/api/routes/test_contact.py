@@ -8,6 +8,7 @@ def test_contact_us_send_message(
     response = client.post(
         "/api/v1/contact-us/",
         json={
+            "category": "error_report",
             "token": "test_token",
             "email": "test@example.com",
             "name": "Test User",

@@ -57,7 +57,7 @@ TEST_DIR=tests
 PYPROJECT_TOML=pyproject.toml
 
 revision:
-	POSTGRES_DB=app POSTGRES_HOST=0.0.0.0 POSTGRES_PORT=5432 \
+	POSTGRES_DB=contact_service POSTGRES_HOST=0.0.0.0 POSTGRES_PORT=5432 \
 	POSTGRES_USER=postgres POSTGRES_PASSWORD=changeme PYTHONPATH=. \
 	uv run alembic revision --autogenerate
 

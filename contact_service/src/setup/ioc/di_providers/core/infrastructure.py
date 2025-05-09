@@ -3,7 +3,6 @@ from collections.abc import AsyncIterable
 
 from dishka import Provider, Scope, provide
 from keycloak import KeycloakOpenID
-from redis import Redis
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -11,8 +10,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from src.infrastructure.security.rate_limiting.interface import RateLimiter
-from src.infrastructure.security.rate_limiting.redis import RedisRateLimiter
+from src.domain.repository import ContactMessageRepository
+from src.infrastructure.persistence.repository import SQLAlchemyContactMessageRepository
 from src.infrastructure.security.request_verification.interface import (
     RequestVerificationService,
 )
@@ -80,6 +79,12 @@ class CoreInfrastructureProvider(Provider):
             log.debug("Closing async session.")
         log.debug("Async session closed for '%s'.", self.component)
 
+    @provide(scope=Scope.REQUEST)
+    def provide_contact_message_repository(
+        self, async_session: AsyncSession
+    ) -> ContactMessageRepository:
+        return SQLAlchemyContactMessageRepository(session=async_session)
+
     @provide
     def provide_auth_client(self, settings: Settings) -> KeycloakOpenID:
         return KeycloakOpenID(
@@ -106,10 +111,3 @@ class CoreInfrastructureProvider(Provider):
             cloudflare_url=settings.security.cloudflare.cloudflare_url,
             cloudflare_secret_key=settings.security.cloudflare.cloudflare_secret_key,
         )
-
-    @provide
-    def provide_rate_limiter(self, settings: Settings) -> RateLimiter:
-        redis = Redis(
-            host=settings.redis.host, port=settings.redis.port, password=settings.redis.password
-        )
-        return RedisRateLimiter(redis=redis)
