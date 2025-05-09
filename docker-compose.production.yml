@@ -92,6 +92,52 @@ services:
     env_file:
       - ./notification_service/.env
 
+  contact-service:
+    image: '${DOCKER_IMAGE_REPOSITORY?unset}/${DOCKER_IMAGE_CONTACT_SERVICE?unset}:${TAG-latest}'
+    restart: always
+    networks:
+      - traefik-public
+      - default
+    depends_on:
+      contact-service-pre-start:
+        condition: service_completed_successfully
+        restart: false
+    env_file:
+      - ./contact_service/.env
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp_application_credentials
+    secrets:
+      - gcp_application_credentials
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+
+      - traefik.http.services.${STACK_NAME?unset}-backend.loadbalancer.server.port=8002
+
+      - traefik.http.routers.${STACK_NAME?unset}-backend-http.rule=Host(`contact.${DOMAIN?unset}`)
+      - traefik.http.routers.${STACK_NAME?unset}-backend-http.entrypoints=http
+
+      - traefik.http.routers.${STACK_NAME?unset}-backend-https.rule=Host(`contact.${DOMAIN?unset}`)
+      - traefik.http.routers.${STACK_NAME?unset}-backend-https.entrypoints=https
+
+      - traefik.http.routers.${STACK_NAME?unset}-backend-https.tls=true
+      - traefik.http.routers.${STACK_NAME?unset}-backend-https.tls.certresolver=le
+      - traefik.http.routers.${STACK_NAME?unset}-backend-http.middlewares=https-redirect
+
+  contact-service-pre-start:
+    image: '${DOCKER_IMAGE_REPOSITORY?unset}/${DOCKER_IMAGE_CONTACT_SERVICE?unset}-alembic:${TAG-latest}'
+    restart: "no"
+    env_file:
+      - ./contact_service/.env
+
   labour-consumer:
     image: '${DOCKER_IMAGE_REPOSITORY}/${DOCKER_IMAGE_LABOUR_SERVICE?unset}:${TAG-latest}'
     restart: always
