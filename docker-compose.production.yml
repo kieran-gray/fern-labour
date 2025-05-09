@@ -120,17 +120,17 @@ services:
       - traefik.docker.network=traefik-public
       - traefik.constraint-label=traefik-public
 
-      - traefik.http.services.${STACK_NAME?unset}-backend.loadbalancer.server.port=8002
+      - traefik.http.services.${STACK_NAME?unset}-contact.loadbalancer.server.port=8002
 
-      - traefik.http.routers.${STACK_NAME?unset}-backend-http.rule=Host(`contact.${DOMAIN?unset}`)
-      - traefik.http.routers.${STACK_NAME?unset}-backend-http.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?unset}-contact-http.rule=Host(`contact.${DOMAIN?unset}`)
+      - traefik.http.routers.${STACK_NAME?unset}-contact-http.entrypoints=http
 
-      - traefik.http.routers.${STACK_NAME?unset}-backend-https.rule=Host(`contact.${DOMAIN?unset}`)
-      - traefik.http.routers.${STACK_NAME?unset}-backend-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?unset}-contact-https.rule=Host(`contact.${DOMAIN?unset}`)
+      - traefik.http.routers.${STACK_NAME?unset}-contact-https.entrypoints=https
 
-      - traefik.http.routers.${STACK_NAME?unset}-backend-https.tls=true
-      - traefik.http.routers.${STACK_NAME?unset}-backend-https.tls.certresolver=le
-      - traefik.http.routers.${STACK_NAME?unset}-backend-http.middlewares=https-redirect
+      - traefik.http.routers.${STACK_NAME?unset}-contact-https.tls=true
+      - traefik.http.routers.${STACK_NAME?unset}-contact-https.tls.certresolver=le
+      - traefik.http.routers.${STACK_NAME?unset}-contact-http.middlewares=https-redirect
 
   contact-service-pre-start:
     image: '${DOCKER_IMAGE_REPOSITORY?unset}/${DOCKER_IMAGE_CONTACT_SERVICE?unset}-alembic:${TAG-latest}'
