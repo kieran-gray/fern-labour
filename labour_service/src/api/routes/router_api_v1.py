@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 
-from src.admin.api.routes import contact_us_router
 from src.api.routes.healthcheck import healthcheck_router
 from src.labour.api.routes.router import labour_module_router
 from src.payments.api.routes import payments_router
@@ -14,7 +13,6 @@ api_v1_router = APIRouter(
 
 api_v1_sub_routers = (
     auth_router,
-    contact_us_router,
     user_router,
     labour_module_router,
     subscription_module_router,

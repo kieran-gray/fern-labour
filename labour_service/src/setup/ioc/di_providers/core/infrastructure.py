@@ -13,12 +13,6 @@ from sqlalchemy.ext.asyncio import (
 
 from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
 from src.core.infrastructure.security.rate_limiting.redis import RedisRateLimiter
-from src.core.infrastructure.security.request_verification.interface import (
-    RequestVerificationService,
-)
-from src.core.infrastructure.security.request_verification.turnstile import (
-    TurnstileRequestVerificationService,
-)
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.ioc.di_providers.core.settings import PostgresDsn
 from src.setup.settings import Settings, SqlaEngineSettings
@@ -97,15 +91,6 @@ class CommonInfrastructureProvider(Provider):
     @provide
     def provide_auth_controller(self, auth_service: AuthService) -> AuthController:
         return KeycloakAuthController(auth_service=auth_service)
-
-    @provide
-    def provide_request_verification_service(
-        self, settings: Settings
-    ) -> RequestVerificationService:
-        return TurnstileRequestVerificationService(
-            cloudflare_url=settings.security.cloudflare.cloudflare_url,
-            cloudflare_secret_key=settings.security.cloudflare.cloudflare_secret_key,
-        )
 
     @provide
     def provide_rate_limiter(self, settings: Settings) -> RateLimiter:
