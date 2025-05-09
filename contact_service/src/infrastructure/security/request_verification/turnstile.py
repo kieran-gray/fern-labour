@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from uuid import uuid4
 
@@ -11,6 +12,8 @@ from src.infrastructure.security.request_verification.exceptions import (
 from src.infrastructure.security.request_verification.interface import (
     RequestVerificationService,
 )
+
+log = logging.getLogger(__name__)
 
 
 class TurnstileRequestVerificationService(RequestVerificationService):
@@ -45,6 +48,7 @@ class TurnstileRequestVerificationService(RequestVerificationService):
         """
         result = await self._call_cloudflare_api(token, ip)
         if not result["success"]:
+            log.error(f"Request verification failed: {result}")
             if "timeout-or-duplicate" in result["error-codes"]:
                 raise VerificationTokenAlreadyUsedException()
             if "invalid-input-response" in result["error-codes"]:

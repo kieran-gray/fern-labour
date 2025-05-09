@@ -65,7 +65,7 @@ RUN --mount=type=secret,id=artifact_registry_token \
 # Final minimal production image for the HTTP server
 FROM base AS http
 
-ARG UVICORN_PORT=8001
+ARG UVICORN_PORT=8002
 
 # Copy the virtual environment with core + http dependencies
 COPY --from=http_builder --chown=nonroot:nonroot /venv /venv
