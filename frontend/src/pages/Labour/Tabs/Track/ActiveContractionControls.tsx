@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useState } from 'react';
 import { Slider, Space, Text } from '@mantine/core';
-import { ContractionDTO } from '../../../../client/types.gen.ts';
+import { ContractionDTO } from '../../../../clients/labour_service/types.gen.ts';
 import EndContractionButton from './EndContractionButton.tsx';
 import Stopwatch, { StopwatchHandle } from './Stopwatch/Stopwatch.tsx';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';

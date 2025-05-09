@@ -10,7 +10,7 @@ import {
   OpenAPI,
   SendSubscriberInviteRequest,
   SubscriberService,
-} from '../../../../client';
+} from '../../../../clients/labour_service';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from '../../../Labour/Tabs/Invites/InviteContainer/invite.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';

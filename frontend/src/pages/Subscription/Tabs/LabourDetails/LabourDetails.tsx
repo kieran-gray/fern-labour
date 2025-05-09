@@ -1,5 +1,5 @@
 import { Badge, Image, Text } from '@mantine/core';
-import { LabourDTO } from '../../../../client';
+import { LabourDTO } from '../../../../clients/labour_service';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '../../../../shared-components/utils';
 import image from '../../../Labour/Tabs/Manage/LabourDetails/Meditate.svg';

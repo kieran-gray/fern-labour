@@ -12,7 +12,7 @@ import {
   LabourUpdateRequest,
   LabourUpdatesService,
   OpenAPI,
-} from '../../../../client';
+} from '../../../../clients/labour_service';
 import { useLabour } from '../../LabourContext';
 import ConfirmAnnouncementModal from './ConfirmAnnouncement';
 

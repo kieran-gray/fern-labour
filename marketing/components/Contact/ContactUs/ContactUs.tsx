@@ -35,14 +35,14 @@ export function ContactUs() {
     },
   });
 
-  const backendApiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const contactServiceURL = process.env.NEXT_PUBLIC_CONTACT_SERVICE_URL;
 
   const handleSubmit = async (values: typeof form.values) => {
     setIsLoading(true);
     setStatus({ type: '', message: '' });
 
     try {
-      const response = await fetch(`${backendApiUrl}/api/v1/contact-us/`, {
+      const response = await fetch(`${contactServiceURL}/api/v1/contact-us/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

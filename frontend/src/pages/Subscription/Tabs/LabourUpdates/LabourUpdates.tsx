@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Avatar, Group, ScrollArea, Text } from '@mantine/core';
-import { LabourDTO, UserSummaryDTO } from '../../../../client';
+import { LabourDTO, UserSummaryDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '../../../../shared-components/utils';

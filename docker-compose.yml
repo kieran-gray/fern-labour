@@ -92,6 +92,51 @@ services:
     env_file:
       - ./notification_service/.env
 
+  contact-service:
+    image: '${DOCKER_IMAGE_CONTACT_SERVICE?unset}:latest'
+    build:
+      context: ./contact_service
+      target: http
+      secrets:
+        - artifact_registry_token
+    restart: "no"
+    networks:
+      - traefik-public
+      - default
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+      contact-service-pre-start:
+        condition: service_completed_successfully
+        restart: false
+    env_file:
+      - ./contact_service/.env
+    environment:
+      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8002/api/v1/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  contact-service-pre-start:
+    image: '${DOCKER_IMAGE_CONTACT_SERVICE?unset}-alembic:latest'
+    build:
+      context: ./contact_service
+      target: migrations
+      secrets:
+        - artifact_registry_token
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    env_file:
+      - ./contact_service/.env
+
   db:
     image: postgres:16.2
     restart: "no"
@@ -224,7 +269,8 @@ services:
       context: ./frontend
       target: build-stage
       args:
-        - VITE_API_URL=http://localhost:8000
+        - VITE_LABOUR_SERVICE_URL=http://localhost:8000
+        - VITE_CONTACT_SERVICE_URL=http://localhost:8002
         - NODE_ENV=development
         - VITE_KEYCLOAK_AUTHORITY=${VITE_KEYCLOAK_AUTHORITY}
         - VITE_KEYCLOAK_METADATA_URL=${VITE_KEYCLOAK_METADATA_URL}
@@ -247,7 +293,7 @@ services:
       target: build-stage
       args:
         - NODE_ENV=development
-        - BACKEND_API_URL=${BACKEND_API_URL?unset}
+        - CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
         - INSTAGRAM_URL=${INSTAGRAM_URL?unset}
         - FRONTEND_URL=${FRONTEND_HOST?unset}
     restart: "no"
@@ -257,7 +303,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL?unset}
+      - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
       - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_HOST?unset}
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
     volumes:

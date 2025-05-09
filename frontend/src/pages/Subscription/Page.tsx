@@ -11,7 +11,7 @@ import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space, Tabs, Text } from '@mantine/core';
-import { ApiError, OpenAPI, SubscriptionService } from '../../client/index.ts';
+import { ApiError, OpenAPI, SubscriptionService } from '../../clients/labour_service/index.ts';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';

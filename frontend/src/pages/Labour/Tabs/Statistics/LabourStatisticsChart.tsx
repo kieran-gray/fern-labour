@@ -1,5 +1,5 @@
 import { ScatterChart } from '@mantine/charts';
-import { ContractionDTO } from '../../../../client';
+import { ContractionDTO } from '../../../../clients/labour_service';
 import classes from './LabourStatistics.module.css';
 
 interface ChartData {

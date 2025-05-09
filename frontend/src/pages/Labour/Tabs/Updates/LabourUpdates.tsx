@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { IconPencil, IconSpeakerphone } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
 import { Avatar, Group, Image, LoadingOverlay, ScrollArea, Text, TextInput } from '@mantine/core';
-import { LabourDTO } from '../../../../client';
+import { LabourDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from './image.svg';

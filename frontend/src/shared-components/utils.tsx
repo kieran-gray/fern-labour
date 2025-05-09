@@ -1,4 +1,4 @@
-import { ContractionDTO, LabourDTO } from '../client';
+import { ContractionDTO, LabourDTO } from '../clients/labour_service';
 
 interface ContractionFrequencyGaps {
   previous: number;

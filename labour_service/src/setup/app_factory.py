@@ -62,7 +62,7 @@ def initialise_sentry(settings: Settings) -> None:
 def create_app(settings: Settings) -> FastAPI:
     initialise_sentry(settings=settings)
     new_app: FastAPI = FastAPI(
-        title="Labour Tracker",
+        title="Labour Service",
         lifespan=lifespan,
         default_response_class=ORJSONResponse,
         docs_url=None,

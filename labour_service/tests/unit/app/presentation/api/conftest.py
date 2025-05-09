@@ -10,7 +10,6 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from src.admin.application.contact_service import ContactService
 from src.api.exception_handler import (
     ExceptionHandler,
     ExceptionHeaderMapper,
@@ -18,9 +17,6 @@ from src.api.exception_handler import (
     ExceptionMessageProvider,
 )
 from src.api.routes.router_root import root_router
-from src.core.infrastructure.security.request_verification.interface import (
-    RequestVerificationService,
-)
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
 from src.labour.application.services.contraction_service import ContractionService
@@ -324,17 +320,6 @@ class MockUserProvider(Provider):
         return service
 
 
-class MockAdminProvider(Provider):
-    scope = Scope.REQUEST
-    component = ComponentEnum.ADMIN
-
-    @provide()
-    def get_contact_service(self) -> ContactService:
-        service = MagicMock(spec=ContactService)
-        service.send_contact_email.return_value = None
-        return service
-
-
 class MockDefaultProvider(Provider):
     scope = Scope.REQUEST
     component = ComponentEnum.DEFAULT
@@ -352,18 +337,6 @@ class MockDefaultProvider(Provider):
         auth_controller = TestAuthController(test_user=test_user)
         return auth_controller
 
-    @provide()
-    def get_contact_service(self) -> ContactService:
-        service = MagicMock(spec=ContactService)
-        service.send_contact_email.return_value = None
-        return service
-
-    @provide()
-    def get_request_verification_service(self) -> RequestVerificationService:
-        service = MagicMock(spec=RequestVerificationService)
-        service.verify.return_value = None
-        return service
-
 
 def get_providers() -> Iterable[Provider]:
     return (
@@ -372,7 +345,6 @@ def get_providers() -> Iterable[Provider]:
         MockPaymentsProvider(),
         MockSubscriptionProvider(),
         MockUserProvider(),
-        MockAdminProvider(),
     )
 
 

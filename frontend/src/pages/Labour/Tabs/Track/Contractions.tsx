@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Space, Stack, Text, Title } from '@mantine/core';
 import { useScrollIntoView } from '@mantine/hooks';
-import { ContractionDTO, LabourDTO } from '../../../../client/index.ts';
+import { ContractionDTO, LabourDTO } from '../../../../clients/labour_service/index.ts';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText.tsx';
 import { sortContractions } from '../../../../shared-components/utils.tsx';
 import { ActiveContractionControls } from './ActiveContractionControls.tsx';

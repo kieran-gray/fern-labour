@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ScrollArea, Space, Text, Timeline } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { ContractionDTO } from '../../../../client';
+import { ContractionDTO } from '../../../../clients/labour_service';
 import {
   formatTimeMilliseconds,
   formatTimeSeconds,

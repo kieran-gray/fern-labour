@@ -11,11 +11,6 @@ from fern_labour_core.exceptions.application import ApplicationError
 from fern_labour_core.exceptions.domain import DomainError
 from pydantic_core import ErrorDetails
 
-from src.core.infrastructure.security.request_verification.exceptions import (
-    InvalidVerificationTokenException,
-    RequestVerificationError,
-    VerificationTokenAlreadyUsedException,
-)
 from src.labour.application.exceptions import LabourInviteRateLimitExceeded
 from src.labour.domain.contraction.exceptions import (
     CannotDeleteActiveContraction,
@@ -111,9 +106,6 @@ class ExceptionMapper:
             UnauthorizedSubscriptionRequest: status.HTTP_403_FORBIDDEN,
             UnauthorizedSubscriptionUpdateRequest: status.HTTP_403_FORBIDDEN,
             InvalidLabourId: status.HTTP_400_BAD_REQUEST,
-            RequestVerificationError: status.HTTP_400_BAD_REQUEST,
-            VerificationTokenAlreadyUsedException: status.HTTP_400_BAD_REQUEST,
-            InvalidVerificationTokenException: status.HTTP_400_BAD_REQUEST,
             InvalidLabourUpdateId: status.HTTP_400_BAD_REQUEST,
             LabourUpdateNotFoundById: status.HTTP_404_NOT_FOUND,
             ContractionStartTimeAfterEndTime: status.HTTP_400_BAD_REQUEST,

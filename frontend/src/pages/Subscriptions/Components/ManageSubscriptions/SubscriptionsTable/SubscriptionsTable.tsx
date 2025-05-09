@@ -3,7 +3,7 @@ import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Avatar, Button, Group, Table, Text } from '@mantine/core';
-import { OpenAPI, SubscriptionService } from '../../../../../client';
+import { OpenAPI, SubscriptionService } from '../../../../../clients/labour_service';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { useSubscription } from '../../../../Subscription/SubscriptionContext';

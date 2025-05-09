@@ -1,5 +1,5 @@
 import { Image, Space, Text } from '@mantine/core';
-import { ContractionDTO, LabourDTO } from '../../../../client';
+import { ContractionDTO, LabourDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { formatTimeSeconds } from '../../../../shared-components/utils';

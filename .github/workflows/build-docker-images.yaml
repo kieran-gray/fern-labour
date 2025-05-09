@@ -8,6 +8,7 @@ on:
       - 'marketing/**'
       - 'keycloak/**'
       - 'notification_service/**'
+      - 'contact_service/**'
       - '.github/workflows/**'
 
 permissions:
@@ -78,6 +79,24 @@ jobs:
       image-name: notification-service-backend-alembic
       stage: migrations
 
+  contact_service:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.contact_service == 'true' }}
+    uses: ./.github/workflows/build-and-push.yaml
+    with:
+      directory: contact_service
+      image-name: contact-service-backend
+      stage: http
+
+  contact_service_alembic:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.contact_service == 'true' }}
+    uses: ./.github/workflows/build-and-push.yaml
+    with:
+      directory: contact_service
+      image-name: contact-service-backend-alembic
+      stage: migrations
+
   frontend:
     needs: check-changes
     if: ${{ needs.check-changes.outputs.frontend == 'true' }}
@@ -86,7 +105,8 @@ jobs:
       directory: frontend
       image-name: labour-tracker-frontend
       build-args: |
-        VITE_API_URL=${{ vars.VITE_API_URL }}
+        VITE_LABOUR_SERVICE_URL=${{ vars.LABOUR_SERVICE_URL }}
+        VITE_CONTACT_SERVICE_URL=${{ vars.CONTACT_SERVICE_URL }}
         VITE_KEYCLOAK_AUTHORITY=${{ vars.VITE_KEYCLOAK_AUTHORITY }}
         VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
         VITE_KEYCLOAK_METADATA_URL=${{ vars.VITE_KEYCLOAK_METADATA_URL }}
@@ -100,7 +120,7 @@ jobs:
       directory: marketing
       image-name: labour-tracker-marketing
       build-args: |
-        BACKEND_API_URL=${{ vars.BACKEND_API_URL }}
+        CONTACT_SERVICE_URL=${{ vars.CONTACT_SERVICE_URL }}
         INSTAGRAM_URL=${{ vars.INSTAGRAM_URL }}
         FRONTEND_URL=${{ vars.FRONTEND_URL }}
 

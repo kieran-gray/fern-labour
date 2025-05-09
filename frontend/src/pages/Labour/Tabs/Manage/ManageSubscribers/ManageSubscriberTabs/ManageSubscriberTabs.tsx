@@ -2,7 +2,11 @@ import { IconUserCheck, IconUserOff, IconUserQuestion } from '@tabler/icons-reac
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Tabs, Text } from '@mantine/core';
-import { OpenAPI, SubscriptionDTO, SubscriptionService } from '../../../../../../client';
+import {
+  OpenAPI,
+  SubscriptionDTO,
+  SubscriptionService,
+} from '../../../../../../clients/labour_service';
 import { ImportantText } from '../../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoadingIcon } from '../../../../../../shared-components/PageLoading/Loading';
 import { useLabour } from '../../../../LabourContext';

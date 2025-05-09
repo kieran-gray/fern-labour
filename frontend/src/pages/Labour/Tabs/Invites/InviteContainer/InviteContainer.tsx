@@ -5,7 +5,12 @@ import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { ApiError, LabourService, OpenAPI, SendInviteRequest } from '../../../../../client';
+import {
+  ApiError,
+  LabourService,
+  OpenAPI,
+  SendInviteRequest,
+} from '../../../../../clients/labour_service';
 import { useLabour } from '../../../LabourContext';
 import image from './invite.svg';
 import classes from './InviteContainer.module.css';

@@ -7,7 +7,12 @@ import { Button, Group, Image, Radio, Text, TextInput, Title } from '@mantine/co
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { LabourDTO, LabourService, OpenAPI, PlanLabourRequest } from '../../../../client';
+import {
+  LabourDTO,
+  LabourService,
+  OpenAPI,
+  PlanLabourRequest,
+} from '../../../../clients/labour_service';
 import image from './plan.svg';
 import classes from './Plan.module.css';
 

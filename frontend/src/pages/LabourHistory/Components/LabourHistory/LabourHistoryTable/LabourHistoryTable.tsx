@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Table, Text } from '@mantine/core';
-import { LabourQueriesService, OpenAPI } from '../../../../../client';
+import { LabourQueriesService, OpenAPI } from '../../../../../clients/labour_service';
 import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { useLabour } from '../../../../Labour/LabourContext';

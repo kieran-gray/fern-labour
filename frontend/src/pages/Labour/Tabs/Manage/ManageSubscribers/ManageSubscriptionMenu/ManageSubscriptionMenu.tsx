@@ -18,7 +18,7 @@ import {
   RemoveSubscriberRequest,
   SubscriptionManagementService,
   UnblockSubscriberRequest,
-} from '../../../../../../client';
+} from '../../../../../../clients/labour_service';
 import ConfirmActionModal from './ConfirmActionModal';
 
 export function ManageSubscriptionMenu({
