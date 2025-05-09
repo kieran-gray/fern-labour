@@ -105,8 +105,8 @@ jobs:
       directory: frontend
       image-name: labour-tracker-frontend
       build-args: |
-        VITE_LABOUR_SERVICE_URL=${{ vars.VITE_LABOUR_SERVICE_URL }}
-        VITE_CONTACT_SERVICE_URL=${{ vars.VITE_CONTACT_SERVICE_URL }}
+        VITE_LABOUR_SERVICE_URL=${{ vars.LABOUR_SERVICE_URL }}
+        VITE_CONTACT_SERVICE_URL=${{ vars.CONTACT_SERVICE_URL }}
         VITE_KEYCLOAK_AUTHORITY=${{ vars.VITE_KEYCLOAK_AUTHORITY }}
         VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
         VITE_KEYCLOAK_METADATA_URL=${{ vars.VITE_KEYCLOAK_METADATA_URL }}
@@ -120,7 +120,7 @@ jobs:
       directory: marketing
       image-name: labour-tracker-marketing
       build-args: |
-        BACKEND_API_URL=${{ vars.BACKEND_API_URL }}
+        CONTACT_SERVICE_URL=${{ vars.CONTACT_SERVICE_URL }}
         INSTAGRAM_URL=${{ vars.INSTAGRAM_URL }}
         FRONTEND_URL=${{ vars.FRONTEND_URL }}
 

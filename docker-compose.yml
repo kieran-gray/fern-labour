@@ -293,7 +293,7 @@ services:
       target: build-stage
       args:
         - NODE_ENV=development
-        - BACKEND_API_URL=${BACKEND_API_URL?unset}
+        - CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
         - INSTAGRAM_URL=${INSTAGRAM_URL?unset}
         - FRONTEND_URL=${FRONTEND_HOST?unset}
     restart: "no"
@@ -303,7 +303,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_BACKEND_API_URL=${BACKEND_API_URL?unset}
+      - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
       - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_HOST?unset}
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
     volumes:
