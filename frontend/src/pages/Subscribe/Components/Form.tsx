@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { OpenAPI, SubscribeToRequest, SubscriptionService } from '../../../client';
+import { OpenAPI, SubscribeToRequest, SubscriptionService } from '../../../clients/labour_service';
 import { AppMode, useMode } from '../../Home/SelectAppMode';
 import image from './protected.svg';
 import baseClasses from '../../../shared-components/shared-styles.module.css';

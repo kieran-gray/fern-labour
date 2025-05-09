@@ -11,7 +11,7 @@ import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space, Tabs, Text } from '@mantine/core';
-import { ApiError, LabourQueriesService, OpenAPI } from '../../client';
+import { ApiError, LabourQueriesService, OpenAPI } from '../../clients/labour_service';
 import { NotFoundError, PermissionDenied } from '../../Errors';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';

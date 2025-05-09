@@ -11,8 +11,6 @@ import type {
   BlockSubscriberApiV1SubscriptionManagementBlockSubscriberPutResponse,
   CompleteLabourApiV1LabourCompletePutData,
   CompleteLabourApiV1LabourCompletePutResponse,
-  ContactUsSendMessageApiV1ContactUsPostData,
-  ContactUsSendMessageApiV1ContactUsPostResponse,
   CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostData,
   CreateCheckoutSessionApiV1PaymentsCreateCheckoutSessionPostResponse,
   DeleteContractionApiV1LabourContractionDeleteDeleteData,
@@ -36,7 +34,6 @@ import type {
   GetSubscriptionByIdApiV1SubscriptionSubscriptionDataSubscriptionIdGetResponse,
   GetSubscriptionsApiV1SubscriptionSubscriptionsGetResponse,
   GetSubscriptionTokenApiV1LabourSubscriptionTokenGetResponse,
-  GetUserApiV1AuthUserGetResponse,
   GetUserApiV1UserGetResponse,
   GetUserSummaryApiV1UserSummaryGetResponse,
   HealthcheckApiV1HealthGetResponse,
@@ -100,52 +97,6 @@ export class AuthService {
       mediaType: 'application/x-www-form-urlencoded',
       errors: {
         422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Get User
-   * Get currently logged in user. Requires a valid token for access.
-   *
-   * Args:
-   * credentials (HTTPAuthorizationCredentials):
-   * Bearer token provided via HTTP Authorization header.
-   *
-   * Returns:
-   * User: Information about the authenticated user.
-   * @returns UserDTO Successful Response
-   * @throws ApiError
-   */
-  public static getUser(): CancelablePromise<GetUserApiV1AuthUserGetResponse> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/v1/auth/user',
-    });
-  }
-}
-
-export class ContactUsService {
-  /**
-   * Contact Us Send Message
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns void Successful Response
-   * @throws ApiError
-   */
-  public static contactUsSendMessage(
-    data: ContactUsSendMessageApiV1ContactUsPostData
-  ): CancelablePromise<ContactUsSendMessageApiV1ContactUsPostResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/contact-us/',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: 'Bad Request',
-        422: 'Validation Error',
-        429: 'Too Many Requests',
-        500: 'Internal Server Error',
       },
     });
   }

@@ -1,6 +1,6 @@
 import { IconInfoCircle } from '@tabler/icons-react';
 import { Image, Space, Text } from '@mantine/core';
-import { LabourDTO } from '../../../../client';
+import { LabourDTO } from '../../../../clients/labour_service';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { formatTimeSeconds } from '../../../../shared-components/utils';
 import { createLabourStatistics } from '../../../Labour/Tabs/Statistics/LabourStatistics';

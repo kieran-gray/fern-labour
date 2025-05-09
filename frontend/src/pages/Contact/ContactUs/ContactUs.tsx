@@ -15,8 +15,8 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { ContactUsService } from '../../../client/sdk.gen.ts';
-import { ContactUsRequest } from '../../../client/types.gen.ts';
+import { ContactUsService } from '../../../clients/contact_service/sdk.gen.ts';
+import { ContactUsRequest } from '../../../clients/contact_service/types.gen.ts';
 import { ContactIconsList } from './ContactIcons.tsx';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './ContactUs.module.css';

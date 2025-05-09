@@ -23,14 +23,6 @@ export type CompleteLabourRequest = {
   notes?: string | null;
 };
 
-export type ContactUsRequest = {
-  email: string;
-  name: string;
-  message: string;
-  token: string;
-  user_id?: string | null;
-};
-
 export type ContractionDTO = {
   id: string;
   labour_id: string;
@@ -260,14 +252,6 @@ export type LoginApiV1AuthLoginPostData = {
 };
 
 export type LoginApiV1AuthLoginPostResponse = TokenResponse;
-
-export type GetUserApiV1AuthUserGetResponse = UserDTO;
-
-export type ContactUsSendMessageApiV1ContactUsPostData = {
-  requestBody: ContactUsRequest;
-};
-
-export type ContactUsSendMessageApiV1ContactUsPostResponse = void;
 
 export type StartContractionApiV1LabourContractionStartPostData = {
   requestBody: StartContractionRequest;

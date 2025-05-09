@@ -3,7 +3,7 @@ import { useAuth } from 'react-oidc-context';
 import { useSearchParams } from 'react-router-dom';
 import { Badge, Button, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { SubscriptionDTO, UserService } from '../../../../client';
+import { SubscriptionDTO, UserService } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import ContactMethodsForm from './ContactMethodsForm';

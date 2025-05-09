@@ -12,7 +12,7 @@ import {
   SubscriptionManagementService,
   UpdateContactMethodsRequest,
   UserService,
-} from '../../../../client';
+} from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { warnNonUKNumber, warnNoNumberSet } from './ContactMethods';
 import modalClasses from '../../../../shared-components/Modal.module.css';

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Image, Text } from '@mantine/core';
-import { ApiError, LabourQueriesService, OpenAPI } from '../../../../../client';
+import { ApiError, LabourQueriesService, OpenAPI } from '../../../../../clients/labour_service';
 import { NotFoundError } from '../../../../../Errors';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';

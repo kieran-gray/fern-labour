@@ -5,7 +5,11 @@ import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { CompleteLabourRequest, LabourService, OpenAPI } from '../../../../../client';
+import {
+  CompleteLabourRequest,
+  LabourService,
+  OpenAPI,
+} from '../../../../../clients/labour_service';
 import { useLabour } from '../../../LabourContext';
 import ConfirmCompleteLabourModal from './ConfirmCompleteLabour';
 

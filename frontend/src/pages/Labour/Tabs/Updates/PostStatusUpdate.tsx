@@ -11,7 +11,7 @@ import {
   LabourUpdateRequest,
   LabourUpdatesService,
   OpenAPI,
-} from '../../../../client';
+} from '../../../../clients/labour_service';
 import { useLabour } from '../../LabourContext';
 import classes from './LabourUpdates.module.css';
 

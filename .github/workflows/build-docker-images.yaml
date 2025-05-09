@@ -105,7 +105,8 @@ jobs:
       directory: frontend
       image-name: labour-tracker-frontend
       build-args: |
-        VITE_API_URL=${{ vars.VITE_API_URL }}
+        VITE_LABOUR_SERVICE_URL=${{ vars.VITE_LABOUR_SERVICE_URL }}
+        VITE_CONTACT_SERVICE_URL=${{ vars.VITE_CONTACT_SERVICE_URL }}
         VITE_KEYCLOAK_AUTHORITY=${{ vars.VITE_KEYCLOAK_AUTHORITY }}
         VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
         VITE_KEYCLOAK_METADATA_URL=${{ vars.VITE_KEYCLOAK_METADATA_URL }}

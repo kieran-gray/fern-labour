@@ -11,7 +11,7 @@ import {
   DeleteContractionRequest,
   OpenAPI,
   UpdateContractionRequest,
-} from '../../../../client';
+} from '../../../../clients/labour_service';
 import ConfirmActionModal from './ConfirmActionModal';
 import { ContractionData } from './ContractionTimeline';
 import modalClasses from '../../../../shared-components/Modal.module.css';

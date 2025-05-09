@@ -11,7 +11,7 @@ import {
   LabourDTO,
   OpenAPI,
   StartContractionRequest,
-} from '../../../../client';
+} from '../../../../clients/labour_service';
 import { useLabour } from '../../LabourContext';
 import { StopwatchHandle } from './Stopwatch/Stopwatch';
 

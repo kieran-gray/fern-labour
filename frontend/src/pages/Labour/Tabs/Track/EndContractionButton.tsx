@@ -11,7 +11,7 @@ import {
   EndContractionRequest,
   LabourDTO,
   OpenAPI,
-} from '../../../../client';
+} from '../../../../clients/labour_service';
 import { contractionDurationSeconds } from '../../../../shared-components/utils';
 
 export default function EndContractionButton({

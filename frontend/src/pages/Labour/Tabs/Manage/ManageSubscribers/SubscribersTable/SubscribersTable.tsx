@@ -1,5 +1,5 @@
 import { Avatar, Group, Table, Text } from '@mantine/core';
-import { SubscriptionDTO, UserSummaryDTO } from '../../../../../../client';
+import { SubscriptionDTO, UserSummaryDTO } from '../../../../../../clients/labour_service';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import baseClasses from '../../../../../../shared-components/shared-styles.module.css';
 import classes from './SubscribersTable.module.css';

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Group, Image, Space, Text, Title } from '@mantine/core';
-import { LabourService, OpenAPI } from '../../../../../client';
+import { LabourService, OpenAPI } from '../../../../../clients/labour_service';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { useLabour } from '../../../LabourContext';
 import { CopyButton } from '../CopyButton/CopyButton';

@@ -4,7 +4,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, Image, Text, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ApiError, CreateCheckoutRequest, OpenAPI, PaymentsService } from '../../../client';
+import {
+  ApiError,
+  CreateCheckoutRequest,
+  OpenAPI,
+  PaymentsService,
+} from '../../../clients/labour_service';
 import { useSubscription } from '../SubscriptionContext';
 import image from './ShareMore.svg';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
