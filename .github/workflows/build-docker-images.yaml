@@ -24,6 +24,7 @@ jobs:
       marketing: ${{ steps.filter.outputs.marketing }}
       keycloak: ${{ steps.filter.outputs.keycloak }}
       notification_service: ${{ steps.filter.outputs.notification_service }}
+      contact_service: ${{ steps.filter.outputs.contact_service }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,6 +43,8 @@ jobs:
               - 'keycloak/**'
             notification_service:
               - 'notification_service/**'
+            contact_service:
+              - 'contact_service/**'
 
   labour_service:
     needs: check-changes
