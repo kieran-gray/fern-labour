@@ -25,7 +25,6 @@ class MockConfigReader(ConfigReader):
                     "KEYCLOAK_CLIENT_SECRET": "ABC123",
                     "KEYCLOAK_ADMIN": "user",
                     "KEYCLOAK_ADMIN_PASSWORD": "pass",
-                    "JWT_ALGORITHM": "RS256",
                 },
             },
             "logging": {

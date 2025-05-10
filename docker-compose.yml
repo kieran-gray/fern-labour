@@ -269,8 +269,8 @@ services:
       context: ./frontend
       target: build-stage
       args:
-        - VITE_LABOUR_SERVICE_URL=http://localhost:8000
-        - VITE_CONTACT_SERVICE_URL=http://localhost:8002
+        - VITE_LABOUR_SERVICE_URL=${LABOUR_SERVICE_URL?unset}
+        - VITE_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
         - NODE_ENV=development
         - VITE_KEYCLOAK_AUTHORITY=${VITE_KEYCLOAK_AUTHORITY}
         - VITE_KEYCLOAK_METADATA_URL=${VITE_KEYCLOAK_METADATA_URL}
