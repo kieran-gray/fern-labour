@@ -1,0 +1,3 @@
+[submodule "fern-labour-marketing"]
+	path = fern-labour-marketing
+	url = git@github.com:kieran-gray/fern-labour-marketing.git

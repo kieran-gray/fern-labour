@@ -293,9 +293,9 @@ services:
       target: build-stage
       args:
         - NODE_ENV=development
-        - CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
-        - INSTAGRAM_URL=${INSTAGRAM_URL?unset}
-        - FRONTEND_URL=${FRONTEND_HOST?unset}
+        - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
+        - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
+        - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_HOST?unset}
     restart: "no"
     networks:
       - traefik-public

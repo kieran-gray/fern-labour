@@ -5,7 +5,6 @@ on:
     paths:
       - 'labour_service/**'
       - 'frontend/**'
-      - 'marketing/**'
       - 'keycloak/**'
       - 'notification_service/**'
       - 'contact_service/**'
@@ -21,7 +20,6 @@ jobs:
     outputs:
       labour_service: ${{ steps.filter.outputs.labour_service }}
       frontend: ${{ steps.filter.outputs.frontend }}
-      marketing: ${{ steps.filter.outputs.marketing }}
       keycloak: ${{ steps.filter.outputs.keycloak }}
       notification_service: ${{ steps.filter.outputs.notification_service }}
       contact_service: ${{ steps.filter.outputs.contact_service }}
@@ -37,8 +35,6 @@ jobs:
               - 'labour_service/**'
             frontend:
               - 'frontend/**'
-            marketing:
-              - 'marketing/**'
             keycloak:
               - 'keycloak/**'
             notification_service:
@@ -114,18 +110,6 @@ jobs:
         VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
         VITE_KEYCLOAK_METADATA_URL=${{ vars.VITE_KEYCLOAK_METADATA_URL }}
         VITE_POST_LOGOUT_REDIRECT=${{ vars.VITE_POST_LOGOUT_REDIRECT }}
-
-  marketing:
-    needs: check-changes
-    if: ${{ needs.check-changes.outputs.marketing == 'true' }}
-    uses: ./.github/workflows/build-and-push.yaml
-    with:
-      directory: marketing
-      image-name: labour-tracker-marketing
-      build-args: |
-        CONTACT_SERVICE_URL=${{ vars.CONTACT_SERVICE_URL }}
-        INSTAGRAM_URL=${{ vars.INSTAGRAM_URL }}
-        FRONTEND_URL=${{ vars.FRONTEND_URL }}
 
   keycloak:
     needs: check-changes
