@@ -16,7 +16,7 @@ from src.api.exception_handler import (
     ExceptionMessageProvider,
 )
 from src.api.routes.router_root import root_router
-from src.application.contact_service import ContactService
+from src.application.contact_message_service import ContactMessageService
 from src.infrastructure.security.request_verification.interface import (
     RequestVerificationService,
 )
@@ -156,8 +156,8 @@ class MockDefaultProvider(Provider):
         return auth_controller
 
     @provide()
-    def get_contact_service(self) -> ContactService:
-        service = MagicMock(spec=ContactService)
+    def get_contact_service(self) -> ContactMessageService:
+        service = MagicMock(spec=ContactMessageService)
         service.send_contact_email.return_value = None
         return service
 

@@ -6,10 +6,14 @@ export type Body_login_api_v1_auth_login_post = {
 };
 
 export type ContactUsRequest = {
+  category: string;
   email: string;
   name: string;
   message: string;
   token: string;
+  data?: {
+    [key: string]: unknown;
+  } | null;
   user_id?: string | null;
 };
 
@@ -66,6 +70,12 @@ export type ContactUsSendMessageApiV1ContactUsPostData = {
 };
 
 export type ContactUsSendMessageApiV1ContactUsPostResponse = void;
+
+export type ContactUsStoreApiV1ContactUsStorePostData = {
+  requestBody: ContactUsRequest;
+};
+
+export type ContactUsStoreApiV1ContactUsStorePostResponse = unknown;
 
 export type RedirectToDocsGetResponse = unknown;
 

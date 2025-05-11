@@ -276,6 +276,7 @@ services:
         - VITE_KEYCLOAK_METADATA_URL=${VITE_KEYCLOAK_METADATA_URL}
         - VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}
         - VITE_POST_LOGOUT_REDIRECT=${MARKETING_URL}
+        - VITE_CLOUDFLARE_SITEKEY=${CLOUDFLARE_SITEKEY}
     restart: "no"
     networks:
       - traefik-public
@@ -296,6 +297,7 @@ services:
         - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
         - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
         - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_URL?unset}
+        - NEXT_PUBLIC_CLOUDFLARE_SITEKEY=${CLOUDFLARE_SITEKEY?unset}
     restart: "no"
     networks:
       - traefik-public
@@ -306,6 +308,7 @@ services:
       - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
       - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_URL?unset}
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
+      - NEXT_PUBLIC_CLOUDFLARE_SITEKEY=${CLOUDFLARE_SITEKEY?unset}
     volumes:
       - ./marketing:/app
     command: [ "npm", "run", "dev" ]

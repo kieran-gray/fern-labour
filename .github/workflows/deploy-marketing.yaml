@@ -3,6 +3,9 @@ name: Deploy Marketing to Cloudflare Pages
 on:
   push:
     branches: ['main']
+    paths:
+      - 'marketing/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 jobs:
@@ -32,6 +35,7 @@ jobs:
           NEXT_PUBLIC_CONTACT_SERVICE_URL: ${{ vars.CONTACT_SERVICE_URL }}
           NEXT_PUBLIC_FRONTEND_URL: ${{ vars.FRONTEND_URL }}
           NEXT_PUBLIC_INSTAGRAM_URL: ${{ vars.INSTAGRAM_URL }}
+          NEXT_PUBLIC_CLOUDFLARE_SITEKEY: ${{ vars.CLOUDFLARE_SITEKEY }}
 
       - name: Publish
         uses: cloudflare/pages-action@v1

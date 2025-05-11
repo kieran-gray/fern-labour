@@ -3,6 +3,9 @@ name: Deploy Frontend to Cloudflare Pages
 on:
   push:
     branches: ['main']
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 jobs:
@@ -35,6 +38,7 @@ jobs:
           VITE_KEYCLOAK_METADATA_URL: ${{ vars.VITE_KEYCLOAK_METADATA_URL }}
           VITE_KEYCLOAK_CLIENT_ID: ${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
           VITE_POST_LOGOUT_REDIRECT: ${{ vars.MARKETING_URL }}
+          VITE_CLOUDFLARE_SITEKEY: ${{ vars.CLOUDFLARE_SITEKEY }}
 
       - name: Publish
         uses: cloudflare/pages-action@v1

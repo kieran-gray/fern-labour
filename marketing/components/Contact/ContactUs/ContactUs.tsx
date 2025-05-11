@@ -52,6 +52,7 @@ export function ContactUs() {
           name: values.name,
           message: values.message,
           token: turnstileToken,
+          category: 'other',
         }),
       });
 
@@ -128,7 +129,7 @@ export function ContactUs() {
           />
           <Space h={10} />
           <Turnstile
-            sitekey="0x4AAAAAAA-eKMn9GfnERlf2"
+            sitekey={process.env.NEXT_PUBLIC_CLOUDFLARE_SITEKEY || '1x00000000000000000000AA'}
             onVerify={(token) => setTurnstileToken(token)}
           />
           <Group justify="flex-end" mt="md">
