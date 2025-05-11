@@ -33,7 +33,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="Fern Labour" />
         <link rel="manifest" href="/favicon/site.webmanifest" />
-        <script defer data-domain="fernlabour.com" src="https://plausible.io/js/script.js" />
       </Head>
       <ResponsiveParticles />
       <main className={quicksand.className}>

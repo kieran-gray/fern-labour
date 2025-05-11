@@ -113,7 +113,7 @@ jobs:
         VITE_KEYCLOAK_AUTHORITY=${{ vars.VITE_KEYCLOAK_AUTHORITY }}
         VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
         VITE_KEYCLOAK_METADATA_URL=${{ vars.VITE_KEYCLOAK_METADATA_URL }}
-        VITE_POST_LOGOUT_REDIRECT=${{ vars.VITE_POST_LOGOUT_REDIRECT }}
+        VITE_POST_LOGOUT_REDIRECT=${{ vars.MARKETING_URL }}
 
   marketing:
     needs: check-changes
@@ -123,9 +123,9 @@ jobs:
       directory: marketing
       image-name: labour-tracker-marketing
       build-args: |
-        CONTACT_SERVICE_URL=${{ vars.CONTACT_SERVICE_URL }}
-        INSTAGRAM_URL=${{ vars.INSTAGRAM_URL }}
-        FRONTEND_URL=${{ vars.FRONTEND_URL }}
+        NEXT_PUBLIC_CONTACT_SERVICE_URL=${{ vars.CONTACT_SERVICE_URL }}
+        NEXT_PUBLIC_INSTAGRAM_URL=${{ vars.INSTAGRAM_URL }}
+        NEXT_PUBLIC_FRONTEND_URL=${{ vars.FRONTEND_URL }}
 
   keycloak:
     needs: check-changes

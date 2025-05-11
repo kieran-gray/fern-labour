@@ -269,13 +269,13 @@ services:
       context: ./frontend
       target: build-stage
       args:
-        - VITE_LABOUR_SERVICE_URL=http://localhost:8000
-        - VITE_CONTACT_SERVICE_URL=http://localhost:8002
+        - VITE_LABOUR_SERVICE_URL=${LABOUR_SERVICE_URL?unset}
+        - VITE_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
         - NODE_ENV=development
         - VITE_KEYCLOAK_AUTHORITY=${VITE_KEYCLOAK_AUTHORITY}
         - VITE_KEYCLOAK_METADATA_URL=${VITE_KEYCLOAK_METADATA_URL}
         - VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}
-        - VITE_POST_LOGOUT_REDIRECT=${VITE_POST_LOGOUT_REDIRECT}
+        - VITE_POST_LOGOUT_REDIRECT=${MARKETING_URL}
     restart: "no"
     networks:
       - traefik-public
@@ -293,9 +293,9 @@ services:
       target: build-stage
       args:
         - NODE_ENV=development
-        - CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
-        - INSTAGRAM_URL=${INSTAGRAM_URL?unset}
-        - FRONTEND_URL=${FRONTEND_HOST?unset}
+        - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
+        - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
+        - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_URL?unset}
     restart: "no"
     networks:
       - traefik-public
@@ -304,7 +304,7 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
-      - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_HOST?unset}
+      - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_URL?unset}
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
     volumes:
       - ./marketing:/app

@@ -10,8 +10,6 @@ KEYCLOAK_CLIENT_ID  = "labour_tracker_backend"
 KEYCLOAK_CLIENT_SECRET  = "changeme"
 KEYCLOAK_ADMIN = ""
 KEYCLOAK_ADMIN_PASSWORD = ""
-# JWT_ALGORITHM can be set to "HS256", "HS384", "HS512", "RS256", "RS384", "RS512"
-JWT_ALGORITHM = "HS256"
 
 [logging]
 # Level can be set to "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
