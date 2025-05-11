@@ -140,3 +140,4 @@ omit = [
     "**/api/**"
 ]
 show_missing = true
+fail_under = 100

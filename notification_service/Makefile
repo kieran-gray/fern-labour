@@ -68,7 +68,7 @@ add: ensure-token
 deps: ensure-token
 	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
 	UV_INDEX_FERN_LABOUR_PACKAGES_PASSWORD=${TOKEN} \
-	uv sync --all-groups --frozen
+	uv sync --all-groups
 
 update: ensure-token
 	UV_INDEX_FERN_LABOUR_PACKAGES_USERNAME=oauth2accesstoken \
