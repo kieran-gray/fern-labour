@@ -6,6 +6,8 @@ import { request as __request } from './core/request';
 import type {
   ContactUsSendMessageApiV1ContactUsPostData,
   ContactUsSendMessageApiV1ContactUsPostResponse,
+  ContactUsStoreApiV1ContactUsStorePostData,
+  ContactUsStoreApiV1ContactUsStorePostResponse,
   DocsDocsGetResponse,
   GetUserApiV1UserGetResponse,
   GetUserSummaryApiV1UserSummaryGetResponse,
@@ -62,6 +64,30 @@ export class ContactUsService {
     return __request(OpenAPI, {
       method: 'POST',
       url: '/api/v1/contact-us/',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        422: 'Validation Error',
+        429: 'Too Many Requests',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
+  /**
+   * Contact Us Store
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns unknown Successful Response
+   * @throws ApiError
+   */
+  public static contactUsStore(
+    data: ContactUsStoreApiV1ContactUsStorePostData
+  ): CancelablePromise<ContactUsStoreApiV1ContactUsStorePostResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/v1/contact-us/store',
       body: data.requestBody,
       mediaType: 'application/json',
       errors: {

@@ -48,6 +48,7 @@ export function ContactUs() {
         message: values.message,
         token: turnstileToken!,
         user_id: auth.user?.profile.sub,
+        category: 'other',
       };
       await ContactUsService.contactUsSendMessage({ requestBody });
     },
@@ -136,7 +137,7 @@ export function ContactUs() {
               />
               <Space h={10} />
               <Turnstile
-                sitekey="0x4AAAAAAA-eKMn9GfnERlf2"
+                sitekey={import.meta.env.VITE_CLOUDFLARE_SITEKEY || '1x00000000000000000000AA'}
                 onVerify={(token) => setTurnstileToken(token)}
               />
               <Group justify="flex-end" mt="md">
