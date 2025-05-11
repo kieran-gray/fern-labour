@@ -3,6 +3,9 @@ name: Deploy Marketing to Cloudflare Pages
 on:
   push:
     branches: ['main']
+    paths:
+      - 'marketing/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 jobs:
