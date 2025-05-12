@@ -1,0 +1,27 @@
+.input {
+  background-color: var(--mantine-color-white);
+  border-color: var(--mantine-color-gray-4);
+  color: var(--mantine-color-black);
+
+  &::placeholder {
+    color: var(--mantine-color-gray-5);
+  }
+
+  &:focus{
+    border-color: var(--mantine-color-pink-2);
+  }
+}
+
+.modalHeader {
+  padding: 12px 16px;
+  padding-bottom: 0px;
+  min-height: 0px;
+}
+
+.inputLabel {
+  color: var(--mantine-color-black);
+}
+
+.control {
+  background-color: var(--mantine-color-pink-5);
+}
