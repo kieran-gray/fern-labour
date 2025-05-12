@@ -4,7 +4,7 @@ services:
     image: '${DOCKER_IMAGE_LABOUR_SERVICE?unset}:latest'
     build:
       context: ./labour_service
-      target: development
+      target: http
       secrets:
         - artifact_registry_token
     restart: "no"
@@ -24,8 +24,6 @@ services:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
     ports:
       - "8000:8000"
-      - "5678:5678"
-    command: [ "debugpy", "--listen", "0.0.0.0:5678", "-m", "src.run" ]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
       interval: 30s
@@ -191,6 +189,23 @@ services:
       - ./notification_service/.env
     environment:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
+    depends_on:
+      pub-sub-emulator:
+        condition: service_healthy
+        restart: true
+    command: [ "python", "-m", "src.run_consumer" ]
+    networks:
+      - default
+
+  contact-consumer:
+    image: '${DOCKER_IMAGE_CONTACT_SERVICE?unset}:latest'
+    restart: "no"
+    env_file:
+      - ./contact_service/.env
+    environment:
+      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
+    ports:
+      - "5678:5678"
     depends_on:
       pub-sub-emulator:
         condition: service_healthy

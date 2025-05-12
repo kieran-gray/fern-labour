@@ -4,6 +4,7 @@ from src.domain.contact_message_id import ContactMessageId
 from src.domain.entity import ContactMessage
 from src.infrastructure.persistence.orm_registry import mapper_registry
 from src.infrastructure.persistence.table import contact_messages_table
+from src.user.domain.value_objects.user_id import UserId
 
 
 def map_contact_messages_table() -> None:
@@ -17,7 +18,7 @@ def map_contact_messages_table() -> None:
             "name": contact_messages_table.c.name,
             "message": contact_messages_table.c.message,
             "data": contact_messages_table.c.data,
-            "user_id": contact_messages_table.c.user_id,
+            "user_id": composite(UserId, contact_messages_table.c.user_id),
         },
         column_prefix="_",
     )

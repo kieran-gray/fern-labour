@@ -158,7 +158,7 @@ class MockDefaultProvider(Provider):
     @provide()
     def get_contact_service(self) -> ContactMessageService:
         service = MagicMock(spec=ContactMessageService)
-        service.send_contact_email.return_value = None
+        service.create_message.return_value = None
         return service
 
     @provide()

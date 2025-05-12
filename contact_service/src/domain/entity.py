@@ -6,7 +6,7 @@ from fern_labour_core.aggregate_root import AggregateRoot
 
 from src.domain.contact_message_id import ContactMessageId
 from src.domain.enums import ContactMessageCategory
-from src.domain.events import ContactMessageSubmitted
+from src.domain.events import ContactMessageCreated
 from src.user.domain.value_objects.user_id import UserId
 
 
@@ -42,6 +42,6 @@ class ContactMessage(AggregateRoot[ContactMessageId]):
             user_id=user_id,
         )
         contact_message.add_domain_event(
-            ContactMessageSubmitted.create(data={"contact_message_id": str(contact_message_id)})
+            ContactMessageCreated.create(data={"contact_message_id": str(contact_message_id)})
         )
         return contact_message

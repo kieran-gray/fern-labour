@@ -50,8 +50,6 @@ class ConsumerRunner:
         self._consumer = consumer
         if hasattr(self._consumer, "set_container"):
             self._consumer.set_container(container)
-        if hasattr(self._consumer, "set_event_handler_component"):
-            self._consumer.set_event_handler_component(ComponentEnum.NOTIFICATION_EVENTS.value)
         self._should_exit = asyncio.Event()
         self._task_manager: TaskManager = TaskManager()
 

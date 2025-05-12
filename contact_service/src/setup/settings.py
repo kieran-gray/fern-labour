@@ -103,6 +103,8 @@ class DbSettings(BaseModel):
 class GCPSettings(BaseModel):
     project_id: str = Field(alias="GCP_PROJECT_ID")
     retries: int = Field(alias="GCP_PRODUCER_RETRIES", default=3)
+    consumer_mode: str = Field(alias="GCP_PUB_SUB_CONSUMER_MODE")
+    max_batch_size: int = Field(alias="GCP_PUB_SUB_CONSUMER_MAX_BATCH_SIZE")
 
 
 class EventSettings(BaseModel):
