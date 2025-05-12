@@ -7,6 +7,7 @@ import my1styears_desktop from './ads/my1styears/desktop.jpg';
 import my1styears_main from './ads/my1styears/main.webp';
 import powfood_main from './ads/powfood/main.jpg';
 import wildly_tasty_main from './ads/wildlytasty/main.webp';
+import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
 import image from './Gifts.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Updates/LabourUpdates.module.css';
@@ -38,6 +39,30 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
         />
       ),
       url: 'https://tidd.ly/3EL2r6X',
+    },
+    {
+      title: 'Pure Earth Collection',
+      subtitle: 'Natural, Non-Toxic Products for Growing Families',
+      text: `From baby sleepwear to eco-friendly lunchboxes, Pure Earth Collection offers beautifully designed products made with your child’s health and the planet in mind.
+  Created by parents, for parents, their award-winning range uses only natural, biodegradable materials, completely free from harmful chemicals. It’s a thoughtful choice for anyone wanting safer, more sustainable essentials as little ones grow.`,
+      note: '👉 A meaningful way to say: “Healthy kids, healthy planet.”',
+      mobileImage: (
+        <Image
+          hiddenFrom="md"
+          src={pure_earth_collection_main}
+          alt="Pure Earth Collection"
+          style={{ maxHeight: '250px', maxWidth: '400px', width: '100%', margin: 'auto' }}
+        />
+      ),
+      desktopImage: (
+        <Image
+          visibleFrom="md"
+          src={pure_earth_collection_main}
+          alt="Pure Earth Collection"
+          style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+        />
+      ),
+      url: 'https://tidd.ly/436fwA0',
     },
     {
       title: 'Don’t Buy Her Flowers',
@@ -138,7 +163,6 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
                   direction={{ base: 'column', md: index % 2 === 0 ? 'row' : 'row-reverse' }}
                   gap="xl"
                   align="center"
-                  mt="xl"
                 >
                   <Box style={{ flexGrow: 1, width: '100%' }}>{gift.desktopImage}</Box>
                   <Box>
