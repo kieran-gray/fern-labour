@@ -1,5 +1,9 @@
+from unittest.mock import AsyncMock
+
 import pytest_asyncio
 
+from src.application.contact_message_query_service import ContactMessageQueryService
+from src.application.contact_message_service import ContactMessageService
 from src.domain.contact_message_id import ContactMessageId
 from src.domain.entity import ContactMessage
 from src.domain.repository import ContactMessageRepository
@@ -57,6 +61,11 @@ async def user_repo() -> UserRepository:
 
 
 @pytest_asyncio.fixture
+async def user_service(user_repo: UserRepository) -> UserQueryService:
+    return UserQueryService(user_repository=user_repo)
+
+
+@pytest_asyncio.fixture
 async def contact_message_repo() -> ContactMessageRepository:
     repo = MockContactMessageRepository()
     repo._data = {}
@@ -64,5 +73,17 @@ async def contact_message_repo() -> ContactMessageRepository:
 
 
 @pytest_asyncio.fixture
-async def user_service(user_repo: UserRepository) -> UserQueryService:
-    return UserQueryService(user_repository=user_repo)
+async def contact_message_service(
+    contact_message_repo: ContactMessageRepository,
+) -> ContactMessageService:
+    return ContactMessageService(
+        contact_message_repository=contact_message_repo,
+        event_producer=AsyncMock(),
+    )
+
+
+@pytest_asyncio.fixture
+async def contact_message_query_service(
+    contact_message_repo: ContactMessageRepository,
+) -> ContactMessageQueryService:
+    return ContactMessageQueryService(contact_message_repository=contact_message_repo)

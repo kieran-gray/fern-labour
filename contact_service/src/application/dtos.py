@@ -31,6 +31,7 @@ class ContactMessageDTO:
             "id": self.id,
             "category": self.category,
             "email": self.email,
+            "name": self.name,
             "message": self.message,
             "data": self.data,
             "user_id": self.user_id,

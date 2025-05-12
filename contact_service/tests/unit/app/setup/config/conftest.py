@@ -53,7 +53,11 @@ class MockConfigReader(ConfigReader):
                 },
             },
             "events": {
-                "gcp": {"GCP_PROJECT_ID": "test"},
+                "gcp": {
+                    "GCP_PROJECT_ID": "test",
+                    "GCP_PUB_SUB_CONSUMER_MODE": "unary_pull",
+                    "GCP_PUB_SUB_CONSUMER_MAX_BATCH_SIZE": 50,
+                },
             },
         }
 

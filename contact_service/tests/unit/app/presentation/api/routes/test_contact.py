@@ -17,7 +17,7 @@ def test_contact_us_send_message(
         },
     )
 
-    assert response.status_code == 204
+    assert response.status_code == 201
 
 
 def test_contact_us_send_message_missing_data(client: TestClient) -> None:
