@@ -75,18 +75,11 @@ const ResponsiveParticles = () => {
             size: {
               value: particleConfig.particles.size.value,
             },
-            line_linked: {
-              enable: true,
-              distance: 150,
-              color: '#ffffff',
-              opacity: 0.4,
-              width: 1,
-            },
             move: {
               enable: true,
               speed: 0.5,
               direction: 'none',
-              random: false,
+              random: true,
               straight: false,
               attract: { enable: false },
             },
@@ -97,7 +90,6 @@ const ResponsiveParticles = () => {
               onClick: { enable: true, mode: 'repulse' },
             },
             modes: {
-              grab: { distance: 400, line_linked: { opacity: 1 } },
               bubble: {
                 distance: 300,
                 size: particleConfig.particles.size.value * 0.8,
@@ -105,9 +97,7 @@ const ResponsiveParticles = () => {
                 opacity: 1,
                 speed: 0.1,
               },
-              repulse: { distance: 200, duration: 0.4 },
-              push: { particles_nb: 4 },
-              remove: { particles_nb: 2 },
+              repulse: { distance: 200, duration: 0.5 },
             },
           },
           retina_detect: true,

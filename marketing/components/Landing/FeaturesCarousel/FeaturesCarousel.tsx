@@ -7,13 +7,13 @@ import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesCarousel.module.css';
 
 const images = [
-  'images/features/01.webp',
-  'images/features/02.webp',
-  'images/features/03.webp',
-  'images/features/04.webp',
-  'images/features/05.webp',
-  'images/features/06.webp',
-  'images/features/07.webp',
+  { src: 'images/features/01.webp', alt: 'Fern Labour Tracker home screen' },
+  { src: 'images/features/02.webp', alt: 'Fern Labour Tracker contraction tracker' },
+  { src: 'images/features/03.webp', alt: 'Fern Labour Tracker status updates' },
+  { src: 'images/features/04.webp', alt: 'Fern Labour Tracker statistics' },
+  { src: 'images/features/05.webp', alt: 'Fern Labour Tracker invites' },
+  { src: 'images/features/06.webp', alt: 'Fern Labour Tracker security' },
+  { src: 'images/features/07.webp', alt: 'Fern Labour Tracker announcements' },
 ];
 
 export function FeaturesCarousel() {
@@ -35,9 +35,9 @@ export function FeaturesCarousel() {
         align="start"
         pos="relative"
       >
-        {images.map((src) => (
-          <Carousel.Slide>
-            <Image src={src} className={classes.image} />
+        {images.map((imageData) => (
+          <Carousel.Slide id={imageData.alt}>
+            <Image src={imageData.src} className={classes.image} alt={imageData.alt} />
           </Carousel.Slide>
         ))}
       </Carousel>

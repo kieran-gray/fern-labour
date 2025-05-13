@@ -7,7 +7,7 @@ export function FaqWithImage() {
       <Container size="lg" className={classes.container} id="#faqs">
         <Grid id="faq-grid" gutter={50}>
           <Grid.Col span={{ base: 12, sm: 6 }}>
-            <Image src="images/FAQ.svg" className={classes.bigImage} />
+            <Image src="images/FAQ.svg" className={classes.bigImage} alt="Question mark" />
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Title order={1} ta="left" className={classes.title}>
