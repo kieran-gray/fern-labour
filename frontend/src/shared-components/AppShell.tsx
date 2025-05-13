@@ -1,5 +1,4 @@
 import { Center, Space } from '@mantine/core';
-import { FooterSimple } from './Footer/Footer';
 import { Header } from './Header/Header';
 
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
@@ -15,9 +14,8 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     >
       <Header />
       <Center flex="shrink">{children}</Center>
-      <Space h="xl" />
+      <Space h="md" />
       <div style={{ flexGrow: 1 }} />
-      <FooterSimple />
     </div>
   );
 };
