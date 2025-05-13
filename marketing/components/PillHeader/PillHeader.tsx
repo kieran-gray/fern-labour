@@ -205,6 +205,7 @@ export const Header01 = ({
             px="lg"
             h="100%"
             align="center"
+            style={{ overflow: 'hidden' }}
             wrap="nowrap"
             visibleFrom={breakpoint}
             gap="lg"
