@@ -21,7 +21,7 @@ export default function App({ Component, pageProps }: AppProps) {
         />
         <meta
           name="description"
-          content="Fern Labour: Plan your labour, Track your Contractions, and keep friends and family up-to-date in one app"
+          content="Fern Labour: Effortlessly plan and track your labour with our app. Monitor contractions and share updates with loved ones seamlessly. No download required!"
         />
         <meta
           name="keywords"
