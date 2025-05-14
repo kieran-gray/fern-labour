@@ -1,4 +1,4 @@
-import { IconDotsVertical, IconTrash } from '@tabler/icons-react';
+import { IconDots, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
@@ -43,8 +43,8 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
   return (
     <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
       <Menu.Target>
-        <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
-          <IconDotsVertical size={16} stroke={1.5} />
+        <ActionIcon variant="subtle" color="#24968b">
+          <IconDots size={16} stroke={1.5} />
         </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
