@@ -65,7 +65,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
     },
     onSuccess: async (labour, variables) => {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-      const message = variables.existing ? 'Labour Plan Updated' : "Labour Planned";
+      const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';
       notifications.show({
         title: 'Success',
         message,

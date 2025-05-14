@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { IconPencil,  } from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
 import { Image, ScrollArea, Text, TextInput } from '@mantine/core';
 import { LabourDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from './image.svg';
+import { LabourUpdate } from './LabourUpdate';
 import MakeAnnouncementButton from './MakeAnnouncement';
 import { PostStatusUpdateButton } from './PostStatusUpdate';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourUpdates.module.css';
-import { LabourUpdate } from './LabourUpdate';
 
 export function LabourUpdates({ labour }: { labour: LabourDTO }) {
   const [update, setUpdate] = useState('');
@@ -22,7 +22,7 @@ export function LabourUpdates({ labour }: { labour: LabourDTO }) {
 
   const labourUpdateDisplay = useMemo(() => {
     return labourUpdates.map((data) => {
-      return <LabourUpdate data={data} completed={completed} owner />
+      return <LabourUpdate data={data} completed={completed} owner />;
     });
   }, [labourUpdates, userName, completed]);
 
@@ -43,7 +43,7 @@ export function LabourUpdates({ labour }: { labour: LabourDTO }) {
     'Share updates here to let your subscribers know how you are getting on. Making an announcement will send your update to your subscribers by their preferred methods.';
 
   return (
-    <div className={baseClasses.root} style={{maxHeight: "calc(80% - 120px)"}}>
+    <div className={baseClasses.root} style={{ maxHeight: 'calc(80% - 120px)' }}>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>

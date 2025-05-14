@@ -4,9 +4,9 @@ import { LabourDTO, UserSummaryDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '../../../../shared-components/utils';
+import { LabourUpdate } from '../../../Labour/Tabs/Updates/LabourUpdate';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Updates/LabourUpdates.module.css';
-import { LabourUpdate } from '../../../Labour/Tabs/Updates/LabourUpdate';
 
 export function StatusUpdates({
   labour,
@@ -34,7 +34,7 @@ export function StatusUpdates({
   const completedDescription = `Here's where ${birthingPerson.first_name} kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`;
 
   return (
-    <div className={baseClasses.root} style={{maxHeight: "calc(85% - 120px)"}}>
+    <div className={baseClasses.root} style={{ maxHeight: 'calc(85% - 120px)' }}>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
