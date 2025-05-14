@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { IconCheck, IconInfoCircle, IconMessageQuestion } from '@tabler/icons-react';
+import { IconCheck, IconMessageQuestion } from '@tabler/icons-react';
 import Turnstile from 'react-turnstile';
 import {
   ActionIcon,
   Affix,
-  Alert,
   Button,
   Checkbox,
   Container,
@@ -35,12 +34,10 @@ export function ContactMessageFloating() {
   const [opened, { open, close }] = useDisclosure(false);
   const [showNotification, setShowNotification] = useState(false);
   const [showContactButton, setShowContactButton] = useState(true);
-  const [status, setStatus] = useState({ type: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [rating, setRating] = useState(5);
   const [checked, setChecked] = useState(false);
-  const icon = <IconInfoCircle />;
   const form = useForm({
     initialValues: {
       category: 'error_report',
@@ -58,7 +55,6 @@ export function ContactMessageFloating() {
 
   const handleSubmit = async (values: typeof form.values) => {
     setIsLoading(true);
-    setStatus({ type: '', message: '' });
     let data = {};
     if (values.category === 'testimonial') {
       data = { rating, consent: checked };
@@ -136,20 +132,6 @@ export function ContactMessageFloating() {
             Give us your thoughts
           </Title>
           <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-            {status.type && (
-              <Alert
-                variant="light"
-                color={status.type === 'success' ? 'green' : 'red'}
-                radius="md"
-                title={status.type}
-                icon={icon}
-                mb={10}
-                withCloseButton
-                onClose={() => setStatus({ type: '', message: '' })}
-              >
-                {status.message}
-              </Alert>
-            )}
             <Group>
               <Text>This is</Text>
               <Select
@@ -235,12 +217,7 @@ export function ContactMessageFloating() {
               <Button variant="transparent" radius="lg" onClick={close} disabled={isLoading}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className={classes.control}
-                radius="lg"
-                disabled={isLoading || status.type === 'success'}
-              >
+              <Button type="submit" className={classes.control} radius="lg" disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Submit'}
               </Button>
             </Group>

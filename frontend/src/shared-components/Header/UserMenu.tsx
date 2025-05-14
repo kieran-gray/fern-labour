@@ -4,6 +4,7 @@ import {
   IconChevronRight,
   IconHistory,
   IconLogout,
+  IconMessageCircleQuestion,
   IconPassword,
   IconSettings,
   IconSwitchHorizontal,
@@ -65,7 +66,7 @@ export function UserMenu() {
               >
                 Switch to {switchToMode} mode
               </Menu.Item>
-              {mode === AppMode.Birth && pathname === '/history' && (
+              {mode === AppMode.Birth && ['/history', '/contact'].includes(pathname) && (
                 <Menu.Item
                   leftSection={<IconArrowLeft size={16} stroke={1.5} />}
                   onClick={() => navigate('/')}
@@ -79,6 +80,14 @@ export function UserMenu() {
                   onClick={() => navigate('/history')}
                 >
                   Your Labour History
+                </Menu.Item>
+              )}
+              {pathname !== '/contact' && (
+                <Menu.Item
+                  leftSection={<IconMessageCircleQuestion size={16} stroke={1.5} />}
+                  onClick={() => navigate('/contact')}
+                >
+                  Contact Us
                 </Menu.Item>
               )}
             </>
@@ -149,7 +158,7 @@ export function MobileUserMenu() {
           >
             Switch to {switchToMode} Mode
           </Anchor>
-          {mode === AppMode.Birth && pathname === '/history' && (
+          {mode === AppMode.Birth && ['/history', '/contact'].includes(pathname) && (
             <Anchor<'a'> key="history" onClick={() => navigate('/')} className={classes.mainLink}>
               Go to your labour
             </Anchor>
@@ -161,6 +170,15 @@ export function MobileUserMenu() {
               className={classes.mainLink}
             >
               Your Labour History
+            </Anchor>
+          )}
+          {pathname !== '/contact' && (
+            <Anchor<'a'>
+              key="contact"
+              onClick={() => navigate('/contact')}
+              className={classes.mainLink}
+            >
+              Contact Us
             </Anchor>
           )}
           <Space h="xl" />
