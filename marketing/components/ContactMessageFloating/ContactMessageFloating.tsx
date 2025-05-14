@@ -171,7 +171,6 @@ export function ContactMessageFloating() {
               placeholder={getTextAreaPlaceholder(form.values)}
               minRows={5}
               maxRows={8}
-              data-autofocus
               autosize
               mt="md"
               classNames={{ input: classes.input, label: classes.inputLabel }}
