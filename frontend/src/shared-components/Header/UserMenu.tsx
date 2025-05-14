@@ -1,7 +1,6 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import {
   IconArrowLeft,
-  IconChevronRight,
   IconHistory,
   IconLogout,
   IconMessageCircleQuestion,
@@ -12,7 +11,15 @@ import {
 } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
-import { Anchor, Avatar, Group, Menu, Space, Text, UnstyledButton } from '@mantine/core';
+import {
+  Avatar,
+  Button,
+  Group,
+  SegmentedControl,
+  Space,
+  Text,
+  UnstyledButton,
+} from '@mantine/core';
 import { AppMode, useMode } from '../../pages/Home/SelectAppMode';
 import classes from './Header.module.css';
 
@@ -37,198 +44,167 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
   )
 );
 
-export function UserMenu() {
-  const auth = useAuth();
-  const navigate = useNavigate();
-  const { mode, setMode } = useMode();
-  const pathname = window.location.pathname;
-  const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
-
-  return (
-    <Group justify="center">
-      <Menu withArrow position="bottom" transitionProps={{ transition: 'pop' }} withinPortal>
-        <Menu.Target>
-          <UserButton
-            name={auth.user?.profile.name ?? ''}
-            icon={<IconChevronRight size={16} color="var(--mantine-color-white)" />}
-          />
-        </Menu.Target>
-        <Menu.Dropdown>
-          {mode !== null && (
-            <>
-              <Menu.Label>Current Mode: {mode}</Menu.Label>
-              <Menu.Item
-                leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}
-                onClick={() => {
-                  setMode(switchToMode);
-                  navigate('/');
-                }}
-              >
-                Switch to {switchToMode} mode
-              </Menu.Item>
-              {mode === AppMode.Birth && ['/history', '/contact'].includes(pathname) && (
-                <Menu.Item
-                  leftSection={<IconArrowLeft size={16} stroke={1.5} />}
-                  onClick={() => navigate('/')}
-                >
-                  Go to your labour
-                </Menu.Item>
-              )}
-              {mode === AppMode.Birth && pathname !== '/history' && (
-                <Menu.Item
-                  leftSection={<IconHistory size={16} stroke={1.5} />}
-                  onClick={() => navigate('/history')}
-                >
-                  Your Labour History
-                </Menu.Item>
-              )}
-              {pathname !== '/contact' && (
-                <Menu.Item
-                  leftSection={<IconMessageCircleQuestion size={16} stroke={1.5} />}
-                  onClick={() => navigate('/contact')}
-                >
-                  Contact Us
-                </Menu.Item>
-              )}
-            </>
-          )}
-          <Menu.Label>Account Settings</Menu.Label>
-          <Menu.Item
-            leftSection={<IconSettings size={16} stroke={1.5} />}
-            onClick={() => {
-              auth.signinRedirect({ extraQueryParams: { kc_action: 'UPDATE_PROFILE' } });
-            }}
-          >
-            Update Profile
-          </Menu.Item>
-          <Menu.Item
-            leftSection={<IconPassword size={16} stroke={1.5} />}
-            onClick={() => {
-              auth.signinRedirect({ extraQueryParams: { kc_action: 'UPDATE_PASSWORD' } });
-            }}
-          >
-            Change Password
-          </Menu.Item>
-          <Menu.Item
-            leftSection={<IconLogout size={16} stroke={1.5} />}
-            onClick={() => {
-              void auth.signoutRedirect();
-            }}
-          >
-            Logout
-          </Menu.Item>
-
-          <Menu.Divider />
-
-          <Menu.Label>Danger zone</Menu.Label>
-          <Menu.Item
-            color="red"
-            leftSection={<IconTrash size={16} stroke={1.5} />}
-            onClick={() => {
-              auth.signinRedirect({ extraQueryParams: { kc_action: 'delete_account' } });
-            }}
-          >
-            Delete account
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
-    </Group>
-  );
-}
-
 export function MobileUserMenu() {
+  const [section, setSection] = useState<'app' | 'account'>('app');
   const auth = useAuth();
   const navigate = useNavigate();
   const pathname = window.location.pathname;
   const { mode, setMode } = useMode();
   const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
 
-  return (
+  const appSettings = (
     <>
       {mode !== null && (
-        <>
-          <Text className={classes.drawerLabel}>Current Mode: {mode}</Text>
-          <Anchor<'a'>
+        <Group>
+          <Space h="xs" />
+          <Button
             key="update"
             className={classes.mainLink}
             onClick={() => {
               setMode(switchToMode);
               navigate('/');
             }}
+            leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}
+            size="md"
+            w="100%"
+            variant="transparent"
           >
             Switch to {switchToMode} Mode
-          </Anchor>
+          </Button>
           {mode === AppMode.Birth && ['/history', '/contact'].includes(pathname) && (
-            <Anchor<'a'> key="history" onClick={() => navigate('/')} className={classes.mainLink}>
+            <Button
+              key="history"
+              onClick={() => navigate('/')}
+              leftSection={<IconArrowLeft size={16} stroke={1.5} />}
+              className={classes.mainLink}
+              size="md"
+              w="100%"
+              variant="transparent"
+            >
               Go to your labour
-            </Anchor>
+            </Button>
           )}
           {mode === AppMode.Birth && pathname !== '/history' && (
-            <Anchor<'a'>
+            <Button
               key="labour"
               onClick={() => navigate('/history')}
               className={classes.mainLink}
+              leftSection={<IconHistory size={16} stroke={1.5} />}
+              size="md"
+              w="100%"
+              variant="transparent"
             >
               Your Labour History
-            </Anchor>
+            </Button>
           )}
-          {pathname !== '/contact' && (
-            <Anchor<'a'>
-              key="contact"
-              onClick={() => navigate('/contact')}
-              className={classes.mainLink}
-            >
-              Contact Us
-            </Anchor>
-          )}
-          <Space h="xl" />
-        </>
+        </Group>
       )}
-      <Text className={classes.drawerLabel}>Account Settings</Text>
-      <Anchor<'a'>
-        key="update"
-        className={classes.mainLink}
-        onClick={(event) => {
-          event.preventDefault();
-          auth.signinRedirect({ extraQueryParams: { kc_action: 'UPDATE_PROFILE' } });
-        }}
-      >
-        Update Profile
-      </Anchor>
-      <Anchor<'a'>
-        key="password"
-        className={classes.mainLink}
-        onClick={(event) => {
-          event.preventDefault();
-          auth.signinRedirect({ extraQueryParams: { kc_action: 'UPDATE_PASSWORD' } });
-        }}
-      >
-        Change Password
-      </Anchor>
-      <Anchor<'a'>
-        key="logout"
-        className={classes.mainLink}
-        onClick={(event) => {
-          event.preventDefault();
-          void auth.signoutRedirect();
-        }}
-      >
-        Logout
-      </Anchor>
-      <Space h="xl" />
-      <Text className={classes.drawerLabel}>Danger Zone</Text>
-      <Anchor<'a'>
-        key="delete"
-        className={classes.mainLink}
-        onClick={(event) => {
-          event.preventDefault();
-          auth.signinRedirect({ extraQueryParams: { kc_action: 'delete_account' } });
-        }}
-        c="var(--mantine-color-pink-8)"
-      >
-        Delete Account
-      </Anchor>
-      <Space h="xl" />
     </>
+  );
+
+  const accountSettings = (
+    <>
+      <Group>
+        <Space h="xs" />
+        <Button
+          key="update"
+          className={classes.mainLink}
+          onClick={(event) => {
+            event.preventDefault();
+            auth.signinRedirect({ extraQueryParams: { kc_action: 'UPDATE_PROFILE' } });
+          }}
+          leftSection={<IconSettings size={16} stroke={1.5} />}
+          size="md"
+          w="100%"
+          variant="transparent"
+        >
+          Update Profile
+        </Button>
+        <Button
+          key="password"
+          className={classes.mainLink}
+          onClick={(event) => {
+            event.preventDefault();
+            auth.signinRedirect({ extraQueryParams: { kc_action: 'UPDATE_PASSWORD' } });
+          }}
+          leftSection={<IconPassword size={16} stroke={1.5} />}
+          size="md"
+          w="100%"
+          variant="transparent"
+        >
+          Change Password
+        </Button>
+        <Button
+          key="delete"
+          className={classes.mainLink}
+          onClick={(event) => {
+            event.preventDefault();
+            auth.signinRedirect({ extraQueryParams: { kc_action: 'delete_account' } });
+          }}
+          leftSection={<IconTrash size={16} stroke={1.5} />}
+          size="md"
+          w="100%"
+          variant="transparent"
+        >
+          Delete Account
+        </Button>
+      </Group>
+    </>
+  );
+
+  const links = section === 'app' ? appSettings : accountSettings;
+
+  return (
+    <div className={classes.linksDrawer}>
+      <SegmentedControl
+        value={section}
+        onChange={(value: any) => setSection(value)}
+        transitionTimingFunction="ease"
+        fullWidth
+        data={[
+          { label: 'App', value: 'app' },
+          { label: 'Account Settings', value: 'account' },
+        ]}
+        radius="lg"
+        mt={0}
+        color="var(--mantine-color-pink-4)"
+        styles={{ root: { backgroundColor: 'var(--mantine-color-pink-0)' } }}
+      />
+
+      {links}
+
+      <div style={{ flexGrow: 1 }} />
+      <div className={classes.footer}>
+        <UserButton name={auth.user?.profile.name ?? ''} />
+        <Button
+          key="logout"
+          className={classes.mainLink}
+          onClick={(event) => {
+            event.preventDefault();
+            void auth.signoutRedirect();
+          }}
+          size="md"
+          w="100%"
+          variant="transparent"
+          leftSection={<IconLogout size={16} stroke={1.5} />}
+        >
+          Logout
+        </Button>
+        {pathname !== '/contact' && (
+          <Button
+            key="contact"
+            onClick={() => navigate('/contact')}
+            className={classes.mainLink}
+            leftSection={<IconMessageCircleQuestion size={16} stroke={1.5} />}
+            size="md"
+            w="100%"
+            variant="transparent"
+            mt={10}
+          >
+            Contact Us
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }
