@@ -35,8 +35,8 @@
   .form {
     background-color: var(--mantine-color-white);
     padding: var(--mantine-spacing-xl);
-    border-radius: var(--mantine-radius-md);
-    box-shadow: var(--mantine-shadow-lg);
+    border-radius: var(--mantine-radius-lg);
+    box-shadow: var(--mantine-shadow-sm);
   }
   
   .social {

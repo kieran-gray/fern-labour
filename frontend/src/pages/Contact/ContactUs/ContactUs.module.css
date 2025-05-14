@@ -25,10 +25,9 @@
   }
   
   .form {
-    background-color: var(--mantine-color-pink-0);
     padding: var(--mantine-spacing-xl);
-    border-radius: var(--mantine-radius-md);
-    box-shadow: var(--mantine-shadow-lg);
+    border-radius: var(--mantine-radius-lg);
+    border: 1px solid var(--mantine-color-pink-1);
   }
   
   .social {
