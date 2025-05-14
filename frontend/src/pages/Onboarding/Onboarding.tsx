@@ -1,4 +1,3 @@
-import { IconPencil } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Stepper } from '@mantine/core';
@@ -65,15 +64,10 @@ export const OnboardingPage = () => {
                     step: classes.stepperStep,
                     stepLabel: classes.stepperStepLabel,
                     stepDescription: classes.stepperStepDescription,
-                    content: classes.stepperContent,
                     stepIcon: classes.stepperStepIcon,
                   }}
                 >
-                  <Stepper.Step
-                    icon={<IconPencil size={18} />}
-                    label="Your Labour Details"
-                    description=""
-                  >
+                  <Stepper.Step>
                     <Plan labour={labour} />
                   </Stepper.Step>
                 </Stepper>
