@@ -34,9 +34,7 @@ export default function ConfirmAnnouncementModal({
       title="Make Announcement?"
     >
       <Space h="lg" />
-      <Text className={classes.modalText}>
-        Are you sure you want to make the following announcement to your subscribers?
-      </Text>
+      <Text className={classes.modalText}>You can't delete an announcement.</Text>
       <div className={classes.modalInnerTextContainer}>
         <Text className={classes.modalInnerText}>{message}</Text>
       </div>

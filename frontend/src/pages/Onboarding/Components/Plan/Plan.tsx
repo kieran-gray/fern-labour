@@ -63,8 +63,15 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
       }
       return response.labour;
     },
-    onSuccess: async (labour) => {
+    onSuccess: async (labour, variables) => {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
+      const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';
+      notifications.show({
+        title: 'Success',
+        message,
+        radius: 'lg',
+        color: 'green',
+      });
     },
     onError: async (error) => {
       notifications.show({

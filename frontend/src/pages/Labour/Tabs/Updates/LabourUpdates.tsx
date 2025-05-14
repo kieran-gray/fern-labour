@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { IconPencil, IconSpeakerphone } from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
-import { Avatar, Group, Image, LoadingOverlay, ScrollArea, Text, TextInput } from '@mantine/core';
+import { Image, ScrollArea, Text, TextInput } from '@mantine/core';
 import { LabourDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from './image.svg';
+import { LabourUpdate } from './LabourUpdate';
 import MakeAnnouncementButton from './MakeAnnouncement';
-import { ManageLabourUpdateMenu } from './ManageLabourUpdateMenu';
 import { PostStatusUpdateButton } from './PostStatusUpdate';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourUpdates.module.css';
@@ -22,47 +22,7 @@ export function LabourUpdates({ labour }: { labour: LabourDTO }) {
 
   const labourUpdateDisplay = useMemo(() => {
     return labourUpdates.map((data) => {
-      return (
-        <div
-          className={
-            data.labour_update_type === 'announcement'
-              ? classes.announcementPanel
-              : classes.statusUpdatePanel
-          }
-          id={data.id}
-        >
-          <LoadingOverlay visible={data.id === 'placeholder'} />
-          <Group>
-            <Avatar
-              alt={userName}
-              radius="xl"
-              color={
-                data.labour_update_type === 'announcement'
-                  ? 'var(--mantine-color-pink-8)'
-                  : 'var(--mantine-color-pink-6)'
-              }
-            />
-            <div>
-              <Text size="sm" fw="700" c="var(--mantine-color-gray-9)">
-                {userName}
-              </Text>
-              <Text size="xs" c="var(--mantine-color-gray-9)">
-                {new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at')}
-              </Text>
-            </div>
-            <div style={{ flexGrow: 1 }} />
-            {data.labour_update_type === 'announcement' && (
-              <IconSpeakerphone size={15} color="var(--mantine-color-pink-8)" />
-            )}
-            {!completed && data.labour_update_type !== 'announcement' && (
-              <ManageLabourUpdateMenu statusUpdateId={data.id} />
-            )}
-          </Group>
-          <Text pl={54} pt="sm" size="sm" fw="400">
-            {data.message}
-          </Text>
-        </div>
-      );
+      return <LabourUpdate data={data} completed={completed} owner />;
     });
   }, [labourUpdates, userName, completed]);
 
@@ -83,7 +43,7 @@ export function LabourUpdates({ labour }: { labour: LabourDTO }) {
     'Share updates here to let your subscribers know how you are getting on. Making an announcement will send your update to your subscribers by their preferred methods.';
 
   return (
-    <div className={baseClasses.root}>
+    <div className={baseClasses.root} style={{ maxHeight: 'calc(80% - 120px)' }}>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
@@ -92,7 +52,7 @@ export function LabourUpdates({ labour }: { labour: LabourDTO }) {
               {completed ? completedDescription : activeDescription}
             </Text>
             {labourUpdateDisplay.length > 0 && (
-              <ScrollArea.Autosize mah={400} viewportRef={viewport}>
+              <ScrollArea.Autosize mah="55svh" viewportRef={viewport}>
                 <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
               </ScrollArea.Autosize>
             )}

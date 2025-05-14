@@ -20,23 +20,46 @@
 .statusUpdateContainer {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
+  row-gap: 15px;
+  padding-top: 10px;
 }
 
 .statusUpdatePanel{
-  background-color: var(--mantine-color-pink-0);
+  background-color: #f0f9f8;
   padding: 10px 20px;
   width: 100%;
-  border-radius: var(--mantine-radius-lg);
+  border-radius: var(--mantine-radius-md);
   position: relative;
+  border-left: 4px solid #24968b;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .announcementPanel{
-  background-color: color-mix(in srgb, var(--mantine-color-pink-1), red 10%);
+  background-color: var(--mantine-color-pink-0);
   padding: 10px 20px;
   width: 100%;
-  border-radius: var(--mantine-radius-lg);
+  border-radius: var(--mantine-radius-md);
   position: relative;
+  border-left: 4px solid var(--mantine-color-pink-6);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.messageFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.8rem;
 }
 
 .statusUpdateButton {

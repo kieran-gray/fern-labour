@@ -3,13 +3,7 @@
 }
 
 .stepperStepIcon {
-    background-color: var(--mantine-color-pink-0);
-    color: var(--mantine-color-pink-4);
-    border-color: var(--mantine-color-pink-4);
-
-    &[data-completed] {
-        background-color: var(--mantine-color-pink-4);
-    }
+    display: none;
 }
 
 .stepperStep {
@@ -19,10 +13,6 @@
       transform: scale(1.05);
     }
   }
-
-.stepperContent {
-    margin-top: 10px;
-}
 
 .stepperStepLabel {
     @media (max-width: $mantine-breakpoint-md) {

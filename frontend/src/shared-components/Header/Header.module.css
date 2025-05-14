@@ -10,6 +10,11 @@
     background-color: var(--mantine-color-pink-3);
   }
 
+  .body {
+    display: flex;
+    height: 90vh;
+  }
+
   .drawerLabel {
     justify-content: center;
     color: var(--mantine-color-white);
@@ -69,10 +74,11 @@
 
   .linksDrawer {
     padding-top: var(--mantine-spacing-lg);
-    height: 60px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex-grow:1;
+    background-color: var(--mantine-color-pink-3);
   }
 
   .linksDrawer > *{
@@ -112,4 +118,13 @@
     padding-bottom: var(--mantine-spacing-md);
     color: var(--mantine-color-white);
     border-radius: var(--mantine-radius-lg);
+  }
+
+  .footer {
+    border-top: 1px solid var(--mantine-color-pink-2);
+    padding-top: var(--mantine-spacing-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
