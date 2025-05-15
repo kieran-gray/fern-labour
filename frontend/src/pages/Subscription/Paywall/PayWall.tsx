@@ -86,7 +86,7 @@ export const PayWall = () => {
             <Text c="var(--mantine-color-gray-7)" mt="md">
               Upgrade your subscription now to get live notifications to your phone.
               <br />
-              Choose between SMS, WhatsApp, and Email notifications so you never miss an update.
+              Choose between SMS*, WhatsApp, and Email notifications so you never miss an update.
             </Text>
             <div className={classes.imageFlexRow} style={{ marginTop: '20px' }}>
               <Image src={image} className={classes.smallImage} />
@@ -101,6 +101,9 @@ export const PayWall = () => {
             >
               Upgrade now
             </Button>
+            <Text mt={15} size="xs" c="var(--mantine-color-gray-8)">
+              *SMS messages are only supported for UK (+44) phone numbers{' '}
+            </Text>
           </div>
           <Image src={image} className={classes.image} />
         </div>
