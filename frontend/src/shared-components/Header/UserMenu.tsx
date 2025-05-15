@@ -2,6 +2,7 @@ import { forwardRef, useState } from 'react';
 import {
   IconArrowLeft,
   IconHistory,
+  IconHome,
   IconLogout,
   IconMessageCircleQuestion,
   IconPassword,
@@ -54,6 +55,24 @@ export function MobileUserMenu() {
 
   const appSettings = (
     <>
+      {mode === null && pathname !== '/' && (
+        <Group>
+          <Space h="xs" />
+          <Button
+            key="home"
+            className={classes.mainLink}
+            onClick={() => {
+              navigate('/');
+            }}
+            leftSection={<IconHome size={16} stroke={1.5} />}
+            size="md"
+            w="100%"
+            variant="transparent"
+          >
+            Home
+          </Button>
+        </Group>
+      )}
       {mode !== null && (
         <Group>
           <Space h="xs" />
