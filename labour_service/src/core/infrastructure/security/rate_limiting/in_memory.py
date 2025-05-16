@@ -14,11 +14,7 @@ class CacheEntry:
     expiry: datetime
 
     def __init__(
-        self,
-        key: str,
-        count: int,
-        expiry_seconds: int,
-        expiry: datetime | None = None
+        self, key: str, count: int, expiry_seconds: int, expiry: datetime | None = None
     ) -> None:
         self.key = key
         self.count = count
