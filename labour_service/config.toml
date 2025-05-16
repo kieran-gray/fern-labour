@@ -3,6 +3,7 @@
 ENVIRONMENT = ""
 SUPPORT_EMAIL = "support@fernlabour.com"
 
+
 [security.keycloak]
 KEYCLOAK_SERVER_URL = "http://localhost:8080"
 KEYCLOAK_DOCKER_URL = "http://keycloak:8080"
@@ -12,18 +13,17 @@ KEYCLOAK_CLIENT_SECRET  = "changeme"
 KEYCLOAK_ADMIN = ""
 KEYCLOAK_ADMIN_PASSWORD = ""
 
+
 [security.subscriber_token]
 SUBSCRIBER_TOKEN_SALT = ""
 
-[security.cloudflare]
-CLOUDFLARE_URL = ""
-CLOUDFLARE_SECRET_KEY = ""
 
 [security.rate_limits]
 LABOUR_INVITE_RATE_LIMIT = 10
 LABOUR_INVITE_RATE_LIMIT_EXPIRY = 86400
 SUBSCRIBER_INVITE_RATE_LIMIT = 10
 SUBSCRIBER_INVITE_RATE_LIMIT_EXPIRY = 86400
+
 
 [logging]
 # Level can be set to "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
@@ -62,9 +62,11 @@ BACKEND_CORS_ORIGINS = "http://localhost,https://localhost"
 FRONTEND_HOST = "http://localhost:5173"
 MARKETING_HOST = "http://localhost:3000"
 
+
 [events.gcp]
 GCP_PROJECT_ID = "test"
 GCP_PRODUCER_RETRIES = 3
+
 
 [payments.stripe]
 STRIPE_API_KEY = ""
