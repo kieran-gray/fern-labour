@@ -27,10 +27,6 @@ class MockConfigReader(ConfigReader):
                 "subscriber_token": {
                     "SUBSCRIBER_TOKEN_SALT": "salty",
                 },
-                "cloudflare": {
-                    "CLOUDFLARE_URL": "test",
-                    "CLOUDFLARE_SECRET_KEY": "secret",
-                },
                 "rate_limits": {
                     "LABOUR_INVITE_RATE_LIMIT": 20,
                     "LABOUR_INVITE_RATE_LIMIT_EXPIRY": 86400,
