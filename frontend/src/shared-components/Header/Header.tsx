@@ -11,6 +11,13 @@ export function Header() {
   return (
     <header className={classes.header}>
       <Container className={classes.inner} size="lg">
+        <Burger
+          opened={opened}
+          onClick={toggle}
+          className={classes.burger}
+          size="sm"
+          color="white"
+        />
         <div onClick={() => navigate('/')} className={classes.titleRow}>
           <img src="/logo/logo.svg" className={classes.icon} alt="Fern Icon" />
           <Text className={classes.title}>Fern Labour</Text>
@@ -19,19 +26,12 @@ export function Header() {
           size="xs"
           classNames={{ content: classes.drawer, header: classes.drawer, body: classes.body }}
           overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
-          position="right"
+          position="left"
           opened={opened}
           onClose={toggle}
         >
           <MobileUserMenu />
         </Drawer>
-        <Burger
-          opened={opened}
-          onClick={toggle}
-          className={classes.burger}
-          size="sm"
-          color="white"
-        />
       </Container>
     </header>
   );
