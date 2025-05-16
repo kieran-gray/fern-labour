@@ -74,11 +74,6 @@ class MockConfigReader(ConfigReader):
             "payments": {
                 "stripe": {"STRIPE_API_KEY": "test", "STRIPE_WEBHOOK_ENDPOINT_SECRET": "test"}
             },
-            "redis": {
-                "REDIS_HOST": "localhost",
-                "REDIS_PORT": 1234,
-                "REDIS_PASSWORD": "password",
-            },
         }
 
 

@@ -137,12 +137,6 @@ class PaymentSettings(BaseModel):
     stripe: StripeSettings
 
 
-class RedisSettings(BaseModel):
-    host: str = Field(alias="REDIS_HOST")
-    port: int = Field(alias="REDIS_PORT")
-    password: str = Field(alias="REDIS_PASSWORD")
-
-
 class Settings(BaseModel):
     base: BaseSettings
     security: SecuritySettings
@@ -151,7 +145,6 @@ class Settings(BaseModel):
     events: EventSettings
     db: DbSettings
     payments: PaymentSettings
-    redis: RedisSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"
 
