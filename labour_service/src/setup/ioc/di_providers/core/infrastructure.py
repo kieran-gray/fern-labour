@@ -3,7 +3,6 @@ from collections.abc import AsyncIterable
 
 from dishka import Provider, Scope, provide
 from keycloak import KeycloakOpenID
-from redis import Redis
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -11,8 +10,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from src.core.infrastructure.security.rate_limiting.in_memory import InMemoryRateLimiter
 from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
-from src.core.infrastructure.security.rate_limiting.redis import RedisRateLimiter
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.ioc.di_providers.core.settings import PostgresDsn
 from src.setup.settings import Settings, SqlaEngineSettings
@@ -93,8 +92,5 @@ class CommonInfrastructureProvider(Provider):
         return KeycloakAuthController(auth_service=auth_service)
 
     @provide
-    def provide_rate_limiter(self, settings: Settings) -> RateLimiter:
-        redis = Redis(
-            host=settings.redis.host, port=settings.redis.port, password=settings.redis.password
-        )
-        return RedisRateLimiter(redis=redis)
+    def provide_rate_limiter(self) -> RateLimiter:
+        return InMemoryRateLimiter()

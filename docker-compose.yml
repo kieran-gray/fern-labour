@@ -272,12 +272,6 @@ services:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
       - PUBSUB_PROJECT_ID=test
 
-  valkey:
-    image: valkey/valkey:latest
-    command: valkey-server --port ${REDIS_PORT?unset} --requirepass ${REDIS_PASSWORD?unset} --save
-    volumes:
-      - valkey-cache:/data
-
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND?unset}:latest'
     build:
@@ -336,7 +330,6 @@ services:
 
 volumes:
   app-db-data:
-  valkey-cache:
 
 networks:
   traefik-public:
