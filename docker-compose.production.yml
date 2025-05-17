@@ -1,51 +1,5 @@
 services:
 
-  labour-service:
-    image: '${DOCKER_IMAGE_REPOSITORY?unset}/${DOCKER_IMAGE_LABOUR_SERVICE?unset}:${TAG-latest}'
-    restart: always
-    networks:
-      - traefik-public
-      - default
-    depends_on:
-      labour-service-pre-start:
-        condition: service_completed_successfully
-        restart: false
-    env_file:
-      - ./labour_service/.env
-    ports:
-      - "8000:8000"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-    environment:
-      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp_application_credentials
-    secrets:
-      - gcp_application_credentials
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
-
-      - traefik.http.services.${STACK_NAME?unset}-backend.loadbalancer.server.port=8000
-
-      - traefik.http.routers.${STACK_NAME?unset}-backend-http.rule=Host(`api.${DOMAIN?unset}`)
-      - traefik.http.routers.${STACK_NAME?unset}-backend-http.entrypoints=http
-
-      - traefik.http.routers.${STACK_NAME?unset}-backend-https.rule=Host(`api.${DOMAIN?unset}`)
-      - traefik.http.routers.${STACK_NAME?unset}-backend-https.entrypoints=https
-
-      - traefik.http.routers.${STACK_NAME?unset}-backend-https.tls=true
-      - traefik.http.routers.${STACK_NAME?unset}-backend-https.tls.certresolver=le
-      - traefik.http.routers.${STACK_NAME?unset}-backend-http.middlewares=https-redirect
-
-  labour-service-pre-start:
-    image: '${DOCKER_IMAGE_REPOSITORY?unset}/${DOCKER_IMAGE_LABOUR_SERVICE?unset}-alembic:${TAG-latest}'
-    restart: "no"
-    env_file:
-      - ./labour_service/.env
-
   labour-consumer:
     image: '${DOCKER_IMAGE_REPOSITORY}/${DOCKER_IMAGE_LABOUR_SERVICE?unset}:${TAG-latest}'
     restart: always
