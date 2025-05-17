@@ -14,6 +14,7 @@ class LabourUpdateDTO:
     labour_id: str
     message: str
     sent_time: datetime
+    edited: bool
 
     @classmethod
     def from_domain(cls, labour_update: LabourUpdate) -> Self:
@@ -24,6 +25,7 @@ class LabourUpdateDTO:
             labour_id=str(labour_update.labour_id.value),
             message=labour_update.message,
             sent_time=labour_update.sent_time,
+            edited=labour_update.edited,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -34,4 +36,5 @@ class LabourUpdateDTO:
             "labour_update_type": self.labour_update_type,
             "message": self.message,
             "sent_time": self.sent_time.isoformat(),
+            "edited": self.edited,
         }

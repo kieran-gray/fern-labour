@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, Table
+from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy_utils import StringEncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
@@ -25,4 +25,5 @@ labour_updates_table = Table(
         nullable=False,
     ),
     Column("sent_time", DateTime(timezone=True), nullable=False),
+    Column("edited", Boolean, nullable=False, default=False),
 )

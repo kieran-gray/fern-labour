@@ -11,7 +11,10 @@ from fern_labour_core.exceptions.application import ApplicationError
 from fern_labour_core.exceptions.domain import DomainError
 from pydantic_core import ErrorDetails
 
-from src.labour.application.exceptions import LabourInviteRateLimitExceeded
+from src.labour.application.exceptions import (
+    InvalidLabourUpdateRequest,
+    LabourInviteRateLimitExceeded,
+)
 from src.labour.domain.contraction.exceptions import (
     CannotDeleteActiveContraction,
     CannotUpdateActiveContraction,
@@ -125,6 +128,7 @@ class ExceptionMapper:
             SubscriberAlreadyRequested: status.HTTP_400_BAD_REQUEST,
             SubscriptionAccessLevelInvalid: status.HTTP_400_BAD_REQUEST,
             WebhookHasInvalidSignature: status.HTTP_403_FORBIDDEN,
+            InvalidLabourUpdateRequest: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:
