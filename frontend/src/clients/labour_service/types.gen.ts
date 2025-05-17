@@ -115,6 +115,7 @@ export type LabourUpdateDTO = {
   labour_id: string;
   message: string;
   sent_time: string;
+  edited: boolean;
 };
 
 export type LabourUpdateRequest = {
@@ -211,6 +212,12 @@ export type UpdateContractionRequest = {
   end_time?: string | null;
   intensity?: number | null;
   notes?: string | null;
+};
+
+export type UpdateLabourUpdateRequest = {
+  labour_update_id: string;
+  labour_update_type?: LabourUpdateType | null;
+  message?: string | null;
 };
 
 export type UpdateRoleRequest = {
@@ -337,6 +344,12 @@ export type GetLabourByIdApiV1LabourGetLabourIdGetResponse = LabourResponse;
 export type GetActiveLabourApiV1LabourActiveGetResponse = LabourResponse;
 
 export type GetActiveLabourSummaryApiV1LabourActiveSummaryGetResponse = LabourSummaryResponse;
+
+export type UpdateLabourUpdateApiV1LabourLabourUpdatePutData = {
+  requestBody: UpdateLabourUpdateRequest;
+};
+
+export type UpdateLabourUpdateApiV1LabourLabourUpdatePutResponse = LabourResponse;
 
 export type PostLabourUpdateApiV1LabourLabourUpdatePostData = {
   requestBody: LabourUpdateRequest;

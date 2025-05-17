@@ -1,19 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { IconPencil } from '@tabler/icons-react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useAuth } from 'react-oidc-context';
-import { Image, ScrollArea, Text, TextInput } from '@mantine/core';
+import { Image, ScrollArea, Text } from '@mantine/core';
 import { LabourDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from './image.svg';
 import { LabourUpdate } from './LabourUpdate';
-import MakeAnnouncementButton from './MakeAnnouncement';
-import { PostStatusUpdateButton } from './PostStatusUpdate';
+import { LabourUpdateControls } from './LabourUpdateControls';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourUpdates.module.css';
 
 export function LabourUpdates({ labour }: { labour: LabourDTO }) {
-  const [update, setUpdate] = useState('');
   const viewport = useRef<HTMLDivElement>(null);
   const auth = useAuth();
   const userName = auth.user?.profile.name;
@@ -31,10 +28,6 @@ export function LabourUpdates({ labour }: { labour: LabourDTO }) {
       viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'auto' });
     }
   }, [labourUpdates]);
-
-  const handleUpdateChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setUpdate(event.currentTarget.value);
-  }, []);
 
   const title = completed ? 'Your labour updates' : 'Post an update';
   const completedDescription =
@@ -64,36 +57,7 @@ export function LabourUpdates({ labour }: { labour: LabourDTO }) {
                 <ImportantText message="You haven't posted any updates yet." />
               </>
             )}
-            {!completed && (
-              <>
-                <TextInput
-                  mt={20}
-                  rightSection={<IconPencil size={18} stroke={1.5} />}
-                  radius="lg"
-                  size="md"
-                  visibleFrom="sm"
-                  placeholder="What's happening with your labour?"
-                  onChange={handleUpdateChange}
-                  value={update}
-                />
-                <TextInput
-                  mt={20}
-                  rightSection={<IconPencil size={18} stroke={1.5} />}
-                  radius="lg"
-                  size="sm"
-                  hiddenFrom="sm"
-                  placeholder="What's happening with your labour?"
-                  onChange={handleUpdateChange}
-                  value={update}
-                />
-              </>
-            )}
-            <div className={classes.flexRow} style={{ marginTop: '10px' }}>
-              {!completed && <PostStatusUpdateButton message={update} setUpdate={setUpdate} />}
-              {!completed && (
-                <MakeAnnouncementButton message={update} setAnnouncement={setUpdate} />
-              )}
-            </div>
+            {!completed && <LabourUpdateControls />}
           </div>
         </div>
       </div>
