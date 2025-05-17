@@ -1,19 +1,16 @@
 import { Button, Modal, Space, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import classes from '../../../../shared-components/Modal.module.css';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 
 export default function ConfirmAnnouncementModal({
   message,
-  setGetConfirmation,
-  setConfirmedComplete,
+  onConfirm,
+  onCancel,
 }: {
   message: string;
-  setGetConfirmation: Function;
-  setConfirmedComplete: Function;
+  onConfirm: Function;
+  onCancel: Function;
 }) {
-  const [_, { close }] = useDisclosure(false);
-
   return (
     <Modal
       overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
@@ -28,8 +25,7 @@ export default function ConfirmAnnouncementModal({
       centered
       closeOnClickOutside
       onClose={() => {
-        setGetConfirmation(false);
-        close;
+        onCancel();
       }}
       title="Make Announcement?"
     >
@@ -44,8 +40,7 @@ export default function ConfirmAnnouncementModal({
           style={{ flex: 1, marginRight: 5 }}
           radius="lg"
           onClick={() => {
-            setGetConfirmation(false);
-            close;
+            onCancel();
           }}
         >
           Cancel
@@ -55,8 +50,7 @@ export default function ConfirmAnnouncementModal({
           variant="light"
           radius="lg"
           onClick={() => {
-            setConfirmedComplete(true);
-            close;
+            onConfirm();
           }}
         >
           Yes
