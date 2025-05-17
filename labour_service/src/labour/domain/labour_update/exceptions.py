@@ -8,3 +8,8 @@ class TooSoonSinceLastAnnouncement(DomainError):
         super().__init__(
             f"Wait at least {ANNOUNCEMENT_COOLDOWN_SECONDS} seconds between announcements"
         )
+
+
+class CannotUpdateAnnouncement(DomainError):
+    def __init__(self) -> None:
+        super().__init__("Cannot update an announcement")

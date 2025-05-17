@@ -27,6 +27,7 @@ def map_labour_updates_table() -> None:
             "labour_id": composite(LabourId, labour_updates_table.c.labour_id),
             "message": labour_updates_table.c.message,
             "sent_time": labour_updates_table.c.sent_time,
+            "edited": labour_updates_table.c.edited,
         },
         column_prefix="_",
     )

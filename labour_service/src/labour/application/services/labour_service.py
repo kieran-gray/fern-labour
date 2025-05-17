@@ -5,6 +5,7 @@ from uuid import UUID
 from fern_labour_core.events.producer import EventProducer
 
 from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.exceptions import InvalidLabourUpdateRequest
 from src.labour.domain.labour.entity import Labour
 from src.labour.domain.labour.exceptions import (
     CannotDeleteActiveLabour,
@@ -19,6 +20,7 @@ from src.labour.domain.labour.services.complete_labour import CompleteLabourServ
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.labour.domain.labour_update.enums import LabourUpdateType
 from src.labour.domain.labour_update.services.post_labour_update import PostLabourUpdateService
+from src.labour.domain.labour_update.services.update_labour_update import UpdateLabourUpdateService
 from src.labour.domain.labour_update.value_objects.labour_update_id import LabourUpdateId
 from src.user.domain.exceptions import UserDoesNotHaveActiveLabour, UserHasActiveLabour
 from src.user.domain.value_objects.user_id import UserId
@@ -30,6 +32,13 @@ class LabourService:
     def __init__(self, labour_repository: LabourRepository, event_producer: EventProducer):
         self._labour_repository = labour_repository
         self._event_producer = event_producer
+
+    async def _get_labour(self, birthing_person_id: str) -> Labour:
+        domain_id = UserId(birthing_person_id)
+        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
+        if not labour:
+            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+        return labour
 
     async def plan_labour(
         self,
@@ -65,10 +74,7 @@ class LabourService:
         due_date: datetime,
         labour_name: str | None = None,
     ) -> LabourDTO:
-        domain_id = UserId(birthing_person_id)
-        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
-        if not labour:
-            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+        labour = await self._get_labour(birthing_person_id=birthing_person_id)
 
         labour.update_plan(first_labour=first_labour, due_date=due_date, labour_name=labour_name)
 
@@ -79,10 +85,7 @@ class LabourService:
         return LabourDTO.from_domain(labour)
 
     async def begin_labour(self, birthing_person_id: str) -> LabourDTO:
-        domain_id = UserId(birthing_person_id)
-        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
-        if not labour:
-            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+        labour = await self._get_labour(birthing_person_id=birthing_person_id)
 
         labour = BeginLabourService().begin_labour(labour=labour)
         await self._labour_repository.save(labour)
@@ -94,10 +97,7 @@ class LabourService:
     async def complete_labour(
         self, birthing_person_id: str, end_time: datetime | None = None, notes: str | None = None
     ) -> LabourDTO:
-        domain_id = UserId(birthing_person_id)
-        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
-        if not labour:
-            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+        labour = await self._get_labour(birthing_person_id=birthing_person_id)
 
         labour = CompleteLabourService().complete_labour(
             labour=labour, end_time=end_time, notes=notes
@@ -115,10 +115,7 @@ class LabourService:
         message: str,
         sent_time: datetime | None = None,
     ) -> LabourDTO:
-        domain_id = UserId(birthing_person_id)
-        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
-        if not labour:
-            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+        labour = await self._get_labour(birthing_person_id=birthing_person_id)
 
         labour_update_type_enum = LabourUpdateType(labour_update_type)
         labour = PostLabourUpdateService().post_labour_update(
@@ -133,16 +130,49 @@ class LabourService:
 
         return LabourDTO.from_domain(labour)
 
+    async def update_labour_update(
+        self,
+        birthing_person_id: str,
+        labour_update_id: str,
+        labour_update_type: str | None = None,
+        message: str | None = None,
+    ) -> LabourDTO:
+        if message is None and labour_update_type is None:
+            raise InvalidLabourUpdateRequest()
+
+        labour = await self._get_labour(birthing_person_id=birthing_person_id)
+        try:
+            labour_update_domain_id = LabourUpdateId(UUID(labour_update_id))
+        except ValueError:
+            raise InvalidLabourUpdateId()
+
+        update_service = UpdateLabourUpdateService()
+
+        if labour_update_type:
+            labour_update_type_enum = LabourUpdateType(labour_update_type)
+            update_service.update_labour_type(
+                labour=labour,
+                labour_update_id=labour_update_domain_id,
+                labour_update_type=labour_update_type_enum,
+            )
+
+        if message:
+            update_service.update_message(
+                labour=labour, labour_update_id=labour_update_domain_id, message=message
+            )
+
+        await self._labour_repository.save(labour)
+
+        await self._event_producer.publish_batch(labour.clear_domain_events())
+
+        return LabourDTO.from_domain(labour)
+
     async def delete_labour_update(
         self,
         birthing_person_id: str,
         labour_update_id: str,
     ) -> LabourDTO:
-        domain_id = UserId(birthing_person_id)
-        labour = await self._labour_repository.get_active_labour_by_birthing_person_id(domain_id)
-        if not labour:
-            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
-
+        labour = await self._get_labour(birthing_person_id=birthing_person_id)
         try:
             labour_update_domain_id = LabourUpdateId(UUID(labour_update_id))
         except ValueError:

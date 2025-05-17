@@ -16,6 +16,7 @@ class LabourUpdate(Entity[LabourUpdateId]):
     message: str
     labour_update_type: LabourUpdateType
     sent_time: datetime
+    edited: bool
 
     @classmethod
     def create(
@@ -35,4 +36,14 @@ class LabourUpdate(Entity[LabourUpdateId]):
             labour_id=labour_id,
             message=message,
             sent_time=sent_time,
+            edited=False,
         )
+
+    def update(
+        self, message: str | None = None, labour_update_type: LabourUpdateType | None = None
+    ) -> None:
+        if message is not None:
+            self.message = message
+            self.edited = True
+        if labour_update_type:
+            self.labour_update_type = labour_update_type

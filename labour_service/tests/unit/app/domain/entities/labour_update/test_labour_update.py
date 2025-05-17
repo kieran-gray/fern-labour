@@ -21,6 +21,7 @@ def test_labour_update_init():
         labour_id=labour_id,
         message=message,
         sent_time=sent_time,
+        edited=False,
     )
 
     indirect_labour_update = LabourUpdate.create(

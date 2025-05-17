@@ -7,6 +7,7 @@ import pytest_asyncio
 from fern_labour_core.events.producer import EventProducer
 
 from src.labour.application.dtos.labour import LabourDTO
+from src.labour.application.exceptions import InvalidLabourUpdateRequest
 from src.labour.application.services.contraction_service import ContractionService
 from src.labour.application.services.labour_service import LabourService
 from src.labour.domain.labour.exceptions import (
@@ -211,3 +212,61 @@ async def test_cannot_delete_labour_does_not_exist(labour_service: LabourService
 async def test_cannot_delete_labour_invalid_id(labour_service: LabourService):
     with pytest.raises(InvalidLabourId):
         await labour_service.delete_labour(OTHER_USER, labour_id="test123")
+
+
+async def test_can_update_labour_update_message(
+    labour_service: LabourService, contraction_service: ContractionService
+) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await contraction_service.start_contraction(BIRTHING_PERSON)
+    labour = await labour_service.post_labour_update(
+        BIRTHING_PERSON, labour_update_type="status_update", message="Test message"
+    )
+    labour_update = labour.labour_updates[0]
+    await labour_service.update_labour_update(
+        BIRTHING_PERSON, labour_update_id=labour_update.id, message="New message"
+    )
+
+
+async def test_can_update_labour_update_type(
+    labour_service: LabourService, contraction_service: ContractionService
+) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await contraction_service.start_contraction(BIRTHING_PERSON)
+    labour = await labour_service.post_labour_update(
+        BIRTHING_PERSON, labour_update_type="status_update", message="Test message"
+    )
+    labour_update = labour.labour_updates[0]
+    await labour_service.update_labour_update(
+        BIRTHING_PERSON, labour_update_id=labour_update.id, labour_update_type="announcement"
+    )
+
+
+async def test_must_update_message_or_type(
+    labour_service: LabourService, contraction_service: ContractionService
+) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await contraction_service.start_contraction(BIRTHING_PERSON)
+    labour = await labour_service.post_labour_update(
+        BIRTHING_PERSON, labour_update_type="status_update", message="Test message"
+    )
+    labour_update = labour.labour_updates[0]
+    with pytest.raises(InvalidLabourUpdateRequest):
+        await labour_service.update_labour_update(
+            BIRTHING_PERSON, labour_update_id=labour_update.id
+        )
+
+
+async def test_cannot_update_labour_update_invalid_id(
+    labour_service: LabourService, contraction_service: ContractionService
+) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await contraction_service.start_contraction(BIRTHING_PERSON)
+    with pytest.raises(InvalidLabourUpdateId):
+        await labour_service.update_labour_update(
+            BIRTHING_PERSON, labour_update_id="should fail", message="New message"
+        )
