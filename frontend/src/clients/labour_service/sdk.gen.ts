@@ -67,6 +67,8 @@ import type {
   UpdateContractionApiV1LabourContractionUpdatePutResponse,
   UpdateLabourPlanApiV1LabourPlanPutData,
   UpdateLabourPlanApiV1LabourPlanPutResponse,
+  UpdateLabourUpdateApiV1LabourLabourUpdatePutData,
+  UpdateLabourUpdateApiV1LabourLabourUpdatePutResponse,
   UpdateRoleApiV1SubscriptionManagementUpdateRolePutData,
   UpdateRoleApiV1SubscriptionManagementUpdateRolePutResponse,
 } from './types.gen';
@@ -519,6 +521,31 @@ export class LabourQueriesService {
 }
 
 export class LabourUpdatesService {
+  /**
+   * Update Labour Update
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns LabourResponse Successful Response
+   * @throws ApiError
+   */
+  public static updateLabourUpdate(
+    data: UpdateLabourUpdateApiV1LabourLabourUpdatePutData
+  ): CancelablePromise<UpdateLabourUpdateApiV1LabourLabourUpdatePutResponse> {
+    return __request(OpenAPI, {
+      method: 'PUT',
+      url: '/api/v1/labour/labour-update/',
+      body: data.requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        404: 'Not Found',
+        422: 'Validation Error',
+        500: 'Internal Server Error',
+      },
+    });
+  }
+
   /**
    * Post Labour Update
    * @param data The data for the request.
