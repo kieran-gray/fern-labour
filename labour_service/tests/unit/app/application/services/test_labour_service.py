@@ -20,6 +20,7 @@ from src.labour.domain.labour.exceptions import (
 )
 from src.labour.domain.labour.repository import LabourRepository
 from src.labour.domain.labour.value_objects.labour_id import LabourId
+from src.labour.domain.labour_update.exceptions import CannotUpdateLabourUpdate
 from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.entity import User
 from src.user.domain.exceptions import (
@@ -223,10 +224,26 @@ async def test_can_update_labour_update_message(
     labour = await labour_service.post_labour_update(
         BIRTHING_PERSON, labour_update_type="status_update", message="Test message"
     )
-    labour_update = labour.labour_updates[0]
+    labour_update = labour.labour_updates[-1]
     await labour_service.update_labour_update(
         BIRTHING_PERSON, labour_update_id=labour_update.id, message="New message"
     )
+
+
+async def test_cannot_update_labour_begun_message(
+    labour_service: LabourService, contraction_service: ContractionService
+) -> None:
+    await labour_service.plan_labour(BIRTHING_PERSON, True, datetime.now(UTC))
+    await labour_service.begin_labour(BIRTHING_PERSON)
+    await contraction_service.start_contraction(BIRTHING_PERSON)
+    labour = await labour_service.post_labour_update(
+        BIRTHING_PERSON, labour_update_type="status_update", message="Test message"
+    )
+    labour_update = labour.labour_updates[0]
+    with pytest.raises(CannotUpdateLabourUpdate):
+        await labour_service.update_labour_update(
+            BIRTHING_PERSON, labour_update_id=labour_update.id, message="New message"
+        )
 
 
 async def test_can_update_labour_update_type(

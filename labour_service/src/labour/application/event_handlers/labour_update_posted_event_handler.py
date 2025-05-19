@@ -67,7 +67,7 @@ class LabourUpdatePostedEventHandler(EventHandler):
 
     async def handle(self, event: dict[str, Any]) -> None:
         domain_event = DomainEvent.from_dict(event=event)
-        if domain_event.data["labour_update_type"] == LabourUpdateType.STATUS_UPDATE.value:
+        if domain_event.data["labour_update_type"] != LabourUpdateType.ANNOUNCEMENT.value:
             return
 
         birthing_person_id = domain_event.data["birthing_person_id"]

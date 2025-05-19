@@ -329,3 +329,23 @@ async def test_labour_update_posted_event_basic_subscriber(
     await labour_update_posted_event_handler.handle(event.to_dict())
     assert not has_sent_email(labour_update_posted_event_handler)
     assert not has_sent_sms(labour_update_posted_event_handler)
+
+
+async def test_labour_update_does_not_notify_private_note(
+    labour_update_posted_event_handler: LabourUpdatePostedEventHandler,
+    paid_subscription: SubscriptionDTO,
+    subscription_management_service: SubscriptionManagementService,
+) -> None:
+    await subscription_management_service.update_contact_methods(
+        requester_id=paid_subscription.subscriber_id,
+        subscription_id=paid_subscription.id,
+        contact_methods=[ContactMethod.SMS.value, ContactMethod.EMAIL.value],
+    )
+    event = generate_domain_event(
+        birthing_person_id=paid_subscription.birthing_person_id,
+        labour_id=paid_subscription.labour_id,
+        update_type=LabourUpdateType.PRIVATE_NOTE,
+    )
+    await labour_update_posted_event_handler.handle(event.to_dict())
+    assert not has_sent_email(labour_update_posted_event_handler)
+    assert not has_sent_sms(labour_update_posted_event_handler)

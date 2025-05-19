@@ -17,6 +17,7 @@ from src.labour.domain.labour.exceptions import (
 from src.labour.domain.labour.repository import LabourRepository
 from src.labour.domain.labour.services.begin_labour import BeginLabourService
 from src.labour.domain.labour.services.complete_labour import CompleteLabourService
+from src.labour.domain.labour.services.plan_labour import PlanLabourService
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.labour.domain.labour_update.enums import LabourUpdateType
 from src.labour.domain.labour_update.services.post_labour_update import PostLabourUpdateService
@@ -54,7 +55,7 @@ class LabourService:
         if existing_labour:
             raise UserHasActiveLabour(user_id=birthing_person_id)
 
-        labour = Labour.plan(
+        labour = PlanLabourService().plan_labour(
             birthing_person_id=domain_id,
             first_labour=first_labour,
             due_date=due_date,

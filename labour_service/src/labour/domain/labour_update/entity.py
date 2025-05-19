@@ -17,6 +17,7 @@ class LabourUpdate(Entity[LabourUpdateId]):
     labour_update_type: LabourUpdateType
     sent_time: datetime
     edited: bool
+    application_generated: bool
 
     @classmethod
     def create(
@@ -27,6 +28,7 @@ class LabourUpdate(Entity[LabourUpdateId]):
         message: str,
         sent_time: datetime | None = None,
         labour_update_id: UUID | None = None,
+        application_generated: bool = False,
     ) -> Self:
         sent_time = sent_time or datetime.now(UTC)
         labour_update_id = labour_update_id or uuid4()
@@ -37,6 +39,7 @@ class LabourUpdate(Entity[LabourUpdateId]):
             message=message,
             sent_time=sent_time,
             edited=False,
+            application_generated=application_generated,
         )
 
     def update(
