@@ -4,7 +4,7 @@ import { LabourDTO, UserSummaryDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '../../../../shared-components/utils';
-import { LabourUpdate } from '../../../Labour/Tabs/Updates/LabourUpdate';
+import { LabourUpdate, LabourUpdateProps } from '../../../Labour/Tabs/Updates/LabourUpdate';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from '../../../Labour/Tabs/Updates/LabourUpdates.module.css';
 
@@ -18,9 +18,53 @@ export function StatusUpdates({
   const labourUpdates = labour.labour_updates;
   const viewport = useRef<HTMLDivElement>(null);
   const pluralisedBirthingPersonName = pluraliseName(birthingPerson.first_name);
+  const sharedLabourBegunMessage = `Exciting news, ${birthingPerson.first_name} has started labour!`;
 
   const statusUpdateDisplay = labourUpdates.map((data) => {
-    return <LabourUpdate data={data} completed={false} owner={false} />;
+    let props: LabourUpdateProps;
+    if (data.labour_update_type === 'announcement') {
+      if (data.application_generated) {
+        props = {
+          id: data.id,
+          sentTime: new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at'),
+          class: classes.privateNotePanel,
+          icon: '🌱',
+          badgeColor: '#ff8f00',
+          badgeText: 'Fern Labour',
+          text: sharedLabourBegunMessage,
+          visibility: '',
+          showMenu: false,
+          showFooter: false,
+        };
+      } else {
+        props = {
+          id: data.id,
+          sentTime: new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at'),
+          class: classes.announcementPanel,
+          icon: '📣',
+          badgeColor: 'var(--mantine-color-pink-6)',
+          badgeText: data.labour_update_type.split('_')[0],
+          text: data.message,
+          visibility: '',
+          showMenu: false,
+          showFooter: false,
+        };
+      }
+    } else {
+      props = {
+        id: data.id,
+        sentTime: new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at'),
+        class: classes.statusUpdatePanel,
+        icon: '💫',
+        badgeColor: '#24968b',
+        badgeText: data.labour_update_type.split('_')[0],
+        text: data.message,
+        visibility: '',
+        showMenu: false,
+        showFooter: false,
+      };
+    }
+    return <LabourUpdate data={props} />;
   });
 
   useEffect(() => {

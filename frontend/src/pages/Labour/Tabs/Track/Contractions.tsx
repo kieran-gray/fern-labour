@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Space, Stack, Text, Title } from '@mantine/core';
+import { Image, Space, Stack, Text, Title } from '@mantine/core';
 import { useScrollIntoView } from '@mantine/hooks';
 import { ContractionDTO, LabourDTO } from '../../../../clients/labour_service/index.ts';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText.tsx';
@@ -11,6 +11,7 @@ import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital.tsx';
 import ContractionTimeline from './ContractionTimeline.tsx';
 import StartContractionButton from './StartContractionButton.tsx';
 import { StopwatchHandle } from './Stopwatch/Stopwatch.tsx';
+import image from './Track.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './Contractions.module.css';
 
@@ -58,8 +59,11 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
                 <ContractionTimeline contractions={sortedContractions} completed={completed} />
               )}
               {sortedContractions.length === 0 && !completed && (
-                <div style={{ width: '100%', marginBottom: '30px' }}>
-                  <ImportantText message="When you start your first contraction, we will let your subscribers know that your labour is starting." />
+                <div style={{ width: '100%', marginBottom: '25px' }}>
+                  <div className={classes.imageFlexRow}>
+                    <Image src={image} className={classes.image} />
+                  </div>
+                  <ImportantText message="You haven't logged any contractions yet" />
                 </div>
               )}
             </Stack>

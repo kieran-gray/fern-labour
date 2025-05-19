@@ -49,8 +49,8 @@ export function ShareContainer() {
   }
 
   // TODO environment variable for frontend host
-  const shareUrl = `https://track.fernlabour.com/subscribe/${labourId}`;
-  const shareText = `Hey, follow this link and sign up to get notifications about my labour:\n\n${shareUrl}\n\nYou'll also need this code: ${data}`;
+  const shareUrl = `${window.location.origin}/subscribe/${labourId}`;
+  const shareText = `Hey! I’d love for you to be part of my labour circle.\nUse the link below to sign up and get updates as things happen:\n\n${shareUrl}\n\nYou'll need this code for access: ${data}`;
   return (
     <div className={classes.inner}>
       <div className={classes.content}>
@@ -69,12 +69,15 @@ export function ShareContainer() {
         </div>
         <Group mt={30}>
           <div className={classes.share}>
-            <Text fw={500} fz="md" mb={20}>
-              Hey, follow this link and sign up to get notifications about my labour:
+            <Text fw={500} fz="sm" mb={20}>
+              Hey! I’d love for you to be part of my labour circle.
+              <br />
+              <br />
+              Use the link below to sign up and get updates as things happen:
             </Text>
             <Text
               fw={500}
-              fz="md"
+              fz="sm"
               mb={25}
               style={{ overflowWrap: 'break-word', wordBreak: 'break-all' }}
             >

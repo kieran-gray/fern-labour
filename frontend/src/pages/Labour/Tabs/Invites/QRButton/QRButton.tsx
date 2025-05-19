@@ -52,7 +52,7 @@ export default function QRButton({ url }: { url: string }) {
         h={48}
         variant="outline"
         onClick={open}
-        mt="var(--mantine-spacing-lg)"
+        mt="var(--mantine-spacing-sm)"
         hiddenFrom="sm"
       >
         QR Code
