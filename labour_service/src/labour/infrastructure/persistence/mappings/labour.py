@@ -28,6 +28,7 @@ def map_labour_updates_table() -> None:
             "message": labour_updates_table.c.message,
             "sent_time": labour_updates_table.c.sent_time,
             "edited": labour_updates_table.c.edited,
+            "application_generated": labour_updates_table.c.application_generated,
         },
         column_prefix="_",
     )

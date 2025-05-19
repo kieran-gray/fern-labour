@@ -1,6 +1,7 @@
 from datetime import UTC, datetime, timedelta
 
 from src.labour.domain.labour.entity import Labour
+from src.labour.domain.labour.events import LabourUpdatePosted
 from src.labour.domain.labour_update.constants import ANNOUNCEMENT_COOLDOWN_SECONDS
 from src.labour.domain.labour_update.enums import LabourUpdateType
 from src.labour.domain.labour_update.exceptions import TooSoonSinceLastAnnouncement
@@ -21,8 +22,11 @@ class PostLabourUpdateService:
             ):
                 raise TooSoonSinceLastAnnouncement()
 
-        labour.add_labour_update(
+        labour_update = labour.add_labour_update(
             labour_update_type=labour_update_type, message=message, sent_time=sent_time
+        )
+        labour.add_domain_event(
+            LabourUpdatePosted.from_domain(labour=labour, labour_update=labour_update)
         )
 
         return labour

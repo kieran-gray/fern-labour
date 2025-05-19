@@ -15,6 +15,7 @@ class LabourUpdateDTO:
     message: str
     sent_time: datetime
     edited: bool
+    application_generated: bool
 
     @classmethod
     def from_domain(cls, labour_update: LabourUpdate) -> Self:
@@ -26,6 +27,7 @@ class LabourUpdateDTO:
             message=labour_update.message,
             sent_time=labour_update.sent_time,
             edited=labour_update.edited,
+            application_generated=labour_update.application_generated,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -37,4 +39,5 @@ class LabourUpdateDTO:
             "message": self.message,
             "sent_time": self.sent_time.isoformat(),
             "edited": self.edited,
+            "application_generated": self.application_generated,
         }

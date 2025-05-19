@@ -26,4 +26,5 @@ labour_updates_table = Table(
     ),
     Column("sent_time", DateTime(timezone=True), nullable=False),
     Column("edited", Boolean, nullable=False, default=False),
+    Column("application_generated", Boolean, nullable=False, default=False),
 )

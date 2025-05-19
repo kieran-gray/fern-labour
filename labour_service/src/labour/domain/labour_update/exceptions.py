@@ -10,6 +10,6 @@ class TooSoonSinceLastAnnouncement(DomainError):
         )
 
 
-class CannotUpdateAnnouncement(DomainError):
+class CannotUpdateLabourUpdate(DomainError):
     def __init__(self) -> None:
-        super().__init__("Cannot update an announcement")
+        super().__init__("This labour update cannot updated")

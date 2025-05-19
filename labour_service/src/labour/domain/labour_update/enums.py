@@ -6,3 +6,4 @@ class LabourUpdateType(StrEnum):
 
     ANNOUNCEMENT = "announcement"
     STATUS_UPDATE = "status_update"
+    PRIVATE_NOTE = "private_note"

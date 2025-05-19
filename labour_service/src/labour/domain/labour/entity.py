@@ -8,12 +8,6 @@ from fern_labour_core.aggregate_root import AggregateRoot
 from src.labour.domain.contraction.entity import Contraction
 from src.labour.domain.contraction.events import ContractionEnded, ContractionStarted
 from src.labour.domain.labour.enums import LabourPhase
-from src.labour.domain.labour.events import (
-    LabourBegun,
-    LabourCompleted,
-    LabourPlanned,
-    LabourUpdatePosted,
-)
 from src.labour.domain.labour.exceptions import LabourUpdateNotFoundById
 from src.labour.domain.labour.value_objects.labour_id import LabourId
 from src.labour.domain.labour_update.entity import LabourUpdate
@@ -49,22 +43,13 @@ class Labour(AggregateRoot[LabourId]):
         labour_name: str | None = None,
         labour_id: UUID | None = None,
     ) -> Self:
-        labour = cls(
+        return cls(
             id_=LabourId(labour_id or uuid4()),
             birthing_person_id=birthing_person_id,
             first_labour=first_labour,
             due_date=due_date,
             labour_name=labour_name,
         )
-        labour.add_domain_event(
-            LabourPlanned.create(
-                data={
-                    "labour_id": str(labour.id_.value),
-                    "birthing_person_id": labour.birthing_person_id.value,
-                }
-            )
-        )
-        return labour
 
     def update_plan(
         self, first_labour: bool, due_date: datetime, labour_name: str | None = None
@@ -76,15 +61,11 @@ class Labour(AggregateRoot[LabourId]):
     def begin(self, start_time: datetime | None = None) -> None:
         self.start_time = start_time or datetime.now(UTC)
         self.set_labour_phase(LabourPhase.EARLY)
-        self.add_domain_event(
-            LabourBegun.create(
-                data={
-                    "labour_id": str(self.id_.value),
-                    "birthing_person_id": self.birthing_person_id.value,
-                    "start_time": self.start_time.isoformat(),
-                    "notes": self.notes if self.notes else "",
-                }
-            )
+        self.add_labour_update(
+            labour_update_type=LabourUpdateType.PRIVATE_NOTE,
+            message="labour_begun",
+            sent_time=self.start_time,
+            application_generated=True,
         )
 
     @property
@@ -146,16 +127,6 @@ class Labour(AggregateRoot[LabourId]):
         self.current_phase = LabourPhase.COMPLETE
         if notes:
             self.notes = notes
-        self.add_domain_event(
-            LabourCompleted.create(
-                data={
-                    "labour_id": str(self.id_.value),
-                    "birthing_person_id": self.birthing_person_id.value,
-                    "end_time": self.end_time.isoformat(),
-                    "notes": self.notes if self.notes else "",
-                }
-            )
-        )
 
     @property
     def announcements(self) -> list[LabourUpdate]:
@@ -166,27 +137,21 @@ class Labour(AggregateRoot[LabourId]):
         ]
 
     def add_labour_update(
-        self, labour_update_type: LabourUpdateType, message: str, sent_time: datetime | None = None
-    ) -> None:
+        self,
+        labour_update_type: LabourUpdateType,
+        message: str,
+        sent_time: datetime | None = None,
+        application_generated: bool = False,
+    ) -> LabourUpdate:
         labour_update = LabourUpdate.create(
             labour_id=self.id_,
             labour_update_type=labour_update_type,
             message=message,
             sent_time=sent_time,
+            application_generated=application_generated,
         )
         self.labour_updates.append(labour_update)
-        self.add_domain_event(
-            LabourUpdatePosted.create(
-                {
-                    "birthing_person_id": self.birthing_person_id.value,
-                    "labour_id": str(self.id_.value),
-                    "labour_update_type": labour_update_type.value,
-                    "labour_update_id": str(labour_update.id_.value),
-                    "message": labour_update.message,
-                    "sent_time": labour_update.sent_time.isoformat(),
-                }
-            )
-        )
+        return labour_update
 
     def delete_labour_update(self, labour_update_id: LabourUpdateId) -> bool:
         for labour_update in self.labour_updates:
