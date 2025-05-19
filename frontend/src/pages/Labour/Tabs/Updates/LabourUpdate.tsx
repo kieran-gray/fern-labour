@@ -1,56 +1,46 @@
 import { Badge, Group, LoadingOverlay, Text } from '@mantine/core';
-import { LabourUpdateDTO } from '../../../../clients/labour_service';
 import { ManageLabourUpdateMenu } from './ManageLabourUpdateMenu';
 import classes from './LabourUpdates.module.css';
 
-export function LabourUpdate({
-  data,
-  completed,
-  owner,
-}: {
-  data: LabourUpdateDTO;
-  completed: boolean;
-  owner: boolean;
-}) {
-  const announce = data.labour_update_type === 'announcement';
+export interface LabourUpdateProps {
+  id: string;
+  sentTime: string;
+  class: string;
+  icon: string;
+  badgeColor: string;
+  badgeText: string;
+  text: string;
+  visibility: string;
+  showMenu: boolean;
+  showFooter: boolean;
+}
+
+export function LabourUpdate({ data }: { data: LabourUpdateProps }) {
   return (
-    <div className={announce ? classes.announcementPanel : classes.statusUpdatePanel} id={data.id}>
+    <div className={data.class}>
       <LoadingOverlay visible={data.id === 'placeholder'} />
       <Group>
-        <Text>{(announce && '📣') || '💫'}</Text>
-        <Badge
-          visibleFrom="xs"
-          variant="filled"
-          size="md"
-          radius="md"
-          bg={(announce && 'var(--mantine-color-pink-6)') || '#24968b'}
-        >
-          {data.labour_update_type.split('_')[0]}
+        <Text>{data.icon}</Text>
+        <Badge visibleFrom="xs" variant="filled" size="md" radius="md" bg={data.badgeColor}>
+          {data.badgeText}
         </Badge>
-        <Badge
-          hiddenFrom="xs"
-          variant="filled"
-          size="sm"
-          radius="md"
-          bg={(announce && 'var(--mantine-color-pink-6)') || '#24968b'}
-        >
-          {data.labour_update_type.split('_')[0]}
+        <Badge hiddenFrom="xs" variant="filled" size="sm" radius="md" bg={data.badgeColor}>
+          {data.badgeText}
         </Badge>
 
         <div style={{ flexGrow: 1 }} />
         <Text size="xs" c="var(--mantine-color-gray-9)">
-          {new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at')}
+          {data.sentTime}
         </Text>
       </Group>
       <Text pt="sm" size="md" fw="400">
-        {data.message}
+        {data.text}
       </Text>
-      {owner && (
+      {}
+      {data.showFooter && (
         <div className={classes.messageFooter}>
-          <Text size="xs">
-            {(announce && '📡 Broadcast to subscribers') || '👁️ Visible to subscribers'}
-          </Text>
-          {!completed && !announce && <ManageLabourUpdateMenu statusUpdateId={data.id} />}
+          <Text size="xs">{data?.visibility}</Text>
+          {data.showMenu && <ManageLabourUpdateMenu statusUpdateId={data.id} />}
         </div>
       )}
     </div>

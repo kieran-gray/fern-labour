@@ -24,6 +24,20 @@
   padding-top: 10px;
 }
 
+.privateNotePanel{
+  background-color: #fff8e1;
+  padding: 10px 20px;
+  width: 100%;
+  border-radius: var(--mantine-radius-md);
+  position: relative;
+  border-left: 4px solid #ffb300;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
 .statusUpdatePanel{
   background-color: #f0f9f8;
   padding: 10px 20px;

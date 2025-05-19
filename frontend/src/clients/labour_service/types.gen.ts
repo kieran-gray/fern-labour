@@ -116,6 +116,7 @@ export type LabourUpdateDTO = {
   message: string;
   sent_time: string;
   edited: boolean;
+  application_generated: boolean;
 };
 
 export type LabourUpdateRequest = {
@@ -127,7 +128,7 @@ export type LabourUpdateRequest = {
 /**
  * Represents the different types of labour update
  */
-export type LabourUpdateType = 'announcement' | 'status_update';
+export type LabourUpdateType = 'announcement' | 'status_update' | 'private_note';
 
 export type PlanLabourRequest = {
   first_labour: boolean;

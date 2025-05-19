@@ -25,6 +25,7 @@ function createLabourUpdate(message: string, labourId: string | null, labourUpda
     labour_id: labourId || '',
     sent_time: new Date().toISOString(),
     edited: false,
+    application_generated: false,
   };
   return labourUpdate;
 }

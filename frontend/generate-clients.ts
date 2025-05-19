@@ -2,7 +2,7 @@ import { createClient } from '@hey-api/openapi-ts';
 
 const services = {
   labour_service: 'http://localhost:8000/openapi.json',
-  contact_service: 'http://localhost:8002/openapi.json',
+  // contact_service: 'http://localhost:8002/openapi.json',
 };
 
 Object.entries(services).forEach(([serviceName, url]) => {

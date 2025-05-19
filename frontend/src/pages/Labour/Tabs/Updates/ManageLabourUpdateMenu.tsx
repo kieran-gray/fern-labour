@@ -76,7 +76,7 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
   return (
     <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
       <Menu.Target>
-        <ActionIcon variant="subtle" color="#24968b">
+        <ActionIcon variant="subtle" color="var(--mantine-color-gray-8)">
           <IconDots size={16} stroke={1.5} />
         </ActionIcon>
       </Menu.Target>
