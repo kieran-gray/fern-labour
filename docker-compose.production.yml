@@ -50,15 +50,38 @@ services:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
       - traefik.constraint-label=traefik-public
-      # Keycloak application routes
-      - traefik.http.routers.${STACK_NAME?unset}-keycloak-http.rule=Host(`auth.${DOMAIN?unset}`)
-      - traefik.http.routers.${STACK_NAME?unset}-keycloak-http.entrypoints=http
-      - traefik.http.routers.${STACK_NAME?unset}-keycloak-http.middlewares=https-redirect
-      - traefik.http.routers.${STACK_NAME?unset}-keycloak-https.rule=Host(`auth.${DOMAIN?unset}`)
-      - traefik.http.routers.${STACK_NAME?unset}-keycloak-https.entrypoints=https
-      - traefik.http.routers.${STACK_NAME?unset}-keycloak-https.tls=true
-      - traefik.http.routers.${STACK_NAME?unset}-keycloak-https.tls.certresolver=le
-      - traefik.http.services.${STACK_NAME?unset}-keycloak.loadbalancer.server.port=8080
+
+      # --- Middlewares for Keycloak Admin Access Control ---
+      # Redirect Middleware to hide admin
+      - traefik.http.middlewares.${STACK_NAME?unset}-keycloak-admin-redirect.redirectregex.regex=^(https?://)?auth\.${DOMAIN?unset}/admin(/.*)?$$
+      - traefik.http.middlewares.${STACK_NAME?unset}-keycloak-admin-redirect.redirectregex.replacement=${FRONTEND_URL?unset}
+      - traefik.http.middlewares.${STACK_NAME?unset}-keycloak-admin-redirect.redirectregex.permanent=false
+
+      # --- Routers for Keycloak ---
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-entry-http.rule=Host(`auth.${DOMAIN?unset}`)
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-entry-http.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-entry-http.middlewares=https-redirect@docker
+
+      # Router 1: Admin access - Redirect
+      # Matches auth.{DOMAIN}/admin/master/*
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-admin-redirect-https.rule=Host(`auth.${DOMAIN?unset}`) && PathPrefix(`/admin/master`)
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-admin-redirect-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-admin-redirect-https.priority=10
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-admin-redirect-https.tls=true
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-admin-redirect-https.tls.certresolver=le
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-admin-redirect-https.middlewares=${STACK_NAME?unset}-keycloak-admin-redirect@docker
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-admin-redirect-https.service=noop@internal
+
+      # Router 2: General Keycloak Access
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-main-https.rule=Host(`auth.${DOMAIN?unset}`)
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-main-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-main-https.priority=1
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-main-https.tls=true
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-main-https.tls.certresolver=le
+      - traefik.http.routers.${STACK_NAME?unset}-keycloak-main-https.service=${STACK_NAME?unset}-keycloak-svc@docker
+
+      # --- Service Definition for Keycloak ---
+      - traefik.http.services.${STACK_NAME?unset}-keycloak-svc.loadbalancer.server.port=8080
     volumes:
       - ./keycloak/realms:/opt/keycloak/data/import:ro
 
