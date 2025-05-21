@@ -3,10 +3,10 @@ import { Container, Image, Text, Title } from '@mantine/core';
 import { StoryProps } from './Story-01';
 import classes from './Story.module.css';
 
-export function Story03({ title, body, imageSrc, imageAlt }: StoryProps) {
+export function Story04({ title, body, imageSrc, imageAlt }: StoryProps) {
   return (
     <motion.div
-      initial={{ opacity: 0.0, x: -200 }}
+      initial={{ opacity: 0.0, x: 200 }}
       whileInView={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.8, delay: 0.2, ease: 'easeInOut' }}
       viewport={{ once: true }}
@@ -14,6 +14,7 @@ export function Story03({ title, body, imageSrc, imageAlt }: StoryProps) {
     >
       <Container size="lg" className={classes.container} id="#home">
         <div className={classes.inner}>
+          <Image src={imageSrc} className={classes.bigImage} alt={imageAlt} />
           <div className={classes.content}>
             <Title order={2} className={classes.title}>
               {title}
@@ -25,7 +26,6 @@ export function Story03({ title, body, imageSrc, imageAlt }: StoryProps) {
               {body}
             </Text>
           </div>
-          <Image src={imageSrc} className={classes.bigImage} alt={imageAlt} />
         </div>
       </Container>
     </motion.div>

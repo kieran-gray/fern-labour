@@ -1,8 +1,9 @@
 import { motion } from 'motion/react';
 import { Container, Image, Text, Title } from '@mantine/core';
+import { StoryProps } from './Story-01';
 import classes from './Story.module.css';
 
-export function Story02() {
+export function Story02({ title, body, imageSrc, imageAlt }: StoryProps) {
   return (
     <motion.div
       initial={{ opacity: 0.0, x: 200 }}
@@ -13,24 +14,16 @@ export function Story02() {
     >
       <Container size="lg" className={classes.container} id="#home">
         <div className={classes.inner}>
-          <Image src="images/Meditate.svg" className={classes.bigImage} alt="woman meditating" />
+          <Image src={imageSrc} className={classes.bigImage} alt={imageAlt} />
           <div className={classes.content}>
             <Title order={2} className={classes.title}>
-              Effortless updates during your labour journey
+              {title}
             </Title>
             <div className={classes.flexRow}>
-              <Image
-                src="images/Meditate.svg"
-                className={classes.smallImage}
-                alt="woman meditating"
-              />
+              <Image src={imageSrc} className={classes.smallImage} alt={imageAlt} />
             </div>
             <Text mt="md" className={classes.text}>
-              With our app, you don’t have to keep answering.
-              <br />
-              <br />
-              Friends and family can check for updates themselves, so you can focus on resting,
-              preparing, and getting through labour your way.
+              {body}
             </Text>
           </div>
         </div>

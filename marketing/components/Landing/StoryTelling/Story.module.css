@@ -1,19 +1,28 @@
 .container {
   background-color: var(--mantine-color-pink-0);
   border-radius: var(--mantine-radius-xl);
-  padding: 0 40px;
+  padding: 0 50px;
   position: relative;
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    padding: 0 25px;
+  }
 }
 
 .inner {
     display: flex;
     justify-content: space-between;
-    padding-top: calc(var(--mantine-spacing-xl) * 3);
-    padding-bottom: calc(var(--mantine-spacing-xl) * 3);
+    padding-top: calc(var(--mantine-spacing-xl) * 2);
+    padding-bottom: calc(var(--mantine-spacing-xl));
 
     @media (max-width: $mantine-breakpoint-sm) {
       padding-top: calc(var(--mantine-spacing-md) * 3);
-      padding-bottom: calc(var(--mantine-spacing-md) * 3);
+      padding-bottom: calc(var(--mantine-spacing-md) * 2);
+    }
+
+    @media (max-width: $mantine-breakpoint-xs) {
+      padding-top: calc(var(--mantine-spacing-md) * 2);
+      padding-bottom: calc(var(--mantine-spacing-lg));
     }
   }
   

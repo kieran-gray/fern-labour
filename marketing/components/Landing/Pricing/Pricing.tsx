@@ -122,11 +122,12 @@ const PricingCard = ({
 );
 
 type Pricing01Props = {
-  /** URL for the call to action button */
+  title: string;
+  description: string;
   callToActionUrl?: string;
 };
 
-export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
+export const Pricing01 = ({ title, description, callToActionUrl = '#' }: Pricing01Props) => {
   return (
     <Container
       bg="var(--mantine-color-body)"
@@ -140,10 +141,10 @@ export const Pricing01 = ({ callToActionUrl = '#' }: Pricing01Props) => {
       <Container size="md" id="#pricing" style={{ position: 'relative' }}>
         <Stack align="center" gap="xs">
           <JumboTitle order={2} fz="md" ta="center" style={{ textWrap: 'balance' }}>
-            Free for Mums. Flexible for Family.
+            {title}
           </JumboTitle>
           <Text c="var(--mantine-color-gray-7)" ta="center" fz="xl" style={{ textWrap: 'balance' }}>
-            Track labour for free. Let your loved ones stay in the loop, if they want to.
+            {description}
           </Text>
         </Stack>
       </Container>

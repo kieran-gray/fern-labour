@@ -11,12 +11,7 @@ type Hero03Props = ContainerProps & {
   description?: string;
 };
 
-export const Hero03 = ({
-  badge = 'For peace of mind at the end of your pregnancy',
-  title = 'Share Your Birth Journey, On Your Terms',
-  description = 'Real-time updates for family and friends, without the endless check-ins.',
-  ...containerProps
-}: Hero03Props) => (
+export const Hero03 = ({ badge, title, description, ...containerProps }: Hero03Props) => (
   <Container pos="relative" h="100vh" mah={750} style={{ overflow: 'hidden' }} fluid>
     <Container component="section" h="100vh" mah={750} mx="auto" size="xl" {...containerProps}>
       <Box
@@ -117,7 +112,7 @@ export const Hero03 = ({
                 radius="xl"
                 size="lg"
                 className={classes.control}
-                rightSection=<IconArrowRight />
+                rightSection={<IconArrowRight />}
               >
                 Join now!
               </Button>
