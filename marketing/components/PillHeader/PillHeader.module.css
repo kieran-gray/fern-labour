@@ -22,6 +22,7 @@
   .link {
     color: var(--mantine-color-white);
     font-weight: 600;
+    white-space: nowrap;
   
     &:hover {
       color: var(--mantine-color-gray-8);

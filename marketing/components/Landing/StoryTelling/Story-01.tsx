@@ -2,7 +2,14 @@ import { motion } from 'motion/react';
 import { Container, Image, Text, Title } from '@mantine/core';
 import classes from './Story.module.css';
 
-export function Story01() {
+export type StoryProps = {
+  title?: string;
+  body?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+};
+
+export function Story01({ title, body, imageSrc, imageAlt }: StoryProps) {
   return (
     <motion.div
       initial={{ opacity: 0.0, x: -200 }}
@@ -11,29 +18,24 @@ export function Story01() {
       viewport={{ once: true }}
       style={{ height: '100%' }}
     >
-      <Container size="lg" className={classes.container} id="#home">
+      <Container size="lg" className={classes.container}>
         <div className={classes.inner}>
           <div className={classes.content}>
             <Title order={2} className={classes.title}>
-              Only 4% of women give birth on their due date
+              {title}
             </Title>
             <div className={classes.flexRow}>
-              <Image
-                src="images/ComingSoon.svg"
-                className={classes.smallImage}
-                alt="clock and calendar"
-              />
+              <Image src={imageSrc} className={classes.smallImage} alt={imageAlt} />
             </div>
             <Text mt="md" className={classes.text}>
-              That means a lot of waiting, guessing, and unfortunately, constant messages asking:
-              "Any news?"
+              {body}
             </Text>
           </div>
           <Image
-            src="images/ComingSoon.svg"
-            className={classes.comingSoonImageBig}
+            src={imageSrc}
+            className={classes.bigImage}
             style={{ padding: '20px' }}
-            alt="clock and calendar"
+            alt={imageAlt}
           />
         </div>
       </Container>
