@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { IconArrowLeft, IconPencil } from '@tabler/icons-react';
-import { Button, Image, Text, Textarea, Title } from '@mantine/core';
+import { Button, Image, Textarea } from '@mantine/core';
+import { ResponsiveDescription } from '../../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from './celebrate.svg';
 import CompleteLabourButton from './CompleteLabourButton';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
@@ -14,28 +16,27 @@ export default function Complete({
   setActiveTab: Function;
 }) {
   const [labourNotes, setLabourNotes] = useState('');
+  const title = 'Complete your labour';
+  const description = (
+    <>
+      If you want to, you can add a note below before completing your labour which will be shared
+      with all of your subscribers.
+      <br />
+      <br />
+      You could use it to introduce the new addition to your family, or just to let everyone know
+      you are OK.'
+    </>
+  );
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={baseClasses.inner}>
           <div className={baseClasses.content}>
-            <Title order={1} visibleFrom="sm">
-              Complete your labour
-            </Title>
-            <Title order={2} hiddenFrom="sm">
-              Complete your labour
-            </Title>
+            <ResponsiveTitle title={title} />
             <div className={baseClasses.flexRow} style={{ flexWrap: 'nowrap' }}>
               <div className={baseClasses.flexColumn}>
-                <Text c="var(--mantine-color-gray-7)" mt="sm" mb="sm" size="md">
-                  If you want to, you can add a note below before completing your labour which will
-                  be shared with all of your subscribers.
-                  <br />
-                  <br />
-                  You could use it to introduce the new addition to your family, or just to let
-                  everyone know you are OK.
-                </Text>
-                <div className={classes.imageFlexRow}>
+                <ResponsiveDescription description={description} marginTop={10} />
+                <div className={classes.imageFlexRow} style={{ marginTop: 10 }}>
                   <Image src={image} className={classes.smallImage} />
                 </div>
               </div>

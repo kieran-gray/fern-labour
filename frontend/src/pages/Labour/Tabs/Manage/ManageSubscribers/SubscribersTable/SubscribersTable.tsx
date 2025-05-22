@@ -20,14 +20,26 @@ export function SubscribersTable({
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
             <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />
-            <div>
-              <Text fz="sm" fw={500} className={classes.cropText}>
+            <>
+              <Text fz="sm" visibleFrom="xs" fw={500} className={classes.cropText}>
                 {subscriber.first_name} {subscriber.last_name}
               </Text>
-            </div>
+              <Text fz="xs" hiddenFrom="xs" fw={500} className={classes.cropText}>
+                {subscriber.first_name} {subscriber.last_name}
+              </Text>
+            </>
           </Group>
         </Table.Td>
-        <Table.Td>{subscription.status}</Table.Td>
+        <Table.Td>
+          <>
+            <Text fz="sm" visibleFrom="xs" fw={500} className={classes.cropText}>
+              {subscription.status}
+            </Text>
+            <Text fz="xs" hiddenFrom="xs" fw={500} className={classes.cropText}>
+              {subscription.status}
+            </Text>
+          </>
+        </Table.Td>
         <Table.Td>
           <ManageSubscriptionMenu subscription_id={subscription.id} status={status} />
         </Table.Td>
@@ -62,8 +74,25 @@ export function SubscribersTable({
   }
 
   return (
-    <Text className={baseClasses.importantText} bg="var(--mantine-color-pink-0)" mt={10}>
-      {message}
-    </Text>
+    <>
+      <Text
+        className={baseClasses.importantText}
+        bg="var(--mantine-color-pink-0)"
+        size="sm"
+        hiddenFrom="sm"
+        mt={10}
+      >
+        {message}
+      </Text>
+      <Text
+        className={baseClasses.importantText}
+        bg="var(--mantine-color-pink-0)"
+        size="md"
+        visibleFrom="sm"
+        mt={10}
+      >
+        {message}
+      </Text>
+    </>
   );
 }

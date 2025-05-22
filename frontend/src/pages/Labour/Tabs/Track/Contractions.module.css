@@ -44,6 +44,23 @@
     }
   }
 
+  .titleRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    @media (max-width: $mantine-breakpoint-xs) {
+      flex-direction: column;
+    }
+  }
+
+  .docsButton {
+    @media (max-width: $mantine-breakpoint-xs) {
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+
 .controlsBackground {
     display: flex;
     flex-direction: column;

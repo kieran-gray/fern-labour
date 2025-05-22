@@ -3,7 +3,7 @@ import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/ic
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
-import { Button, Group, Image, Radio, Text, TextInput, Title } from '@mantine/core';
+import { Button, Group, Image, Radio, TextInput, Title } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
@@ -13,6 +13,7 @@ import {
   OpenAPI,
   PlanLabourRequest,
 } from '../../../../clients/labour_service';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import image from './plan.svg';
 import classes from './Plan.module.css';
 
@@ -87,6 +88,10 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
     },
   });
 
+  const title = 'Plan your upcoming labour';
+  const description =
+    'Add some basic details about your upcoming labour to help us provide you with the best service.';
+
   return (
     <form
       onSubmit={form.onSubmit((values) =>
@@ -95,11 +100,13 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
     >
       <div className={classes.inner} style={{ padding: 0, marginBottom: '25px' }}>
         <div className={classes.content}>
-          <Title order={2}>Plan your upcoming labour</Title>
-          <Text c="var(--mantine-color-gray-7)" mt="md">
-            Add some basic details about your upcoming labour to help us provide you with the best
-            service.
-          </Text>
+          <Title order={3} hiddenFrom="sm">
+            {title}
+          </Title>
+          <Title order={2} visibleFrom="sm">
+            {title}
+          </Title>
+          <ResponsiveDescription description={description} marginTop={10} />
           <div className={classes.imageFlexRow}>
             <Image className={classes.smallImage} src={image} />
           </div>

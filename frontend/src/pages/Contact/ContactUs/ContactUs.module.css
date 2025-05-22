@@ -27,7 +27,10 @@
   .form {
     padding: var(--mantine-spacing-xl);
     border-radius: var(--mantine-radius-lg);
-    border: 1px solid var(--mantine-color-pink-1);
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: 0;
+    }
   }
   
   .social {

@@ -5,6 +5,7 @@ import { Badge, Button, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { SubscriptionDTO, UserService } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import ContactMethodsForm from './ContactMethodsForm';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
@@ -68,6 +69,9 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
     </Badge>
   ));
 
+  const description =
+    "Choose how you want to hear about updates during labour. Select your preferred notification methods so you don't miss any important moments.";
+
   return (
     <>
       <div className={baseClasses.root}>
@@ -75,13 +79,13 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
           <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
             <div className={classes.content} style={{ marginRight: 0 }}>
               <ResponsiveTitle title="Your contact methods" />
-              <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
-                Choose how you want to hear about updates during labour. Select your preferred
-                notification methods so you don't miss any important moments.
-              </Text>
+              <ResponsiveDescription description={description} marginTop={10} />
             </div>
           </div>
-          <div className={baseClasses.inner} style={{ paddingTop: 0, paddingBottom: 0 }}>
+          <div
+            className={baseClasses.inner}
+            style={{ paddingTop: 0, paddingBottom: 0, marginTop: 10 }}
+          >
             <div className={baseClasses.content}>
               {subscription.contact_methods.length === 0 && (
                 <div style={{ marginTop: '10px' }}>

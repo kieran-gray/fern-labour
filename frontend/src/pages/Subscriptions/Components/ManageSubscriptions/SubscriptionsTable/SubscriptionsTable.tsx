@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
+import { IconArrowRight, IconX } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Avatar, Button, Group, Table, Text } from '@mantine/core';
@@ -8,7 +8,6 @@ import { ImportantText } from '../../../../../shared-components/ImportantText/Im
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
 import { useSubscription } from '../../../../Subscription/SubscriptionContext';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './SubscriptionsTable.module.css';
 
 export function SubscriptionsTable() {
@@ -70,11 +69,14 @@ export function SubscriptionsTable() {
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
             <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />
-            <div>
-              <Text fz="sm" fw={500} className={classes.cropText}>
+            <>
+              <Text fw={500} className={classes.cropText} size="xs" hiddenFrom="xs">
                 {birthing_person.first_name} {birthing_person.last_name}
               </Text>
-            </div>
+              <Text fw={500} className={classes.cropText} size="sm" visibleFrom="xs">
+                {birthing_person.first_name} {birthing_person.last_name}
+              </Text>
+            </>
           </Group>
         </Table.Td>
         <Table.Td>
@@ -129,13 +131,5 @@ export function SubscriptionsTable() {
       </Table.ScrollContainer>
     );
   }
-  return (
-    <Text className={baseClasses.importantText}>
-      <IconInfoCircle
-        size={20}
-        style={{ alignSelf: 'center', marginRight: '10px', flexShrink: 0 }}
-      />
-      You don't have any subscriptions yet.{' '}
-    </Text>
-  );
+  return <ImportantText message="You don't have any subscriptions yet." />;
 }

@@ -19,6 +19,8 @@ import {
 import { useForm } from '@mantine/form';
 import { ContactUsService } from '../../../clients/contact_service/sdk.gen.ts';
 import { ContactUsRequest } from '../../../clients/contact_service/types.gen.ts';
+import { ResponsiveDescription } from '../../../shared-components/ResponsiveDescription/ResponsiveDescription.tsx';
+import { ResponsiveTitle } from '../../../shared-components/ResponsiveTitle/ResponsiveTitle.tsx';
 import { ContactIconsList } from './ContactIcons.tsx';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './ContactUs.module.css';
@@ -90,21 +92,18 @@ export function ContactUs() {
     return values.category !== 'testimonial';
   }
 
+  const title = 'Send us a message';
+  const description = 'Leave your email and we will get back to you within 24 hours';
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={baseClasses.inner}>
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={50}>
             <div>
-              <Title order={2} visibleFrom="sm">
-                Send us a message
-              </Title>
-              <Title order={3} hiddenFrom="sm">
-                Send us a message
-              </Title>
-              <Text mt="sm" mb={30}>
-                Leave your email and we will get back to you within 24 hours
-              </Text>
+              <ResponsiveTitle title={title} />
+              <ResponsiveDescription description={description} marginTop={10} />
+              <Space h="lg" />
               <ContactIconsList />
             </div>
             <form

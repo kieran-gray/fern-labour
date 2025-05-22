@@ -1,6 +1,7 @@
-import { IconInfoCircle } from '@tabler/icons-react';
 import { Image, Space, Text } from '@mantine/core';
 import { LabourDTO } from '../../../../clients/labour_service';
+import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { formatTimeSeconds } from '../../../../shared-components/utils';
 import { createLabourStatistics } from '../../../Labour/Tabs/Statistics/LabourStatistics';
@@ -50,15 +51,7 @@ export const LabourStatistics = ({
         )}
       </div>
       <Space h="sm" />
-      {!completed && !labourStatistics.total && (
-        <Text className={baseClasses.importantText}>
-          <IconInfoCircle
-            size={20}
-            style={{ alignSelf: 'center', marginRight: '10px', flexShrink: 0 }}
-          />
-          Not enough data yet.
-        </Text>
-      )}
+      {!completed && !labourStatistics.total && <ImportantText message="Not enough data yet." />}
       {labourStatistics.total && (
         <LabourStatisticsTabs labour={labour} statistics={labourStatistics} />
       )}
@@ -66,16 +59,15 @@ export const LabourStatistics = ({
   );
 
   const completedDescription = `All the numbers and patterns from ${birthingPersonName} contractions during labour.`;
-  const activeDescription = `Here, you can view all of the statistics about ${birthingPersonName} contractions. This is useful information to have if you are a birth partner and need to discuss ${birthingPersonName} labour progress with your midwife or healthcare provider.`;
+  const activeDescription = `Here, you can view all of the statistics about ${birthingPersonName} contractions.`;
+  const description = completed ? completedDescription : activeDescription;
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title={`${birthingPersonName} labour statistics`} />
-            <Text c="var(--mantine-color-gray-7)" mt="md">
-              {completed ? completedDescription : activeDescription}
-            </Text>
+            <ResponsiveDescription description={description} marginTop={10} />
             <div className={baseClasses.imageFlexRow}>
               <Image src={image} className={baseClasses.smallImage} />
             </div>

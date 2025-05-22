@@ -3,6 +3,8 @@ import { useAuth } from 'react-oidc-context';
 import { Group, Image, Space, Text, Title } from '@mantine/core';
 import { LabourService, OpenAPI } from '../../../../../clients/labour_service';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
+import { ResponsiveDescription } from '../../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { useLabour } from '../../../LabourContext';
 import { CopyButton } from '../CopyButton/CopyButton';
 import QRButton from '../QRButton/QRButton';
@@ -48,22 +50,16 @@ export function ShareContainer() {
     );
   }
 
-  // TODO environment variable for frontend host
+  const title = 'Or share this link';
+  const description =
+    'Share this link with your friends and family, make sure to include the code at the bottom of the message.';
   const shareUrl = `${window.location.origin}/subscribe/${labourId}`;
   const shareText = `Hey! I’d love for you to be part of my labour circle.\nUse the link below to sign up and get updates as things happen:\n\n${shareUrl}\n\nYou'll need this code for access: ${data}`;
   return (
     <div className={classes.inner}>
       <div className={classes.content}>
-        <Title order={2} visibleFrom="sm">
-          Or share this link
-        </Title>
-        <Title order={3} hiddenFrom="sm">
-          Or share this link
-        </Title>
-        <Text c="var(--mantine-color-gray-7)" mt="md">
-          Share this link with your friends and family, make sure to include the code at the bottom
-          of the message.
-        </Text>
+        <ResponsiveTitle title={title} />
+        <ResponsiveDescription description={description} marginTop={10} />
         <div className={classes.imageFlexRow} style={{ marginTop: '20px' }}>
           <Image src={image} className={classes.smallImage} />
         </div>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { Button, Group, Image, Space, Text, TextInput, Title } from '@mantine/core';
+import { Button, Group, Image, Space, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import {
@@ -11,6 +11,8 @@ import {
   OpenAPI,
   SendInviteRequest,
 } from '../../../../../clients/labour_service';
+import { ResponsiveDescription } from '../../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { useLabour } from '../../../LabourContext';
 import image from './invite.svg';
 import classes from './InviteContainer.module.css';
@@ -71,20 +73,16 @@ export function InviteContainer() {
     },
   });
 
+  const title = 'Invite friends and family by email';
+  const description =
+    "Invite your friends and family, we'll give them instructions on how to sign up and what to expect.";
+
   return (
     <div className={classes.inner}>
       <Image src={image} className={classes.image} />
       <div className={classes.content}>
-        <Title order={2} visibleFrom="sm">
-          Invite friends and family by email
-        </Title>
-        <Title order={3} hiddenFrom="sm">
-          Invite friends and family by email
-        </Title>
-        <Text c="var(--mantine-color-gray-7)" mt="md">
-          Invite your friends and family, we'll give them instructions on how to sign up and what to
-          expect.
-        </Text>
+        <ResponsiveTitle title={title} />
+        <ResponsiveDescription description={description} marginTop={10} />
         <div className={classes.imageFlexRow}>
           <Image src={image} className={classes.smallImage} />
         </div>

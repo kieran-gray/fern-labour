@@ -30,7 +30,12 @@ function ContactIcon({ icon: Icon, title, description, link, ...others }: Contac
 
       <div>
         <Text size="xs">{title}</Text>
-        <Text>{description}</Text>
+        <Text size="md" visibleFrom="sm">
+          {description}
+        </Text>
+        <Text size="sm" hiddenFrom="sm">
+          {description}
+        </Text>
       </div>
     </div>
   );

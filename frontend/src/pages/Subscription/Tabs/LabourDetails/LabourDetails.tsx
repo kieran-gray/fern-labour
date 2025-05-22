@@ -1,5 +1,6 @@
 import { Badge, Image, Text } from '@mantine/core';
 import { LabourDTO } from '../../../../clients/labour_service';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '../../../../shared-components/utils';
 import image from '../../../Labour/Tabs/Manage/LabourDetails/Meditate.svg';
@@ -25,16 +26,15 @@ export default function LabourDetails({
       : `In ${labour.current_phase} labour`;
 
   const title = labour.labour_name ? labour.labour_name : `${birthingPersonName} Labour`;
+  const description = completed ? completedDescription : activeDescription;
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
           <div className={classes.content} style={{ marginRight: 0 }}>
             <ResponsiveTitle title={title} />
-            <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
-              {completed ? completedDescription : activeDescription}
-            </Text>
-            <div className={baseClasses.imageFlexRow}>
+            <ResponsiveDescription description={description} marginTop={10} />
+            <div className={baseClasses.imageFlexRow} style={{ marginTop: 10 }}>
               <Image src={image} className={classes.smallImage} />
             </div>
           </div>

@@ -33,7 +33,10 @@ export function LabourUpdate({ data }: { data: LabourUpdateProps }) {
           {data.sentTime}
         </Text>
       </Group>
-      <Text pt="sm" size="md" fw="400">
+      <Text pt="sm" size="md" fw="400" visibleFrom="xs">
+        {data.text}
+      </Text>
+      <Text pt="sm" size="sm" fw="400" hiddenFrom="xs">
         {data.text}
       </Text>
       {}

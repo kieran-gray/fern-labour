@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from 'react-oidc-context';
-import { Image, ScrollArea, Text } from '@mantine/core';
+import { Image, ScrollArea } from '@mantine/core';
 import { LabourDTO, LabourUpdateDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from './image.svg';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
@@ -142,11 +143,9 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
         <div className={classes.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title={title} />
-            <Text c="var(--mantine-color-gray-7)" mt="sm" mb="md">
-              {description}
-            </Text>
+            <ResponsiveDescription description={description} marginTop={10} />
             {hasUpdates && (
-              <ScrollArea.Autosize mah="55svh" viewportRef={viewport}>
+              <ScrollArea.Autosize mt={10} mah="55svh" viewportRef={viewport}>
                 <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
               </ScrollArea.Autosize>
             )}

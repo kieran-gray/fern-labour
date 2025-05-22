@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { Button, Group, Image, Space, Text, TextInput } from '@mantine/core';
+import { Button, Group, Image, Space, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import {
@@ -11,6 +11,7 @@ import {
   SendSubscriberInviteRequest,
   SubscriberService,
 } from '../../../../clients/labour_service';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from '../../../Labour/Tabs/Invites/InviteContainer/invite.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
@@ -71,17 +72,18 @@ export function InviteContainer() {
     },
   });
 
+  const title = 'Know an expecting mum? Invite her to join!';
+  const description =
+    'Introduce her to a simple way to keep family and friends informed throughout her labour experience.';
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={baseClasses.inner}>
           <Image src={image} className={classes.image} />
           <div className={baseClasses.content}>
-            <ResponsiveTitle title="Know an expecting mum? Invite her to join!" />
-            <Text c="var(--mantine-color-gray-7)" mt="md">
-              Introduce her to a simple way to keep family and friends informed throughout her
-              labour experience.
-            </Text>
+            <ResponsiveTitle title={title} />
+            <ResponsiveDescription description={description} marginTop={10} />
             <div className={classes.imageFlexRow}>
               <Image src={image} className={classes.smallImage} />
             </div>

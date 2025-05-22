@@ -1,4 +1,5 @@
-import { Image, Text } from '@mantine/core';
+import { Image } from '@mantine/core';
+import { ResponsiveDescription } from '../ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../ResponsiveTitle/ResponsiveTitle';
 import baseClasses from '../shared-styles.module.css';
 import classes from './PageContainer.module.css';
@@ -25,9 +26,7 @@ export function PageContainerContentBottom({
         <div className={classes.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title={title} />
-            <Text c="var(--mantine-color-gray-7)" mt="md">
-              {description}
-            </Text>
+            <ResponsiveDescription description={description} marginTop={10} />
             {mobileImage && (
               <div className={classes.imageFlexRow}>
                 <Image src={mobileImage} className={classes.mobileImage} />
