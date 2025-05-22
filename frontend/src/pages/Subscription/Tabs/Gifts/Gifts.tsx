@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Image, Text } from '@mantine/core';
+import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { PageContainerContentBottom } from '../../../../shared-components/PageContainer/PageContainer';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '../../../../shared-components/utils';
@@ -148,7 +149,9 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
         description={description}
         image={image}
         mobileImage={image}
-      />
+      >
+        <ImportantText message="Some of our links are affiliate links, which help support the app at no extra cost to you." />
+      </PageContainerContentBottom>
       {gifts.map((gift, index) => (
         <div className={baseClasses.root} style={{ marginTop: '20px' }}>
           <div className={baseClasses.body}>
