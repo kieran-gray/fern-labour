@@ -12,9 +12,9 @@ export type CallToActionProps = {
 export const CallToAction01 = ({ title, description, cta }: CallToActionProps) => (
   <Container
     py={{
-      base: 'calc(var(--mantine-spacing-lg) * 4)',
-      xs: 'calc(var(--mantine-spacing-lg) * 5)',
-      lg: 'calc(var(--mantine-spacing-lg) * 6)',
+      base: 'calc(var(--mantine-spacing-lg))',
+      xs: 'calc(var(--mantine-spacing-lg) * 2)',
+      lg: 'calc(var(--mantine-spacing-lg) * 3)',
     }}
     px={0}
     w="100%"

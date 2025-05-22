@@ -1,19 +1,21 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 import {
-  IconAmbulance,
-  IconBellRinging,
   IconCalendar,
-  IconChartHistogram,
+  IconCurrencyPound,
+  IconHourglass,
+  IconLink,
+  IconLock,
+  IconMail,
   IconMessage,
   IconSend,
-  IconSpeakerphone,
   IconStopwatch,
+  IconUserPlus,
   IconUsers,
 } from '@tabler/icons-react';
 import { motion } from 'motion/react';
-import { Box, Card, Container, Flex, Grid, Stack, Text } from '@mantine/core';
+import { Box, Card, Container, Flex, Grid, SegmentedControl, Stack, Text } from '@mantine/core';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesMotion.module.css';
 
@@ -23,54 +25,70 @@ type Feature = {
   description: ReactNode;
 };
 
-const FEATURES: Feature[] = [
+const MUM_FEATURES: Feature[] = [
+  {
+    icon: <IconUserPlus color="var(--mantine-color-pink-6)" />,
+    title: 'Sign Up',
+    description: 'Create your free Fern Labour account and get ready to share your journey.',
+  },
   {
     icon: <IconCalendar color="var(--mantine-color-pink-6)" />,
     title: 'Plan Your Labour',
-    description: 'Share some basic details about your labour for a more customized experience.',
-  },
-  {
-    icon: <IconStopwatch color="var(--mantine-color-pink-6)" />,
-    title: 'Track Your Contractions',
-    description: 'You can choose to track your contractions continuously, or in bursts.',
-  },
-  {
-    icon: <IconAmbulance color="var(--mantine-color-pink-6)" />,
-    title: 'Get To The Hospital On Time',
-    description: 'We will alert you when it is time to go to the hospital.',
-  },
-  {
-    icon: <IconChartHistogram color="var(--mantine-color-pink-6)" />,
-    title: 'Detailed Statistics',
-    description: 'Access detailed statistics about your contractions and labour progress.',
+    description: 'Set your due date and share a few preferences for a personalised experience.',
   },
   {
     icon: <IconSend color="var(--mantine-color-pink-6)" />,
-    title: 'Invite Friends and Family',
-    description: 'Share invites with your loved ones by email, link, or QR code.',
-  },
-  {
-    icon: <IconMessage color="var(--mantine-color-pink-6)" />,
-    title: 'Share Status Updates',
-    description:
-      'Keep loved ones up-to-date with status updates to prevent those annoying "Is the baby here yet?" messages.',
-  },
-  {
-    icon: <IconBellRinging color="var(--mantine-color-pink-6)" />,
-    title: 'Automatic Notifications',
-    description:
-      'Loved ones receive automatic text or email notifications when your labour begins.',
-  },
-  {
-    icon: <IconSpeakerphone color="var(--mantine-color-pink-6)" />,
-    title: 'Share Announcements',
-    description: 'Send important updates to your loved ones by text or email during your labour.',
+    title: 'Invite Loved Ones',
+    description: 'Send invites via email, link, or QR code so they can follow your progress.',
   },
   {
     icon: <IconUsers color="var(--mantine-color-pink-6)" />,
-    title: 'Manage Your Subscribers',
+    title: 'Accept Subscribers',
+    description: 'Approve or remove people at any time, you’re in control of who’s included.',
+  },
+  {
+    icon: <IconMessage color="var(--mantine-color-pink-6)" />,
+    title: 'Share Updates',
     description:
-      'Only people you approve can see your labour, and you can remove or block any unwanted subscribers.',
+      'Keep your loved ones informed before and during your labour with one-tap status updates.',
+  },
+  {
+    icon: <IconStopwatch color="var(--mantine-color-pink-6)" />,
+    title: 'Track Contractions',
+    description: 'Monitor your contractions and get alerts when it’s time to go to the hospital.',
+  },
+] as const;
+
+const SUBSCRIBER_FEATURES: Feature[] = [
+  {
+    icon: <IconMail color="var(--mantine-color-pink-6)" />,
+    title: 'Receive an Invite',
+    description: 'A loved one shares a private link with you via email, text, or QR code.',
+  },
+  {
+    icon: <IconLink color="var(--mantine-color-pink-6)" />,
+    title: 'Follow the Invite Link',
+    description: 'Open the invite to begin. The link contains your subscription token.',
+  },
+  {
+    icon: <IconUserPlus color="var(--mantine-color-pink-6)" />,
+    title: 'Sign Up',
+    description: 'Create your free Fern Labour account to stay connected.',
+  },
+  {
+    icon: <IconLock color="var(--mantine-color-pink-6)" />,
+    title: 'Request Access',
+    description: 'Your token is used to request access from the expectant mother.',
+  },
+  {
+    icon: <IconHourglass color="var(--mantine-color-pink-6)" />,
+    title: 'Wait for Approval',
+    description: 'Once approved, you’ll be able to follow their labour journey.',
+  },
+  {
+    icon: <IconCurrencyPound color="var(--mantine-color-pink-6)" />,
+    title: 'Upgrade for Notifications',
+    description: 'Pay £2.50 to receive real-time updates by SMS or WhatsApp.',
   },
 ] as const;
 
@@ -106,7 +124,7 @@ const FeatureCell = ({
           </Flex>
           <Box>
             <Text fz="xl" className={classes.cellTitle}>
-              {title}
+              Step {index + 1}: {title}
             </Text>
             <Text fz="md" c="var(--mantine-color-gray-8)">
               {description}
@@ -120,44 +138,84 @@ const FeatureCell = ({
 
 type Feature02Props = {
   title?: string;
-  features?: Feature[];
+  mum_features?: Feature[];
+  subscriber_features?: Feature[];
   iconSize?: number;
 };
 
 export const Feature02 = ({
-  title = 'Features',
-  features = FEATURES,
+  title = 'How It Works',
+  mum_features = MUM_FEATURES,
+  subscriber_features = SUBSCRIBER_FEATURES,
   iconSize = 20,
-}: Feature02Props) => (
-  <Container
-    bg="var(--mantine-color-body)"
-    py={{
-      base: 'calc(var(--mantine-spacing-lg) * 4)',
-      xs: 'calc(var(--mantine-spacing-lg) * 5)',
-      lg: 'calc(var(--mantine-spacing-lg) * 6)',
-    }}
-    fluid
-  >
-    <Container size="lg" px={0} style={{ position: 'relative' }} id="#features">
-      <JumboTitle order={2} fz="md" style={{ textWrap: 'balance' }}>
-        {title}
-      </JumboTitle>
+}: Feature02Props) => {
+  const [mode, setMode] = useState('mum');
+
+  const featuresToRender = useMemo(() => {
+    return mode === 'mum' ? mum_features : subscriber_features;
+  }, [mode, mum_features, subscriber_features]);
+
+  const controlProps = {
+    fullWidth: true,
+    radius: 'xl',
+    mt: 'xl',
+    mb: 'xl',
+    color: 'var(--mantine-color-pink-4)',
+  };
+
+  return (
+    <Container
+      bg="var(--mantine-color-body)"
+      py={{
+        base: 'calc(var(--mantine-spacing-lg) * 4)',
+        xs: 'calc(var(--mantine-spacing-lg) * 5)',
+        lg: 'calc(var(--mantine-spacing-lg) * 6)',
+      }}
+      fluid
+    >
+      <Container size="lg" px={0} style={{ position: 'relative' }} id="#features">
+        <JumboTitle order={2} fz="md" style={{ textWrap: 'balance' }}>
+          {title}
+        </JumboTitle>
+        <SegmentedControl
+          size="xl"
+          visibleFrom="sm"
+          value={mode}
+          onChange={setMode}
+          {...controlProps}
+          data={[
+            { value: 'mum', label: 'For Mums' },
+            { value: 'subscriber', label: 'For Loved Ones' },
+          ]}
+        />
+        <SegmentedControl
+          size="md"
+          hiddenFrom="sm"
+          value={mode}
+          onChange={setMode}
+          {...controlProps}
+          data={[
+            { value: 'mum', label: 'For Mums' },
+            { value: 'subscriber', label: 'For Loved Ones' },
+          ]}
+        />
+      </Container>
+      <Container size="lg" p={0} mt="xl">
+        <Grid gutter="xl">
+          {featuresToRender.map((feature, index) => (
+            <Grid.Col key={feature.title} span={{ base: 12, xs: 6, md: 4 }} mih="100%">
+              <FeatureCell
+                key={feature.title}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                index={index}
+                iconSize={iconSize}
+              />
+            </Grid.Col>
+          ))}
+        </Grid>
+      </Container>
     </Container>
-    <Container size="lg" p={0} mt="xl">
-      <Grid gutter="xl">
-        {features.map((feature, index) => (
-          <Grid.Col key={feature.title} span={{ base: 12, xs: 6, md: 4 }} mih="100%">
-            <FeatureCell
-              key={feature.title}
-              icon={feature.icon}
-              title={feature.title}
-              description={feature.description}
-              index={index}
-              iconSize={iconSize}
-            />
-          </Grid.Col>
-        ))}
-      </Grid>
-    </Container>
-  </Container>
-);
+  );
+};

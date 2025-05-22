@@ -18,7 +18,7 @@ export function Story01({ title, body, imageSrc, imageAlt }: StoryProps) {
       viewport={{ once: true }}
       style={{ height: '100%' }}
     >
-      <Container size="lg" className={classes.container} id="#home">
+      <Container size="lg" className={classes.container}>
         <div className={classes.inner}>
           <div className={classes.content}>
             <Title order={2} className={classes.title}>
