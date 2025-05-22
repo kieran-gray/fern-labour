@@ -203,7 +203,7 @@ export const Feature02 = ({
       <Container size="lg" p={0} mt="xl">
         <Grid gutter="xl">
           {featuresToRender.map((feature, index) => (
-            <Grid.Col key={feature.title} span={{ base: 12, xs: 6, md: 4 }} mih="100%">
+            <Grid.Col key={`${feature.title}-${mode}`} span={{ base: 12, xs: 6, md: 4 }} mih="100%">
               <FeatureCell
                 key={feature.title}
                 icon={feature.icon}
