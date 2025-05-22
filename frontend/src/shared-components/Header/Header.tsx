@@ -17,11 +17,20 @@ export function Header() {
           className={classes.burger}
           size="sm"
           color="white"
+          hiddenFrom="sm"
         />
         <div onClick={() => navigate('/')} className={classes.titleRow}>
           <img src="/logo/logo.svg" className={classes.icon} alt="Fern Icon" />
           <Text className={classes.title}>Fern Labour</Text>
         </div>
+        <Burger
+          opened={opened}
+          onClick={toggle}
+          className={classes.burger}
+          size="sm"
+          color="white"
+          visibleFrom="sm"
+        />
         <Drawer
           size="xs"
           classNames={{ content: classes.drawer, header: classes.drawer, body: classes.body }}

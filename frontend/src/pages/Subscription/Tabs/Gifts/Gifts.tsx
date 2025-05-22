@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Image, Text } from '@mantine/core';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { PageContainerContentBottom } from '../../../../shared-components/PageContainer/PageContainer';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '../../../../shared-components/utils';
 import dbhf_main from './ads/dbhf/main.jpg';
@@ -158,22 +159,27 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
             <div className={classes.inner}>
               <div className={classes.content}>
                 <ResponsiveTitle title={gift.title} />
-                <Text c="var(--mantine-color-gray-8)" mt="sm" mb="md">
-                  {gift.subtitle}
-                </Text>
+                <ResponsiveDescription description={gift.subtitle} marginTop={6} />
                 <Flex
                   key={gift.title}
                   direction={{ base: 'column', md: index % 2 === 0 ? 'row' : 'row-reverse' }}
                   gap="xl"
                   align="center"
+                  mt="md"
                 >
                   <Box style={{ flexGrow: 1, width: '100%' }}>{gift.desktopImage}</Box>
                   <Box>
                     {gift.mobileImage}
-                    <Text mb="sm" mt="md">
+                    <Text mb="sm" mt="md" size="sm" hiddenFrom="sm">
                       {gift.text}
                     </Text>
-                    <Text fs="italic" mb="xl">
+                    <Text mb="sm" mt="md" size="md" visibleFrom="sm">
+                      {gift.text}
+                    </Text>
+                    <Text fs="italic" mb="xl" size="sm" hiddenFrom="sm">
+                      {gift.note}
+                    </Text>
+                    <Text fs="italic" mb="xl" size="md" visibleFrom="sm">
                       {gift.note}
                     </Text>
                     <div

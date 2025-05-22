@@ -1,6 +1,7 @@
 import { Image, Space, Text } from '@mantine/core';
 import { ContractionDTO, LabourDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { formatTimeSeconds } from '../../../../shared-components/utils';
 import { LabourStatisticsTabs } from './LabourStatisticsTabs';
@@ -169,16 +170,17 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
   const completedDescription =
     'Here, you can see all the statistics about your contractions during your labour journey.';
   const activeDescription =
-    'Here, you can view all of the statistics about your contractions. This is useful information to have when discussing labour progress with a midwife or healthcare provider.';
+    'Here, you can view all of the statistics about your contractions. Useful when discussing labour progress with a midwife or healthcare provider.';
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title="Your labour statistics" />
-            <Text c="var(--mantine-color-gray-7)" mt="md">
-              {completed ? completedDescription : activeDescription}
-            </Text>
+            <ResponsiveDescription
+              description={completed ? completedDescription : activeDescription}
+              marginTop={10}
+            />
             <div className={baseClasses.imageFlexRow}>
               <Image src={image} className={baseClasses.smallImage} />
             </div>

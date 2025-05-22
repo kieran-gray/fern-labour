@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { Image, Space, Stack, Text, Title } from '@mantine/core';
+import { Image, Space, Stack } from '@mantine/core';
 import { useScrollIntoView } from '@mantine/hooks';
 import { ContractionDTO, LabourDTO } from '../../../../clients/labour_service/index.ts';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText.tsx';
+import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription.tsx';
+import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle.tsx';
 import { sortContractions } from '../../../../shared-components/utils.tsx';
 import { ActiveContractionControls } from './ActiveContractionControls.tsx';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
@@ -45,15 +47,16 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
       <div className={baseClasses.body}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title order={2} visibleFrom="sm">
-              Track your contractions
-            </Title>
-            <Title order={3} hiddenFrom="sm">
-              Track your contractions
-            </Title>
-            <Text c="var(--mantine-color-gray-7)" mt="md">
-              {completed ? completedDescription : activeDescription}
-            </Text>
+            <div className={classes.titleRow}>
+              <ResponsiveTitle title="Track your contractions" />
+              {/* <Button radius="lg" className={classes.docsButton} leftSection={<IconBook />} variant='light'>
+                Help
+              </Button> */}
+            </div>
+            <ResponsiveDescription
+              description={completed ? completedDescription : activeDescription}
+              marginTop={10}
+            />
             <Stack align="stretch" justify="flex-end" mt="20px" style={{ alignItems: 'center' }}>
               {sortedContractions.length > 0 && (
                 <ContractionTimeline contractions={sortedContractions} completed={completed} />

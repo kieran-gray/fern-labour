@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { IconCheck, IconLoader, IconSelector, IconUpload, IconX } from '@tabler/icons-react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useSearchParams } from 'react-router-dom';
 import { Button, Modal, MultiSelect } from '@mantine/core';
@@ -11,10 +11,7 @@ import {
   SubscriptionDTO,
   SubscriptionManagementService,
   UpdateContactMethodsRequest,
-  UserService,
 } from '../../../../clients/labour_service';
-import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
-import { warnNonUKNumber, warnNoNumberSet } from './ContactMethods';
 import modalClasses from '../../../../shared-components/Modal.module.css';
 import classes from './ContactMethodsForm.module.css';
 
@@ -41,25 +38,6 @@ export default function ContactMethodsForm({
     return auth.user?.access_token || '';
   };
   const queryClient = useQueryClient();
-
-  const { status, data } = useQuery({
-    queryKey: ['subscriber', auth.user?.profile.sub],
-    queryFn: async () => {
-      try {
-        const response = await UserService.getUser();
-        return response;
-      } catch (err) {
-        throw new Error('Failed to load subscriber. Please try again later.');
-      }
-    },
-  });
-
-  let contactMethodsWarning = null;
-  if (status === 'success') {
-    contactMethodsWarning =
-      warnNoNumberSet(subscription.contact_methods, data.user.phone_number) ||
-      warnNonUKNumber(subscription.contact_methods, data.user.phone_number);
-  }
 
   const form = useForm({
     mode: 'controlled',
@@ -148,12 +126,6 @@ export default function ContactMethodsForm({
       }}
     >
       <div style={{ padding: '20px 10px 10px' }}>
-        {contactMethodsWarning != null && (
-          <div style={{ marginBottom: '20px' }}>
-            <ImportantText message={contactMethodsWarning} />
-          </div>
-        )}
-
         <form
           onSubmit={form.onSubmit((values) =>
             mutation.mutate({ values, subscriptionId: subscription.id })

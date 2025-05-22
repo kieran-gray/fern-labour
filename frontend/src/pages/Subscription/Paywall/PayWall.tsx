@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { IconArrowUp } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
-import { Button, Image, Text, Title } from '@mantine/core';
+import { Button, Image, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
   ApiError,
@@ -10,6 +10,8 @@ import {
   OpenAPI,
   PaymentsService,
 } from '../../../clients/labour_service';
+import { ResponsiveDescription } from '../../../shared-components/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { useSubscription } from '../SubscriptionContext';
 import image from './ShareMore.svg';
 import baseClasses from '../../../shared-components/shared-styles.module.css';
@@ -72,22 +74,22 @@ export const PayWall = () => {
       setMutationInProgress(false);
     },
   });
+  const title = 'Want live notifications?';
+  const description = (
+    <>
+      Upgrade your subscription now to get live notifications to your phone.
+      <br />
+      Choose between SMS*, WhatsApp, and Email notifications so you never miss an update.
+    </>
+  );
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={baseClasses.inner}>
           <div className={baseClasses.flexColumn}>
-            <Title order={1} visibleFrom="sm">
-              Want live notifications?
-            </Title>
-            <Title order={2} hiddenFrom="sm">
-              Want live notifications?
-            </Title>
-            <Text c="var(--mantine-color-gray-7)" mt="md">
-              Upgrade your subscription now to get live notifications to your phone.
-              <br />
-              Choose between SMS*, WhatsApp, and Email notifications so you never miss an update.
-            </Text>
+            <ResponsiveTitle title={title} />
+            <ResponsiveDescription description={description} marginTop={10} />
             <div className={classes.imageFlexRow} style={{ marginTop: '20px' }}>
               <Image src={image} className={classes.smallImage} />
             </div>

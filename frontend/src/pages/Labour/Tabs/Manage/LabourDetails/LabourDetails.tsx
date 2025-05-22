@@ -6,6 +6,7 @@ import { Badge, Button, Image, Text } from '@mantine/core';
 import { ApiError, LabourQueriesService, OpenAPI } from '../../../../../clients/labour_service';
 import { NotFoundError } from '../../../../../Errors';
 import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
+import { ResponsiveDescription } from '../../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '../../../../../shared-components/utils';
 import { useLabour } from '../../../LabourContext';
@@ -73,10 +74,11 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
         <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
           <div className={classes.content}>
             <ResponsiveTitle title={title} />
-            <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
-              {completed ? completedDescription : activeDescription}
-            </Text>
-            <div className={baseClasses.imageFlexRow}>
+            <ResponsiveDescription
+              description={completed ? completedDescription : activeDescription}
+              marginTop={10}
+            />
+            <div className={baseClasses.imageFlexRow} style={{ marginTop: '10px' }}>
               <Image src={image} className={classes.smallImage} />
             </div>
           </div>
