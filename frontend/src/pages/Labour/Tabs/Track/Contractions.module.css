@@ -2,24 +2,6 @@
     display: flex;
   }
   
-  .inner {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-    padding: calc(var(--mantine-spacing-xl));
-    padding-bottom: 0;
-  
-    @media (max-width: $mantine-breakpoint-md) {
-      padding: calc(var(--mantine-spacing-md));
-      padding-bottom: 0;
-    }
-  
-    @media (max-width: $mantine-breakpoint-sm) {
-      padding: calc(var(--mantine-spacing-xs));
-      padding-bottom: 0;
-    }
-  }
-  
   .content {
     width: 100%;
     margin-right: calc(var(--mantine-spacing-xl));

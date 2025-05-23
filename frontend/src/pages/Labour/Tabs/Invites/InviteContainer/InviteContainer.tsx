@@ -15,6 +15,7 @@ import { ResponsiveDescription } from '../../../../../shared-components/Responsi
 import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { useLabour } from '../../../LabourContext';
 import image from './invite.svg';
+import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './InviteContainer.module.css';
 
 export function InviteContainer() {
@@ -78,7 +79,7 @@ export function InviteContainer() {
     "Invite your friends and family, we'll give them instructions on how to sign up and what to expect.";
 
   return (
-    <div className={classes.inner}>
+    <div className={baseClasses.inner}>
       <Image src={image} className={classes.image} />
       <div className={classes.content}>
         <ResponsiveTitle title={title} />

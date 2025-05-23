@@ -26,7 +26,6 @@ import { Contractions } from './Tabs/Track/Contractions.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import baseClasses from '../../shared-components/shared-styles.module.css';
 
-// Define tab configuration to make it more maintainable
 const TABS = [
   { id: 'details', label: 'Manage', icon: IconSettings },
   { id: 'updates', label: 'Updates', icon: IconMessage, requiresPaid: true },

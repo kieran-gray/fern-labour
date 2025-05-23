@@ -9,6 +9,7 @@ import { useLabour } from '../../../LabourContext';
 import { CopyButton } from '../CopyButton/CopyButton';
 import QRButton from '../QRButton/QRButton';
 import image from './share.svg';
+import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './ShareContainer.module.css';
 
 export function ShareContainer() {
@@ -56,7 +57,7 @@ export function ShareContainer() {
   const shareUrl = `${window.location.origin}/subscribe/${labourId}`;
   const shareText = `Hey! I’d love for you to be part of my labour circle.\nUse the link below to sign up and get updates as things happen:\n\n${shareUrl}\n\nYou'll need this code for access: ${data}`;
   return (
-    <div className={classes.inner}>
+    <div className={baseClasses.inner}>
       <div className={classes.content}>
         <ResponsiveTitle title={title} />
         <ResponsiveDescription description={description} marginTop={10} />

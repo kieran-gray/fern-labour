@@ -140,7 +140,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   return (
     <div className={baseClasses.root} style={{ maxHeight: 'calc(80% - 120px)' }}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={baseClasses.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title={title} />
             <ResponsiveDescription description={description} marginTop={10} />

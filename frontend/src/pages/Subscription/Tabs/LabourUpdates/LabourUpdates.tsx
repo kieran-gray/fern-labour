@@ -85,7 +85,7 @@ export function StatusUpdates({
   return (
     <div className={baseClasses.root} style={{ maxHeight: 'calc(85% - 120px)' }}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={baseClasses.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title={`${pluralisedBirthingPersonName} status updates`} />
             <ResponsiveDescription description={description} marginTop={10} />

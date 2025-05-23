@@ -13,7 +13,7 @@ export function LabourHistory() {
   return (
     <div className={baseClasses.root} style={{ width: '100%', flexGrow: 1 }}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={baseClasses.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title={title} />
             <ResponsiveDescription description={description} marginTop={10} />
@@ -24,7 +24,7 @@ export function LabourHistory() {
           <Image src={image} className={classes.image} />
         </div>
 
-        <div className={classes.inner} style={{ paddingTop: '0' }}>
+        <div className={baseClasses.inner} style={{ padding: '0' }}>
           <LabourHistoryTable />
         </div>
       </div>

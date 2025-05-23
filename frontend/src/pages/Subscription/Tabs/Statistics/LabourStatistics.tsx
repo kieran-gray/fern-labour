@@ -64,7 +64,7 @@ export const LabourStatistics = ({
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={baseClasses.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title={`${birthingPersonName} labour statistics`} />
             <ResponsiveDescription description={description} marginTop={10} />

@@ -70,20 +70,6 @@
     }
   }
 
-  .inner {
-    display: flex;
-    justify-content: space-between;
-    padding: calc(var(--mantine-spacing-xl));
-
-    @media (max-width: $mantine-breakpoint-md) {
-        padding: calc(var(--mantine-spacing-md));
-    }
-
-    @media (max-width: $mantine-breakpoint-sm) {
-      padding: calc(var(--mantine-spacing-xs));
-    }
-  }
-
   .statsTextContainer {
     display: flex;
     flex-direction: row;
