@@ -174,7 +174,7 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={baseClasses.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title="Your labour statistics" />
             <ResponsiveDescription

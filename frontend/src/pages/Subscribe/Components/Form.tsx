@@ -71,7 +71,7 @@ export default function SubscribeForm({
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={baseClasses.inner}>
           <div className={classes.content}>
             <Title className={classes.title}>
               Congratulations! <br /> Someone wants to share their labour journey with you!

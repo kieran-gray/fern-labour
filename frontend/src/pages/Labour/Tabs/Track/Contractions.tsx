@@ -45,7 +45,7 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={baseClasses.inner} style={{ paddingBottom: 0 }}>
           <div className={classes.content}>
             <div className={classes.titleRow}>
               <ResponsiveTitle title="Track your contractions" />

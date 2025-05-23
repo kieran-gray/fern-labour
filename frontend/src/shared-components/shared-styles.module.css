@@ -25,7 +25,15 @@
     @media (max-width: $mantine-breakpoint-md) {
       padding: calc(var(--mantine-spacing-md));
     }
-  }
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: calc(var(--mantine-spacing-sm));
+    }
+
+    @media (max-width: $mantine-breakpoint-xs) {
+      padding: calc(var(--mantine-spacing-xs));
+    }
+}
 
 .content {
     width: 100%

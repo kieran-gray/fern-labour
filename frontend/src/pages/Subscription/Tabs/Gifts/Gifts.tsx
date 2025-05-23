@@ -12,7 +12,6 @@ import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
 import wildly_tasty_main from './ads/wildlytasty/main.webp';
 import image from './Gifts.svg';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from '../../../Labour/Tabs/Updates/LabourUpdates.module.css';
 
 export default function Gifts({ birthingPersonName }: { birthingPersonName: string }) {
   const pluralisedBirthingPersonName = pluraliseName(birthingPersonName);
@@ -156,8 +155,8 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
       {gifts.map((gift, index) => (
         <div className={baseClasses.root} style={{ marginTop: '20px' }}>
           <div className={baseClasses.body}>
-            <div className={classes.inner}>
-              <div className={classes.content}>
+            <div className={baseClasses.inner}>
+              <div className={baseClasses.content}>
                 <ResponsiveTitle title={gift.title} />
                 <ResponsiveDescription description={gift.subtitle} marginTop={6} />
                 <Flex

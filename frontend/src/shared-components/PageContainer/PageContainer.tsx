@@ -10,7 +10,6 @@ interface PageContainerProps {
   image?: string;
   mobileImage?: string;
   children?: React.ReactNode;
-  mobileTitle?: string;
 }
 
 export function PageContainerContentBottom({
@@ -23,7 +22,7 @@ export function PageContainerContentBottom({
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        <div className={classes.inner}>
+        <div className={baseClasses.inner}>
           <div className={classes.content}>
             <ResponsiveTitle title={title} />
             <ResponsiveDescription description={description} marginTop={10} />
@@ -39,7 +38,7 @@ export function PageContainerContentBottom({
             </div>
           )}
         </div>
-        <div className={classes.inner} style={{ paddingTop: 0 }}>
+        <div className={baseClasses.inner} style={{ paddingTop: 0, paddingBottom: 0 }}>
           {children}
         </div>
       </div>

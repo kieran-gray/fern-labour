@@ -70,7 +70,7 @@ export function LabourHistoryTable() {
     const date =
       labour.end_time != null
         ? new Date(labour.end_time).toISOString().substring(0, 10)
-        : new Date(labour.due_date).toDateString().substring(0, 10);
+        : new Date(labour.due_date).toISOString().substring(0, 10);
     return (
       <Table.Tr key={labour.id}>
         <Table.Td>
