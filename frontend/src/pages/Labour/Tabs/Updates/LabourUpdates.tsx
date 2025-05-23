@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { IconBook } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
-import { Image, ScrollArea } from '@mantine/core';
+import { ActionIcon, Image, ScrollArea } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { LabourDTO, LabourUpdateDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
 import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
+import { LabourUpdatesHelpModal } from './HelpModal';
 import image from './image.svg';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
 import { LabourUpdateControls } from './LabourUpdateControls';
@@ -88,6 +91,7 @@ const mapLabourUpdateToProps = (
 };
 
 export function LabourUpdates({ labour }: LabourUpdatesProps) {
+  const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
   const auth = useAuth();
   const firstName = auth.user?.profile.given_name || '';
@@ -132,7 +136,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   const title = completed ? 'Your labour updates' : 'Share an update';
   const description = completed
     ? 'Here you can see the updates you made during your labour experience.'
-    : 'Share updates here to let your subscribers know how you are getting on. Making an announcement will send your update to your subscribers by their preferred methods.';
+    : 'Share updates here to let your subscribers know how you are getting on. Click the book icon above for more info.';
 
   const hasUpdates = labourUpdateDisplay.length > 0;
   const showEmptyState = !hasUpdates && !completed;
@@ -140,12 +144,20 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   return (
     <div className={baseClasses.root} style={{ maxHeight: 'calc(80% - 120px)' }}>
       <div className={baseClasses.body}>
-        <div className={baseClasses.inner}>
-          <div className={classes.content}>
+        <div className={classes.titleRow}>
+          <div className={classes.title} style={{ paddingBottom: 0 }}>
             <ResponsiveTitle title={title} />
-            <ResponsiveDescription description={description} marginTop={10} />
+          </div>
+          <ActionIcon radius="xl" variant="light" size="xl" onClick={open}>
+            <IconBook />
+          </ActionIcon>
+          <LabourUpdatesHelpModal close={close} opened={opened} />
+        </div>
+        <div className={baseClasses.inner} style={{ paddingTop: 0 }}>
+          <div className={classes.content}>
+            <ResponsiveDescription description={description} marginTop={0} />
             {hasUpdates && (
-              <ScrollArea.Autosize mt={10} mah="55svh" viewportRef={viewport}>
+              <ScrollArea.Autosize mt={20} mah="55svh" viewportRef={viewport}>
                 <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
               </ScrollArea.Autosize>
             )}

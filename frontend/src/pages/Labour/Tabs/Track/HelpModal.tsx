@@ -1,9 +1,13 @@
-import { Anchor, Modal, Text, Title } from '@mantine/core';
+import { IconHourglassHigh, IconHourglassLow } from '@tabler/icons-react';
+import { Anchor, Button, Modal, Slider, Text, Title } from '@mantine/core';
+import { ContractionDTO } from '../../../../clients/labour_service';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert';
 import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital';
+import ContractionTimeline from './ContractionTimeline';
 import modalClasses from '../../../../shared-components/Modal.module.css';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
+import contractionClasses from './Contractions.module.css';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -14,11 +18,34 @@ export const ContractionsHelpModal = ({
   opened: boolean;
   close: CloseFunctionType;
 }) => {
+  const now = new Date();
+  const mockContractions: ContractionDTO[] = [
+    {
+      id: 'mock-contraction-1',
+      labour_id: 'mock-labour-id',
+      start_time: new Date(now.getTime() - 300 * 1000).toISOString(),
+      end_time: new Date(now.getTime() - 229 * 1000).toISOString(),
+      duration: 71,
+      intensity: 3,
+      notes: null,
+      is_active: false,
+    },
+    {
+      id: 'mock-contraction-2',
+      labour_id: 'mock-labour-id',
+      start_time: new Date(now.getTime() - 44 * 1000).toISOString(),
+      end_time: now.toISOString(),
+      duration: 44,
+      intensity: 2,
+      notes: null,
+      is_active: false,
+    },
+  ];
   return (
     <Modal
       opened={opened}
       onClose={close}
-      title="Help"
+      title="What's this?"
       size="xl"
       transitionProps={{ transition: 'slide-left' }}
       overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
@@ -41,20 +68,81 @@ export const ContractionsHelpModal = ({
           Tracking your contractions
         </Title>
         <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
-          At the beginning of your contraction tap 'Start Contraction' and at the end tap 'End
-          Contraction'.
-          <br />
-          <br />
+          At the beginning of your contraction tap:
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              flexDirection: 'column',
+              padding: '20px 0',
+            }}
+          >
+            <Button
+              leftSection={<IconHourglassLow size={25} />}
+              radius="xl"
+              size="lg"
+              variant="filled"
+              color="var(--mantine-color-pink-4)"
+            >
+              Start Contraction
+            </Button>
+          </div>
+          At the end tap:
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              flexDirection: 'column',
+              padding: '20px 0',
+            }}
+          >
+            <Button
+              leftSection={<IconHourglassHigh size={25} />}
+              radius="xl"
+              size="lg"
+              variant="white"
+            >
+              End Contraction
+            </Button>
+          </div>
           While your contraction is being timed you will have access to a slider to set the
-          intensity.
-          <br />
+          intensity:
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              flexDirection: 'column',
+              padding: '20px 0',
+            }}
+          >
+            <Text ta="center" className={baseClasses.minorText}>
+              Your contraction intensity
+            </Text>
+            <Slider
+              classNames={{
+                root: contractionClasses.slider,
+                markLabel: contractionClasses.markLabel,
+                track: contractionClasses.track,
+              }}
+              color="var(--mantine-color-pink-4)"
+              size="lg"
+              radius="lg"
+              w="60%"
+              min={0}
+              max={10}
+              step={1}
+              defaultValue={5}
+              marks={[
+                { value: 0, label: '0' },
+                { value: 5, label: 5 },
+                { value: 10, label: 10 },
+              ]}
+            />
+          </div>
           Don't worry if you don't set it, you can always set it later by editing the contraction.
-          <br />
-          <br />
-          To edit a contraction, simply tap on it and a popup will open. Here you can edit the start
-          time, end time, and intensity of the contraction.
-          <br />
-          You can also delete a contraction through the same popup.
           <br />
           <br />
           On the contraction tracker screen you will see some information next to each contraction:
@@ -66,47 +154,27 @@ export const ContractionsHelpModal = ({
           <br />
           - The duration of the contraction
           <br />
-          Additionally, the contraction intensity is shown as a number inside each contraction.
+          The contraction intensity is shown as a number inside each contraction.
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+            <ContractionTimeline contractions={mockContractions} completed />
+          </div>
         </Text>
-        <Title order={3} mt="lg" visibleFrom="md">
-          When to contact a midwife
+        <Title order={3} mt="sm" visibleFrom="md">
+          Editing a contraction
         </Title>
-        <Title order={4} mt="lg" hiddenFrom="md">
-          When to contact a midwife
+        <Title order={4} mt="sm" hiddenFrom="md">
+          Editing a contraction
         </Title>
         <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
-          <Text fw={500} size="sm" mb={5}>
-            Call your midwife or maternity unit for guidance if:
-          </Text>
-          - You think you’re in labour
+          To edit a contraction, simply tap on it and a popup will open. You can edit the start
+          time, end time, and intensity of the contraction.
           <br />
-          - You’re having regular contractions coming every 5 minutes or more often
-          <br />
-          - You're worried about anything
-          <br />
-          <br />
-          <Text fw={500} size="sm" mb={5}>
-            Call your midwife or maternity unit urgently if:
-          </Text>
-          - Your waters break
-          <br />
-          - You have vaginal bleeding
-          <br />
-          - Your baby is moving less than usual
-          <br />
-          - You're less than 37 weeks pregnant and think you might be in labour
-          <br />
-          - Any of your contractions last longer than 2 minutes
-          <br />
-          - You're having 6 or more contractions every 10 minutes
-          <br />
-          The app will alert you if you should call based on the final two points above.
-          <CallMidwifeAlert />
+          You can also delete a contraction through the same popup.
         </Text>
-        <Title order={3} mt="lg" visibleFrom="md">
+        <Title order={3} mt="xl" visibleFrom="md">
           When to go to the hospital
         </Title>
-        <Title order={4} mt="lg" hiddenFrom="md">
+        <Title order={4} mt="xl" hiddenFrom="md">
           When to go to the hospital
         </Title>
         <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
@@ -149,6 +217,41 @@ export const ContractionsHelpModal = ({
             Please always follow your healthcare provider's specific guidance, as they may give you
             different instructions based on your individual situation.
           </Text>
+        </Text>
+        <Title order={3} mt="xl" visibleFrom="md">
+          When to contact a midwife
+        </Title>
+        <Title order={4} mt="xl" hiddenFrom="md">
+          When to contact a midwife
+        </Title>
+        <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
+          <Text fw={500} size="sm" mb={5}>
+            Call your midwife or maternity unit for guidance if:
+          </Text>
+          - You think you’re in labour
+          <br />
+          - You’re having regular contractions coming every 5 minutes or more often
+          <br />
+          - You're worried about anything
+          <br />
+          <br />
+          <Text fw={500} size="sm" mb={5}>
+            Call your midwife or maternity unit urgently if:
+          </Text>
+          - Your waters break
+          <br />
+          - You have vaginal bleeding
+          <br />
+          - Your baby is moving less than usual
+          <br />
+          - You're less than 37 weeks pregnant and think you might be in labour
+          <br />
+          - Any of your contractions last longer than 2 minutes
+          <br />
+          - You're having 6 or more contractions every 10 minutes
+          <br />
+          The app will alert you if you should call based on the final two points above.
+          <CallMidwifeAlert />
           <br />
           <Anchor
             href="https://www.nhs.uk/pregnancy/labour-and-birth/what-happens/the-stages-of-labour-and-birth/"
