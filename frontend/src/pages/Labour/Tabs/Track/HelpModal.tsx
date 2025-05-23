@@ -20,6 +20,7 @@ export const ContractionsHelpModal = ({
       onClose={close}
       title="Help"
       size="xl"
+      transitionProps={{ transition: 'slide-left' }}
       overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
       classNames={{
         content: modalClasses.helpModalRoot,
