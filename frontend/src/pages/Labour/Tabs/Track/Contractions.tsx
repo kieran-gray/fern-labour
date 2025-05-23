@@ -41,13 +41,13 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
 
   const completed = labour.end_time !== null;
   const activeDescription =
-    'Track your contractions here. Simply click the button below to start a new contraction. Click the book icon above for more info.';
+    'Track your contractions here. Simply press the button below to start a new contraction. Click the book icon above for more info.';
   const completedDescription =
     "Here's a record of your contractions during labour. All contraction data is preserved for your reference.";
 
   return (
     <div className={baseClasses.root}>
-      <div className={baseClasses.body} style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className={baseClasses.body}>
         <div className={classes.titleRow}>
           <div className={classes.title} style={{ paddingBottom: 0 }}>
             <ResponsiveTitle title="Track your contractions" />
