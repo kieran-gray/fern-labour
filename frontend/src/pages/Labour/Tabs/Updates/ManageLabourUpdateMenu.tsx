@@ -85,7 +85,11 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
         <Menu.Item
           color="red"
           leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
-          onClick={() => announceStatusUpdate.mutate()}
+          onClick={() => {
+            if (!statusUpdateId.startsWith('mock-')) {
+              announceStatusUpdate.mutate();
+            }
+          }}
         >
           Announce
         </Menu.Item>
@@ -93,7 +97,11 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
         <Menu.Item
           color="red"
           leftSection={<IconTrash size={20} stroke={1.5} />}
-          onClick={() => deleteStatusUpdate.mutate()}
+          onClick={() => {
+            if (!statusUpdateId.startsWith('mock-')) {
+              deleteStatusUpdate.mutate();
+            }
+          }}
         >
           Delete
         </Menu.Item>
