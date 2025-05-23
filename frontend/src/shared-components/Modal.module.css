@@ -9,6 +9,15 @@
       flex-direction: column;
     }
   }
+
+  .helpModalRoot {
+    display: flex;
+    flex-wrap: wrap;
+    border: 5px solid var(--mantine-color-pink-3);
+    background-color: var(--mantine-color-pink-3);
+    border-radius: var(--mantine-radius-xl);
+
+  }
   
   .modal {
     color: var(--mantine-color-white);
