@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ScrollArea, Space } from '@mantine/core';
 import { LabourDTO, UserSummaryDTO } from '../../../../clients/labour_service';
 import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
@@ -21,52 +21,56 @@ export function StatusUpdates({
   const pluralisedBirthingPersonName = pluraliseName(birthingPerson.first_name);
   const sharedLabourBegunMessage = `Exciting news, ${birthingPerson.first_name} has started labour!`;
 
-  const statusUpdateDisplay = labourUpdates.map((data) => {
-    let props: LabourUpdateProps;
-    if (data.labour_update_type === 'announcement') {
-      if (data.application_generated) {
-        props = {
-          id: data.id,
-          sentTime: new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at'),
-          class: classes.privateNotePanel,
-          icon: '🌱',
-          badgeColor: '#ff8f00',
-          badgeText: 'Fern Labour',
-          text: sharedLabourBegunMessage,
-          visibility: '',
-          showMenu: false,
-          showFooter: false,
-        };
-      } else {
-        props = {
-          id: data.id,
-          sentTime: new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at'),
-          class: classes.announcementPanel,
-          icon: '📣',
-          badgeColor: 'var(--mantine-color-pink-6)',
-          badgeText: data.labour_update_type.split('_')[0],
-          text: data.message,
-          visibility: '',
-          showMenu: false,
-          showFooter: false,
-        };
-      }
-    } else {
-      props = {
+  const formatTime = (time: string) =>
+    new Date(time).toLocaleString().slice(0, 17).replace(',', ' at');
+
+  const renderedUpdates = useMemo(() => {
+    const statusUpdateDisplay: JSX.Element[] = [];
+    labourUpdates.forEach((data) => {
+      let props: LabourUpdateProps | null = null;
+      const baseProps = {
         id: data.id,
-        sentTime: new Date(data.sent_time).toLocaleString().slice(0, 17).replace(',', ' at'),
-        class: classes.statusUpdatePanel,
-        icon: '💫',
-        badgeColor: '#24968b',
-        badgeText: data.labour_update_type.split('_')[0],
-        text: data.message,
+        sentTime: formatTime(data.sent_time),
         visibility: '',
         showMenu: false,
         showFooter: false,
       };
-    }
-    return <LabourUpdate data={props} />;
-  });
+      if (data.labour_update_type === 'announcement') {
+        if (data.application_generated) {
+          props = {
+            ...baseProps,
+            class: classes.privateNotePanel,
+            icon: '🌱',
+            badgeColor: '#ff8f00',
+            badgeText: 'Fern Labour',
+            text: sharedLabourBegunMessage,
+          };
+        } else {
+          props = {
+            ...baseProps,
+            class: classes.announcementPanel,
+            icon: '📣',
+            badgeColor: 'var(--mantine-color-pink-6)',
+            badgeText: data.labour_update_type.split('_')[0],
+            text: data.message,
+          };
+        }
+      } else if (data.labour_update_type === 'status_update') {
+        props = {
+          ...baseProps,
+          class: classes.statusUpdatePanel,
+          icon: '💫',
+          badgeColor: '#24968b',
+          badgeText: data.labour_update_type.split('_')[0],
+          text: data.message,
+        };
+      }
+      if (props != null) {
+        statusUpdateDisplay.push(<LabourUpdate data={props} />);
+      }
+    });
+    return statusUpdateDisplay;
+  }, [labourUpdates]);
 
   useEffect(() => {
     if (viewport.current) {
@@ -85,16 +89,19 @@ export function StatusUpdates({
           <div className={classes.content}>
             <ResponsiveTitle title={`${pluralisedBirthingPersonName} status updates`} />
             <ResponsiveDescription description={description} marginTop={10} />
-            {(statusUpdateDisplay.length > 0 && (
-              <ScrollArea.Autosize mt="md" mah="60svh" viewportRef={viewport}>
-                <div className={classes.statusUpdateContainer}>{statusUpdateDisplay}</div>
-              </ScrollArea.Autosize>
+            <Space h="lg" />
+            {(renderedUpdates.length > 0 && (
+              <>
+                <ScrollArea.Autosize mah="60svh" viewportRef={viewport}>
+                  <div className={classes.statusUpdateContainer}>{renderedUpdates}</div>
+                </ScrollArea.Autosize>
+                <Space h="lg" />
+              </>
             )) || (
               <ImportantText
                 message={`${birthingPerson.first_name} hasn't posted any updates yet.`}
               />
             )}
-            <Space h="lg" />
           </div>
         </div>
       </div>
