@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
-import { Space, Tabs, Text } from '@mantine/core';
+import { Center, Space, Tabs, Text } from '@mantine/core';
 import { ApiError, LabourQueriesService, OpenAPI } from '../../clients/labour_service';
 import { NotFoundError, PermissionDenied } from '../../Errors';
 import { AppShell } from '../../shared-components/AppShell.tsx';
@@ -179,8 +179,8 @@ export const LabourPage = () => {
           </Tabs.List>
           <div className={baseClasses.flexPageColumn}>
             {TABS.map(({ id }) => (
-              <Tabs.Panel key={id} value={id}>
-                {renderTabPanel(id)}
+              <Tabs.Panel key={id} value={id} w="100%">
+                <Center style={{ flexDirection: 'column' }}>{renderTabPanel(id)}</Center>
               </Tabs.Panel>
             ))}
           </div>

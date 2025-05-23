@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
-import { Space, Tabs, Text } from '@mantine/core';
+import { Center, Space, Tabs, Text } from '@mantine/core';
 import { ApiError, OpenAPI, SubscriptionService } from '../../clients/labour_service/index.ts';
 import { AppShell } from '../../shared-components/AppShell.tsx';
 import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
@@ -174,8 +174,8 @@ export const SubscriptionPage = () => {
           </Tabs.List>
           <div className={baseClasses.flexPageColumn}>
             {TABS.map((tab) => (
-              <Tabs.Panel key={tab.id} value={tab.id} keepMounted={tab.id !== 'stats'}>
-                {renderTabPanel(tab.id)}
+              <Tabs.Panel key={tab.id} value={tab.id} keepMounted={tab.id !== 'stats'} w="100%">
+                <Center style={{ flexDirection: 'column' }}>{renderTabPanel(tab.id)}</Center>
               </Tabs.Panel>
             ))}
           </div>
