@@ -13,16 +13,18 @@
   }
   
   .title {
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-    font-family:
-      "Greycliff CF",
-      var(--mantine-font-family);
-    font-size: 34px;
-    line-height: 1.2;
-    font-weight: 900;
+    padding: calc(var(--mantine-spacing-xl));
   
+    @media (max-width: $mantine-breakpoint-md) {
+      padding: calc(var(--mantine-spacing-md));
+    }
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      padding: calc(var(--mantine-spacing-sm));
+    }
+
     @media (max-width: $mantine-breakpoint-xs) {
-      font-size: 24px;
+      padding: calc(var(--mantine-spacing-xs));
     }
   }
 
@@ -30,9 +32,15 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-content:end;
+    margin-bottom: 10px;
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      margin-bottom: 8px;
+    }
 
     @media (max-width: $mantine-breakpoint-xs) {
-      flex-direction: column;
+      margin-bottom: 2px;
     }
   }
 
