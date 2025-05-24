@@ -1,16 +1,14 @@
 import { Button, Modal, Space, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import classes from '../../../../../shared-components/Modal.module.css';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 
 export default function ConfirmActionModal({
-  setGetConfirmation,
-  setConfirmed,
+  onConfirm,
+  onCancel,
 }: {
-  setGetConfirmation: Function;
-  setConfirmed: Function;
+  onConfirm: Function;
+  onCancel: Function;
 }) {
-  const [_, { close }] = useDisclosure(false);
   const title = 'Unsubscribe?';
   return (
     <Modal
@@ -26,8 +24,7 @@ export default function ConfirmActionModal({
       centered
       closeOnClickOutside
       onClose={() => {
-        setGetConfirmation(false);
-        close;
+        onCancel();
       }}
       title={title}
     >
@@ -40,8 +37,7 @@ export default function ConfirmActionModal({
           variant="light"
           radius="lg"
           onClick={() => {
-            setGetConfirmation(false);
-            close;
+            onCancel();
           }}
         >
           Cancel
@@ -50,8 +46,7 @@ export default function ConfirmActionModal({
           style={{ flex: 1, marginLeft: 5 }}
           radius="lg"
           onClick={() => {
-            setConfirmed(true);
-            close;
+            onConfirm();
           }}
         >
           Unsubscribe
