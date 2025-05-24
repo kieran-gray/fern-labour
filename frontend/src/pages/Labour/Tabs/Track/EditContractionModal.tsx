@@ -14,6 +14,7 @@ import {
 } from '../../../../clients/labour_service';
 import ConfirmActionModal from './ConfirmActionModal';
 import { ContractionData } from './ContractionTimeline';
+import { updateTime } from './UpdateTime';
 import modalClasses from '../../../../shared-components/Modal.module.css';
 import classes from './Contractions.module.css';
 
@@ -31,8 +32,7 @@ export const EditContractionModal = ({
   const auth = useAuth();
   const [updateMutationInProgress, setUpdateMutationInProgress] = useState<boolean>(false);
   const [deleteMutationInProgress, setDeleteMutationInProgress] = useState<boolean>(false);
-  const [getConfirmation, setGetConfirmation] = useState<boolean>(false);
-  const [confirmed, setConfirmed] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const form = useForm({
@@ -46,17 +46,6 @@ export const EditContractionModal = ({
 
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
-  };
-
-  const updateTime = (dateTime: string, time: string) => {
-    const originalDate = new Date(dateTime);
-
-    const [hours, minutes, seconds] = time.split(':').map(Number);
-
-    const newLocalDate = new Date(originalDate);
-    newLocalDate.setHours(hours, minutes, seconds);
-
-    return newLocalDate.toISOString();
   };
 
   const deleteContractionMutation = useMutation({
@@ -140,17 +129,14 @@ export const EditContractionModal = ({
     },
   });
 
-  if (getConfirmation) {
-    if (confirmed) {
-      deleteContractionMutation.mutate({ contractionId: contractionData!.contractionId });
-      setGetConfirmation(false);
-      setConfirmed(false);
-    } else {
-      return (
-        <ConfirmActionModal setGetConfirmation={setGetConfirmation} setConfirmed={setConfirmed} />
-      );
-    }
-  }
+  const handleConfirm = () => {
+    setIsModalOpen(false);
+    deleteContractionMutation.mutate({ contractionId: contractionData!.contractionId });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const getTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString(navigator.language, {
@@ -162,103 +148,106 @@ export const EditContractionModal = ({
   };
 
   return (
-    <Modal
-      opened={opened}
-      onClose={close}
-      title="Update Contraction"
-      centered
-      overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
-      classNames={{
-        content: modalClasses.modalRoot,
-        header: modalClasses.modalHeader,
-        title: modalClasses.modalTitle,
-        body: modalClasses.modalBody,
-        close: modalClasses.closeButton,
-      }}
-    >
-      <form
-        onSubmit={form.onSubmit((values) =>
-          updateContractionMutation.mutate({
-            values,
-            contractionId: contractionData!.contractionId,
-          })
-        )}
+    <>
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Update Contraction"
+        centered
+        overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
+        classNames={{
+          content: modalClasses.modalRoot,
+          header: modalClasses.modalHeader,
+          title: modalClasses.modalTitle,
+          body: modalClasses.modalBody,
+          close: modalClasses.closeButton,
+        }}
       >
-        <Space h="lg" />
-        <TimeInput
-          rightSection={<IconClock />}
-          withSeconds
-          key={form.key('startTime')}
-          radius="lg"
-          label="Start Time"
-          {...form.getInputProps('startTime')}
-          defaultValue={getTime(contractionData?.startTime) || undefined}
-        />
-        <Space h="lg" />
-        <TimeInput
-          rightSection={<IconClock />}
-          withSeconds
-          key={form.key('endTime')}
-          radius="lg"
-          label="End Time"
-          {...form.getInputProps('endTime')}
-          defaultValue={getTime(contractionData?.endTime) || undefined}
-        />
-        <Space h="lg" />
-        <Text size="sm" fw={500}>
-          Intensity
-        </Text>
-        <Slider
-          classNames={{
-            root: classes.slider,
-            markLabel: classes.markLabel,
-            track: classes.track,
-          }}
-          color="var(--mantine-color-pink-4)"
-          key={form.key('intensity')}
-          size="xl"
-          radius="lg"
-          min={0}
-          max={10}
-          step={1}
-          {...form.getInputProps('intensity')}
-          defaultValue={contractionData?.intensity || undefined}
-          marks={[
-            { value: 0, label: '0' },
-            { value: 5, label: 5 },
-            { value: 10, label: 10 },
-          ]}
-        />
-        <Space h="xl" />
-        <div className={classes.flexRow}>
-          <Button
-            color="var(--mantine-color-pink-5)"
-            leftSection={<IconTrash />}
-            variant="filled"
-            radius="xl"
-            size="md"
-            h={48}
-            styles={{ section: { marginLeft: 20 } }}
-            style={{ flexShrink: 1, marginRight: '5px' }}
-            onClick={() => setGetConfirmation(true)}
-            loading={deleteMutationInProgress}
+        <form
+          onSubmit={form.onSubmit((values) =>
+            updateContractionMutation.mutate({
+              values,
+              contractionId: contractionData!.contractionId,
+            })
+          )}
+        >
+          <Space h="lg" />
+          <TimeInput
+            rightSection={<IconClock />}
+            withSeconds
+            key={form.key('startTime')}
+            radius="lg"
+            label="Start Time"
+            {...form.getInputProps('startTime')}
+            defaultValue={getTime(contractionData?.startTime) || undefined}
           />
-          <Button
+          <Space h="lg" />
+          <TimeInput
+            rightSection={<IconClock />}
+            withSeconds
+            key={form.key('endTime')}
+            radius="lg"
+            label="End Time"
+            {...form.getInputProps('endTime')}
+            defaultValue={getTime(contractionData?.endTime) || undefined}
+          />
+          <Space h="lg" />
+          <Text size="sm" fw={500}>
+            Intensity
+          </Text>
+          <Slider
+            classNames={{
+              root: classes.slider,
+              markLabel: classes.markLabel,
+              track: classes.track,
+            }}
             color="var(--mantine-color-pink-4)"
-            leftSection={<IconUpload />}
-            variant="light"
-            radius="xl"
-            size="md"
-            h={48}
-            styles={{ section: { marginRight: 22 } }}
-            style={{ width: '100%' }}
-            type="submit"
-            loading={updateMutationInProgress}
-          >
-            Update Contraction
-          </Button>
-        </div>
-      </form>
-    </Modal>
+            key={form.key('intensity')}
+            size="xl"
+            radius="lg"
+            min={0}
+            max={10}
+            step={1}
+            {...form.getInputProps('intensity')}
+            defaultValue={contractionData?.intensity || undefined}
+            marks={[
+              { value: 0, label: '0' },
+              { value: 5, label: 5 },
+              { value: 10, label: 10 },
+            ]}
+          />
+          <Space h="xl" />
+          <div className={classes.flexRow}>
+            <Button
+              color="var(--mantine-color-pink-5)"
+              leftSection={<IconTrash />}
+              variant="filled"
+              radius="xl"
+              size="md"
+              h={48}
+              styles={{ section: { marginLeft: 20 } }}
+              style={{ flexShrink: 1, marginRight: '5px' }}
+              onClick={() => setIsModalOpen(true)}
+              loading={deleteMutationInProgress}
+            />
+            <Button
+              color="var(--mantine-color-pink-4)"
+              leftSection={<IconUpload />}
+              variant="light"
+              radius="xl"
+              size="md"
+              h={48}
+              styles={{ section: { marginRight: 22 } }}
+              style={{ width: '100%' }}
+              type="submit"
+              loading={updateMutationInProgress}
+            >
+              Update Contraction
+            </Button>
+          </div>
+        </form>
+      </Modal>
+      {isModalOpen && <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} />}
+    </>
   );
 };

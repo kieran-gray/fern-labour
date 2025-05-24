@@ -1,17 +1,14 @@
 import { Button, Modal, Space, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import classes from '../../../../shared-components/Modal.module.css';
 import baseClasses from '../../../../shared-components/shared-styles.module.css';
 
 export default function ConfirmActionModal({
-  setGetConfirmation,
-  setConfirmed,
+  onConfirm,
+  onCancel,
 }: {
-  setGetConfirmation: Function;
-  setConfirmed: Function;
+  onConfirm: Function;
+  onCancel: Function;
 }) {
-  const [_, { close }] = useDisclosure(false);
-  const title = `Delete Contraction?`;
   return (
     <Modal
       overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
@@ -25,10 +22,9 @@ export default function ConfirmActionModal({
       opened
       centered
       onClose={() => {
-        setGetConfirmation(false);
-        close();
+        onCancel();
       }}
-      title={title}
+      title="Delete Contraction?"
     >
       <Space h="lg" />
       <Text className={classes.modalText}>This can't be undone.</Text>
@@ -39,8 +35,7 @@ export default function ConfirmActionModal({
           variant="light"
           radius="lg"
           onClick={() => {
-            setGetConfirmation(false);
-            close;
+            onCancel();
           }}
         >
           Cancel
@@ -49,8 +44,7 @@ export default function ConfirmActionModal({
           style={{ flex: 1, marginLeft: 5 }}
           radius="lg"
           onClick={() => {
-            setConfirmed(true);
-            close;
+            onConfirm();
           }}
         >
           Delete
