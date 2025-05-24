@@ -37,7 +37,7 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
         title: 'Error',
         message: `Error deleting status update. Please try again.`,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-6)',
+        color: 'var(--mantine-color-primary-6)',
       });
     },
   });
@@ -68,7 +68,7 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
         title: 'Error making announcement',
         message,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -83,8 +83,8 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
       <Menu.Dropdown>
         <Menu.Label>Manage Update</Menu.Label>
         <Menu.Item
-          color="red"
           leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
+          style={{color: 'light-dark(red, var(--mantine-color-gray-1))'}}
           onClick={() => {
             if (!statusUpdateId.startsWith('mock-')) {
               announceStatusUpdate.mutate();
@@ -95,8 +95,8 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item
-          color="red"
           leftSection={<IconTrash size={20} stroke={1.5} />}
+          style={{color: 'light-dark(red, var(--mantine-color-gray-1))'}}
           onClick={() => {
             if (!statusUpdateId.startsWith('mock-')) {
               deleteStatusUpdate.mutate();

@@ -58,14 +58,14 @@ export function InviteContainer() {
           title: 'Slow down!',
           message: 'You have sent too many invites today. Wait until tomorrow to send more.',
           radius: 'lg',
-          color: 'var(--mantine-color-pink-7)',
+          color: 'var(--mantine-color-primary-7)',
         });
       } else {
         notifications.show({
           title: 'Error sending invite',
           message: 'Something went wrong. Please try again.',
           radius: 'lg',
-          color: 'var(--mantine-color-pink-7)',
+          color: 'var(--mantine-color-primary-7)',
         });
       }
     },
@@ -107,7 +107,7 @@ export function InviteContainer() {
               />
               <Space w="md" />
               <Button
-                color="var(--mantine-color-pink-4)"
+                color="var(--mantine-color-primary-4)"
                 variant="filled"
                 rightSection={<IconSend size={20} stroke={1.5} />}
                 radius="xl"
@@ -122,7 +122,7 @@ export function InviteContainer() {
                 Send invite
               </Button>
               <Button
-                color="var(--mantine-color-pink-4)"
+                color="var(--mantine-color-primary-4)"
                 variant="filled"
                 rightSection={<IconSend size={20} stroke={1.5} />}
                 radius="xl"

@@ -84,7 +84,7 @@ export function LabourUpdateControls() {
         title: 'Error',
         message: `Error posting ${labourUpdateType === 'status_update' ? 'status update' : 'announcement'}: ${error.message}`,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
     onSettled: () => {
@@ -121,7 +121,7 @@ export function LabourUpdateControls() {
     labourUpdateType === 'status_update' ? 'Post Status Update' : 'Make Announcement';
 
   const buttonProps = {
-    color: 'var(--mantine-color-pink-4)',
+    color: 'var(--mantine-color-primary-4)',
     variant: 'filled',
     radius: 'xl',
     type: 'submit',
@@ -155,7 +155,7 @@ export function LabourUpdateControls() {
         ]}
         radius="lg"
         mt={20}
-        color="var(--mantine-color-pink-4)"
+        color="var(--mantine-color-primary-4)"
       />
       <TextInput {...inputProps} rightSection={inputIcon} size="md" visibleFrom="sm" />
       <TextInput {...inputProps} rightSection={inputIcon} size="sm" hiddenFrom="sm" />

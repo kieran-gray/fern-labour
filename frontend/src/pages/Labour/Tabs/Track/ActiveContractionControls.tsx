@@ -42,7 +42,7 @@ export function ActiveContractionControls({
           markLabel: classes.markLabel,
           track: classes.track,
         }}
-        color="var(--mantine-color-pink-4)"
+        color="var(--mantine-color-primary-4)"
         size="xl"
         radius="lg"
         min={0}

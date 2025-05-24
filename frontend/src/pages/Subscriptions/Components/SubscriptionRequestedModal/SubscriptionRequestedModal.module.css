@@ -33,7 +33,7 @@
   padding: 20px;
   margin-bottom: 10px;
   border-radius: var(--mantine-radius-lg);
-  background-color: var(--mantine-color-pink-0);
+  background-color: var(--mantine-color-primary-0);
 }
 
 .title {
@@ -121,7 +121,7 @@
 }
 
 .pill {
-  background-color: var(--mantine-color-pink-4);
+  background-color: var(--mantine-color-primary-4);
   color: var(--mantine-color-white);
   font-weight: 600;
 }

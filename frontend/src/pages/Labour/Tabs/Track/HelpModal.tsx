@@ -83,7 +83,7 @@ export const ContractionsHelpModal = ({
               radius="xl"
               size="lg"
               variant="filled"
-              color="var(--mantine-color-pink-4)"
+              color="var(--mantine-color-primary-4)"
             >
               Start Contraction
             </Button>
@@ -127,7 +127,7 @@ export const ContractionsHelpModal = ({
                 markLabel: contractionClasses.markLabel,
                 track: contractionClasses.track,
               }}
-              color="var(--mantine-color-pink-4)"
+              color="var(--mantine-color-primary-4)"
               size="lg"
               radius="lg"
               w="60%"

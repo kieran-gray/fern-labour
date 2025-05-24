@@ -29,7 +29,7 @@ export default function QRButton({ url }: { url: string }) {
             value={url}
             style={{ width: '70%', height: '70%', margin: 'auto' }}
             bgColor="var(--mantine-color-white)"
-            fgColor="var(--mantine-color-pink-9)"
+            fgColor="var(--mantine-color-primary-9)"
           />
         </div>
         <Space h="lg" />

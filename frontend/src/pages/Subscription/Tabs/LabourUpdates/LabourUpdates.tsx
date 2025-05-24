@@ -50,7 +50,7 @@ export function StatusUpdates({
             ...baseProps,
             class: classes.announcementPanel,
             icon: '📣',
-            badgeColor: 'var(--mantine-color-pink-6)',
+            badgeColor: 'var(--mantine-color-primary-6)',
             badgeText: data.labour_update_type.split('_')[0],
             text: data.message,
           };

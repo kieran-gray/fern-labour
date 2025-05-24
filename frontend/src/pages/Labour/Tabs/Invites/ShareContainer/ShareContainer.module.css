@@ -2,7 +2,7 @@
 .share {
   padding: 15px;
   border-radius: 15px;
-  background-color: var(--mantine-color-pink-0);
+  background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-4));
   max-width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;

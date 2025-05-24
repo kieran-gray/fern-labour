@@ -118,7 +118,6 @@ export default function ContractionTimeline({
           active={timelineContractions.length}
           lineWidth={6}
           bulletSize={60}
-          color="var(--mantine-color-pink-4)"
         >
           {timelineContractions}
         </Timeline>

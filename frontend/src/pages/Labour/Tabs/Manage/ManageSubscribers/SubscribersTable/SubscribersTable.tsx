@@ -19,7 +19,7 @@ export function SubscribersTable({
       <Table.Tr key={subscription.id}>
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />
+            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-primary-5)" />
             <>
               <Text fz="sm" visibleFrom="xs" fw={500} className={classes.cropText}>
                 {subscriber.first_name} {subscriber.last_name}
@@ -77,7 +77,7 @@ export function SubscribersTable({
     <>
       <Text
         className={baseClasses.importantText}
-        bg="var(--mantine-color-pink-0)"
+        bg="var(--mantine-color-primary-0)"
         size="sm"
         hiddenFrom="sm"
         mt={10}
@@ -86,7 +86,7 @@ export function SubscribersTable({
       </Text>
       <Text
         className={baseClasses.importantText}
-        bg="var(--mantine-color-pink-0)"
+        bg="var(--mantine-color-primary-0)"
         size="md"
         visibleFrom="sm"
         mt={10}

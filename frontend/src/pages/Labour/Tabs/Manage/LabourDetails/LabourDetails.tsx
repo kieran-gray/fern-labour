@@ -121,7 +121,6 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
             {!completed && (
               <div className={baseClasses.flexRow} style={{ marginTop: '20px' }}>
                 <Button
-                  color="var(--mantine-color-pink-4)"
                   leftSection={<IconArrowLeft size={18} stroke={1.5} />}
                   variant="light"
                   radius="xl"
@@ -134,7 +133,6 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
                   Go back to planning
                 </Button>
                 <Button
-                  color="var(--mantine-color-pink-4)"
                   rightSection={<IconArrowRight size={18} stroke={1.5} />}
                   variant="filled"
                   radius="xl"

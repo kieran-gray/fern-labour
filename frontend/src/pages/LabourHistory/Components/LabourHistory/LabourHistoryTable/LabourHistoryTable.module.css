@@ -1,5 +1,5 @@
 table {
-    --table-highlight-on-hover-color: var(--mantine-color-pink-1);
+    --table-highlight-on-hover-color: var(--mantine-color-primary-1);
 }
 
 .cropText {

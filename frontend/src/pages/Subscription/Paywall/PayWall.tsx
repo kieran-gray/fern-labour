@@ -67,7 +67,7 @@ export const PayWall = () => {
         title: 'Error',
         message,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
     onSettled: () => {

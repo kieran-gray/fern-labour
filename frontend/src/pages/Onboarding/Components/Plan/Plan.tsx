@@ -79,7 +79,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
         title: 'Error Planning Labour',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
       console.error('Error planning labour', error);
     },
@@ -164,7 +164,6 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
           style={{ justifyContent: 'flex-end', marginTop: '15px' }}
         >
           <Button
-            color="var(--mantine-color-pink-4)"
             rightSection={icon}
             variant="filled"
             radius="xl"
@@ -181,7 +180,6 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
       )) || (
         <div className={classes.submitRow} style={{ justifyContent: 'space-between' }}>
           <Button
-            color="var(--mantine-color-pink-4)"
             leftSection={icon}
             variant="light"
             radius="xl"
@@ -195,7 +193,6 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
             Update labour plan
           </Button>
           <Button
-            color="var(--mantine-color-pink-4)"
             rightSection={<IconArrowRight size={18} stroke={1.5} />}
             variant="filled"
             radius="xl"

@@ -69,7 +69,7 @@ export default function EndContractionButton({
         title: 'Error',
         message: `Error ending contraction: ${error.message}`,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-6)',
+        color: 'var(--mantine-color-primary-6)',
       });
     },
     onSettled: () => {

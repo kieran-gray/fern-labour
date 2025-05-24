@@ -31,7 +31,7 @@ export const LabourUpdatesHelpModal = ({
     sentTime,
     class: labourUpdateClasses.announcementPanel,
     icon: '📣',
-    badgeColor: 'var(--mantine-color-pink-6)',
+    badgeColor: 'var(--mantine-color-primary-6)',
     badgeText: 'announcement',
     text: 'This is an announcement, use me to make more important updates',
     visibility: '📡 Broadcast to subscribers',

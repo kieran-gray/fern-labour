@@ -77,7 +77,7 @@ export default function StartContractionButton({
         title: 'Error',
         message: `Error starting contraction: ${error.message}`,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-6)',
+        color: 'var(--mantine-color-primary-6)',
       });
     },
     onSettled: () => {
@@ -95,7 +95,7 @@ export default function StartContractionButton({
       size="xl"
       variant="filled"
       loading={mutationInProgress}
-      color="var(--mantine-color-pink-4)"
+      color="var(--mantine-color-primary-4)"
       onClick={() => mutation.mutate(createNewContraction())}
     >
       Start Contraction

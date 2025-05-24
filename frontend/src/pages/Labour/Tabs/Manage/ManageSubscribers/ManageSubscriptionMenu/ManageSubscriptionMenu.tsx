@@ -49,7 +49,7 @@ export function ManageSubscriptionMenu({
         title: 'Error approving subscriber',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -67,7 +67,7 @@ export function ManageSubscriptionMenu({
         title: 'Error removing subscriber',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -85,7 +85,7 @@ export function ManageSubscriptionMenu({
         title: 'Error blocking subscriber',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -103,7 +103,7 @@ export function ManageSubscriptionMenu({
         title: 'Error unblocking subscriber',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -125,7 +125,7 @@ export function ManageSubscriptionMenu({
     <>
       <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
         <Menu.Target>
-          <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
+          <ActionIcon variant="subtle" color="var(--mantine-color-primary-9)">
             <IconDots size={16} stroke={1.5} />
           </ActionIcon>
         </Menu.Target>

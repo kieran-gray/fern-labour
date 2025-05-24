@@ -37,7 +37,7 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
         title: 'Error unsubscribing',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -55,7 +55,7 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
     <>
       <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
         <Menu.Target>
-          <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
+          <ActionIcon variant="subtle" color="var(--mantine-color-primary-9)">
             <IconDots size={16} stroke={1.5} />
           </ActionIcon>
         </Menu.Target>

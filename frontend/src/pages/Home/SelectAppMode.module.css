@@ -101,7 +101,7 @@
   column-gap: 10px;
   padding: 20px;
   border-radius: var(--mantine-radius-lg);
-  background-color: var(--mantine-color-pink-1);
+  background-color: var(--mantine-color-primary-1);
 
   @media (max-width: $mantine-breakpoint-sm) {
       flex-direction: column;
@@ -110,7 +110,7 @@
 
 .labourBadge{
   color: var(--mantine-color-white);
-  background-color: var(--mantine-color-pink-4);
+  background-color: var(--mantine-color-primary-4);
 }
 
 .flexRowEnd {

@@ -24,7 +24,7 @@ export const LabourStatisticsChart = ({
 }) => {
   let minStartTime: number | null = null;
   const chartData: ChartData = {
-    color: 'var(--mantine-color-pink-6)',
+    color: 'var(--mantine-color-primary-6)',
     name: 'Contraction',
     data: [],
   };

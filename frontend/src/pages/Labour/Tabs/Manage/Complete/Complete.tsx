@@ -55,7 +55,7 @@ export default function Complete({
               />
               <div className={baseClasses.flexRow} style={{ marginTop: '20px' }}>
                 <Button
-                  color="var(--mantine-color-pink-4)"
+                  color="var(--mantine-color-primary-4)"
                   leftSection={<IconArrowLeft size={18} stroke={1.5} />}
                   variant="light"
                   radius="xl"

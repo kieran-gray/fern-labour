@@ -58,7 +58,7 @@
     justify-content: flex-end;
     padding: 15px;
     border-radius: 15px;
-    background-color: var(--mantine-color-pink-1);
+    background-color: var(--mantine-color-primary-1);
 }
 
 .slider {
@@ -72,17 +72,17 @@
 }
 
 .track {
-    background-color: var(--mantine-color-pink-1);
+    background-color: var(--mantine-color-primary-1);
 }
 
 .timelineLabel {
-    color: var(--mantine-color-gray-7);
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-2));
     font-size: 11pt;
     font-weight: 400;
 }
 
 .bulletText {
-    color: var(--mantine-color-pink-1);
+    color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-9));
     font-weight: 1000;
     font-size: var(--mantine-font-size-xl);
 }

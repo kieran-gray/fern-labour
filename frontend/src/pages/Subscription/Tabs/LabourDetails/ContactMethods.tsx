@@ -64,7 +64,7 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
   }
 
   const selectedContactMethods = subscription.contact_methods.map((method) => (
-    <Badge id={method} variant="filled" size="lg" color="var(--mantine-color-pink-4)">
+    <Badge id={method} variant="filled" size="lg" color="var(--mantine-color-primary-4)">
       {method}
     </Badge>
   ));
@@ -110,7 +110,7 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
           <div className={baseClasses.inner} style={{ paddingTop: 0 }}>
             <div className={classes.submitRow}>
               <Button
-                color="var(--mantine-color-pink-4)"
+                color="var(--mantine-color-primary-4)"
                 variant="outline"
                 radius="xl"
                 size="md"

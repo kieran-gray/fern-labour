@@ -60,7 +60,7 @@ export default function SubscribeForm({
         title: 'Error',
         message: 'Token or Labour ID is incorrect.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
     onSettled: () => {
@@ -100,7 +100,7 @@ export default function SubscribeForm({
                   />
                   <Space w="xl" h="xl" />
                   <Button
-                    color="var(--mantine-color-pink-4)"
+                    color="var(--mantine-color-primary-4)"
                     size="lg"
                     radius="lg"
                     variant="filled"

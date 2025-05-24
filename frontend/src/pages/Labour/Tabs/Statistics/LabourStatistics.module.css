@@ -1,5 +1,5 @@
 .labourStatsWrapper {
-    background-color: var(--mantine-color-pink-3);
+    background-color: var(--mantine-color-primary-3);
     border-radius: var(--mantine-radius-xl);
   }
   
@@ -11,15 +11,15 @@
   }
   
   .labourStatsHeader {
-    background-color: var(--mantine-color-pink-3);
-    border: 3px solid var(--mantine-color-pink-3);
+    background-color: var(--mantine-color-primary-3);
+    border: 3px solid var(--mantine-color-primary-3);
     border-radius: var(--mantine-radius-xl);
     padding-top: 5px;
     padding-bottom: 5px;
   
     &:hover {
-      background-color: var(--mantine-color-pink-3);
-      border: 3px solid var(--mantine-color-pink-4);
+      background-color: var(--mantine-color-primary-3);
+      border: 3px solid var(--mantine-color-primary-4);
     }
   }
   
@@ -28,7 +28,7 @@
     border: 5px solid #ff7964;
     border-bottom-left-radius: var(--mantine-radius-xl);
     border-bottom-right-radius: var(--mantine-radius-xl);
-    background-color: var(--mantine-color-pink-1);
+    background-color: var(--mantine-color-primary-1);
     height: auto;
     min-width: 220px;
     flex: 1;
@@ -41,7 +41,7 @@
   }
 
   .labourStatsTabsRoot {
-    background-color: var(--mantine-color-pink-1);
+    background-color: var(--mantine-color-primary-1);
     border-radius: var(--mantine-radius-lg);
     padding: 10px;
     flex-direction: column;
@@ -66,7 +66,7 @@
     flex-grow: 1;
       
     &[data-active] {
-      background-color: var(--mantine-color-pink-4);
+      background-color: var(--mantine-color-primary-4);
     }
   }
 
@@ -119,7 +119,7 @@
   }
 
   .tableHeader {
-    background-color: var(--mantine-color-pink-1);
+    background-color: var(--mantine-color-primary-1);
     font-weight: 600;
   }
 

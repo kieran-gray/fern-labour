@@ -18,7 +18,7 @@ export function CopyButton({ text }: { text: string }) {
         disabled={!isMobile}
       >
         <Button
-          color="var(--mantine-color-pink-4)"
+          color="var(--mantine-color-primary-4)"
           variant="filled"
           rightSection={
             clipboard.copied ? (
@@ -48,7 +48,7 @@ export function CopyButton({ text }: { text: string }) {
         disabled={isMobile}
       >
         <Button
-          color="var(--mantine-color-pink-4)"
+          color="var(--mantine-color-primary-4)"
           variant="filled"
           rightSection={
             clipboard.copied ? (

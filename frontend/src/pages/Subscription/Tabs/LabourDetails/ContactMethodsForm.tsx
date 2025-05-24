@@ -89,7 +89,7 @@ export default function ContactMethodsForm({
         title: 'Error Updating Contact Methods',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
       console.error('Error updating contact methods', error);
     },
@@ -155,7 +155,7 @@ export default function ContactMethodsForm({
               clearable
             />
             <Button
-              color="var(--mantine-color-pink-4)"
+              color="var(--mantine-color-primary-4)"
               leftSection={icon}
               variant="outline"
               radius="xl"
@@ -170,7 +170,7 @@ export default function ContactMethodsForm({
               Update Contact Methods
             </Button>
             <Button
-              color="var(--mantine-color-pink-4)"
+              color="var(--mantine-color-primary-4)"
               leftSection={icon}
               variant="outline"
               radius="xl"

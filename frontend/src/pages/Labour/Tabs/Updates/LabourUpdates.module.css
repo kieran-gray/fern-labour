@@ -64,6 +64,7 @@
   position: relative;
   border-left: 4px solid #ffb300;
   transition: transform 0.2s ease;
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-9));
 
   &:hover {
     transform: translateY(-2px);
@@ -78,6 +79,7 @@
   position: relative;
   border-left: 4px solid #24968b;
   transition: transform 0.2s ease;
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-9));
 
   &:hover {
     transform: translateY(-2px);
@@ -92,6 +94,7 @@
   position: relative;
   border-left: 4px solid var(--mantine-color-pink-6);
   transition: transform 0.2s ease;
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-9));
 
   &:hover {
     transform: translateY(-2px);

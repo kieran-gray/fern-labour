@@ -36,7 +36,7 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
         title: 'Error deleting labour',
         message,
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -54,7 +54,7 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
     <>
       <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
         <Menu.Target>
-          <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
+          <ActionIcon variant="subtle" color="var(--mantine-color-primary-9)">
             <IconDotsVertical size={16} stroke={1.5} />
           </ActionIcon>
         </Menu.Target>

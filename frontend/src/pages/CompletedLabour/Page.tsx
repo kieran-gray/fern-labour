@@ -39,7 +39,7 @@ export const CompletedLabourContainer: React.FC = () => {
                 <Button
                   size="md"
                   mt={20}
-                  color="var(--mantine-color-pink-4)"
+                  color="var(--mantine-color-primary-4)"
                   radius="xl"
                   variant="light"
                   onClick={() => navigate('/contact')}

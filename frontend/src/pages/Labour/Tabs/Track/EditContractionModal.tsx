@@ -72,7 +72,7 @@ export const EditContractionModal = ({
         title: 'Error Deleting Contraction',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -121,7 +121,7 @@ export const EditContractionModal = ({
         title: 'Error Updating Contraction',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
     onSettled: () => {
@@ -201,7 +201,7 @@ export const EditContractionModal = ({
               markLabel: classes.markLabel,
               track: classes.track,
             }}
-            color="var(--mantine-color-pink-4)"
+            color="var(--mantine-color-primary-4)"
             key={form.key('intensity')}
             size="xl"
             radius="lg"
@@ -219,7 +219,7 @@ export const EditContractionModal = ({
           <Space h="xl" />
           <div className={classes.flexRow}>
             <Button
-              color="var(--mantine-color-pink-5)"
+              color="var(--mantine-color-primary-5)"
               leftSection={<IconTrash />}
               variant="filled"
               radius="xl"
@@ -231,7 +231,7 @@ export const EditContractionModal = ({
               loading={deleteMutationInProgress}
             />
             <Button
-              color="var(--mantine-color-pink-4)"
+              color="var(--mantine-color-primary-4)"
               leftSection={<IconUpload />}
               variant="light"
               radius="xl"

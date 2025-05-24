@@ -98,7 +98,7 @@ export function LabourHistoryTable() {
         </Table.Td>
         <Table.Td>
           <Button
-            color="var(--mantine-color-pink-4)"
+            color="var(--mantine-color-primary-4)"
             rightSection={toggleButtonIcon(labour.id)}
             variant="light"
             radius="xl"
@@ -111,7 +111,7 @@ export function LabourHistoryTable() {
             {labourId === labour.id ? 'Exit' : 'View'}
           </Button>
           <Button
-            color="var(--mantine-color-pink-4)"
+            color="var(--mantine-color-primary-4)"
             rightSection={toggleButtonIcon(labour.id)}
             variant="light"
             radius="xl"

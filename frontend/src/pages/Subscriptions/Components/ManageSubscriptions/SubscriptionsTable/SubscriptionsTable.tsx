@@ -68,7 +68,7 @@ export function SubscriptionsTable() {
       <Table.Tr key={subscription.id}>
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />
+            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-primary-5)" />
             <>
               <Text fw={500} className={classes.cropText} size="xs" hiddenFrom="xs">
                 {birthing_person.first_name} {birthing_person.last_name}
@@ -81,7 +81,7 @@ export function SubscriptionsTable() {
         </Table.Td>
         <Table.Td>
           <Button
-            color="var(--mantine-color-pink-4)"
+            color="var(--mantine-color-primary-4)"
             rightSection={toggleButtonIcon(subscription.id)}
             variant="light"
             radius="xl"
@@ -94,7 +94,7 @@ export function SubscriptionsTable() {
             {subscriptionId === subscription.id ? 'Exit' : 'View'}
           </Button>
           <Button
-            color="var(--mantine-color-pink-4)"
+            color="var(--mantine-color-primary-4)"
             rightSection={toggleButtonIcon(subscription.id)}
             variant="light"
             radius="xl"

@@ -51,7 +51,7 @@ export default function CompleteLabourButton({
         title: 'Error Completing Labour',
         message: 'Something went wrong. Please try again.',
         radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
+        color: 'var(--mantine-color-primary-7)',
       });
     },
     onSettled: () => {
@@ -77,7 +77,7 @@ export default function CompleteLabourButton({
           data-disabled
           leftSection={icon}
           size="lg"
-          color="var(--mantine-color-pink-4)"
+          color="var(--mantine-color-primary-4)"
           radius="xl"
           variant="filled"
           loading={isMutating}
@@ -93,7 +93,7 @@ export default function CompleteLabourButton({
       <Button
         leftSection={icon}
         size="lg"
-        color="var(--mantine-color-pink-4)"
+        color="var(--mantine-color-primary-4)"
         radius="xl"
         variant="filled"
         onClick={() => setIsModalOpen(true)}
