@@ -8,8 +8,7 @@ import { ApiError, LabourService, OpenAPI } from '../../../../../clients/labour_
 import ConfirmActionModal from './ConfirmActionModal';
 
 export function ManageLabourMenu({ labourId }: { labourId: string }) {
-  const [getConfirmation, setGetConfirmation] = useState<boolean>(false);
-  const [confirmed, setConfirmed] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -42,35 +41,35 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
     },
   });
 
-  if (getConfirmation) {
-    if (confirmed) {
-      deleteLabourMutation.mutate();
-      setGetConfirmation(false);
-      setConfirmed(false);
-    } else {
-      return (
-        <ConfirmActionModal setGetConfirmation={setGetConfirmation} setConfirmed={setConfirmed} />
-      );
-    }
-  }
+  const handleConfirm = () => {
+    setIsModalOpen(false);
+    deleteLabourMutation.mutate();
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
-    <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
-      <Menu.Target>
-        <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
-          <IconDotsVertical size={16} stroke={1.5} />
-        </ActionIcon>
-      </Menu.Target>
-      <Menu.Dropdown>
-        <Menu.Label>Manage Labour</Menu.Label>
-        <Menu.Item
-          color="red"
-          leftSection={<IconTrash size={20} stroke={1.5} />}
-          onClick={() => setGetConfirmation(true)}
-        >
-          Delete
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
+    <>
+      <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
+        <Menu.Target>
+          <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
+            <IconDotsVertical size={16} stroke={1.5} />
+          </ActionIcon>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Label>Manage Labour</Menu.Label>
+          <Menu.Item
+            color="red"
+            leftSection={<IconTrash size={20} stroke={1.5} />}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Delete
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+      {isModalOpen && <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} />}
+    </>
   );
 }

@@ -23,8 +23,7 @@ export default function CompleteLabourButton({
   const auth = useAuth();
   const navigate = useNavigate();
   const { setLabourId } = useLabour();
-  const [getConfimation, setGetConfimation] = useState(false);
-  const [confirmedCompleteLabour, setConfirmedCompleteLabour] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
   OpenAPI.TOKEN = async () => {
     return auth.user?.access_token || '';
@@ -60,20 +59,14 @@ export default function CompleteLabourButton({
     },
   });
 
-  if (getConfimation) {
-    if (confirmedCompleteLabour) {
-      mutation.mutate(labourNotes);
-      setGetConfimation(false);
-      setConfirmedCompleteLabour(false);
-    } else {
-      return (
-        <ConfirmCompleteLabourModal
-          setGetConfirmation={setGetConfimation}
-          setConfirmedComplete={setConfirmedCompleteLabour}
-        />
-      );
-    }
-  }
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirm = () => {
+    setIsModalOpen(false);
+    mutation.mutate(labourNotes);
+  };
 
   const icon = <IconConfetti size={25} />;
 
@@ -96,15 +89,20 @@ export default function CompleteLabourButton({
     );
   }
   return (
-    <Button
-      leftSection={icon}
-      size="lg"
-      color="var(--mantine-color-pink-4)"
-      radius="xl"
-      variant="filled"
-      onClick={() => setGetConfimation(true)}
-    >
-      Complete Labour
-    </Button>
+    <>
+      <Button
+        leftSection={icon}
+        size="lg"
+        color="var(--mantine-color-pink-4)"
+        radius="xl"
+        variant="filled"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Complete Labour
+      </Button>
+      {isModalOpen && (
+        <ConfirmCompleteLabourModal onConfirm={handleConfirm} onCancel={handleCancel} />
+      )}
+    </>
   );
 }

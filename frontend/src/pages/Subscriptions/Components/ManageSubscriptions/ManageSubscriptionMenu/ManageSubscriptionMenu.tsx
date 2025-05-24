@@ -13,8 +13,7 @@ import { useSubscription } from '../../../../Subscription/SubscriptionContext';
 import ConfirmActionModal from './ConfirmActionModal';
 
 export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
-  const [getConfirmation, setGetConfirmation] = useState<boolean | undefined>(undefined);
-  const [confirmed, setConfirmed] = useState<string | undefined>(undefined);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { setSubscriptionId } = useSubscription();
   const auth = useAuth();
   OpenAPI.TOKEN = async () => {
@@ -43,35 +42,35 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
     },
   });
 
-  if (getConfirmation) {
-    if (confirmed) {
-      unsubscribeMutation.mutate();
-      setGetConfirmation(false);
-      setConfirmed(undefined);
-    } else {
-      return (
-        <ConfirmActionModal setGetConfirmation={setGetConfirmation} setConfirmed={setConfirmed} />
-      );
-    }
-  }
+  const handleConfirm = () => {
+    setIsModalOpen(false);
+    unsubscribeMutation.mutate();
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
-    <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
-      <Menu.Target>
-        <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
-          <IconDots size={16} stroke={1.5} />
-        </ActionIcon>
-      </Menu.Target>
-      <Menu.Dropdown>
-        <Menu.Label>Manage Subscription</Menu.Label>
-        <Menu.Item
-          color="red"
-          leftSection={<IconUserMinus size={20} stroke={1.5} />}
-          onClick={() => setGetConfirmation(true)}
-        >
-          Unsubscribe
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
+    <>
+      <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
+        <Menu.Target>
+          <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
+            <IconDots size={16} stroke={1.5} />
+          </ActionIcon>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Label>Manage Subscription</Menu.Label>
+          <Menu.Item
+            color="red"
+            leftSection={<IconUserMinus size={20} stroke={1.5} />}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Unsubscribe
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+      {isModalOpen && <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} />}
+    </>
   );
 }

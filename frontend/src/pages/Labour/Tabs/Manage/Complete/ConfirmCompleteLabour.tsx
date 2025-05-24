@@ -1,17 +1,14 @@
 import { Button, Modal, Space, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import classes from '../../../../../shared-components/Modal.module.css';
 import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 
 export default function ConfirmCompleteLabourModal({
-  setGetConfirmation,
-  setConfirmedComplete,
+  onConfirm,
+  onCancel,
 }: {
-  setGetConfirmation: Function;
-  setConfirmedComplete: Function;
+  onConfirm: Function;
+  onCancel: Function;
 }) {
-  const [_, { close }] = useDisclosure(false);
-
   return (
     <Modal
       overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
@@ -24,7 +21,9 @@ export default function ConfirmCompleteLabourModal({
       }}
       opened
       centered
-      onClose={close}
+      onClose={() => {
+        onCancel();
+      }}
       title="Complete your labour?"
     >
       <Space h="lg" />
@@ -37,8 +36,7 @@ export default function ConfirmCompleteLabourModal({
           style={{ flex: 1, marginRight: 5 }}
           radius="lg"
           onClick={() => {
-            setGetConfirmation(false);
-            close;
+            onCancel();
           }}
         >
           Cancel
@@ -48,8 +46,7 @@ export default function ConfirmCompleteLabourModal({
           variant="light"
           radius="lg"
           onClick={() => {
-            setConfirmedComplete(true);
-            close;
+            onConfirm();
           }}
         >
           Yes
