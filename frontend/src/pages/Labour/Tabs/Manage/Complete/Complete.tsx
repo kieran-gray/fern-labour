@@ -1,12 +1,12 @@
 import { useState } from 'react';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowLeft, IconPencil } from '@tabler/icons-react';
 import { Button, Image, Textarea } from '@mantine/core';
-import { ResponsiveDescription } from '../../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from './celebrate.svg';
 import CompleteLabourButton from './CompleteLabourButton';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './Complete.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export default function Complete({
   activeContraction,
@@ -50,12 +50,15 @@ export default function Complete({
                 placeholder="Your closing note"
                 classNames={{
                   label: classes.labourNotesLabel,
+                  description: baseClasses.description,
+                  input: baseClasses.input,
+                  section: baseClasses.section,
                 }}
                 onChange={(event) => setLabourNotes(event.currentTarget.value)}
               />
               <div className={baseClasses.flexRow} style={{ marginTop: '20px' }}>
                 <Button
-                  color="var(--mantine-color-primary-4)"
+                  color="var(--mantine-color-pink-4)"
                   leftSection={<IconArrowLeft size={18} stroke={1.5} />}
                   variant="light"
                   radius="xl"

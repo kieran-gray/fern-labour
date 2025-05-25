@@ -1,4 +1,11 @@
 import { useState } from 'react';
+import {
+  OpenAPI,
+  SubscriptionDTO,
+  SubscriptionManagementService,
+  UpdateContactMethodsRequest,
+} from '@clients/labour_service';
+import { Error } from '@shared/Notifications';
 import { IconCheck, IconLoader, IconSelector, IconUpload, IconX } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -6,14 +13,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Button, Modal, MultiSelect } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import {
-  OpenAPI,
-  SubscriptionDTO,
-  SubscriptionManagementService,
-  UpdateContactMethodsRequest,
-} from '../../../../clients/labour_service';
-import modalClasses from '../../../../shared-components/Modal.module.css';
 import classes from './ContactMethodsForm.module.css';
+import modalClasses from '@shared/Modal.module.css';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -86,10 +87,9 @@ export default function ContactMethodsForm({
       setMutationInProgress(false);
       setIcon(<IconX size={18} stroke={1.5} />);
       notifications.show({
+        ...Error,
         title: 'Error Updating Contact Methods',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-primary-7)',
       });
       console.error('Error updating contact methods', error);
     },
@@ -147,6 +147,8 @@ export default function ContactMethodsForm({
                 pill: classes.pill,
                 description: classes.description,
                 inputField: classes.input,
+                options: classes.options,
+                label: classes.label,
               }}
               comboboxProps={{
                 transitionProps: { transition: 'pop', duration: 200 },
@@ -155,7 +157,7 @@ export default function ContactMethodsForm({
               clearable
             />
             <Button
-              color="var(--mantine-color-primary-4)"
+              color="var(--mantine-primary-color-4)"
               leftSection={icon}
               variant="outline"
               radius="xl"
@@ -170,7 +172,7 @@ export default function ContactMethodsForm({
               Update Contact Methods
             </Button>
             <Button
-              color="var(--mantine-color-primary-4)"
+              color="var(--mantine-primary-color-4)"
               leftSection={icon}
               variant="outline"
               radius="xl"

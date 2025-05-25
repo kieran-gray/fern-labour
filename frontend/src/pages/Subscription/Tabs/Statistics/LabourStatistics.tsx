@@ -1,14 +1,14 @@
+import { LabourDTO } from '@clients/labour_service';
+import { createLabourStatistics } from '@labour/Tabs/Statistics/LabourStatistics';
+import { LabourStatisticsTabs } from '@labour/Tabs/Statistics/LabourStatisticsTabs';
+import image from '@labour/Tabs/Statistics/statistics.svg';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { formatTimeSeconds } from '@shared/utils';
 import { Image, Space, Text } from '@mantine/core';
-import { LabourDTO } from '../../../../clients/labour_service';
-import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
-import { formatTimeSeconds } from '../../../../shared-components/utils';
-import { createLabourStatistics } from '../../../Labour/Tabs/Statistics/LabourStatistics';
-import { LabourStatisticsTabs } from '../../../Labour/Tabs/Statistics/LabourStatisticsTabs';
-import image from '../../../Labour/Tabs/Statistics/statistics.svg';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from '../../../Labour/Tabs/Statistics/LabourStatistics.module.css';
+import classes from '@labour/Tabs/Statistics/LabourStatistics.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export const LabourStatistics = ({
   labour,

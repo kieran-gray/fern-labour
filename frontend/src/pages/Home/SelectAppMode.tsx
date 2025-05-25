@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { IconInfoCircle } from '@tabler/icons-react';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Text, Title } from '@mantine/core';
-import baseClasses from '../../shared-components/shared-styles.module.css';
 import classes from './SelectAppMode.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export enum AppMode {
   Subscriber = 'Subscriber',
@@ -55,7 +55,7 @@ export function SelectAppMode() {
                 <Title className={classes.title} ta="center">
                   Welcome to Fern Labour
                 </Title>
-                <Text c="var(--mantine-color-gray-7)" mt="md" ta="center">
+                <Text mt="md" ta="center">
                   We’re so glad you’re here! Whether you're tracking your own labour journey or
                   following and supporting someone special, you’re in the right place.
                 </Text>
@@ -110,13 +110,7 @@ export function SelectAppMode() {
                 </Button>
               </div>
               <div className={classes.selectRow}>
-                <div
-                  className={baseClasses.importantText}
-                  style={{ display: 'flex', justifyContent: 'center' }}
-                >
-                  <IconInfoCircle style={{ alignSelf: 'center', marginRight: '10px' }} />
-                  You can change modes at any time in the app menu.
-                </div>
+                <ImportantText message="You can change modes at any time in the app menu." />
               </div>
             </div>
           </div>

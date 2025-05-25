@@ -1,7 +1,7 @@
 import { Image, Text, Title } from '@mantine/core';
 import image from './thanks.svg';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './Receipt.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export const RecieptContainer = () => {
   return (

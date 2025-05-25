@@ -1,13 +1,13 @@
+import { ContractionDTO, LabourDTO } from '@clients/labour_service';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { formatTimeSeconds } from '@shared/utils';
 import { Image, Space, Text } from '@mantine/core';
-import { ContractionDTO, LabourDTO } from '../../../../clients/labour_service';
-import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
-import { formatTimeSeconds } from '../../../../shared-components/utils';
 import { LabourStatisticsTabs } from './LabourStatisticsTabs';
 import image from './statistics.svg';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourStatistics.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export interface LabourStatisticsData {
   contraction_count: number;

@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import { Button, Modal, Text } from '@mantine/core';
-import modalClasses from '../../../../shared-components/Modal.module.css';
 import classes from './SubscriptionRequestedModal.module.css';
+import modalClasses from '@shared/Modal.module.css';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -36,11 +36,11 @@ export default function SubscriptionRequestedModal({
     >
       <div style={{ padding: '20px 10px 10px' }}>
         <div className={classes.flexColumn}>
-          <Text ta="center">
+          <Text ta="center" className={modalClasses.modalMessageText}>
             Your request to join a labour circle has been sent.
             <br />
             <br />
-            They'll need to approve your request before you can view updates or messages.
+            They will need to approve your request before you can view updates or messages.
             <br />
             <br />
             You'll get an email as soon as you're approved, thanks for your patience! 💛

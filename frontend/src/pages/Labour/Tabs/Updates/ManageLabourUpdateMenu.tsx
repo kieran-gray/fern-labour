@@ -1,15 +1,17 @@
-import { IconDots, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
-import { ActionIcon, Menu } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import {
   ApiError,
   DeleteLabourUpdateRequest,
   LabourUpdatesService,
   OpenAPI,
   UpdateLabourUpdateRequest,
-} from '../../../../clients/labour_service';
+} from '@clients/labour_service';
+import { Error, Success } from '@shared/Notifications';
+import { IconDots, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from 'react-oidc-context';
+import { ActionIcon, Menu } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: string }) {
   const auth = useAuth();
@@ -26,18 +28,16 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
       notifications.show({
+        ...Success,
         title: 'Success',
         message: `Status update deleted`,
-        radius: 'lg',
-        color: 'var(--mantine-color-green-3)',
       });
     },
     onError: (_) => {
       notifications.show({
+        ...Error,
         title: 'Error',
         message: `Error deleting status update. Please try again.`,
-        radius: 'lg',
-        color: 'var(--mantine-color-primary-6)',
       });
     },
   });
@@ -53,10 +53,9 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
       notifications.show({
+        ...Success,
         title: 'Success',
         message: `Status update announced`,
-        radius: 'lg',
-        color: 'var(--mantine-color-green-3)',
       });
     },
     onError: (error) => {
@@ -65,10 +64,9 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
         message = 'Wait at least 10 seconds between announcements';
       }
       notifications.show({
+        ...Error,
         title: 'Error making announcement',
         message,
-        radius: 'lg',
-        color: 'var(--mantine-color-primary-7)',
       });
     },
   });
@@ -76,15 +74,15 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
   return (
     <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
       <Menu.Target>
-        <ActionIcon variant="subtle" color="var(--mantine-color-gray-8)">
+        <ActionIcon variant="subtle" className={baseClasses.actionMenuIcon}>
           <IconDots size={16} stroke={1.5} />
         </ActionIcon>
       </Menu.Target>
-      <Menu.Dropdown>
-        <Menu.Label>Manage Update</Menu.Label>
+      <Menu.Dropdown className={baseClasses.actionMenuDropdown}>
+        <Menu.Label className={baseClasses.actionMenuLabel}>Manage Update</Menu.Label>
         <Menu.Item
           leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
-          style={{color: 'light-dark(red, var(--mantine-color-gray-1))'}}
+          className={baseClasses.actionMenuDanger}
           onClick={() => {
             if (!statusUpdateId.startsWith('mock-')) {
               announceStatusUpdate.mutate();
@@ -96,7 +94,7 @@ export function ManageLabourUpdateMenu({ statusUpdateId }: { statusUpdateId: str
         <Menu.Divider />
         <Menu.Item
           leftSection={<IconTrash size={20} stroke={1.5} />}
-          style={{color: 'light-dark(red, var(--mantine-color-gray-1))'}}
+          className={baseClasses.actionMenuDanger}
           onClick={() => {
             if (!statusUpdateId.startsWith('mock-')) {
               deleteStatusUpdate.mutate();

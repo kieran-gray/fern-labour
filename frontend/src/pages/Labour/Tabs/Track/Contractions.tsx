@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { ContractionDTO, LabourDTO } from '@clients/labour_service/index.ts';
+import { ImportantText } from '@shared/ImportantText/ImportantText.tsx';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription.tsx';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle.tsx';
+import { sortContractions } from '@shared/utils.tsx';
 import { IconBook } from '@tabler/icons-react';
 import { ActionIcon, Image, Space, Stack } from '@mantine/core';
 import { useDisclosure, useScrollIntoView } from '@mantine/hooks';
-import { ContractionDTO, LabourDTO } from '../../../../clients/labour_service/index.ts';
-import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText.tsx';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription.tsx';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle.tsx';
-import { sortContractions } from '../../../../shared-components/utils.tsx';
 import { ActiveContractionControls } from './ActiveContractionControls.tsx';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert.tsx';
@@ -16,8 +16,8 @@ import { ContractionsHelpModal } from './HelpModal.tsx';
 import StartContractionButton from './StartContractionButton.tsx';
 import { StopwatchHandle } from './Stopwatch/Stopwatch.tsx';
 import image from './Track.svg';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './Contractions.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function Contractions({ labour }: { labour: LabourDTO }) {
   const [opened, { open, close }] = useDisclosure(false);

@@ -1,17 +1,13 @@
+import { OpenAPI, SubscriptionDTO, SubscriptionService } from '@clients/labour_service';
+import { useLabour } from '@labour/LabourContext';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconUserCheck, IconUserOff, IconUserQuestion } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Tabs, Text } from '@mantine/core';
-import {
-  OpenAPI,
-  SubscriptionDTO,
-  SubscriptionService,
-} from '../../../../../../clients/labour_service';
-import { ImportantText } from '../../../../../../shared-components/ImportantText/ImportantText';
-import { PageLoadingIcon } from '../../../../../../shared-components/PageLoading/Loading';
-import { useLabour } from '../../../../LabourContext';
 import { SubscribersTable } from '../SubscribersTable/SubscribersTable';
-import baseClasses from '../../../../../../shared-components/shared-styles.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [
   { id: 'subscribed', label: 'Subscribed', icon: IconUserCheck, requiresPaid: true },

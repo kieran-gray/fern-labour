@@ -1,15 +1,15 @@
+import { LabourQueriesService, OpenAPI } from '@clients/labour_service';
+import { useLabour } from '@labour/LabourContext';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Table, Text } from '@mantine/core';
-import { LabourQueriesService, OpenAPI } from '../../../../../clients/labour_service';
-import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
-import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
-import { useLabour } from '../../../../Labour/LabourContext';
 import { ManageLabourMenu } from '../ManageLabourMenu/ManageLabourMenu';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './LabourHistoryTable.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function LabourHistoryTable() {
   const auth = useAuth();
@@ -98,7 +98,7 @@ export function LabourHistoryTable() {
         </Table.Td>
         <Table.Td>
           <Button
-            color="var(--mantine-color-primary-4)"
+            color="var(--mantine-primary-color-4)"
             rightSection={toggleButtonIcon(labour.id)}
             variant="light"
             radius="xl"
@@ -111,7 +111,7 @@ export function LabourHistoryTable() {
             {labourId === labour.id ? 'Exit' : 'View'}
           </Button>
           <Button
-            color="var(--mantine-color-primary-4)"
+            color="var(--mantine-primary-color-4)"
             rightSection={toggleButtonIcon(labour.id)}
             variant="light"
             radius="xl"

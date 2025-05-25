@@ -1,13 +1,13 @@
+import { AppShell } from '@shared/AppShell';
 import { useSearchParams } from 'react-router-dom';
 import { Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { AppShell } from '../../shared-components/AppShell.tsx';
 import { SubscriptionPage } from '../Subscription/Page.tsx';
 import { useSubscription } from '../Subscription/SubscriptionContext.tsx';
 import { InviteContainer } from './Components/InviteContainer/InviteContainer.tsx';
 import { SubscriptionsContainer } from './Components/ManageSubscriptions/ManageSubscriptions.tsx';
 import SubscriptionRequestedModal from './Components/SubscriptionRequestedModal/SubscriptionRequestedModal.tsx';
-import baseClasses from '../../shared-components/shared-styles.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export const SubscriptionsPage = () => {
   const { subscriptionId } = useSubscription();

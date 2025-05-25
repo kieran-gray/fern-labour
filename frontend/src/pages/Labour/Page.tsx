@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import { NotFoundError, PermissionDenied } from '@base/Errors';
+import { ApiError, LabourQueriesService, OpenAPI } from '@clients/labour_service';
+import { AppShell } from '@shared/AppShell';
+import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
+import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
 import {
   IconChartHistogram,
   IconMessage,
@@ -11,11 +16,6 @@ import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Center, Space, Tabs, Text } from '@mantine/core';
-import { ApiError, LabourQueriesService, OpenAPI } from '../../clients/labour_service';
-import { NotFoundError, PermissionDenied } from '../../Errors';
-import { AppShell } from '../../shared-components/AppShell.tsx';
-import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
-import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
 import { CompletedLabourContainer } from '../CompletedLabour/Page.tsx';
 import { useLabour } from './LabourContext.tsx';
 import { Share } from './Tabs/Invites/Share.tsx';
@@ -24,7 +24,7 @@ import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubs
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
 import { Contractions } from './Tabs/Track/Contractions.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
-import baseClasses from '../../shared-components/shared-styles.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [
   { id: 'details', label: 'Manage', icon: IconSettings },

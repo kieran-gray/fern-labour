@@ -1,10 +1,4 @@
 import { useCallback, useState } from 'react';
-import { IconPencil, IconSend, IconSpeakerphone } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import _ from 'lodash';
-import { useAuth } from 'react-oidc-context';
-import { Button, SegmentedControl, TextInput } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import {
   LabourDTO,
   LabourUpdateDTO,
@@ -12,10 +6,18 @@ import {
   LabourUpdatesService,
   LabourUpdateType,
   OpenAPI,
-} from '../../../../clients/labour_service';
-import { useLabour } from '../../LabourContext';
+} from '@clients/labour_service';
+import { useLabour } from '@labour/LabourContext';
+import { Error } from '@shared/Notifications';
+import { IconPencil, IconSend, IconSpeakerphone } from '@tabler/icons-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
+import { useAuth } from 'react-oidc-context';
+import { Button, SegmentedControl, TextInput } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import ConfirmAnnouncementModal from './ConfirmAnnouncement';
 import classes from './LabourUpdates.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 function createLabourUpdate(message: string, labourId: string | null, labourUpdateType: string) {
   const labourUpdate: LabourUpdateDTO = {
@@ -81,10 +83,9 @@ export function LabourUpdateControls() {
         queryClient.setQueryData(['labour', auth.user?.profile.sub], context.previousLabourState);
       }
       notifications.show({
+        ...Error,
         title: 'Error',
         message: `Error posting ${labourUpdateType === 'status_update' ? 'status update' : 'announcement'}: ${error.message}`,
-        radius: 'lg',
-        color: 'var(--mantine-color-primary-7)',
       });
     },
     onSettled: () => {
@@ -121,7 +122,6 @@ export function LabourUpdateControls() {
     labourUpdateType === 'status_update' ? 'Post Status Update' : 'Make Announcement';
 
   const buttonProps = {
-    color: 'var(--mantine-color-primary-4)',
     variant: 'filled',
     radius: 'xl',
     type: 'submit',
@@ -155,15 +155,49 @@ export function LabourUpdateControls() {
         ]}
         radius="lg"
         mt={20}
-        color="var(--mantine-color-primary-4)"
+        color="var(--mantine-primary-color-4)"
       />
-      <TextInput {...inputProps} rightSection={inputIcon} size="md" visibleFrom="sm" />
-      <TextInput {...inputProps} rightSection={inputIcon} size="sm" hiddenFrom="sm" />
+      <TextInput
+        {...inputProps}
+        rightSection={inputIcon}
+        size="md"
+        visibleFrom="sm"
+        classNames={{
+          description: baseClasses.description,
+          input: baseClasses.input,
+          section: baseClasses.section,
+        }}
+      />
+      <TextInput
+        {...inputProps}
+        rightSection={inputIcon}
+        size="sm"
+        hiddenFrom="sm"
+        classNames={{
+          description: baseClasses.description,
+          input: baseClasses.input,
+          section: baseClasses.section,
+        }}
+      />
       <div className={classes.flexRow} style={{ marginTop: '10px' }}>
-        <Button {...buttonProps} type="submit" rightSection={buttonIcon} size="lg" visibleFrom="sm">
+        <Button
+          {...buttonProps}
+          type="submit"
+          rightSection={buttonIcon}
+          size="lg"
+          visibleFrom="sm"
+          color="var(--mantine-primary-color-4)"
+        >
           {buttonText}
         </Button>
-        <Button {...buttonProps} type="submit" rightSection={buttonIcon} size="md" hiddenFrom="sm">
+        <Button
+          {...buttonProps}
+          type="submit"
+          rightSection={buttonIcon}
+          size="md"
+          hiddenFrom="sm"
+          color="var(--mantine-primary-color-4)"
+        >
           {buttonText}
         </Button>
       </div>

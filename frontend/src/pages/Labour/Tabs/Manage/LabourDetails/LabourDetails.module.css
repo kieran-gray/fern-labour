@@ -27,12 +27,12 @@
   column-gap: 10px;
   padding: 20px;
   border-radius: var(--mantine-radius-lg);
-  background-color: var(--mantine-color-primary-0);
+  background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-4));
 }
 
 .labourBadge{
   color: var(--mantine-color-white);
-  background-color: var(--mantine-color-primary-4);
+  background-color: light-dark(var(--mantine-primary-color-4), var(--mantine-primary-color-4));
 }
 
 .backButton {

@@ -176,7 +176,12 @@ export function MobileUserMenu() {
   );
 
   const links = section === 'app' ? appSettings : accountSettings;
-  const themeIcon = colorScheme === 'light' ? <IconMoon size={16} stroke={1.5} /> : <IconSun size={16} stroke={1.5} />;
+  const themeIcon =
+    colorScheme === 'light' ? (
+      <IconMoon size={16} stroke={1.5} />
+    ) : (
+      <IconSun size={16} stroke={1.5} />
+    );
 
   return (
     <div className={classes.linksDrawer}>
@@ -191,8 +196,13 @@ export function MobileUserMenu() {
         ]}
         radius="lg"
         mt={0}
-        color="var(--mantine-color-primary-4)"
-        styles={{ root: { backgroundColor: 'var(--mantine-color-primary-0)' } }}
+        color="var(--mantine-primary-color-4)"
+        styles={{
+          root: {
+            backgroundColor:
+              'light-dark(var(--mantine-primary-color-0), var(--mantine-color-primary-8))',
+          },
+        }}
       />
 
       {links}
@@ -228,8 +238,8 @@ export function MobileUserMenu() {
             Contact Us
           </Button>
         )}
-        <Button 
-          key="theme" 
+        <Button
+          key="theme"
           className={classes.mainLink}
           onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
           leftSection={themeIcon}
@@ -238,7 +248,7 @@ export function MobileUserMenu() {
           variant="transparent"
           mt={10}
         >
-          {colorScheme === 'light' ? 'Dark Mode' : 'Light Mode'}
+          {colorScheme === 'light' ? 'Night Mode' : 'Day Mode'}
         </Button>
       </div>
     </div>

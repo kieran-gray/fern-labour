@@ -1,16 +1,16 @@
+import { LabourService, OpenAPI } from '@clients/labour_service';
+import { useLabour } from '@labour/LabourContext';
+import { PageLoadingIcon } from '@shared/PageLoading/Loading';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Group, Image, Space, Text, Title } from '@mantine/core';
-import { LabourService, OpenAPI } from '../../../../../clients/labour_service';
-import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
-import { ResponsiveDescription } from '../../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
-import { useLabour } from '../../../LabourContext';
 import { CopyButton } from '../CopyButton/CopyButton';
 import QRButton from '../QRButton/QRButton';
 import image from './share.svg';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
 import classes from './ShareContainer.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function ShareContainer() {
   const auth = useAuth();

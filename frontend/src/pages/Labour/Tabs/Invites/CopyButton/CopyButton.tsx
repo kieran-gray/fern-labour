@@ -16,9 +16,10 @@ export function CopyButton({ text }: { text: string }) {
         transitionProps={{ duration: 100, transition: 'slide-down' }}
         opened={clipboard.copied}
         disabled={!isMobile}
+        events={{ hover: true, focus: false, touch: true }}
       >
         <Button
-          color="var(--mantine-color-primary-4)"
+          color="var(--mantine-primary-color-4)"
           variant="filled"
           rightSection={
             clipboard.copied ? (
@@ -46,9 +47,10 @@ export function CopyButton({ text }: { text: string }) {
         transitionProps={{ duration: 100, transition: 'slide-down' }}
         opened={clipboard.copied}
         disabled={isMobile}
+        events={{ hover: true, focus: false, touch: true }}
       >
         <Button
-          color="var(--mantine-color-primary-4)"
+          color="var(--mantine-primary-color-4)"
           variant="filled"
           rightSection={
             clipboard.copied ? (

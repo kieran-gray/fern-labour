@@ -1,13 +1,13 @@
+import { ContractionDTO } from '@clients/labour_service';
 import { IconHourglassHigh, IconHourglassLow } from '@tabler/icons-react';
 import { Anchor, Button, Modal, Slider, Text, Title } from '@mantine/core';
-import { ContractionDTO } from '../../../../clients/labour_service';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert';
 import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital';
 import ContractionTimeline from './ContractionTimeline';
-import modalClasses from '../../../../shared-components/Modal.module.css';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import contractionClasses from './Contractions.module.css';
+import modalClasses from '@shared/Modal.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -59,7 +59,12 @@ export const ContractionsHelpModal = ({
     >
       <div
         className={baseClasses.inner}
-        style={{ flexDirection: 'column', paddingLeft: '5px', paddingRight: '5px' }}
+        style={{
+          flexDirection: 'column',
+          paddingLeft: '5px',
+          paddingRight: '5px',
+          color: 'light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))',
+        }}
       >
         <Title order={3} visibleFrom="md">
           Tracking your contractions
@@ -67,7 +72,11 @@ export const ContractionsHelpModal = ({
         <Title order={4} mt="xs" hiddenFrom="md">
           Tracking your contractions
         </Title>
-        <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
+        <Text
+          mt={10}
+          size="sm"
+          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+        >
           At the beginning of your contraction tap:
           <div
             style={{
@@ -83,7 +92,7 @@ export const ContractionsHelpModal = ({
               radius="xl"
               size="lg"
               variant="filled"
-              color="var(--mantine-color-primary-4)"
+              color="var(--mantine-primary-color-4)"
             >
               Start Contraction
             </Button>
@@ -127,7 +136,7 @@ export const ContractionsHelpModal = ({
                 markLabel: contractionClasses.markLabel,
                 track: contractionClasses.track,
               }}
-              color="var(--mantine-color-primary-4)"
+              color="var(--mantine-primary-color-4)"
               size="lg"
               radius="lg"
               w="60%"
@@ -165,7 +174,11 @@ export const ContractionsHelpModal = ({
         <Title order={4} mt="sm" hiddenFrom="md">
           Editing a contraction
         </Title>
-        <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
+        <Text
+          mt={10}
+          size="sm"
+          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+        >
           To edit a contraction, simply tap on it and a popup will open. You can edit the start
           time, end time, and intensity of the contraction.
           <br />
@@ -177,7 +190,11 @@ export const ContractionsHelpModal = ({
         <Title order={4} mt="xl" hiddenFrom="md">
           When to go to the hospital
         </Title>
-        <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
+        <Text
+          mt={10}
+          size="sm"
+          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+        >
           <Text fw={500} size="sm" mb={5}>
             The app will monitor your contraction pattern and alert you when:
           </Text>
@@ -224,7 +241,11 @@ export const ContractionsHelpModal = ({
         <Title order={4} mt="xl" hiddenFrom="md">
           When to contact a midwife
         </Title>
-        <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
+        <Text
+          mt={10}
+          size="sm"
+          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+        >
           <Text fw={500} size="sm" mb={5}>
             Call your midwife or maternity unit for guidance if:
           </Text>
@@ -257,8 +278,18 @@ export const ContractionsHelpModal = ({
             href="https://www.nhs.uk/pregnancy/labour-and-birth/what-happens/the-stages-of-labour-and-birth/"
             target="_blank"
           >
-            For more info see this NHS page.
+            For additional information see this NHS page.
           </Anchor>
+        </Text>
+        <Text
+          mt={10}
+          size="sm"
+          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+        >
+          Please note: Fern Labour and the materials and information it contains are not intended
+          to, and do not constitute, medical or other health advice or diagnosis and should not be
+          used as such. You should always consult with a qualified physician or health professional
+          about your specific circumstances.
         </Text>
       </div>
     </Modal>

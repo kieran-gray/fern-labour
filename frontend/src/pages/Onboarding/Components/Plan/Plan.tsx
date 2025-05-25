@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { LabourDTO, LabourService, OpenAPI, PlanLabourRequest } from '@clients/labour_service';
+import { Error, Success } from '@shared/Notifications';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -7,15 +10,9 @@ import { Button, Group, Image, Radio, TextInput, Title } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import {
-  LabourDTO,
-  LabourService,
-  OpenAPI,
-  PlanLabourRequest,
-} from '../../../../clients/labour_service';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
 import image from './plan.svg';
 import classes from './Plan.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
   const navigate = useNavigate();
@@ -68,18 +65,16 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
       const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';
       notifications.show({
+        ...Success,
         title: 'Success',
         message,
-        radius: 'lg',
-        color: 'green',
       });
     },
     onError: async (error) => {
       notifications.show({
+        ...Error,
         title: 'Error Planning Labour',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-primary-7)',
       });
       console.error('Error planning labour', error);
     },
@@ -125,6 +120,17 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
                   key={form.key('dueDate')}
                   {...form.getInputProps('dueDate')}
                   withAsterisk
+                  styles={{
+                    weekday: {
+                      color: 'light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-4))',
+                    },
+                  }}
+                  classNames={{
+                    description: baseClasses.description,
+                    input: baseClasses.input,
+                    section: baseClasses.section,
+                    levelsGroup: baseClasses.selectDropdown,
+                  }}
                 />
                 <Radio.Group
                   name="firstLabour"
@@ -135,6 +141,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
                   withAsterisk
                   {...form.getInputProps('firstLabour')}
                   mt="20px"
+                  classNames={{ description: baseClasses.description }}
                 >
                   <Group mt="xs">
                     <Radio value="true" label="Yes" />
@@ -151,6 +158,11 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
                   radius="lg"
                   {...form.getInputProps('labourName')}
                   mt="20px"
+                  classNames={{
+                    description: baseClasses.description,
+                    input: baseClasses.input,
+                    section: baseClasses.section,
+                  }}
                 />
               </div>
             </div>
@@ -164,6 +176,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
           style={{ justifyContent: 'flex-end', marginTop: '15px' }}
         >
           <Button
+            color="var(--mantine-primary-color-4)"
             rightSection={icon}
             variant="filled"
             radius="xl"
@@ -180,6 +193,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
       )) || (
         <div className={classes.submitRow} style={{ justifyContent: 'space-between' }}>
           <Button
+            color="var(--mantine-primary-color-4)"
             leftSection={icon}
             variant="light"
             radius="xl"
@@ -193,6 +207,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
             Update labour plan
           </Button>
           <Button
+            color="var(--mantine-primary-color-4)"
             rightSection={<IconArrowRight size={18} stroke={1.5} />}
             variant="filled"
             radius="xl"

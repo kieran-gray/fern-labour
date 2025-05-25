@@ -1,9 +1,9 @@
+import { AppShell } from '@shared/AppShell';
 import { useNavigate } from 'react-router-dom';
 import { Button, Image, Mark, Text, Title } from '@mantine/core';
-import { AppShell } from '../../shared-components/AppShell';
 import image from './thanks.svg';
-import baseClasses from '../../shared-components/shared-styles.module.css';
 import classes from './CompletedLabour.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export const CompletedLabourContainer: React.FC = () => {
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ export const CompletedLabourContainer: React.FC = () => {
             </Title>
             <div className={baseClasses.flexRow} style={{ flexWrap: 'nowrap' }}>
               <div className={baseClasses.flexColumn}>
-                <Text c="var(--mantine-color-gray-7)" mt="md" size="md">
-                  <Mark color="transparent" fw={700} fz="lg">
+                <Text className={baseClasses.description} mt="md" size="md">
+                  <Mark color="transparent" className={baseClasses.description} fw={700} fz="lg">
                     You did it!
                   </Mark>{' '}
                   Bringing new life into the world is an incredible journey, and we are so proud of
@@ -31,7 +31,7 @@ export const CompletedLabourContainer: React.FC = () => {
                 <div className={classes.imageFlexRow}>
                   <Image src={image} className={classes.smallImage} />
                 </div>
-                <Text c="var(--mantine-color-gray-7)" mt="sm" size="md">
+                <Text className={baseClasses.description} mt="sm" size="md">
                   We're so grateful for you for choosing to use our platform. If you'd like to, we'd
                   love to know what you liked or what you would like to see done differently through
                   the contact form below.
@@ -39,7 +39,7 @@ export const CompletedLabourContainer: React.FC = () => {
                 <Button
                   size="md"
                   mt={20}
-                  color="var(--mantine-color-primary-4)"
+                  color="var(--mantine-primary-color-4)"
                   radius="xl"
                   variant="light"
                   onClick={() => navigate('/contact')}

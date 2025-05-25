@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { LabourDTO } from '@clients/labour_service';
 import { Tabs } from '@mantine/core';
-import { LabourDTO } from '../../../../clients/labour_service';
 import Complete from './Complete/Complete';
 import LabourDetails from './LabourDetails/LabourDetails';
 

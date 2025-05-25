@@ -1,16 +1,16 @@
+import { NotFoundError } from '@base/Errors.tsx';
+import { ApiError, OpenAPI } from '@clients/labour_service/index.ts';
+import { LabourQueriesService } from '@clients/labour_service/sdk.gen.ts';
+import { useLabour } from '@labour/LabourContext.tsx';
+import { AppShell } from '@shared/AppShell';
+import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
+import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Stepper } from '@mantine/core';
-import { ApiError, OpenAPI } from '../../clients/labour_service/index.ts';
-import { LabourQueriesService } from '../../clients/labour_service/sdk.gen.ts';
-import { NotFoundError } from '../../Errors.tsx';
-import { AppShell } from '../../shared-components/AppShell.tsx';
-import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
-import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
-import { useLabour } from '../Labour/LabourContext.tsx';
 import Plan from './Components/Plan/Plan.tsx';
-import baseClasses from '../../shared-components/shared-styles.module.css';
 import classes from './Onboarding.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export const OnboardingPage = () => {
   const auth = useAuth();

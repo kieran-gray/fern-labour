@@ -18,7 +18,18 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "baseUrl": "src",
+    "paths": {
+      "@base/*": ["*"],
+      "@shared/*": ["shared-components/*"],
+      "@clients/*": ["clients/*"],
+      "@labour/*": ["pages/Labour/*"],
+      "@subscription/*": ["pages/Subscription/*"],
+      "@subscribe/*": ["pages/Subscribe/*"],
+      "@subscriptions/*": ["pages/Subscriptions/*"],
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

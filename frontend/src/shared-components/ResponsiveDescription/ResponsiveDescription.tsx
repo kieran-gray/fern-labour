@@ -1,5 +1,5 @@
-import classes from '../shared-styles.module.css';
 import { Text } from '@mantine/core';
+import classes from '../shared-styles.module.css';
 
 interface ResponsiveDescriptionProps {
   description: string | JSX.Element;

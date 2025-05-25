@@ -1,7 +1,7 @@
 import { Space } from '@mantine/core';
 import { InviteContainer } from './InviteContainer/InviteContainer';
 import { ShareContainer } from './ShareContainer/ShareContainer';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function Share() {
   return (

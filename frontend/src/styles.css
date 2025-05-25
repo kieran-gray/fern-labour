@@ -1,7 +1,7 @@
 body {
-    background-color: #ffeae6;
+    background-color: light-dark(#ffeae6, #121212);
 }
 
 #root {
-    background-color: #ffeae6;
+    background-color: light-dark(#ffeae6, #121212);
 }

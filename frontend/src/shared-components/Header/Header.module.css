@@ -99,7 +99,7 @@
     text-transform: uppercase;
     border-radius: 20px;
     font-size: var(--mantine-font-size-sm);
-    color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-1));
+    color: var(--mantine-color-white);
     padding: 7px var(--mantine-spacing-sm);
     font-weight: 700;
     border: 2px solid transparent;

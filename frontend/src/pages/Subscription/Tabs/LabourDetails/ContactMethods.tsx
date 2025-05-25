@@ -1,15 +1,15 @@
+import { SubscriptionDTO, UserService } from '@clients/labour_service';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useSearchParams } from 'react-router-dom';
 import { Badge, Button, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { SubscriptionDTO, UserService } from '../../../../clients/labour_service';
-import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import ContactMethodsForm from './ContactMethodsForm';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './ContactMethodsForm.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function warnNoNumberSet(
   contactMethods: string[],
@@ -64,7 +64,7 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
   }
 
   const selectedContactMethods = subscription.contact_methods.map((method) => (
-    <Badge id={method} variant="filled" size="lg" color="var(--mantine-color-primary-4)">
+    <Badge id={method} variant="filled" size="lg" color="var(--mantine-primary-color-4)">
       {method}
     </Badge>
   ));
@@ -99,7 +99,11 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
               )}
               {subscription.contact_methods.length > 0 && (
                 <>
-                  <Text c="var(--mantine-color-gray-7)" mt="md" mb="md">
+                  <Text
+                    c="light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-2))"
+                    mt="md"
+                    mb="md"
+                  >
                     Your chosen contact methods:
                   </Text>
                   <div className={classes.infoRow}>{selectedContactMethods}</div>
@@ -110,8 +114,8 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
           <div className={baseClasses.inner} style={{ paddingTop: 0 }}>
             <div className={classes.submitRow}>
               <Button
-                color="var(--mantine-color-primary-4)"
-                variant="outline"
+                color="var(--mantine-primary-color-4)"
+                variant="filled"
                 radius="xl"
                 size="md"
                 h={48}

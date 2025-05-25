@@ -2,7 +2,6 @@
 .root {
     display: flex;
     flex-wrap: wrap;
-    background-color: #ff7964;
     border-radius: var(--mantine-radius-xl);
     flex-basis: content;
     width: 100%;
@@ -52,13 +51,13 @@
     transition: color 0.2s ease;
 
     &:hover {
-        color: var(--mantine-color-gray-9);
+        color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-5));
         background-color: var(--mantine-color-primary-1);
     }
 
     @media (max-width: $mantine-breakpoint-sm) {
         &[data-active] {
-            color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-primary-9));
+            color: light-dark(var(--mantine-color-gray-9), var(--mantine-primary-color-3));
             background-color: var(--mantine-color-primary-1);
         }
         
@@ -91,16 +90,12 @@
 
 .body {
     border-radius: var(--mantine-radius-xl);
-    background-color: light-dark(#fff, var(--mantine-color-primary-3));
+    background-color: light-dark(#fff, var(--mantine-color-primary-2));
     color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-1));
     padding: var(--mantine-spacing-md);
     height: auto;
     min-width: 220px;
     flex: 1;
-}
-
-.description {
-    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-2))
 }
 
 .header {
@@ -116,9 +111,13 @@
     font-size: var(--mantine-font-size-lg);
 }
 
+.description {
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-2));
+}
+
 .importantText {
     display: flex;
-    background-color: var(--mantine-color-primary-1);
+    background-color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-4));
     padding: 15px;
     border-radius: 15px;
     width: 100%;
@@ -128,7 +127,7 @@
 }
 
 .minorText {
-    color: var(--mantine-color-gray-7);
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-2));
     font-weight: 400;
     margin-bottom: var(--mantine-spacing-md);
     font-size: var(--mantine-font-size-md);
@@ -248,3 +247,60 @@
     display: flex;
     justify-content: center;
   }
+
+
+.input {
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-primary-1));
+    border-color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-primary-1));
+    color: light-dark(var(--mantine-color-black), var(--mantine-color-gray-1));
+
+    &::placeholder {
+        color: light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6));
+      }
+
+    &:focus {
+        border-color: light-dark(var(--mantine-primary-color-3), var(--mantine-color-gray-6));
+    }
+}
+
+.section {
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-white));
+}
+
+.selectDropdown {
+    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-gray-8));
+}
+
+.actionMenuIcon {
+    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0));
+
+    &:hover {
+        color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0));
+        background-color: light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-8));
+    }
+}
+
+.actionMenuDropdown {
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-gray-8));
+}
+
+.actionMenuLabel {
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-1));
+}
+
+.actionMenuDanger {
+    color: light-dark(red, var(--mantine-color-red-3));
+    
+    &:hover {
+        background-color: light-dark(var(--mantine-color-red-0), var(--mantine-color-gray-7));
+    }
+}
+
+.actionMenuOk {
+    color: light-dark(green, var(--mantine-color-green-3));
+
+    &:hover {
+        background-color: light-dark(var(--mantine-color-green-0), var(--mantine-color-gray-7));
+    }
+}

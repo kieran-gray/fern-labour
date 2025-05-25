@@ -1,21 +1,17 @@
 import { useState } from 'react';
+import { ApiError, CreateCheckoutRequest, OpenAPI, PaymentsService } from '@clients/labour_service';
+import { Error } from '@shared/Notifications';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowUp } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, Image, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import {
-  ApiError,
-  CreateCheckoutRequest,
-  OpenAPI,
-  PaymentsService,
-} from '../../../clients/labour_service';
-import { ResponsiveDescription } from '../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { useSubscription } from '../SubscriptionContext';
 import image from './ShareMore.svg';
-import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './PayWall.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export const PayWall = () => {
   const auth = useAuth();
@@ -64,10 +60,9 @@ export const PayWall = () => {
       }
       setMutationInProgress(false);
       notifications.show({
+        ...Error,
         title: 'Error',
         message,
-        radius: 'lg',
-        color: 'var(--mantine-color-primary-7)',
       });
     },
     onSettled: () => {
@@ -103,7 +98,7 @@ export const PayWall = () => {
             >
               Upgrade now
             </Button>
-            <Text mt={15} size="xs" c="var(--mantine-color-gray-8)">
+            <Text mt={15} size="xs" className={baseClasses.description}>
               *SMS messages are only supported for UK (+44) phone numbers{' '}
             </Text>
           </div>

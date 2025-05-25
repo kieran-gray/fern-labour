@@ -29,16 +29,16 @@ const pinkTheme: MantineColorsTuple = [
 ];
 
 const darkTheme: MantineColorsTuple = [
-  '#01010a',
-  '#0c0d21',
-  '#1d1e30',
-  '#2b2c3d',
-  '#34354a',
-  '#4d4f66',
-  '#666980',
-  '#8c8fa3',
-  '#acaebf',
-  '#d5d7e0',
+  '#121212',
+  '#1e1e1e',
+  '#282828',
+  '#333333',
+  '#3f3f3f',
+  '#4b4b4b',
+  '#575757',
+  '#646464',
+  '#717171',
+  '#7e7e7e',
 ];
 
 // Marketing Hightlights: #24968b

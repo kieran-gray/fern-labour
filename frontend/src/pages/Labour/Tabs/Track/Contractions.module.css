@@ -82,7 +82,7 @@
 }
 
 .bulletText {
-    color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-9));
+    color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-white));
     font-weight: 1000;
     font-size: var(--mantine-font-size-xl);
 }
