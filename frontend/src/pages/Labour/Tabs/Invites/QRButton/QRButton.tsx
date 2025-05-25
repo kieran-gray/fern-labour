@@ -2,8 +2,8 @@ import { IconQrcode } from '@tabler/icons-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button, Modal, Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import classes from '../../../../../shared-components/Modal.module.css';
-import baseClasses from '../../../../../shared-components/shared-styles.module.css';
+import classes from '@shared/Modal.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export default function QRButton({ url }: { url: string }) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -28,8 +28,8 @@ export default function QRButton({ url }: { url: string }) {
           <QRCodeSVG
             value={url}
             style={{ width: '70%', height: '70%', margin: 'auto' }}
-            bgColor="var(--mantine-color-white)"
-            fgColor="var(--mantine-color-pink-9)"
+            bgColor="light-dark(var(--mantine-color-white), var(--mantine-color-primary-2))"
+            fgColor="var(--mantine-color-primary-9)"
           />
         </div>
         <Space h="lg" />

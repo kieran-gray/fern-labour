@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { IconHourglassHigh } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import _ from 'lodash';
-import { useAuth } from 'react-oidc-context';
-import { Button } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import {
   ContractionDTO,
   ContractionsService,
   EndContractionRequest,
   LabourDTO,
   OpenAPI,
-} from '../../../../clients/labour_service';
-import { contractionDurationSeconds } from '../../../../shared-components/utils';
+} from '@clients/labour_service';
+import { Error } from '@shared/Notifications';
+import { contractionDurationSeconds } from '@shared/utils';
+import { IconHourglassHigh } from '@tabler/icons-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
+import { useAuth } from 'react-oidc-context';
+import { Button } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 
 export default function EndContractionButton({
   intensity,
@@ -66,10 +67,9 @@ export default function EndContractionButton({
         queryClient.setQueryData(['labour', auth.user?.profile.sub], context.previousLabourState);
       }
       notifications.show({
+        ...Error,
         title: 'Error',
         message: `Error ending contraction: ${error.message}`,
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-6)',
       });
     },
     onSettled: () => {

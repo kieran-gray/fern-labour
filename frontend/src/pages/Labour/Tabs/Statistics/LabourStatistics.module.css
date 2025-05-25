@@ -1,148 +1,113 @@
-.labourStatsWrapper {
-    background-color: var(--mantine-color-pink-3);
-    border-radius: var(--mantine-radius-xl);
-  }
-  
-  .labourStatsTitle {
-    color: var(--mantine-color-white);
-    font-weight: 700;
-    font-size: var(--mantine-font-size-md);
-    line-height: 1;
-  }
-  
-  .labourStatsHeader {
-    background-color: var(--mantine-color-pink-3);
-    border: 3px solid var(--mantine-color-pink-3);
-    border-radius: var(--mantine-radius-xl);
-    padding-top: 5px;
-    padding-bottom: 5px;
-  
-    &:hover {
-      background-color: var(--mantine-color-pink-3);
-      border: 3px solid var(--mantine-color-pink-4);
-    }
-  }
-  
-  .labourStatsPanel {
-    padding: 20px 0px 0px 10px;
-    border: 5px solid #ff7964;
-    border-bottom-left-radius: var(--mantine-radius-xl);
-    border-bottom-right-radius: var(--mantine-radius-xl);
-    background-color: var(--mantine-color-pink-1);
-    height: auto;
-    min-width: 220px;
-    flex: 1;
-  }
-  
-  .labourStatsText {
-    color: var(--mantine-color-gray-9);
-    font-weight: 500;
-    font-size: var(--mantine-font-size-md);
+.labourStatsText {
+  color: light-dark((--mantine-color-gray-9), var(--mantine-color-gray-2));
+  font-weight: 500;
+  font-size: var(--mantine-font-size-md);
+}
+
+.labourStatsTabsRoot {
+  background-color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-3));;
+  border-radius: var(--mantine-radius-lg);
+  padding: 10px;
+  flex-direction: column;
+}
+
+.labourStatsTabsPanel {
+  width: 100%;
+  padding: calc(var(--mantine-spacing-md));
+
+  @media (max-width: $mantine-breakpoint-md) {
+    padding: calc(var(--mantine-spacing-md));
   }
 
-  .labourStatsTabsRoot {
-    background-color: var(--mantine-color-pink-1);
-    border-radius: var(--mantine-radius-lg);
-    padding: 10px;
+  @media (max-width: $mantine-breakpoint-xs) {
+      padding: calc(var(--mantine-spacing-xs) / 3);
+  }
+}
+
+.labourStatsTabsTab {
+  border-radius: var(--mantine-radius-md);
+  font-weight: 600;
+  flex-grow: 1;
+    
+  &[data-active] {
+    background-color: light-dark(var(--mantine-color-primary-4), var(--mantine-primary-color-4));;
+  }
+}
+
+.statsTextContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: stretch;
+  width: 100%;
+  flex-wrap: wrap;
+  padding: calc(var(--mantine-spacing-xl));
+  padding-bottom: 0px;
+  column-gap: 20px;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    padding: calc(var(--mantine-spacing-md));
+    padding-bottom: 0px;
+  }
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: calc(var(--mantine-spacing-xs));
+    padding-bottom: 0px;
     flex-direction: column;
   }
+}
 
-  .labourStatsTabsPanel {
-    width: 100%;
+.statsInner {
+  display: flex;
+  justify-content: space-between;
+  padding: calc(var(--mantine-spacing-xl));
+  padding-top: 0px;
+  margin-top: 10px 0px;
+  width: 100%;
+
+  @media (max-width: $mantine-breakpoint-md) {
     padding: calc(var(--mantine-spacing-md));
-
-    @media (max-width: $mantine-breakpoint-md) {
-      padding: calc(var(--mantine-spacing-md));
-    }
-
-    @media (max-width: $mantine-breakpoint-xs) {
-        padding: calc(var(--mantine-spacing-xs) / 3);
-    }
   }
 
-  .labourStatsTabsTab {
-    border-radius: var(--mantine-radius-md);
-    font-weight: 600;
-    flex-grow: 1;
-      
-    &[data-active] {
-      background-color: var(--mantine-color-pink-4);
-    }
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: 0px;
   }
+} 
 
-  .statsTextContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-content: stretch;
-    width: 100%;
-    flex-wrap: wrap;
-    padding: calc(var(--mantine-spacing-xl));
-    padding-bottom: 0px;
-    column-gap: 20px;
+.content {
+  max-width: 470px;
 
-    @media (max-width: $mantine-breakpoint-md) {
-      padding: calc(var(--mantine-spacing-md));
-      padding-bottom: 0px;
-    }
-
-    @media (max-width: $mantine-breakpoint-sm) {
-      padding: calc(var(--mantine-spacing-xs));
-      padding-bottom: 0px;
-      flex-direction: column;
-    }
+  @media (max-width: $mantine-breakpoint-md) {
+    max-width: 100%;
   }
+}
 
-  .statsInner {
-    display: flex;
-    justify-content: space-between;
-    padding: calc(var(--mantine-spacing-xl));
-    padding-top: 0px;
-    margin-top: 10px 0px;
-    width: 100%;
+.tableHeader {
+  background-color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-4));
+  font-weight: 600;
+}
 
-    @media (max-width: $mantine-breakpoint-md) {
-      padding: calc(var(--mantine-spacing-md));
-    }
+.image {
+  width: 376px;
+  height: 356px;
 
-    @media (max-width: $mantine-breakpoint-sm) {
-      padding: 0px;
-    }
-  } 
-
-  .content {
-    max-width: 470px;
-
-    @media (max-width: $mantine-breakpoint-md) {
-      max-width: 100%;
-    }
+  @media (max-width: $mantine-breakpoint-md) {
+    display: none;
   }
+}
 
-  .tableHeader {
-    background-color: var(--mantine-color-pink-1);
-    font-weight: 600;
+
+.labourStatsChartRoot {
+  --chart-grid-color: light-dark(alpha(var(--mantine-color-black), 0.15), alpha(var(--mantine-color-gray-1), 0.15));
+  --chart-text-color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-1));
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-primary-4));
+  padding: 30px 30px 10px;
+  border-radius: 15px;
+
+  @media (max-width: $mantine-breakpoint-xs) {
+      padding-top: 30px;
+      padding-left: 10px;
+      padding-right: 10px;
   }
+}
 
-  .image {
-    width: 376px;
-    height: 356px;
-  
-    @media (max-width: $mantine-breakpoint-md) {
-      display: none;
-    }
-  }
-
-
-  .labourStatsChartRoot {
-    --chart-grid-color: alpha(var(--mantine-color-black), 0.15);
-    --chart-text-color: var(--mantine-color-gray-8);
-    background-color: var(--mantine-color-white);
-    padding: 30px 30px 10px;
-    border-radius: 15px;
-
-    @media (max-width: $mantine-breakpoint-xs) {
-        padding-top: 30px;
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-  }

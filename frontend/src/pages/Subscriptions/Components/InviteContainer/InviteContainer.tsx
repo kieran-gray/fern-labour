@@ -1,21 +1,22 @@
 import { useState } from 'react';
+import {
+  ApiError,
+  OpenAPI,
+  SendSubscriberInviteRequest,
+  SubscriberService,
+} from '@clients/labour_service';
+import image from '@labour/Tabs/Invites/InviteContainer/invite.svg';
+import { Error, Success } from '@shared/Notifications';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import {
-  ApiError,
-  OpenAPI,
-  SendSubscriberInviteRequest,
-  SubscriberService,
-} from '../../../../clients/labour_service';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
-import image from '../../../Labour/Tabs/Invites/InviteContainer/invite.svg';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from '../../../Labour/Tabs/Invites/InviteContainer/InviteContainer.module.css';
+import classes from '@labour/Tabs/Invites/InviteContainer/InviteContainer.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function InviteContainer() {
   const [mutationInProgress, setMutationInProgress] = useState(false);
@@ -43,27 +44,24 @@ export function InviteContainer() {
     },
     onSuccess: () => {
       notifications.show({
+        ...Success,
         title: 'Success',
         message: `Invite email sent`,
-        radius: 'lg',
-        color: 'var(--mantine-color-green-3)',
       });
       form.reset();
     },
     onError: (err) => {
       if (err instanceof ApiError && err.status === 429) {
         notifications.show({
+          ...Error,
           title: 'Slow down!',
           message: 'You have sent too many invites today. Wait until tomorrow to send more.',
-          radius: 'lg',
-          color: 'var(--mantine-color-pink-7)',
         });
       } else {
         notifications.show({
+          ...Error,
           title: 'Error Sending Invite',
           message: 'Something went wrong. Please try again.',
-          radius: 'lg',
-          color: 'var(--mantine-color-pink-7)',
         });
       }
     },
@@ -104,10 +102,15 @@ export function InviteContainer() {
                     key={form.key('email')}
                     size="lg"
                     {...form.getInputProps('email')}
+                    classNames={{
+                      description: baseClasses.description,
+                      input: baseClasses.input,
+                      section: baseClasses.section,
+                    }}
                   />
                   <Space w="md" />
                   <Button
-                    color="var(--mantine-color-pink-4)"
+                    color="var(--mantine-primary-color-4)"
                     variant="filled"
                     rightSection={<IconSend size={20} stroke={1.5} />}
                     radius="xl"

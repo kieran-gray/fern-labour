@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { LabourDTO, LabourUpdateDTO } from '@clients/labour_service';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconBook } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Image, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { LabourDTO, LabourUpdateDTO } from '../../../../clients/labour_service';
-import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import { LabourUpdatesHelpModal } from './HelpModal';
 import image from './image.svg';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
 import { LabourUpdateControls } from './LabourUpdateControls';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourUpdates.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 interface LabourUpdatesProps {
   labour: LabourDTO;
@@ -124,6 +124,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
             privateLabourBegunMessage,
             completed
           )}
+          key={data.id}
         />
       );
     });

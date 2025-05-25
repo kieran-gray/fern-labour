@@ -1,6 +1,6 @@
-import { AppShell } from '../../shared-components/AppShell.tsx';
+import { LabourPage } from '@labour/Page.tsx';
+import { AppShell } from '@shared/AppShell';
 import { AppMode, SelectAppMode, useMode } from '../Home/SelectAppMode.tsx';
-import { LabourPage } from '../Labour/Page.tsx';
 import { SubscriptionProvider } from '../Subscription/SubscriptionContext.tsx';
 import { SubscriptionsPage } from '../Subscriptions/Page.tsx';
 

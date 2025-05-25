@@ -1,7 +1,7 @@
+import { AppShell } from '@shared/AppShell';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { AppShell } from '../../shared-components/AppShell';
 import SubscribeForm from './Components/Form';
-import baseClasses from '../../shared-components/shared-styles.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export const SubscribePage: React.FC = () => {
   const { id } = useParams<'id'>();

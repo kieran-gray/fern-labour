@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef } from 'react';
+import { LabourDTO, UserSummaryDTO } from '@clients/labour_service';
+import { LabourUpdate, LabourUpdateProps } from '@labour/Tabs/Updates/LabourUpdate';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { pluraliseName } from '@shared/utils';
 import { ScrollArea, Space } from '@mantine/core';
-import { LabourDTO, UserSummaryDTO } from '../../../../clients/labour_service';
-import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
-import { pluraliseName } from '../../../../shared-components/utils';
-import { LabourUpdate, LabourUpdateProps } from '../../../Labour/Tabs/Updates/LabourUpdate';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from '../../../Labour/Tabs/Updates/LabourUpdates.module.css';
+import classes from '@labour/Tabs/Updates/LabourUpdates.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function StatusUpdates({
   labour,
@@ -50,7 +50,7 @@ export function StatusUpdates({
             ...baseProps,
             class: classes.announcementPanel,
             icon: '📣',
-            badgeColor: 'var(--mantine-color-pink-6)',
+            badgeColor: 'var(--mantine-primary-color-6)',
             badgeText: data.labour_update_type.split('_')[0],
             text: data.message,
           };

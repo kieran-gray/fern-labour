@@ -1,12 +1,12 @@
 import { ReactElement } from 'react';
+import { OpenAPI, SubscriptionService } from '@clients/labour_service';
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { PageLoadingIcon } from '@shared/PageLoading/Loading';
+import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconArrowRight, IconX } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { Avatar, Button, Group, Table, Text } from '@mantine/core';
-import { OpenAPI, SubscriptionService } from '../../../../../clients/labour_service';
-import { ImportantText } from '../../../../../shared-components/ImportantText/ImportantText';
-import { PageLoadingIcon } from '../../../../../shared-components/PageLoading/Loading';
-import { useSubscription } from '../../../../Subscription/SubscriptionContext';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import classes from './SubscriptionsTable.module.css';
 
@@ -68,7 +68,7 @@ export function SubscriptionsTable() {
       <Table.Tr key={subscription.id}>
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />
+            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-primary-color-5)" />
             <>
               <Text fw={500} className={classes.cropText} size="xs" hiddenFrom="xs">
                 {birthing_person.first_name} {birthing_person.last_name}
@@ -81,7 +81,7 @@ export function SubscriptionsTable() {
         </Table.Td>
         <Table.Td>
           <Button
-            color="var(--mantine-color-pink-4)"
+            color="var(--mantine-primary-color-4)"
             rightSection={toggleButtonIcon(subscription.id)}
             variant="light"
             radius="xl"
@@ -94,7 +94,7 @@ export function SubscriptionsTable() {
             {subscriptionId === subscription.id ? 'Exit' : 'View'}
           </Button>
           <Button
-            color="var(--mantine-color-pink-4)"
+            color="var(--mantine-primary-color-4)"
             rightSection={toggleButtonIcon(subscription.id)}
             variant="light"
             radius="xl"

@@ -1,4 +1,4 @@
-import { PageContainerContentBottom } from '../../../../shared-components/PageContainer/PageContainer';
+import { PageContainerContentBottom } from '@shared/PageContainer/PageContainer';
 import image from './image.svg';
 import { SubscriptionsTable } from './SubscriptionsTable/SubscriptionsTable';
 

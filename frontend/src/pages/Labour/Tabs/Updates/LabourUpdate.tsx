@@ -29,7 +29,7 @@ export function LabourUpdate({ data }: { data: LabourUpdateProps }) {
         </Badge>
 
         <div style={{ flexGrow: 1 }} />
-        <Text size="xs" c="var(--mantine-color-gray-9)">
+        <Text size="xs" c="light-dark(var(--mantine-color-gray-9),var(--mantine-color-gray-0))">
           {data.sentTime}
         </Text>
       </Group>

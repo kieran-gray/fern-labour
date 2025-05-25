@@ -57,13 +57,14 @@
 }
 
 .privateNotePanel{
-  background-color: #fff8e1;
+  background-color: light-dark(#fff8e1, #5e553c83);
   padding: 10px 20px;
   width: 100%;
   border-radius: var(--mantine-radius-md);
   position: relative;
   border-left: 4px solid #ffb300;
   transition: transform 0.2s ease;
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
 
   &:hover {
     transform: translateY(-2px);
@@ -71,13 +72,14 @@
 }
 
 .statusUpdatePanel{
-  background-color: #f0f9f8;
+  background-color: light-dark(#f0f9f8, #405c5983);
   padding: 10px 20px;
   width: 100%;
   border-radius: var(--mantine-radius-md);
   position: relative;
   border-left: 4px solid #24968b;
   transition: transform 0.2s ease;
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
 
   &:hover {
     transform: translateY(-2px);
@@ -85,13 +87,14 @@
 }
 
 .announcementPanel{
-  background-color: var(--mantine-color-pink-0);
+  background-color: light-dark(var(--mantine-color-pink-0), #69575393);
   padding: 10px 20px;
   width: 100%;
   border-radius: var(--mantine-radius-md);
   position: relative;
   border-left: 4px solid var(--mantine-color-pink-6);
   transition: transform 0.2s ease;
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
 
   &:hover {
     transform: translateY(-2px);

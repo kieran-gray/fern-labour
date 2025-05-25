@@ -1,8 +1,8 @@
 import { Modal, Space, Text, Title } from '@mantine/core';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
-import modalClasses from '../../../../shared-components/Modal.module.css';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import labourUpdateClasses from './LabourUpdates.module.css';
+import modalClasses from '@shared/Modal.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -31,7 +31,7 @@ export const LabourUpdatesHelpModal = ({
     sentTime,
     class: labourUpdateClasses.announcementPanel,
     icon: '📣',
-    badgeColor: 'var(--mantine-color-pink-6)',
+    badgeColor: 'var(--mantine-primary-color-6)',
     badgeText: 'announcement',
     text: 'This is an announcement, use me to make more important updates',
     visibility: '📡 Broadcast to subscribers',
@@ -68,7 +68,12 @@ export const LabourUpdatesHelpModal = ({
     >
       <div
         className={baseClasses.inner}
-        style={{ flexDirection: 'column', paddingLeft: '5px', paddingRight: '5px' }}
+        style={{
+          flexDirection: 'column',
+          paddingLeft: '5px',
+          paddingRight: '5px',
+          color: 'light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))',
+        }}
       >
         <Title order={3} visibleFrom="md">
           Sharing updates
@@ -76,7 +81,11 @@ export const LabourUpdatesHelpModal = ({
         <Title order={4} mt="xs" hiddenFrom="md">
           Sharing updates
         </Title>
-        <Text mt={10} size="sm" c="var(--mantine-color-gray-8)">
+        <Text
+          mt={10}
+          size="sm"
+          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+        >
           You can share two different types of updates here to keep your loved ones updated.
           <br />
           <br />

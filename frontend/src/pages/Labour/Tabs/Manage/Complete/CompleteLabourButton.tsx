@@ -1,16 +1,13 @@
 import { useState } from 'react';
+import { Error } from '@base/shared-components/Notifications';
+import { CompleteLabourRequest, LabourService, OpenAPI } from '@clients/labour_service';
+import { useLabour } from '@labour/LabourContext';
 import { IconConfetti } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import {
-  CompleteLabourRequest,
-  LabourService,
-  OpenAPI,
-} from '../../../../../clients/labour_service';
-import { useLabour } from '../../../LabourContext';
 import ConfirmCompleteLabourModal from './ConfirmCompleteLabour';
 
 export default function CompleteLabourButton({
@@ -48,10 +45,9 @@ export default function CompleteLabourButton({
     onError: (error) => {
       console.error('Error completing labour', error);
       notifications.show({
+        ...Error,
         title: 'Error Completing Labour',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
     onSettled: () => {
@@ -72,7 +68,10 @@ export default function CompleteLabourButton({
 
   if (disabled) {
     return (
-      <Tooltip label="End your current contraction first">
+      <Tooltip
+        label="End your current contraction first"
+        events={{ hover: true, focus: false, touch: true }}
+      >
         <Button
           data-disabled
           leftSection={icon}

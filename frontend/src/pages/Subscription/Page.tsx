@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import { ApiError, OpenAPI, SubscriptionService } from '@clients/labour_service/index.ts';
+import { AppShell } from '@shared/AppShell';
+import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
+import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
+import { pluraliseName } from '@shared/utils.tsx';
 import {
   IconChartHistogram,
   IconMessage,
@@ -11,11 +16,6 @@ import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Center, Space, Tabs, Text } from '@mantine/core';
-import { ApiError, OpenAPI, SubscriptionService } from '../../clients/labour_service/index.ts';
-import { AppShell } from '../../shared-components/AppShell.tsx';
-import { ErrorContainer } from '../../shared-components/ErrorContainer/ErrorContainer.tsx';
-import { PageLoading } from '../../shared-components/PageLoading/PageLoading.tsx';
-import { pluraliseName } from '../../shared-components/utils.tsx';
 import { InviteContainer } from '../Subscriptions/Components/InviteContainer/InviteContainer.tsx';
 import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions.tsx';
 import { PayWall } from './Paywall/PayWall.tsx';
@@ -25,7 +25,7 @@ import ContactMethods from './Tabs/LabourDetails/ContactMethods.tsx';
 import LabourDetails from './Tabs/LabourDetails/LabourDetails.tsx';
 import { StatusUpdates } from './Tabs/LabourUpdates/LabourUpdates.tsx';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
-import baseClasses from '../../shared-components/shared-styles.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },

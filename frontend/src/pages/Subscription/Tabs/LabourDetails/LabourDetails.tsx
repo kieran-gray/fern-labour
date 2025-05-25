@@ -1,11 +1,11 @@
+import { LabourDTO } from '@clients/labour_service';
+import image from '@labour/Tabs/Manage/LabourDetails/Meditate.svg';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { dueDateToGestationalAge } from '@shared/utils';
 import { Badge, Image, Text } from '@mantine/core';
-import { LabourDTO } from '../../../../clients/labour_service';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
-import { dueDateToGestationalAge } from '../../../../shared-components/utils';
-import image from '../../../Labour/Tabs/Manage/LabourDetails/Meditate.svg';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
-import classes from '../../../Labour/Tabs/Manage/LabourDetails/LabourDetails.module.css';
+import classes from '@labour/Tabs/Manage/LabourDetails/LabourDetails.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export default function LabourDetails({
   labour,

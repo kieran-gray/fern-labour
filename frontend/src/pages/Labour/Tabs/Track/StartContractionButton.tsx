@@ -1,18 +1,19 @@
 import { RefObject, useState } from 'react';
-import { IconHourglassLow } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import _ from 'lodash';
-import { useAuth } from 'react-oidc-context';
-import { Button } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import {
   ContractionDTO,
   ContractionsService,
   LabourDTO,
   OpenAPI,
   StartContractionRequest,
-} from '../../../../clients/labour_service';
-import { useLabour } from '../../LabourContext';
+} from '@clients/labour_service';
+import { useLabour } from '@labour/LabourContext';
+import { Error } from '@shared/Notifications';
+import { IconHourglassLow } from '@tabler/icons-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
+import { useAuth } from 'react-oidc-context';
+import { Button } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { StopwatchHandle } from './Stopwatch/Stopwatch';
 
 export default function StartContractionButton({
@@ -74,10 +75,9 @@ export default function StartContractionButton({
         queryClient.setQueryData(['labour', auth.user?.profile.sub], context.previousLabourState);
       }
       notifications.show({
+        ...Error,
         title: 'Error',
         message: `Error starting contraction: ${error.message}`,
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-6)',
       });
     },
     onSettled: () => {
@@ -95,7 +95,7 @@ export default function StartContractionButton({
       size="xl"
       variant="filled"
       loading={mutationInProgress}
-      color="var(--mantine-color-pink-4)"
+      color="var(--mantine-primary-color-4)"
       onClick={() => mutation.mutate(createNewContraction())}
     >
       Start Contraction

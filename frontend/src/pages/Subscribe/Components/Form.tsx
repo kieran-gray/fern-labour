@@ -1,15 +1,16 @@
 import { useState } from 'react';
+import { OpenAPI, SubscribeToRequest, SubscriptionService } from '@clients/labour_service';
+import { Error } from '@shared/Notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { OpenAPI, SubscribeToRequest, SubscriptionService } from '../../../clients/labour_service';
 import { AppMode, useMode } from '../../Home/SelectAppMode';
 import image from './protected.svg';
-import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './Form.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 const SUBSCRIBER_TOKEN_LENGTH = 5;
 
@@ -57,10 +58,9 @@ export default function SubscribeForm({
     },
     onError: () => {
       notifications.show({
+        ...Error,
         title: 'Error',
         message: 'Token or Labour ID is incorrect.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
     onSettled: () => {
@@ -79,7 +79,7 @@ export default function SubscribeForm({
             <div className={baseClasses.imageFlexRow}>
               <Image src={image} className={baseClasses.smallImage} />
             </div>
-            <Text c="var(--mantine-color-gray-7)" mt="md">
+            <Text className={baseClasses.description} mt="md">
               If the code isn't already filled in, check the share message that was sent to you, or
               ask the person who shared the link with you for the code.
             </Text>
@@ -95,12 +95,18 @@ export default function SubscribeForm({
                     length={SUBSCRIBER_TOKEN_LENGTH}
                     radius="md"
                     style={{ justifyContent: 'center' }}
+                    styles={{
+                      input: {
+                        color:
+                          'light-dark(var(--mantine-color-black), var(--mantine-color-gray-1))',
+                      },
+                    }}
                     key={form.key('token')}
                     {...form.getInputProps('token')}
                   />
                   <Space w="xl" h="xl" />
                   <Button
-                    color="var(--mantine-color-pink-4)"
+                    color="var(--mantine-primary-color-4)"
                     size="lg"
                     radius="lg"
                     variant="filled"

@@ -1,5 +1,14 @@
 import { useState } from 'react';
 import {
+  ApproveSubscriberRequest,
+  BlockSubscriberRequest,
+  OpenAPI,
+  RemoveSubscriberRequest,
+  SubscriptionManagementService,
+  UnblockSubscriberRequest,
+} from '@clients/labour_service';
+import { Error } from '@shared/Notifications';
+import {
   IconBan,
   IconCheck,
   IconCircleCheck,
@@ -11,15 +20,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import {
-  ApproveSubscriberRequest,
-  BlockSubscriberRequest,
-  OpenAPI,
-  RemoveSubscriberRequest,
-  SubscriptionManagementService,
-  UnblockSubscriberRequest,
-} from '../../../../../../clients/labour_service';
 import ConfirmActionModal from './ConfirmActionModal';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({
   subscription_id,
@@ -46,10 +48,9 @@ export function ManageSubscriptionMenu({
     },
     onError: () => {
       notifications.show({
+        ...Error,
         title: 'Error approving subscriber',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
@@ -64,10 +65,9 @@ export function ManageSubscriptionMenu({
     },
     onError: () => {
       notifications.show({
+        ...Error,
         title: 'Error removing subscriber',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
@@ -82,10 +82,9 @@ export function ManageSubscriptionMenu({
     },
     onError: () => {
       notifications.show({
+        ...Error,
         title: 'Error blocking subscriber',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
@@ -100,10 +99,9 @@ export function ManageSubscriptionMenu({
     },
     onError: () => {
       notifications.show({
+        ...Error,
         title: 'Error unblocking subscriber',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
@@ -125,23 +123,23 @@ export function ManageSubscriptionMenu({
     <>
       <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
         <Menu.Target>
-          <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
+          <ActionIcon variant="subtle" className={baseClasses.actionMenuIcon}>
             <IconDots size={16} stroke={1.5} />
           </ActionIcon>
         </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Label>Manage Subscriber</Menu.Label>
+        <Menu.Dropdown className={baseClasses.actionMenuDropdown}>
+          <Menu.Label className={baseClasses.actionMenuLabel}>Manage Subscriber</Menu.Label>
           {status === 'requested' && (
             <>
               <Menu.Item
-                color="green"
+                className={baseClasses.actionMenuOk}
                 leftSection={<IconCheck size={20} stroke={1.5} />}
                 onClick={() => approveSubscriberMutation.mutate()}
               >
                 Approve
               </Menu.Item>
               <Menu.Item
-                color="red"
+                className={baseClasses.actionMenuDanger}
                 leftSection={<IconX size={20} stroke={1.5} />}
                 onClick={() => removeSubscriberMutation.mutate()}
               >
@@ -151,7 +149,7 @@ export function ManageSubscriptionMenu({
           )}
           {status === 'subscribed' && (
             <Menu.Item
-              color="red"
+              className={baseClasses.actionMenuDanger}
               leftSection={<IconCircleMinus size={20} stroke={1.5} />}
               onClick={() => {
                 setAction('remove');
@@ -163,7 +161,7 @@ export function ManageSubscriptionMenu({
           )}
           {status !== 'blocked' && (
             <Menu.Item
-              color="red"
+              className={baseClasses.actionMenuDanger}
               leftSection={<IconBan size={20} stroke={1.5} />}
               onClick={() => {
                 setAction('block');
@@ -175,7 +173,7 @@ export function ManageSubscriptionMenu({
           )}
           {status === 'blocked' && (
             <Menu.Item
-              color="green"
+              className={baseClasses.actionMenuOk}
               leftSection={<IconCircleCheck size={20} stroke={1.5} />}
               onClick={() => unblockSubscriberMutation.mutate()}
             >

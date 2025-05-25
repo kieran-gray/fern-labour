@@ -1,10 +1,10 @@
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button, Image } from '@mantine/core';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
 import image from './notFound.svg';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './Image.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function NotFoundImage() {
   const navigate = useNavigate();

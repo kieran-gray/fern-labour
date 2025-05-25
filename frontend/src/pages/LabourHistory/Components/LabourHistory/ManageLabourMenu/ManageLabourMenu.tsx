@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { IconDotsVertical, IconTrash } from '@tabler/icons-react';
+import { ApiError, LabourService, OpenAPI } from '@clients/labour_service';
+import { Error } from '@shared/Notifications';
+import { IconDots, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ApiError, LabourService, OpenAPI } from '../../../../../clients/labour_service';
 import ConfirmActionModal from './ConfirmActionModal';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageLabourMenu({ labourId }: { labourId: string }) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -33,10 +35,9 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
         }
       }
       notifications.show({
+        ...Error,
         title: 'Error deleting labour',
         message,
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
@@ -54,14 +55,14 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
     <>
       <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
         <Menu.Target>
-          <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
-            <IconDotsVertical size={16} stroke={1.5} />
+          <ActionIcon variant="subtle" className={baseClasses.actionMenuIcon}>
+            <IconDots size={16} stroke={1.5} />
           </ActionIcon>
         </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Label>Manage Labour</Menu.Label>
+        <Menu.Dropdown className={baseClasses.actionMenuDropdown}>
+          <Menu.Label className={baseClasses.actionMenuLabel}>Manage Labour</Menu.Label>
           <Menu.Item
-            color="red"
+            className={baseClasses.actionMenuDanger}
             leftSection={<IconTrash size={20} stroke={1.5} />}
             onClick={() => setIsModalOpen(true)}
           >

@@ -1,60 +1,46 @@
 .wrapper {
-    min-height: 400px;
-    background-color: var(--mantine-color-pink-3);
-    border-radius: var(--mantine-radius-xl);
-    padding: calc(var(--mantine-spacing-xl) * 2.5);
-  
-    @media (max-width: $mantine-breakpoint-sm) {
-      padding: calc(var(--mantine-spacing-xl) * 1.5);
-    }
-  }
-  
-  .title {
-    color: var(--mantine-color-white);
-    line-height: 1;
-  }
-  
-  .description {
-    color: var(--mantine-color-pink-0);
-    max-width: 300px;
-    font-weight: 600;
-  
-    @media (max-width: $mantine-breakpoint-sm) {
-      max-width: 100%;
-    }
-  }
-  
-  .form {
-    padding: var(--mantine-spacing-xl);
-    border-radius: var(--mantine-radius-lg);
+  min-height: 400px;
+  background-color: var(--mantine-color-primary-3);
+  border-radius: var(--mantine-radius-xl);
+  padding: calc(var(--mantine-spacing-xl) * 2.5);
 
-    @media (max-width: $mantine-breakpoint-sm) {
-      padding: 0;
-    }
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: calc(var(--mantine-spacing-xl) * 1.5);
   }
-  
-  .social {
-    color: var(--mantine-color-white);
-  
-    @mixin hover {
-      color: var(--mantine-color-pink-1);
-    }
+}
+
+.title {
+  color: var(--mantine-color-white);
+  line-height: 1;
+}
+
+.description {
+  color: var(--mantine-color-primary-0);
+  max-width: 300px;
+  font-weight: 600;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    max-width: 100%;
   }
-  
-  .input {
-    background-color: var(--mantine-color-white);
-    border-color: var(--mantine-color-gray-4);
-    color: var(--mantine-color-black);
-  
-    &::placeholder {
-      color: var(--mantine-color-gray-5);
-    }
+}
+
+.form {
+  padding: var(--mantine-spacing-xl);
+  border-radius: var(--mantine-radius-lg);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: 0;
   }
-  
-  .inputLabel {
-    color: var(--mantine-color-black);
+}
+
+.social {
+  color: var(--mantine-color-white);
+
+  @mixin hover {
+    color: var(--mantine-color-primary-1);
   }
-  
-  .control {
-    background-color: var(--mantine-color-pink-5);
-  }
+}
+
+.inputLabel {
+  color: var(--mantine-color-black);
+}

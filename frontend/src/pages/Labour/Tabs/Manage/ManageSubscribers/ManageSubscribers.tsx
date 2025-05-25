@@ -1,5 +1,5 @@
-import { PageContainerContentBottom } from '../../../../../shared-components/PageContainer/PageContainer';
-import image from '../../../../Subscribe/Components/protected.svg';
+import { PageContainerContentBottom } from '@shared/PageContainer/PageContainer';
+import image from '@subscribe/Components/protected.svg';
 import { ManageSubscribersTabs } from './ManageSubscriberTabs/ManageSubscriberTabs';
 
 export function SubscribersContainer() {

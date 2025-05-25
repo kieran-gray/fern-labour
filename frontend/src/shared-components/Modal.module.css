@@ -1,8 +1,8 @@
 .modalRoot {
     display: flex;
     flex-wrap: wrap;
-    border: 5px solid var(--mantine-color-pink-3);
-    background-color: var(--mantine-color-pink-3);
+    border: 5px solid var(--mantine-color-primary-3);
+    background-color: var(--mantine-color-primary-3);
     border-radius: var(--mantine-radius-xl);
 
     @media (max-width: $mantine-breakpoint-sm) {
@@ -13,8 +13,8 @@
   .helpModalRoot {
     display: flex;
     flex-wrap: wrap;
-    border: 5px solid var(--mantine-color-pink-3);
-    background-color: var(--mantine-color-pink-3);
+    border: 5px solid var(--mantine-color-primary-3);
+    background-color: var(--mantine-color-primary-3);
     border-radius: var(--mantine-radius-xl);
 
   }
@@ -34,19 +34,19 @@
   }
 
   .modalBody {
-    border: 5px solid var(--mantine-color-pink-3);
+    border: 5px solid var(--mantine-color-primary-3);
     border-radius: var(--mantine-radius-xl);
-    background-color: var(--mantine-color-white);
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-primary-2));
     width: 100%;
   }
 
   .modalHeader {
     width: 100%;
-    background-color: var(--mantine-color-pink-3);
+    background-color: var(--mantine-color-primary-3);
   }
   
   .modalText {
-    color: var(--mantine-color-gray-9);
+    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-1));
     line-height: 1;
     font-weight: 700;
     margin-bottom: var(--mantine-spacing-md);
@@ -64,13 +64,17 @@
   }
 
   .modalInnerText {
-    color: var(--mantine-color-gray-8);
+    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-2));
     font-weight: 700;
     font-size: var(--mantine-font-size-lg);
   }
 
   .modalInnerTextContainer {
     border-radius: var(--mantine-radius-xl);
-    background-color: var(--mantine-color-pink-0);
+    background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-5));
     padding: 10px 15px;
+  }
+
+  .modalMessageText {
+    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-2));
   }

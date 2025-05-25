@@ -1,6 +1,7 @@
 import { IconAt, IconBrandInstagram } from '@tabler/icons-react';
 import { ActionIcon, Box, Stack, Text } from '@mantine/core';
 import classes from './ContactIcons.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 interface ContactIconProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'title'> {
   icon: typeof IconAt;
@@ -20,20 +21,30 @@ function ContactIcon({ icon: Icon, title, description, link, ...others }: Contac
             href={link}
             size={28}
             className={classes.social}
-            c="var(--mantine-color-gray-8)"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-1))"
             variant="transparent"
           >
-            <Icon size={24} color="var(--mantine-color-gray-8)" />
+            <Icon
+              size={24}
+              color="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-1))"
+            />
           </ActionIcon>
-        )) || <Icon size={24} color="var(--mantine-color-gray-8)" />}
+        )) || (
+          <Icon
+            size={24}
+            color="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-1))"
+          />
+        )}
       </Box>
 
       <div>
-        <Text size="xs">{title}</Text>
-        <Text size="md" visibleFrom="sm">
+        <Text size="xs" className={baseClasses.description}>
+          {title}
+        </Text>
+        <Text size="md" className={baseClasses.description} visibleFrom="sm">
           {description}
         </Text>
-        <Text size="sm" hiddenFrom="sm">
+        <Text size="sm" hiddenFrom="sm" className={baseClasses.description}>
           {description}
         </Text>
       </div>

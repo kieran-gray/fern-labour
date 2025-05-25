@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { ContractionDTO } from '@clients/labour_service';
+import { formatTimeMilliseconds, formatTimeSeconds, getTimeSinceLastStarted } from '@shared/utils';
 import { ScrollArea, Space, Text, Timeline } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { ContractionDTO } from '../../../../clients/labour_service';
-import {
-  formatTimeMilliseconds,
-  formatTimeSeconds,
-  getTimeSinceLastStarted,
-} from '../../../../shared-components/utils';
 import { EditContractionModal } from './EditContractionModal';
 import classes from './Contractions.module.css';
 
@@ -118,7 +114,7 @@ export default function ContractionTimeline({
           active={timelineContractions.length}
           lineWidth={6}
           bulletSize={60}
-          color="var(--mantine-color-pink-4)"
+          color="var(--mantine-primary-color-4)"
         >
           {timelineContractions}
         </Timeline>

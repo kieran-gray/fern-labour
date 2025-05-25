@@ -1,5 +1,5 @@
+import { LabourDTO } from '@clients/labour_service';
 import { Space, Tabs } from '@mantine/core';
-import { LabourDTO } from '../../../../clients/labour_service';
 import { filterContractions, LabourStatistics } from './LabourStatistics';
 import { LabourStatisticsChart } from './LabourStatisticsChart';
 import { LabourStatisticsTable } from './LabourStatsticsTable';

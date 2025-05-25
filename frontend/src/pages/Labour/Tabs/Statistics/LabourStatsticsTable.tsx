@@ -1,11 +1,11 @@
+import { formatTimeSeconds } from '@shared/utils';
 import { Table } from '@mantine/core';
-import { formatTimeSeconds } from '../../../../shared-components/utils';
 import { LabourStatisticsData } from './LabourStatistics';
 import classes from './LabourStatistics.module.css';
 
 export const LabourStatisticsTable = ({ data }: { data: LabourStatisticsData }) => {
   return (
-    <Table variant="vertical" borderColor="var(--mantine-color-pink-2)">
+    <Table variant="vertical" borderColor="var(--mantine-color-primary-2)">
       <Table.Tbody>
         <Table.Tr>
           <Table.Th className={classes.tableHeader}>Contractions</Table.Th>

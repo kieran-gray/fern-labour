@@ -1,5 +1,5 @@
+import { ContractionDTO } from '@clients/labour_service';
 import { ScatterChart } from '@mantine/charts';
-import { ContractionDTO } from '../../../../clients/labour_service';
 import classes from './LabourStatistics.module.css';
 
 interface ChartData {
@@ -24,7 +24,7 @@ export const LabourStatisticsChart = ({
 }) => {
   let minStartTime: number | null = null;
   const chartData: ChartData = {
-    color: 'var(--mantine-color-pink-6)',
+    color: 'var(--mantine-primary-color-6)',
     name: 'Contraction',
     data: [],
   };
@@ -59,7 +59,10 @@ export const LabourStatisticsChart = ({
         x: (value) => `${new Date(value).toTimeString().slice(0, 5)}`,
         y: (value) => `${value}s`,
       }}
-      classNames={{ root: classes.labourStatsChartRoot }}
+      classNames={{
+        root: classes.labourStatsChartRoot,
+        axisLabel: classes.labourStatsChartAxisLabel,
+      }}
     />
   );
 };

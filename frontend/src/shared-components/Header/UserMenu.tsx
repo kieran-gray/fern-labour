@@ -5,8 +5,10 @@ import {
   IconHome,
   IconLogout,
   IconMessageCircleQuestion,
+  IconMoon,
   IconPassword,
   IconSettings,
+  IconSun,
   IconSwitchHorizontal,
   IconTrash,
 } from '@tabler/icons-react';
@@ -20,6 +22,7 @@ import {
   Space,
   Text,
   UnstyledButton,
+  useMantineColorScheme,
 } from '@mantine/core';
 import { AppMode, useMode } from '../../pages/Home/SelectAppMode';
 import classes from './Header.module.css';
@@ -52,6 +55,7 @@ export function MobileUserMenu() {
   const pathname = window.location.pathname;
   const { mode, setMode } = useMode();
   const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
+  const { colorScheme, setColorScheme } = useMantineColorScheme();
 
   const appSettings = (
     <>
@@ -172,6 +176,12 @@ export function MobileUserMenu() {
   );
 
   const links = section === 'app' ? appSettings : accountSettings;
+  const themeIcon =
+    colorScheme === 'light' ? (
+      <IconMoon size={16} stroke={1.5} />
+    ) : (
+      <IconSun size={16} stroke={1.5} />
+    );
 
   return (
     <div className={classes.linksDrawer}>
@@ -186,8 +196,13 @@ export function MobileUserMenu() {
         ]}
         radius="lg"
         mt={0}
-        color="var(--mantine-color-pink-4)"
-        styles={{ root: { backgroundColor: 'var(--mantine-color-pink-0)' } }}
+        color="var(--mantine-primary-color-4)"
+        styles={{
+          root: {
+            backgroundColor:
+              'light-dark(var(--mantine-primary-color-0), var(--mantine-color-primary-8))',
+          },
+        }}
       />
 
       {links}
@@ -223,6 +238,18 @@ export function MobileUserMenu() {
             Contact Us
           </Button>
         )}
+        <Button
+          key="theme"
+          className={classes.mainLink}
+          onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
+          leftSection={themeIcon}
+          size="md"
+          w="100%"
+          variant="transparent"
+          mt={10}
+        >
+          {colorScheme === 'light' ? 'Night Mode' : 'Day Mode'}
+        </Button>
       </div>
     </div>
   );

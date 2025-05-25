@@ -1,9 +1,9 @@
+import { ImportantText } from '@shared/ImportantText/ImportantText';
+import { PageContainerContentBottom } from '@shared/PageContainer/PageContainer';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { pluraliseName } from '@shared/utils';
 import { Box, Button, Flex, Image, Text } from '@mantine/core';
-import { ImportantText } from '../../../../shared-components/ImportantText/ImportantText';
-import { PageContainerContentBottom } from '../../../../shared-components/PageContainer/PageContainer';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
-import { pluraliseName } from '../../../../shared-components/utils';
 import dbhf_main from './ads/dbhf/main.jpg';
 import my1styears_desktop from './ads/my1styears/desktop.jpg';
 import my1styears_main from './ads/my1styears/main.webp';
@@ -11,7 +11,7 @@ import powfood_main from './ads/powfood/main.jpg';
 import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
 import wildly_tasty_main from './ads/wildlytasty/main.webp';
 import image from './Gifts.svg';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export default function Gifts({ birthingPersonName }: { birthingPersonName: string }) {
   const pluralisedBirthingPersonName = pluraliseName(birthingPersonName);

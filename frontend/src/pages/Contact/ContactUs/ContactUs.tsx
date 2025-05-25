@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { ContactUsService } from '@clients/contact_service/sdk.gen.ts';
+import { ContactUsRequest } from '@clients/contact_service/types.gen.ts';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription.tsx';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle.tsx';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -17,13 +21,9 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { ContactUsService } from '../../../clients/contact_service/sdk.gen.ts';
-import { ContactUsRequest } from '../../../clients/contact_service/types.gen.ts';
-import { ResponsiveDescription } from '../../../shared-components/ResponsiveDescription/ResponsiveDescription.tsx';
-import { ResponsiveTitle } from '../../../shared-components/ResponsiveTitle/ResponsiveTitle.tsx';
 import { ContactIconsList } from './ContactIcons.tsx';
-import baseClasses from '../../../shared-components/shared-styles.module.css';
 import classes from './ContactUs.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 const categories = [
   { label: 'An Error Report', value: 'error_report' },
@@ -131,23 +131,27 @@ export function ContactUs() {
                   key={form.key('category')}
                   defaultValue="error_report"
                   {...form.getInputProps('category')}
-                  classNames={{ input: classes.input, label: classes.inputLabel }}
+                  classNames={{
+                    input: baseClasses.input,
+                    label: classes.inputLabel,
+                    dropdown: baseClasses.selectDropdown,
+                  }}
                   allowDeselect={false}
                   withAsterisk
                 />
               </Group>
               <Group mb={30} gap="xs" display={hideTestimonialInputs(form.values) ? 'none' : ''}>
-                <Title order={5} mt={15} c="var(--mantine-color-gray-7)">
+                <Title order={5} mt={15} className={baseClasses.description}>
                   Need ideas? Answer the following questions!
                 </Title>
-                <Text size="sm" c="var(--mantine-color-gray-7)">
+                <Text size="sm" className={baseClasses.description}>
                   • How did Fern Labour fit into your birth plan?
                 </Text>
-                <Text size="sm" c="var(--mantine-color-gray-7)">
+                <Text size="sm" className={baseClasses.description}>
                   • What advice would you give someone considering Fern Labour for their own
                   journey?
                 </Text>
-                <Text size="sm" c="var(--mantine-color-gray-7)">
+                <Text size="sm" className={baseClasses.description}>
                   • What was your favourite part of Fern Labour?
                 </Text>
               </Group>
@@ -167,7 +171,7 @@ export function ContactUs() {
                 data-autofocus
                 autosize
                 mt="md"
-                classNames={{ input: classes.input, label: classes.inputLabel }}
+                classNames={{ input: baseClasses.input, label: classes.inputLabel }}
                 {...form.getInputProps('message')}
               />
               <Checkbox
@@ -187,7 +191,8 @@ export function ContactUs() {
               <Group justify="flex-end" mt="md">
                 <Button
                   type="submit"
-                  className={classes.control}
+                  color="var(--mantine-primary-color-4)"
+                  variant="filled"
                   radius="lg"
                   disabled={isLoading || status.type !== ''}
                 >

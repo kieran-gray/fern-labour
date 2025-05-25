@@ -1,4 +1,5 @@
 import { Text } from '@mantine/core';
+import classes from '../shared-styles.module.css';
 
 interface ResponsiveDescriptionProps {
   description: string | JSX.Element;
@@ -8,10 +9,10 @@ interface ResponsiveDescriptionProps {
 export function ResponsiveDescription({ description, marginTop }: ResponsiveDescriptionProps) {
   return (
     <div style={{ marginTop }}>
-      <Text size="sm" hiddenFrom="sm" c="var(--mantine-color-gray-8)">
+      <Text size="sm" hiddenFrom="sm" className={classes.description}>
         {description}
       </Text>
-      <Text size="md" visibleFrom="sm" c="var(--mantine-color-gray-8)">
+      <Text size="md" visibleFrom="sm" className={classes.description}>
         {description}
       </Text>
     </div>

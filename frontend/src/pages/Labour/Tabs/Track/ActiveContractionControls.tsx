@@ -1,10 +1,10 @@
 import { RefObject, useEffect, useState } from 'react';
+import { ContractionDTO } from '@clients/labour_service/types.gen.ts';
 import { Slider, Space, Text } from '@mantine/core';
-import { ContractionDTO } from '../../../../clients/labour_service/types.gen.ts';
 import EndContractionButton from './EndContractionButton.tsx';
 import Stopwatch, { StopwatchHandle } from './Stopwatch/Stopwatch.tsx';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './Contractions.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function ActiveContractionControls({
   stopwatchRef,
@@ -42,7 +42,7 @@ export function ActiveContractionControls({
           markLabel: classes.markLabel,
           track: classes.track,
         }}
-        color="var(--mantine-color-pink-4)"
+        color="var(--mantine-primary-color-4)"
         size="xl"
         radius="lg"
         min={0}

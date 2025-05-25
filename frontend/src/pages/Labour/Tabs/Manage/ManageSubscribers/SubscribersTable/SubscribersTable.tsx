@@ -1,7 +1,7 @@
+import { ImportantText } from '@base/shared-components/ImportantText/ImportantText';
+import { SubscriptionDTO, UserSummaryDTO } from '@clients/labour_service';
 import { Avatar, Group, Table, Text } from '@mantine/core';
-import { SubscriptionDTO, UserSummaryDTO } from '../../../../../../clients/labour_service';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
-import baseClasses from '../../../../../../shared-components/shared-styles.module.css';
 import classes from './SubscribersTable.module.css';
 
 export function SubscribersTable({
@@ -19,7 +19,7 @@ export function SubscribersTable({
       <Table.Tr key={subscription.id}>
         <Table.Td>
           <Group gap="sm" wrap="nowrap">
-            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-color-pink-5)" />
+            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-primary-color-5)" />
             <>
               <Text fz="sm" visibleFrom="xs" fw={500} className={classes.cropText}>
                 {subscriber.first_name} {subscriber.last_name}
@@ -74,25 +74,8 @@ export function SubscribersTable({
   }
 
   return (
-    <>
-      <Text
-        className={baseClasses.importantText}
-        bg="var(--mantine-color-pink-0)"
-        size="sm"
-        hiddenFrom="sm"
-        mt={10}
-      >
-        {message}
-      </Text>
-      <Text
-        className={baseClasses.importantText}
-        bg="var(--mantine-color-pink-0)"
-        size="md"
-        visibleFrom="sm"
-        mt={10}
-      >
-        {message}
-      </Text>
-    </>
+    <div style={{ marginTop: '10px' }}>
+      <ImportantText message={message || ''} />
+    </div>
   );
 }

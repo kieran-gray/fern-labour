@@ -1,16 +1,14 @@
 import { useState } from 'react';
+import { OpenAPI, SubscriptionService, UnsubscribeFromRequest } from '@clients/labour_service';
+import { Error } from '@shared/Notifications';
+import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconDots, IconUserMinus } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import {
-  OpenAPI,
-  SubscriptionService,
-  UnsubscribeFromRequest,
-} from '../../../../../clients/labour_service';
-import { useSubscription } from '../../../../Subscription/SubscriptionContext';
 import ConfirmActionModal from './ConfirmActionModal';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,10 +32,9 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
     },
     onError: () => {
       notifications.show({
+        ...Error,
         title: 'Error unsubscribing',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
@@ -55,14 +52,14 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
     <>
       <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom">
         <Menu.Target>
-          <ActionIcon variant="subtle" color="var(--mantine-color-pink-9)">
+          <ActionIcon variant="subtle" className={baseClasses.actionMenuIcon}>
             <IconDots size={16} stroke={1.5} />
           </ActionIcon>
         </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Label>Manage Subscription</Menu.Label>
+        <Menu.Dropdown className={baseClasses.actionMenuDropdown}>
+          <Menu.Label className={baseClasses.actionMenuLabel}>Manage Subscription</Menu.Label>
           <Menu.Item
-            color="red"
+            className={baseClasses.actionMenuDanger}
             leftSection={<IconUserMinus size={20} stroke={1.5} />}
             onClick={() => setIsModalOpen(true)}
           >

@@ -1,10 +1,10 @@
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import image from '@subscriptions/Components/ManageSubscriptions/image.svg';
 import { Image } from '@mantine/core';
-import { ResponsiveDescription } from '../../../../shared-components/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '../../../../shared-components/ResponsiveTitle/ResponsiveTitle';
-import image from '../../../Subscriptions/Components/ManageSubscriptions/image.svg';
 import { LabourHistoryTable } from './LabourHistoryTable/LabourHistoryTable';
-import baseClasses from '../../../../shared-components/shared-styles.module.css';
 import classes from './LabourHistory.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function LabourHistory() {
   const title = 'Your labour history';

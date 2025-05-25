@@ -9,7 +9,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
         transition: 'min-height 10ms',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'var(--mantine-color-pink-0)',
+        backgroundColor: 'var(--mantine-color-primary-0)',
       }}
     >
       <Header />

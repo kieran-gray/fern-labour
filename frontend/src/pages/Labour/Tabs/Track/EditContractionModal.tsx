@@ -1,4 +1,11 @@
 import { useState } from 'react';
+import {
+  ContractionsService,
+  DeleteContractionRequest,
+  OpenAPI,
+  UpdateContractionRequest,
+} from '@clients/labour_service';
+import { Error, Success } from '@shared/Notifications';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -6,17 +13,11 @@ import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import {
-  ContractionsService,
-  DeleteContractionRequest,
-  OpenAPI,
-  UpdateContractionRequest,
-} from '../../../../clients/labour_service';
 import ConfirmActionModal from './ConfirmActionModal';
 import { ContractionData } from './ContractionTimeline';
 import { updateTime } from './UpdateTime';
-import modalClasses from '../../../../shared-components/Modal.module.css';
 import classes from './Contractions.module.css';
+import modalClasses from '@shared/Modal.module.css';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -59,20 +60,18 @@ export const EditContractionModal = ({
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
       setDeleteMutationInProgress(false);
       notifications.show({
+        ...Success,
         title: 'Success',
         message: `Contraction Deleted`,
-        radius: 'lg',
-        color: 'var(--mantine-color-green-3)',
       });
       close();
     },
     onError: async (_) => {
       setDeleteMutationInProgress(false);
       notifications.show({
+        ...Error,
         title: 'Error Deleting Contraction',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
   });
@@ -108,20 +107,18 @@ export const EditContractionModal = ({
       queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
       setUpdateMutationInProgress(false);
       notifications.show({
+        ...Success,
         title: 'Success',
         message: `Contraction Updated`,
-        radius: 'lg',
-        color: 'var(--mantine-color-green-3)',
       });
       close();
     },
     onError: async (_) => {
       setUpdateMutationInProgress(false);
       notifications.show({
+        ...Error,
         title: 'Error Updating Contraction',
         message: 'Something went wrong. Please try again.',
-        radius: 'lg',
-        color: 'var(--mantine-color-pink-7)',
       });
     },
     onSettled: () => {
@@ -201,7 +198,7 @@ export const EditContractionModal = ({
               markLabel: classes.markLabel,
               track: classes.track,
             }}
-            color="var(--mantine-color-pink-4)"
+            color="var(--mantine-primary-color-4)"
             key={form.key('intensity')}
             size="xl"
             radius="lg"
@@ -219,7 +216,7 @@ export const EditContractionModal = ({
           <Space h="xl" />
           <div className={classes.flexRow}>
             <Button
-              color="var(--mantine-color-pink-5)"
+              color="var(--mantine-primary-color-5)"
               leftSection={<IconTrash />}
               variant="filled"
               radius="xl"
@@ -231,7 +228,7 @@ export const EditContractionModal = ({
               loading={deleteMutationInProgress}
             />
             <Button
-              color="var(--mantine-color-pink-4)"
+              color="var(--mantine-primary-color-4)"
               leftSection={<IconUpload />}
               variant="light"
               radius="xl"
