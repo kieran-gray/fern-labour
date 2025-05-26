@@ -170,8 +170,8 @@ async def get_subscription_token(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> LabourSubscriptionTokenResponse:
     user = auth_controller.get_authenticated_user(credentials=credentials)
-    labour = await service.get_active_labour(birthing_person_id=user.id)
-    token = token_generator.generate(input=labour.id)
+    labour_id = await service.get_active_labour_id(birthing_person_id=user.id)
+    token = token_generator.generate(input=labour_id)
     return LabourSubscriptionTokenResponse(token=token)
 
 
