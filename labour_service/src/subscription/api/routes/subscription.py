@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated
 
 from dishka import FromComponent
@@ -164,10 +165,17 @@ async def get_subscription_by_id(
     subscription = await subscription_query_service.get_by_id(
         requester_id=user.id, subscription_id=subscription_id
     )
-    birthing_person = await user_service.get_summary(user_id=subscription.birthing_person_id)
-    labour = await labour_query_service.get_labour_by_id(labour_id=subscription.labour_id)
+    async with asyncio.TaskGroup() as tg:
+        birthing_person_task = tg.create_task(
+            user_service.get_summary(user_id=subscription.birthing_person_id)
+        )
+        labour_task = tg.create_task(
+            labour_query_service.get_labour_by_id(labour_id=subscription.labour_id)
+        )
     return SubscriptionDataResponse(
-        subscription=subscription, birthing_person=birthing_person, labour=labour
+        subscription=subscription,
+        birthing_person=birthing_person_task.result(),
+        labour=labour_task.result(),
     )
 
 
