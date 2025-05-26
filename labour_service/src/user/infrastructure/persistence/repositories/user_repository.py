@@ -1,3 +1,4 @@
+import asyncio
 from typing import Any
 
 from keycloak import KeycloakAdmin, KeycloakGetError
@@ -48,16 +49,13 @@ class KeycloakUserRepository(UserRepository):
             user = await self._keycloak_admin.a_get_user(
                 user_id=user_id.value, user_profile_metadata=True
             )
-        except KeycloakGetError:
+        except KeycloakGetError as e:
+            print(f"Error fetching user with ID {user_id}: {e}")
             return None
         return keycloak_query_to_user(user)
 
     async def get_by_ids(self, user_ids: list[UserId]) -> list[User]:
         users: list[User] = []
-        for user_id in user_ids:
-            try:
-                user = await self._keycloak_admin.a_get_user(user_id.value)
-                users.append(keycloak_query_to_user(user))
-            except KeycloakGetError as e:
-                print(f"Error fetching user with ID {user_id}: {e}")
+        results = await asyncio.gather(*[self.get_by_id(user_id) for user_id in user_ids])
+        users = [user for user in results if user is not None]
         return users
