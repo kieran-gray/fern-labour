@@ -16,7 +16,7 @@
 .messageContainer {
     border-radius: 15px;
     padding: 20px;
-    background-color: #ffd5cd;
+    background-color: light-dark(#ffd5cd, #3f3f3f);
     margin-top: 15px;
 }
 

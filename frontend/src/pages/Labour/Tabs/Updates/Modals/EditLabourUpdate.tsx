@@ -33,13 +33,14 @@ export default function EditLabourUpdateModal({
     >
       <Space h="lg" />
       <Textarea
-        label="Message"
+        label="Your status update"
         placeholder="Enter your updated message..."
         value={message}
         onChange={(event) => onChange(event.currentTarget.value)}
         minRows={3}
         maxRows={6}
         radius="lg"
+        styles={{ label: { paddingLeft: 10 } }}
         classNames={{ input: baseClasses.input, label: baseClasses.description }}
         mb={20}
         autosize
