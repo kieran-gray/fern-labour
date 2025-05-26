@@ -127,7 +127,7 @@
   }
 
   .footer {
-    border-top: 1px solid var(--mantine-color-primary-2);
+    border-top: 1px solid light-dark(var(--mantine-color-primary-2), var(--mantine-color-primary-7));
     padding-top: var(--mantine-spacing-md);
     display: flex;
     flex-direction: column;
