@@ -43,7 +43,9 @@ export function LabourUpdate({ data }: { data: LabourUpdateProps }) {
       {data.showFooter && (
         <div className={classes.messageFooter}>
           <Text size="xs">{data?.visibility}</Text>
-          {data.showMenu && <ManageLabourUpdateMenu statusUpdateId={data.id} />}
+          {data.showMenu && (
+            <ManageLabourUpdateMenu statusUpdateId={data.id} currentMessage={data.text} />
+          )}
         </div>
       )}
     </div>

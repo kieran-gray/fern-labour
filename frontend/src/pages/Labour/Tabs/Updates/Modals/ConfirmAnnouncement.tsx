@@ -6,10 +6,12 @@ export default function ConfirmAnnouncementModal({
   message,
   onConfirm,
   onCancel,
+  opened,
 }: {
   message: string;
   onConfirm: Function;
   onCancel: Function;
+  opened: boolean;
 }) {
   return (
     <Modal
@@ -21,7 +23,7 @@ export default function ConfirmAnnouncementModal({
         body: classes.modalBody,
         close: classes.closeButton,
       }}
-      opened
+      opened={opened}
       centered
       closeOnClickOutside
       onClose={() => {
@@ -30,7 +32,7 @@ export default function ConfirmAnnouncementModal({
       title="Make Announcement?"
     >
       <Space h="lg" />
-      <Text className={classes.modalText}>You can't delete an announcement.</Text>
+      <Text className={classes.modalText}>Announcements can't be edited or deleted.</Text>
       <div className={classes.modalInnerTextContainer}>
         <Text className={classes.modalInnerText}>{message}</Text>
       </div>
@@ -39,6 +41,7 @@ export default function ConfirmAnnouncementModal({
         <Button
           style={{ flex: 1, marginRight: 5 }}
           radius="lg"
+          variant="light"
           onClick={() => {
             onCancel();
           }}
@@ -47,7 +50,6 @@ export default function ConfirmAnnouncementModal({
         </Button>
         <Button
           style={{ flex: 1, marginLeft: 5 }}
-          variant="light"
           radius="lg"
           onClick={() => {
             onConfirm();

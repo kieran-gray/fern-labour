@@ -15,7 +15,7 @@ import _ from 'lodash';
 import { useAuth } from 'react-oidc-context';
 import { Button, SegmentedControl, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import ConfirmAnnouncementModal from './ConfirmAnnouncement';
+import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
@@ -201,13 +201,12 @@ export function LabourUpdateControls() {
           {buttonText}
         </Button>
       </div>
-      {isModalOpen && (
-        <ConfirmAnnouncementModal
-          message={message}
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )}
+      <ConfirmAnnouncementModal
+        message={message}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        opened={isModalOpen}
+      />
     </>
   );
 }
