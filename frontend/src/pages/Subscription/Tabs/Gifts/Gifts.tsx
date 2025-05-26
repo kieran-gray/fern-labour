@@ -10,8 +10,8 @@ import my1styears_main from './ads/my1styears/main.webp';
 import powfood_main from './ads/powfood/main.jpg';
 import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
 import wildly_tasty_main from './ads/wildlytasty/main.webp';
-import image from './Gifts.svg';
 import zello_main from './ads/zello/main.jpg';
+import image from './Gifts.svg';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export default function Gifts({ birthingPersonName }: { birthingPersonName: string }) {
