@@ -131,3 +131,21 @@ async def test_ensure_labour_is_active_invalid_id(labour_query_service: LabourQu
 async def test_ensure_labour_is_active_not_found(labour_query_service: LabourQueryService) -> None:
     with pytest.raises(LabourNotFoundById):
         await labour_query_service.ensure_labour_is_active(labour_id=str(uuid4()))
+
+
+async def test_can_get_active_labour_id(labour_query_service: LabourQueryService) -> None:
+    await labour_query_service.get_active_labour_id(BIRTHING_PERSON_IN_LABOUR)
+
+
+async def test_cannot_get_active_labour_id_for_non_existent_birthing_person(
+    labour_query_service: LabourQueryService,
+) -> None:
+    with pytest.raises(UserDoesNotHaveActiveLabour):
+        await labour_query_service.get_active_labour_id("TEST123456")
+
+
+async def test_cannot_get_active_labour_id_for_birthing_person_without_active_labour_id(
+    labour_query_service: LabourQueryService,
+) -> None:
+    with pytest.raises(UserDoesNotHaveActiveLabour):
+        await labour_query_service.get_active_labour_id(BIRTHING_PERSON)

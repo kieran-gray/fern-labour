@@ -58,6 +58,15 @@ class LabourQueryService:
         labour = await self._get_active_labour(birthing_person_id=birthing_person_id)
         return LabourSummaryDTO.from_domain(labour)
 
+    async def get_active_labour_id(self, birthing_person_id: str) -> str:
+        domain_id = UserId(birthing_person_id)
+        labour_id = await self._labour_repository.get_active_labour_id_by_birthing_person_id(
+            birthing_person_id=domain_id
+        )
+        if not labour_id:
+            raise UserDoesNotHaveActiveLabour(user_id=birthing_person_id)
+        return str(labour_id)
+
     async def can_accept_subscriber(self, subscriber_id: str, labour_id: str) -> None:
         try:
             domain_id = LabourId(UUID(labour_id))
