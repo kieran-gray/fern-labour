@@ -176,6 +176,11 @@ export const EditContractionModal = ({
             radius="lg"
             label="Start Time"
             {...form.getInputProps('startTime')}
+            classNames={{
+              label: classes.timeInputLabel,
+              input: classes.timeInput,
+              section: classes.timeInputSection,
+            }}
             defaultValue={getTime(contractionData?.startTime) || undefined}
           />
           <Space h="lg" />
@@ -186,10 +191,19 @@ export const EditContractionModal = ({
             radius="lg"
             label="End Time"
             {...form.getInputProps('endTime')}
+            classNames={{
+              label: classes.timeInputLabel,
+              input: classes.timeInput,
+              section: classes.timeInputSection,
+            }}
             defaultValue={getTime(contractionData?.endTime) || undefined}
           />
           <Space h="lg" />
-          <Text size="sm" fw={500}>
+          <Text
+            size="sm"
+            fw={500}
+            c="light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-2))"
+          >
             Intensity
           </Text>
           <Slider

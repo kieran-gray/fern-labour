@@ -57,6 +57,13 @@ export function MobileUserMenu() {
   const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
   const { colorScheme, setColorScheme } = useMantineColorScheme();
 
+  const themeIcon =
+    colorScheme === 'light' ? (
+      <IconMoon size={16} stroke={1.5} />
+    ) : (
+      <IconSun size={16} stroke={1.5} />
+    );
+
   const appSettings = (
     <>
       {mode === null && pathname !== '/' && (
@@ -80,6 +87,17 @@ export function MobileUserMenu() {
       {mode !== null && (
         <Group>
           <Space h="xs" />
+          <Button
+            key="theme"
+            className={classes.mainLink}
+            onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
+            leftSection={themeIcon}
+            size="md"
+            w="100%"
+            variant="transparent"
+          >
+            {colorScheme === 'light' ? 'Night Mode' : 'Day Mode'}
+          </Button>
           <Button
             key="update"
             className={classes.mainLink}
@@ -176,12 +194,6 @@ export function MobileUserMenu() {
   );
 
   const links = section === 'app' ? appSettings : accountSettings;
-  const themeIcon =
-    colorScheme === 'light' ? (
-      <IconMoon size={16} stroke={1.5} />
-    ) : (
-      <IconSun size={16} stroke={1.5} />
-    );
 
   return (
     <div className={classes.linksDrawer}>
@@ -238,18 +250,6 @@ export function MobileUserMenu() {
             Contact Us
           </Button>
         )}
-        <Button
-          key="theme"
-          className={classes.mainLink}
-          onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
-          leftSection={themeIcon}
-          size="md"
-          w="100%"
-          variant="transparent"
-          mt={10}
-        >
-          {colorScheme === 'light' ? 'Night Mode' : 'Day Mode'}
-        </Button>
       </div>
     </div>
   );

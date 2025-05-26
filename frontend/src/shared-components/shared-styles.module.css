@@ -255,7 +255,7 @@
     color: light-dark(var(--mantine-color-black), var(--mantine-color-gray-1));
 
     &::placeholder {
-        color: light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6));
+        color: light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-7));
       }
 
     &:focus {
