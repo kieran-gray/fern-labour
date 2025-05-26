@@ -1,6 +1,6 @@
 import { Modal, Space, Text, Title } from '@mantine/core';
-import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
-import labourUpdateClasses from './LabourUpdates.module.css';
+import { LabourUpdate, LabourUpdateProps } from '../LabourUpdate';
+import labourUpdateClasses from '../LabourUpdates.module.css';
 import modalClasses from '@shared/Modal.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 

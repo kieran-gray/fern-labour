@@ -7,10 +7,10 @@ import { IconBook } from '@tabler/icons-react';
 import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Image, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { LabourUpdatesHelpModal } from './HelpModal';
 import image from './image.svg';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
 import { LabourUpdateControls } from './LabourUpdateControls';
+import { LabourUpdatesHelpModal } from './Modals/HelpModal';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
