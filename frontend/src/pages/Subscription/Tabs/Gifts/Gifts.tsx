@@ -11,6 +11,7 @@ import powfood_main from './ads/powfood/main.jpg';
 import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
 import wildly_tasty_main from './ads/wildlytasty/main.webp';
 import image from './Gifts.svg';
+import zello_main from './ads/zello/main.jpg';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export default function Gifts({ birthingPersonName }: { birthingPersonName: string }) {
@@ -42,6 +43,29 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
       url: 'https://tidd.ly/3EL2r6X',
     },
     {
+      title: 'Zello Sleep',
+      subtitle: 'White Noise Machines for Peaceful Nights',
+      text: `Zello’s beautifully designed white noise machines help babies fall asleep faster and stay asleep longer by mimicking the soothing sounds of the womb. Trusted by thousands of parents, they create a calm, consistent sleep environment that supports healthy bedtime routines for baby and the whole household.`,
+      note: '👉 A perfect way to say: “Rest easy, little one.”',
+      mobileImage: (
+        <Image
+          hiddenFrom="md"
+          src={zello_main}
+          alt="Zello Sleep"
+          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+        />
+      ),
+      desktopImage: (
+        <Image
+          visibleFrom="md"
+          src={zello_main}
+          alt="Zello Sleep"
+          style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+        />
+      ),
+      url: 'https://tidd.ly/4kCWecK',
+    },
+    {
       title: 'Pure Earth Collection',
       subtitle: 'Natural, Non-Toxic Products for Growing Families',
       text: `From baby sleepwear to eco-friendly lunchboxes, Pure Earth Collection offers beautifully designed products made with your child’s health and the planet in mind.
@@ -52,7 +76,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           hiddenFrom="md"
           src={pure_earth_collection_main}
           alt="Pure Earth Collection"
-          style={{ maxHeight: '250px', maxWidth: '400px', width: '100%', margin: 'auto' }}
+          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
         />
       ),
       desktopImage: (
@@ -77,7 +101,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           hiddenFrom="md"
           src={dbhf_main}
           alt="Don’t Buy Her Flowers"
-          style={{ maxHeight: '250px', maxWidth: '400px', width: '100%', margin: 'auto' }}
+          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
         />
       ),
       desktopImage: (
@@ -101,7 +125,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           hiddenFrom="md"
           src={powfood_main}
           alt="PowFood"
-          style={{ maxHeight: '250px', maxWidth: '400px', width: '100%', margin: 'auto' }}
+          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
         />
       ),
       desktopImage: (
@@ -125,7 +149,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           hiddenFrom="md"
           src={wildly_tasty_main}
           alt="Wildly Tasty"
-          style={{ maxHeight: '250px', maxWidth: '400px', width: '100%', margin: 'auto' }}
+          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
         />
       ),
       desktopImage: (
