@@ -5,6 +5,7 @@ from twilio.rest import Client
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
 from src.notification.application.interfaces.notification_gateway import SMSNotificationGateway
 from src.notification.domain.enums import NotificationStatus
+from src.notification.infrastructure.twilio.status_mapping import TWILIO_STATUS_MAPPING
 
 log = logging.getLogger(__name__)
 
@@ -35,3 +36,13 @@ class TwilioSMSNotificationGateway(SMSNotificationGateway):
         return NotificationSendResult(
             success=True, status=NotificationStatus.SENT, external_id=message.sid
         )
+
+    async def get_status(self, external_id: str) -> str:
+        log.debug(f"Fetching status for notification {external_id=}")
+
+        message = self._client.messages(sid=external_id).fetch()
+        if status := TWILIO_STATUS_MAPPING.get(message.status):
+            return status
+
+        log.warning(f"Did not find notification status for notification {external_id=}")
+        return NotificationStatus.SENT

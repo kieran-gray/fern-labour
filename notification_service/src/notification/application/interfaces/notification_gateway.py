@@ -14,6 +14,14 @@ class NotificationGateway(Protocol):
             notification: The notification to send
         """
 
+    async def get_status(self, external_id: str) -> str:
+        """
+        Get the status of a sent notification.
+
+        Args:
+            external_id: The notification external ID
+        """
+
 
 class EmailNotificationGateway(NotificationGateway, Protocol): ...
 

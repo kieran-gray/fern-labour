@@ -2,6 +2,8 @@ import logging
 from unittest.mock import patch
 from uuid import uuid4
 
+import pytest
+
 from src.notification.application.dtos.notification import NotificationDTO
 from src.notification.domain.enums import NotificationChannel, NotificationStatus
 from src.notification.infrastructure.gateways.smtp_email_gateway import (
@@ -95,3 +97,18 @@ async def test_send_email_notification_error(mock_send, caplog):  # noqa
         await gateway.send(notification)
         assert len(caplog.records) == 1
         assert caplog.messages[0] == "Failed to send email notification"
+
+
+async def test_get_status_not_implemented():
+    gateway = SMTPEmailNotificationGateway(
+        smtp_host="smtp.example.com",
+        smtp_port=587,
+        emails_from_email="noreply@example.com",
+        smtp_tls=True,
+        smtp_ssl=False,
+        smtp_user="user",
+        smtp_password="password",
+        emails_from_name="Example",
+    )
+    with pytest.raises(NotImplementedError):
+        await gateway.get_status("test")

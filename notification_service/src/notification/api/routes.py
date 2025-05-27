@@ -5,7 +5,9 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Form, Request, status
 
 from src.api.exception_handler import ExceptionSchema
-from src.notification.application.services.notification_service import NotificationService
+from src.notification.application.services.notification_delivery_service import (
+    NotificationDeliveryService,
+)
 from src.notification.infrastructure.security.request_verification_service import (
     RequestVerificationService,
 )
@@ -28,8 +30,8 @@ twilio_router = APIRouter(prefix="/twilio", tags=["Twilio"])
 @inject
 async def twilio_webhook(
     request: Request,
-    notification_service: Annotated[
-        NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
+    notification_delivery_service: Annotated[
+        NotificationDeliveryService, FromComponent(ComponentEnum.NOTIFICATIONS)
     ],
     request_verification_service: Annotated[
         RequestVerificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
@@ -49,4 +51,6 @@ async def twilio_webhook(
     if not MessageSid or not MessageStatus:
         return
     if status := TWILIO_STATUS_MAPPING.get(MessageStatus):
-        await notification_service.status_callback(external_id=MessageSid, status=status)
+        await notification_delivery_service.delivery_status_callback(
+            external_id=MessageSid, status=status
+        )

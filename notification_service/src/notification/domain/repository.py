@@ -66,3 +66,13 @@ class NotificationRepository(Protocol):
         Returns:
             A list of Notifications
         """
+
+    async def get_undelivered_notifications(self) -> list[Notification]:
+        """
+        Retrieve all undelivered notifications.
+
+        An undelivered notification has an external_id and status of 'sent'.
+
+        Returns:
+            A list of undelivered notifications
+        """

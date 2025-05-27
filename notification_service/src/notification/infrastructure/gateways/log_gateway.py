@@ -15,3 +15,6 @@ class LogNotificationGateway(NotificationGateway):
         log.info(json.dumps(notification.to_dict()))
         log.info(f"{notification.subject=}, {notification.message=}")
         return NotificationSendResult(True, NotificationStatus.SENT)
+
+    async def get_status(self, external_id: str) -> str:
+        raise NotImplementedError()
