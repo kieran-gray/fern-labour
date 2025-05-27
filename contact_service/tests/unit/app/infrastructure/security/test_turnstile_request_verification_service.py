@@ -14,7 +14,7 @@ from src.infrastructure.security.request_verification.turnstile import (
 
 @pytest.fixture
 def service() -> TurnstileRequestVerificationService:
-    return TurnstileRequestVerificationService("/", "test")
+    return TurnstileRequestVerificationService(cloudflare_url="/", cloudflare_secret_key="test")
 
 
 async def test_can_verify_token(service: TurnstileRequestVerificationService):

@@ -59,6 +59,7 @@ class MockConfigReader(ConfigReader):
                     "GCP_PUB_SUB_CONSUMER_MAX_BATCH_SIZE": 50,
                 },
             },
+            "slack": {},
         }
 
 
