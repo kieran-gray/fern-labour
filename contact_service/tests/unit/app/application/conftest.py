@@ -7,6 +7,7 @@ from src.application.contact_message_service import ContactMessageService
 from src.domain.contact_message_id import ContactMessageId
 from src.domain.entity import ContactMessage
 from src.domain.repository import ContactMessageRepository
+from src.infrastructure.log_alert_service import LogAlertService
 from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.entity import User
 from src.user.domain.repository import UserRepository
@@ -79,6 +80,7 @@ async def contact_message_service(
     return ContactMessageService(
         contact_message_repository=contact_message_repo,
         event_producer=AsyncMock(),
+        alert_service=LogAlertService(),
     )
 
 

@@ -111,6 +111,15 @@ class EventSettings(BaseModel):
     gcp: GCPSettings
 
 
+class SlackSettings(BaseModel):
+    token: str = Field(alias="SLACK_ALERT_BOT_TOKEN", default="")
+    alert_channel: str = Field(alias="SLACK_ALERT_BOT_CHANNEL", default="")
+
+    @property
+    def slack_enabled(self) -> bool:
+        return bool(self.token and self.alert_channel)
+
+
 class Settings(BaseModel):
     base: BaseSettings
     security: SecuritySettings
@@ -118,6 +127,7 @@ class Settings(BaseModel):
     uvicorn: UvicornSettings
     events: EventSettings
     db: DbSettings
+    slack: SlackSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"
 

@@ -49,6 +49,8 @@ def test_settings_from_file(mock_config_reader: ConfigReader, tmp_path: Path):
     assert settings.db.sqla_engine.pool_size == 1
     assert settings.db.sqla_engine.max_overflow == 0
 
+    assert not settings.slack.slack_enabled
+
 
 def test_settings_from_file_not_found(mock_config_reader: ConfigReader):
     fake_path: Path = Path("fake_path")
