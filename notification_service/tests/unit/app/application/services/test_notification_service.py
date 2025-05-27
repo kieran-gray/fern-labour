@@ -1,4 +1,3 @@
-from enum import StrEnum
 from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
@@ -7,15 +6,11 @@ import pytest_asyncio
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import ContactUsData, LabourBegunData
 
-from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
-from src.notification.application.interfaces.notification_gateway import (
-    EmailNotificationGateway,
-    SMSNotificationGateway,
-    WhatsAppNotificationGateway,
-)
+from src.notification.application.dtos.notification import NotificationDTO
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
+from src.notification.application.services.notification_router import NotificationRouter
 from src.notification.application.services.notification_service import NotificationService
 from src.notification.domain.enums import (
     NotificationChannel,
@@ -26,76 +21,34 @@ from src.notification.domain.exceptions import (
     InvalidNotificationId,
     InvalidNotificationStatus,
     InvalidNotificationTemplate,
-    NotificationNotFoundByExternalId,
     NotificationNotFoundById,
 )
 from src.notification.domain.repository import NotificationRepository
 from src.notification.domain.value_objects.notification_id import NotificationId
 
 
-class MockEmailNotificationGateway(EmailNotificationGateway):
-    sent_notifications = []
-
-    async def send(self, data: NotificationDTO) -> NotificationSendResult:
-        self.sent_notifications.append(data)
-        return NotificationSendResult(
-            success=True, status=NotificationStatus.SENT, external_id="TEST123"
-        )
-
-
-class MockSMSNotificationGateway(SMSNotificationGateway):
-    sent_notifications = []
-
-    async def send(self, data: NotificationDTO) -> NotificationSendResult:
-        self.sent_notifications.append(data)
-        return NotificationSendResult(
-            success=True, status=NotificationStatus.SENT, external_id="TESTABC"
-        )
-
-
-class MockWhatsAppNotificationGateway(WhatsAppNotificationGateway):
-    sent_notifications = []
-
-    async def send(self, data: NotificationDTO) -> NotificationSendResult:
-        self.sent_notifications.append(data)
-        return NotificationSendResult(
-            success=True, status=NotificationStatus.SENT, external_id="TESTABC123"
-        )
-
-
-@pytest_asyncio.fixture
-def email_notification_gateway():
-    return MockEmailNotificationGateway()
-
-
-@pytest_asyncio.fixture
-def sms_notification_gateway():
-    return MockSMSNotificationGateway()
-
-
-@pytest_asyncio.fixture
-def whatsapp_notification_gateway():
-    return MockWhatsAppNotificationGateway()
-
-
 @pytest_asyncio.fixture
 async def notification_service(
-    email_notification_gateway: EmailNotificationGateway,
-    sms_notification_gateway: SMSNotificationGateway,
-    whatsapp_notification_gateway: WhatsAppNotificationGateway,
+    notification_router: NotificationRouter,
     notification_generation_service: NotificationGenerationService,
     notification_repo: NotificationRepository,
 ) -> NotificationService:
-    email_notification_gateway.sent_notifications = []
-    sms_notification_gateway.sent_notifications = []
     return NotificationService(
-        email_notification_gateway=email_notification_gateway,
-        sms_notification_gateway=sms_notification_gateway,
-        whatsapp_notification_gateway=whatsapp_notification_gateway,
+        notification_router=notification_router,
         notification_generation_service=notification_generation_service,
         notification_repository=notification_repo,
         event_producer=AsyncMock(),
     )
+
+
+def get_notification(
+    notification_service: NotificationService, channel: str
+) -> NotificationDTO | None:
+    gateway = notification_service._notification_router.get_gateway(channel)
+    try:
+        return gateway.sent_notifications[0]
+    except IndexError:
+        return None
 
 
 async def test_can_create_notification(notification_service: NotificationService) -> None:
@@ -151,60 +104,6 @@ async def test_cannot_create_notification_invalid_template(
         )
 
 
-async def test_can_update_notification(notification_service: NotificationService) -> None:
-    notification = await notification_service.create_notification(
-        channel=NotificationChannel.EMAIL.value,
-        destination="test",
-        template="labour_update",
-        data={"test": "test"},
-    )
-    notification = await notification_service.update_notification(
-        notification_id=notification.id, status=NotificationStatus.SENT
-    )
-    assert notification.status == NotificationStatus.SENT.value
-
-
-async def test_can_update_notification_with_external_id(
-    notification_service: NotificationService,
-) -> None:
-    notification = await notification_service.create_notification(
-        channel=NotificationChannel.EMAIL.value,
-        destination="test",
-        template="labour_update",
-        data={"test": "test"},
-    )
-    notification = await notification_service.update_notification(
-        notification_id=notification.id, status=NotificationStatus.SENT, external_id="test"
-    )
-    assert notification.status == NotificationStatus.SENT.value
-    assert notification.external_id == "test"
-
-
-async def test_cannot_update_notification_invalid_notification_id(
-    notification_service: NotificationService,
-) -> None:
-    with pytest.raises(InvalidNotificationId):
-        await notification_service.update_notification(
-            notification_id="test", status=NotificationStatus.SENT
-        )
-
-
-async def test_cannot_update_notification_invalid_notification_status(
-    notification_service: NotificationService,
-) -> None:
-    with pytest.raises(InvalidNotificationStatus):
-        await notification_service.update_notification(notification_id=str(uuid4()), status="fail")
-
-
-async def test_cannot_update_notification_notification_not_found(
-    notification_service: NotificationService,
-) -> None:
-    with pytest.raises(NotificationNotFoundById):
-        await notification_service.update_notification(
-            notification_id=str(uuid4()), status=NotificationStatus.SENT
-        )
-
-
 async def test_can_send_email(notification_service: NotificationService) -> None:
     notification = await notification_service.create_notification(
         channel=NotificationChannel.EMAIL.value,
@@ -223,8 +122,8 @@ async def test_can_send_email(notification_service: NotificationService) -> None
     assert stored_notification.status is NotificationStatus.SENT
     assert stored_notification.channel is NotificationChannel.EMAIL
 
-    assert notification_service._sms_notification_gateway.sent_notifications == []
-    sent_email = notification_service._email_notification_gateway.sent_notifications[0]
+    assert get_notification(notification_service, NotificationChannel.SMS.value) is None
+    sent_email = get_notification(notification_service, NotificationChannel.EMAIL.value)
     assert sent_email.destination == notification.destination
     assert sent_email.data == notification.data
 
@@ -259,8 +158,8 @@ async def test_can_send_sms(notification_service: NotificationService) -> None:
     assert stored_notification.status is NotificationStatus.SENT
     assert stored_notification.channel is NotificationChannel.SMS
 
-    sent_sms = notification_service._sms_notification_gateway.sent_notifications[0]
-    assert notification_service._email_notification_gateway.sent_notifications == []
+    sent_sms = get_notification(notification_service, NotificationChannel.SMS.value)
+    assert get_notification(notification_service, NotificationChannel.EMAIL.value) is None
 
     assert sent_sms.destination == notification.destination
     assert sent_sms.data == notification.data
@@ -295,8 +194,7 @@ async def test_can_send_whatsapp(notification_service: NotificationService) -> N
     assert stored_notification.status is NotificationStatus.SENT
     assert stored_notification.channel is NotificationChannel.WHATSAPP
 
-    sent_whatsapp = notification_service._whatsapp_notification_gateway.sent_notifications[0]
-    assert notification_service._email_notification_gateway.sent_notifications == []
+    sent_whatsapp = get_notification(notification_service, NotificationChannel.WHATSAPP.value)
 
     assert sent_whatsapp.destination == notification.destination
     assert sent_whatsapp.destination.startswith("whatsapp")
@@ -319,67 +217,3 @@ async def test_cannot_send_with_invalid_id(notification_service: NotificationSer
 async def test_cannot_send_with_non_found_id(notification_service: NotificationService) -> None:
     with pytest.raises(NotificationNotFoundById):
         await notification_service.send(notification_id=str(uuid4()))
-
-
-async def test_invalid_type_raises_not_implemented(
-    notification_service: NotificationService,
-) -> None:
-    class NotificationType(StrEnum):
-        TEST = "test"
-
-    with pytest.raises(NotImplementedError):
-        await notification_service._get_notification_gateway(NotificationType.TEST)
-
-
-async def test_status_callback_updates_status(notification_service: NotificationService) -> None:
-    notification = await notification_service.create_notification(
-        channel=NotificationChannel.EMAIL.value,
-        destination="test",
-        template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
-        data=ContactUsData(
-            email="test@email.com", name="test", message="test", user_id="abc123"
-        ).to_dict(),
-    )
-    await notification_service.send(notification_id=notification.id)
-    stored_notification = await notification_service._notification_repository.get_by_id(
-        notification_id=NotificationId(UUID(notification.id))
-    )
-    assert stored_notification.status is NotificationStatus.SENT
-    await notification_service.status_callback(
-        external_id=stored_notification.external_id, status=NotificationStatus.SUCCESS
-    )
-    stored_notification = await notification_service._notification_repository.get_by_id(
-        notification_id=NotificationId(UUID(notification.id))
-    )
-    assert stored_notification.status is NotificationStatus.SUCCESS
-
-
-async def test_status_callback_error_invalid_status(
-    notification_service: NotificationService,
-) -> None:
-    notification = await notification_service.create_notification(
-        channel=NotificationChannel.EMAIL.value,
-        destination="test",
-        template=NotificationTemplate.CONTACT_US_SUBMISSION.value,
-        data=ContactUsData(
-            email="test@email.com", name="test", message="test", user_id="abc123"
-        ).to_dict(),
-    )
-    await notification_service.send(notification_id=notification.id)
-    stored_notification = await notification_service._notification_repository.get_by_id(
-        notification_id=NotificationId(UUID(notification.id))
-    )
-    assert stored_notification.status is NotificationStatus.SENT
-    with pytest.raises(InvalidNotificationStatus):
-        await notification_service.status_callback(
-            external_id=stored_notification.external_id, status="invalid"
-        )
-
-
-async def test_status_callback_error_external_id_not_found(
-    notification_service: NotificationService,
-) -> None:
-    with pytest.raises(NotificationNotFoundByExternalId):
-        await notification_service.status_callback(
-            external_id="fail", status=NotificationStatus.SENT
-        )

@@ -31,3 +31,9 @@ async def test_log_notification_gateway(caplog):
     assert json.dumps(notification.to_dict()) in caplog.text
     assert len(caplog.records) == 2
     assert caplog.records[0].levelname == "INFO"
+
+
+async def test_get_status_not_implemented():
+    gateway = LogNotificationGateway()
+    with pytest.raises(NotImplementedError):
+        await gateway.get_status("test")

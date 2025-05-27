@@ -134,7 +134,8 @@ omit = [
     "src/setup/ioc/*",
     "src/setup/app_factory.py",
     "src/run.py",
-    "src/run_consumer.py"
+    "src/run_consumer.py",
+    "src/scripts/*"
 ]
 show_missing = true
 fail_under = 100

@@ -6,7 +6,9 @@ from sqlalchemy.orm import composite
 from src.core.infrastructure.persistence.orm_registry import mapper_registry
 from src.notification.domain.entity import Notification
 from src.notification.domain.value_objects.notification_id import NotificationId
-from src.notification.infrastructure.persistence.tables.notifications import notifications_table
+from src.notification.infrastructure.persistence.tables import (
+    notifications_table,
+)
 
 
 def map_notifications_table() -> None:

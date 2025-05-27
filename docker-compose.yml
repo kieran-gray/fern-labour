@@ -197,6 +197,21 @@ services:
     networks:
       - default
 
+  notification-delivery-status-script:
+    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?unset}:latest'
+    restart: "no"
+    env_file:
+      - ./notification_service/.env
+    environment:
+      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
+    depends_on:
+      pub-sub-emulator:
+        condition: service_healthy
+        restart: true
+    command: [ "python", "-m", "src.scripts.fetch_message_status" ]
+    networks:
+      - default
+
   contact-consumer:
     image: '${DOCKER_IMAGE_CONTACT_SERVICE?unset}:latest'
     restart: "no"

@@ -13,10 +13,15 @@ from src.notification.application.interfaces.template_engine import (
     SMSTemplateEngine,
     WhatsAppTemplateEngine,
 )
+from src.notification.application.services.notification_delivery_service import (
+    NotificationDeliveryService,
+)
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
+from src.notification.application.services.notification_router import NotificationRouter
 from src.notification.application.services.notification_service import NotificationService
+from src.notification.domain.enums import NotificationChannel
 from src.notification.domain.repository import NotificationRepository
 from src.notification.infrastructure.gateways.log_gateway import (
     LogNotificationGateway,
@@ -105,6 +110,25 @@ class NotificationsApplicationProvider(Provider):
             return LogNotificationGateway()
 
     @provide(scope=Scope.APP)
+    def get_notification_router(
+        self,
+        email_notification_gateway: EmailNotificationGateway,
+        sms_notification_gateway: SMSNotificationGateway,
+        whatsapp_notification_gateway: WhatsAppNotificationGateway,
+    ) -> NotificationRouter:
+        router = NotificationRouter()
+        router.register_gateway(
+            channel=NotificationChannel.EMAIL.value, gateway=email_notification_gateway
+        )
+        router.register_gateway(
+            channel=NotificationChannel.SMS.value, gateway=sms_notification_gateway
+        )
+        router.register_gateway(
+            channel=NotificationChannel.WHATSAPP, gateway=whatsapp_notification_gateway
+        )
+        return router
+
+    @provide(scope=Scope.APP)
     def provide_request_verification_service(
         self, settings: TwilioSettings
     ) -> RequestVerificationService:
@@ -134,18 +158,29 @@ class NotificationsApplicationProvider(Provider):
     @provide
     def get_notification_service(
         self,
-        email_notification_gateway: EmailNotificationGateway,
-        sms_notification_gateway: SMSNotificationGateway,
-        whatsapp_notification_gateway: WhatsAppNotificationGateway,
+        notification_router: NotificationRouter,
         notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
         event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
     ) -> NotificationService:
         return NotificationService(
-            email_notification_gateway=email_notification_gateway,
-            sms_notification_gateway=sms_notification_gateway,
-            whatsapp_notification_gateway=whatsapp_notification_gateway,
+            notification_router=notification_router,
             notification_generation_service=notification_generation_service,
+            notification_repository=notification_repository,
+            event_producer=event_producer,
+        )
+
+    @provide
+    def get_notification_delivery_service(
+        self,
+        notification_service: NotificationService,
+        notification_router: NotificationRouter,
+        notification_repository: NotificationRepository,
+        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+    ) -> NotificationDeliveryService:
+        return NotificationDeliveryService(
+            notification_service=notification_service,
+            notification_router=notification_router,
             notification_repository=notification_repository,
             event_producer=event_producer,
         )

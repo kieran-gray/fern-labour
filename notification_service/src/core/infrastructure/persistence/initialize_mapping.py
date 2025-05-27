@@ -1,4 +1,4 @@
-from src.notification.infrastructure.persistence.mappings.notification import (
+from src.notification.infrastructure.persistence.mapping import (
     map_notifications_table,
 )
 

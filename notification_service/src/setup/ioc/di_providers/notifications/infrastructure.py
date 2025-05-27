@@ -5,7 +5,7 @@ from dishka import FromComponent, Provider, Scope, provide
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.notification.domain.repository import NotificationRepository
-from src.notification.infrastructure.persistence.repositories.notification_repository import (
+from src.notification.infrastructure.persistence.notification_repository import (
     SQLAlchemyNotificationRepository,
 )
 from src.setup.ioc.di_component_enum import ComponentEnum
