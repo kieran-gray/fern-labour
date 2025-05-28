@@ -57,7 +57,7 @@
     align-items: stretch;
     justify-content: flex-end;
     padding: 15px;
-    border-radius: 15px;
+    border-radius: 35px;
     background-color: var(--mantine-color-primary-1);
 }
 

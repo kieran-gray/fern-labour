@@ -13,7 +13,7 @@ import { IconPencil, IconSend, IconSpeakerphone } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { useAuth } from 'react-oidc-context';
-import { Button, SegmentedControl, TextInput } from '@mantine/core';
+import { Button, SegmentedControl, Textarea } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import classes from './LabourUpdates.module.css';
@@ -46,7 +46,7 @@ export function LabourUpdateControls() {
     return auth.user?.access_token || '';
   };
 
-  const handleMessageChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMessageChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.currentTarget.value);
   }, []);
 
@@ -138,7 +138,6 @@ export function LabourUpdateControls() {
     mt: 10,
     radius: 'lg',
     placeholder: "What's happening with your labour?",
-    onChange: handleMessageChange,
     value: message,
   };
 
@@ -157,7 +156,7 @@ export function LabourUpdateControls() {
         mt={20}
         color="var(--mantine-primary-color-4)"
       />
-      <TextInput
+      <Textarea
         {...inputProps}
         rightSection={inputIcon}
         size="md"
@@ -167,8 +166,9 @@ export function LabourUpdateControls() {
           input: baseClasses.input,
           section: baseClasses.section,
         }}
+        onChange={handleMessageChange}
       />
-      <TextInput
+      <Textarea
         {...inputProps}
         rightSection={inputIcon}
         size="sm"
@@ -178,6 +178,7 @@ export function LabourUpdateControls() {
           input: baseClasses.input,
           section: baseClasses.section,
         }}
+        onChange={handleMessageChange}
       />
       <div className={classes.flexRow} style={{ marginTop: '10px' }}>
         <Button
