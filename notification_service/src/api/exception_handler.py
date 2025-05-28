@@ -11,8 +11,12 @@ from fern_labour_core.exceptions.application import ApplicationError
 from fern_labour_core.exceptions.domain import DomainError
 from pydantic_core import ErrorDetails
 
-from src.notification.application.exceptions import UnauthorizedWebhookRequest
+from src.notification.application.exceptions import (
+    CannotGenerateNotificationContent,
+    UnauthorizedWebhookRequest,
+)
 from src.notification.domain.exceptions import (
+    CannotResendNotification,
     InvalidNotificationId,
     InvalidNotificationStatus,
     NotificationNotFoundByExternalId,
@@ -55,6 +59,8 @@ class ExceptionMapper:
             NotificationNotFoundByExternalId: status.HTTP_404_NOT_FOUND,
             UserNotFoundById: status.HTTP_404_NOT_FOUND,
             UnauthorizedWebhookRequest: status.HTTP_403_FORBIDDEN,
+            CannotGenerateNotificationContent: status.HTTP_400_BAD_REQUEST,
+            CannotResendNotification: status.HTTP_400_BAD_REQUEST,
         }
 
     def get_status_code(self, exc: Exception) -> int:

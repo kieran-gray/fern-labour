@@ -7,9 +7,13 @@ from fern_labour_notifications_shared.notification_data import BaseNotificationD
 from fern_labour_notifications_shared.template_data_mapping import TEMPLATE_TO_PAYLOAD
 
 from src.notification.application.dtos.notification import NotificationContent
+from src.notification.application.exceptions import (
+    CannotGenerateNotificationContent,
+)
 from src.notification.application.interfaces.template_engine import (
     NotificationTemplateEngine,
 )
+from src.notification.domain.entity import Notification
 from src.notification.domain.enums import NotificationChannel
 from src.notification.domain.exceptions import (
     InvalidNotificationChannel,
@@ -46,14 +50,7 @@ class NotificationGenerationService:
             raise InvalidNotificationChannel(notification_channel=channel)
         return notification_channel
 
-    def register_template_engine(
-        self, channel: str, template_engine: NotificationTemplateEngine
-    ) -> None:
-        """Register a template engine for a specific channel"""
-        notification_channel = self._channel_to_domain(channel=channel)
-        self._engines[notification_channel] = template_engine
-
-    async def generate_content(self, notification_id: str) -> NotificationContent:
+    async def _get_notification(self, notification_id: str) -> Notification:
         try:
             notification_domain_id = NotificationId(UUID(notification_id))
         except ValueError:
@@ -62,6 +59,27 @@ class NotificationGenerationService:
         notification = await self._notification_repository.get_by_id(notification_domain_id)
         if not notification:
             raise NotificationNotFoundById(notification_id=notification_id)
+        return notification
+
+    def register_template_engine(
+        self, channel: str, template_engine: NotificationTemplateEngine
+    ) -> None:
+        """Register a template engine for a specific channel"""
+        notification_channel = self._channel_to_domain(channel=channel)
+        self._engines[notification_channel] = template_engine
+
+    async def generate_content(
+        self, notification_id: str | None = None, notification: Notification | None = None
+    ) -> NotificationContent:
+        if not notification and not notification_id:
+            raise CannotGenerateNotificationContent(
+                message="Must provide one of `notification` or `notification_id`"
+            )
+
+        if not notification and notification_id:
+            notification = await self._get_notification(notification_id=notification_id)
+
+        assert notification
 
         try:
             template = NotificationTemplate(notification.template)

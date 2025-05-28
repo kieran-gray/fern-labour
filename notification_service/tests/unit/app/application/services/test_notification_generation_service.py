@@ -6,6 +6,7 @@ from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import ContactUsData
 
 from src.notification.application.dtos.notification import NotificationContent, NotificationDTO
+from src.notification.application.exceptions import CannotGenerateNotificationContent
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
@@ -143,3 +144,10 @@ async def test_cannot_generate_notification_not_payload_dataclass(
     )
     with pytest.raises(NotificationProcessingError):
         await notification_generation_service.generate_content(notification.id)
+
+
+async def test_cannot_generate_notification_no_args(
+    notification_generation_service: NotificationGenerationService,
+) -> None:
+    with pytest.raises(CannotGenerateNotificationContent):
+        await notification_generation_service.generate_content()

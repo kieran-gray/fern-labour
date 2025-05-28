@@ -39,3 +39,8 @@ class GenerationTemplateNotFound(DomainError):
 class InvalidNotificationTemplate(DomainValidationError):
     def __init__(self, template: str | None) -> None:
         super().__init__(f"Notification template '{template}' is not valid.")
+
+
+class CannotResendNotification(DomainError):
+    def __init__(self, notification_id: str) -> None:
+        super().__init__(f"Cannot resend notification ID: {notification_id}")

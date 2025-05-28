@@ -6,7 +6,7 @@ import pytest_asyncio
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import ContactUsData, LabourBegunData
 
-from src.notification.application.dtos.notification import NotificationDTO
+from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
 )
@@ -17,6 +17,7 @@ from src.notification.domain.enums import (
     NotificationStatus,
 )
 from src.notification.domain.exceptions import (
+    CannotResendNotification,
     InvalidNotificationChannel,
     InvalidNotificationId,
     InvalidNotificationStatus,
@@ -25,6 +26,7 @@ from src.notification.domain.exceptions import (
 )
 from src.notification.domain.repository import NotificationRepository
 from src.notification.domain.value_objects.notification_id import NotificationId
+from tests.unit.app.application.conftest import MockSMSNotificationGateway
 
 
 @pytest_asyncio.fixture
@@ -217,3 +219,125 @@ async def test_cannot_send_with_invalid_id(notification_service: NotificationSer
 async def test_cannot_send_with_non_found_id(notification_service: NotificationService) -> None:
     with pytest.raises(NotificationNotFoundById):
         await notification_service.send(notification_id=str(uuid4()))
+
+
+async def test_can_resend_unsent_notification(notification_service: NotificationService) -> None:
+    notification = await notification_service.create_notification(
+        channel=NotificationChannel.SMS.value,
+        destination="test",
+        template=NotificationTemplate.LABOUR_BEGUN.value,
+        data=LabourBegunData(
+            birthing_person_name="John Jones",
+            birthing_person_first_name="John",
+            subscriber_first_name="Jane",
+            link="abc123",
+        ).to_dict(),
+        metadata={"test": "abc", "more_data": "test123"},
+    )
+    await notification_service.resend(notification_id=notification.id)
+
+
+async def test_can_resend_failed_notification(notification_service: NotificationService) -> None:
+    class FailSMSGateway:
+        sent_notifications = []
+
+        async def send(self, data: NotificationDTO) -> NotificationSendResult:
+            self.sent_notifications.append(data)
+            return NotificationSendResult(
+                success=False, status=NotificationStatus.FAILURE, external_id="TESTSMS"
+            )
+
+    notification_service._notification_router.register_gateway(
+        channel=NotificationChannel.SMS, gateway=FailSMSGateway()
+    )
+
+    notification = await notification_service.create_notification(
+        channel=NotificationChannel.SMS.value,
+        destination="test",
+        template=NotificationTemplate.LABOUR_BEGUN.value,
+        data=LabourBegunData(
+            birthing_person_name="John Jones",
+            birthing_person_first_name="John",
+            subscriber_first_name="Jane",
+            link="abc123",
+        ).to_dict(),
+        metadata={"test": "abc", "more_data": "test123"},
+    )
+    await notification_service.send(notification_id=notification.id)
+    sent_notification = await notification_service._notification_repository.get_by_id(
+        notification_id=NotificationId(UUID(notification.id))
+    )
+    assert sent_notification.status is NotificationStatus.FAILURE
+
+    notification_service._notification_router.register_gateway(
+        channel=NotificationChannel.SMS, gateway=MockSMSNotificationGateway()
+    )
+    await notification_service.resend(notification_id=notification.id)
+    sent_notification = await notification_service._notification_repository.get_by_id(
+        notification_id=NotificationId(UUID(notification.id))
+    )
+    assert sent_notification.status is NotificationStatus.SENT
+
+
+async def test_can_resend_success_notification(notification_service: NotificationService) -> None:
+    class SuccessSMSGateway:
+        sent_notifications = []
+
+        async def send(self, data: NotificationDTO) -> NotificationSendResult:
+            self.sent_notifications.append(data)
+            return NotificationSendResult(
+                success=False, status=NotificationStatus.SUCCESS, external_id="TESTSMS"
+            )
+
+    notification_service._notification_router.register_gateway(
+        channel=NotificationChannel.SMS, gateway=SuccessSMSGateway()
+    )
+
+    notification = await notification_service.create_notification(
+        channel=NotificationChannel.SMS.value,
+        destination="test",
+        template=NotificationTemplate.LABOUR_BEGUN.value,
+        data=LabourBegunData(
+            birthing_person_name="John Jones",
+            birthing_person_first_name="John",
+            subscriber_first_name="Jane",
+            link="abc123",
+        ).to_dict(),
+        metadata={"test": "abc", "more_data": "test123"},
+    )
+    await notification_service.send(notification_id=notification.id)
+    sent_notification = await notification_service._notification_repository.get_by_id(
+        notification_id=NotificationId(UUID(notification.id))
+    )
+    assert sent_notification.status is NotificationStatus.SUCCESS
+    with pytest.raises(CannotResendNotification):
+        await notification_service.resend(notification_id=notification.id)
+
+
+async def test_cannot_resend_sent_notification(notification_service: NotificationService) -> None:
+    notification = await notification_service.create_notification(
+        channel=NotificationChannel.SMS.value,
+        destination="test",
+        template=NotificationTemplate.LABOUR_BEGUN.value,
+        data=LabourBegunData(
+            birthing_person_name="John Jones",
+            birthing_person_first_name="John",
+            subscriber_first_name="Jane",
+            link="abc123",
+        ).to_dict(),
+        metadata={"test": "abc", "more_data": "test123"},
+    )
+    await notification_service.send(notification_id=notification.id)
+
+    with pytest.raises(CannotResendNotification):
+        await notification_service.resend(notification_id=notification.id)
+
+
+async def test_cannot_resend_with_invalid_id(notification_service: NotificationService) -> None:
+    with pytest.raises(InvalidNotificationId):
+        await notification_service.resend(notification_id="invalid")
+
+
+async def test_cannot_resend_with_non_found_id(notification_service: NotificationService) -> None:
+    with pytest.raises(NotificationNotFoundById):
+        await notification_service.resend(notification_id=str(uuid4()))
