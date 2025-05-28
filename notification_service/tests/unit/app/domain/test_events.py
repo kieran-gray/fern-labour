@@ -15,7 +15,11 @@ def test_can_serde_notification_requested_data():
 
 def test_can_serde_notification_status_updated_data():
     event = NotificationStatusUpdatedData(
-        notification_id="123456", from_status="sent", to_status="delivered", external_id="EXT123"
+        notification_id="123456",
+        channel="sms",
+        from_status="sent",
+        to_status="delivered",
+        external_id="EXT123",
     )
     event_dict = event.to_dict()
     from_dict = NotificationStatusUpdatedData.from_dict(event_dict)

@@ -37,3 +37,9 @@ async def test_get_status_not_implemented():
     gateway = LogNotificationGateway()
     with pytest.raises(NotImplementedError):
         await gateway.get_status("test")
+
+
+async def test_redact_notification_body_not_implemented():
+    gateway = LogNotificationGateway()
+    with pytest.raises(NotImplementedError):
+        await gateway.redact_notification_body("test")

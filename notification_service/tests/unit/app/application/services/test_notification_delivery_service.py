@@ -6,6 +6,8 @@ import pytest_asyncio
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import ContactUsData, LabourBegunData
 
+from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
+from src.notification.application.interfaces.notification_gateway import NotificationGateway
 from src.notification.application.services.notification_delivery_service import (
     NotificationDeliveryService,
 )
@@ -160,6 +162,53 @@ async def test_update_undelivered_notification_delivery_status_unchanged(
         notification_id=NotificationId(UUID(notification.id))
     )
     assert stored_notification.status is NotificationStatus.SENT
+
+    await notification_delivery_service.update_undelivered_notification_delivery_status()
+    stored_notification = await notification_service._notification_repository.get_by_id(
+        notification_id=NotificationId(UUID(notification.id))
+    )
+    assert stored_notification.status is NotificationStatus.SENT
+
+
+async def test_update_undelivered_notification_delivery_status_none(
+    notification_service: NotificationService,
+    notification_delivery_service: NotificationDeliveryService,
+) -> None:
+    notification = await notification_service.create_notification(
+        channel=NotificationChannel.WHATSAPP.value,
+        destination="test",
+        template=NotificationTemplate.LABOUR_BEGUN.value,
+        data=LabourBegunData(
+            birthing_person_name="test",
+            birthing_person_first_name="test",
+            subscriber_first_name="test",
+            link="test",
+        ).to_dict(),
+    )
+    await notification_service.send(notification_id=notification.id)
+    stored_notification = await notification_service._notification_repository.get_by_id(
+        notification_id=NotificationId(UUID(notification.id))
+    )
+    assert stored_notification.status is NotificationStatus.SENT
+
+    class MockGateway(NotificationGateway):
+        sent_notifications = []
+
+        async def send(self, data: NotificationDTO) -> NotificationSendResult:
+            self.sent_notifications.append(data)
+            return NotificationSendResult(
+                success=True, status=NotificationStatus.SENT, external_id="TESTWHATSAPP"
+            )
+
+        async def get_status(self, external_id: str) -> str | None:
+            return None
+
+        async def redact_notification_body(self, external_id: str) -> None:
+            return None
+
+    notification_delivery_service._notification_router.register_gateway(
+        channel=NotificationChannel.WHATSAPP.value, gateway=MockGateway()
+    )
 
     await notification_delivery_service.update_undelivered_notification_delivery_status()
     stored_notification = await notification_service._notification_repository.get_by_id(

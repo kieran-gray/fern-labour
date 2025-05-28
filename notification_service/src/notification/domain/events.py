@@ -42,6 +42,7 @@ class NotificationRequested(DomainEvent):
 @dataclass
 class NotificationStatusUpdatedData:
     notification_id: str
+    channel: str
     from_status: str
     to_status: str
     external_id: str | None = None
@@ -50,6 +51,7 @@ class NotificationStatusUpdatedData:
     def from_dict(cls, event_data: dict[str, Any]) -> Self:
         return cls(
             notification_id=event_data["notification_id"],
+            channel=event_data["channel"],
             from_status=event_data["from_status"],
             to_status=event_data["to_status"],
             external_id=event_data["external_id"],
@@ -58,6 +60,7 @@ class NotificationStatusUpdatedData:
     def to_dict(self) -> dict[str, Any]:
         return {
             "notification_id": self.notification_id,
+            "channel": self.channel,
             "from_status": self.from_status,
             "to_status": self.to_status,
             "external_id": self.external_id,

@@ -123,6 +123,9 @@ class MockEmailNotificationGateway(EmailNotificationGateway):
     async def get_status(self, external_id: str) -> str:
         raise NotImplementedError()
 
+    async def redact_notification_body(self, external_id: str) -> None:
+        raise NotImplementedError()
+
 
 class MockSMSNotificationGateway(SMSNotificationGateway):
     sent_notifications = []
@@ -133,8 +136,11 @@ class MockSMSNotificationGateway(SMSNotificationGateway):
             success=True, status=NotificationStatus.SENT, external_id="TESTSMS"
         )
 
-    async def get_status(self, external_id: str) -> str:
+    async def get_status(self, external_id: str) -> str | None:
         return NotificationStatus.SUCCESS
+
+    async def redact_notification_body(self, external_id: str) -> None:
+        return None
 
 
 class MockWhatsAppNotificationGateway(WhatsAppNotificationGateway):
@@ -146,8 +152,11 @@ class MockWhatsAppNotificationGateway(WhatsAppNotificationGateway):
             success=True, status=NotificationStatus.SENT, external_id="TESTWHATSAPP"
         )
 
-    async def get_status(self, external_id: str) -> str:
+    async def get_status(self, external_id: str) -> str | None:
         return NotificationStatus.SENT
+
+    async def redact_notification_body(self, external_id: str) -> None:
+        return None
 
 
 class MockEmailTemplateEngine(NotificationTemplateEngine):

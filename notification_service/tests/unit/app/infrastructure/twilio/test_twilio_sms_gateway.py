@@ -51,11 +51,18 @@ async def test_can_get_status(gateway: TwilioSMSNotificationGateway) -> None:
     assert result == TWILIO_STATUS_MAPPING.get("failed")
 
 
-async def test_other_status_returns_sent(
+async def test_other_status_returns_none(
     gateway: TwilioSMSNotificationGateway, caplog: pytest.LogCaptureFixture
 ) -> None:
     gateway._client.messages.return_value = MockMessage("ext123", "new_unknown_status")
 
     result = await gateway.get_status("ext123")
-    assert result is NotificationStatus.SENT
+    assert result is None
     assert "Did not find notification status for notification" in caplog.text
+
+
+async def test_redact_message_body(gateway: TwilioSMSNotificationGateway) -> None:
+    gateway._client.messages.update.return_value = None
+
+    result = await gateway.redact_notification_body("ext123")
+    assert result is None
