@@ -14,9 +14,17 @@ class NotificationGateway(Protocol):
             notification: The notification to send
         """
 
-    async def get_status(self, external_id: str) -> str:
+    async def get_status(self, external_id: str) -> str | None:
         """
         Get the status of a sent notification.
+
+        Args:
+            external_id: The notification external ID
+        """
+
+    async def redact_notification_body(self, external_id: str) -> None:
+        """
+        Redact the message body of delivered notification.
 
         Args:
             external_id: The notification external ID

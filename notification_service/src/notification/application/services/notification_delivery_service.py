@@ -36,8 +36,10 @@ class NotificationDeliveryService:
             gateway = self._notification_router.get_gateway(notification.channel)
 
             status = await gateway.get_status(notification.external_id)
-            notification_status = NotificationStatus(status)
+            if not status:
+                continue
 
+            notification_status = NotificationStatus(status)
             if notification_status is notification.status:
                 continue
 
@@ -47,6 +49,10 @@ class NotificationDeliveryService:
             log.info(f"Status updated for notification ID {notification.id_}")
 
             await self._event_producer.publish_batch(notification.clear_domain_events())
+
+    async def redact_delivered_notification_body(self, external_id: str, channel: str) -> None:
+        gateway = self._notification_router.get_gateway(channel=channel)
+        await gateway.redact_notification_body(external_id=external_id)
 
     async def delivery_status_callback(self, external_id: str, status: str) -> None:
         try:

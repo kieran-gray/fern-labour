@@ -112,3 +112,18 @@ async def test_get_status_not_implemented():
     )
     with pytest.raises(NotImplementedError):
         await gateway.get_status("test")
+
+
+async def test_redact_notification_body_not_implemented():
+    gateway = SMTPEmailNotificationGateway(
+        smtp_host="smtp.example.com",
+        smtp_port=587,
+        emails_from_email="noreply@example.com",
+        smtp_tls=True,
+        smtp_ssl=False,
+        smtp_user="user",
+        smtp_password="password",
+        emails_from_name="Example",
+    )
+    with pytest.raises(NotImplementedError):
+        await gateway.redact_notification_body("test")

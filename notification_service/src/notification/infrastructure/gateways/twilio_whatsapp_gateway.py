@@ -41,12 +41,20 @@ class TwilioWhatsAppNotificationGateway(WhatsAppNotificationGateway):
             success=True, status=NotificationStatus.SENT, external_id=message.sid
         )
 
-    async def get_status(self, external_id: str) -> str:
+    async def get_status(self, external_id: str) -> str | None:
         log.debug(f"Fetching status for notification {external_id=}")
 
         message = self._client.messages(sid=external_id).fetch()
         if status := TWILIO_STATUS_MAPPING.get(message.status):
             return status
 
-        log.warning(f"Did not find notification status for notification {external_id=}")
-        return NotificationStatus.SENT
+        log.warning(
+            f"Did not find notification status for notification {external_id=}."
+            f"Message status {message.status}"
+        )
+        return None
+
+    async def redact_notification_body(self, external_id: str) -> None:
+        log.debug(f"Redacting message body for {external_id=}")
+
+        self._client.messages(sid=external_id).update(body="")

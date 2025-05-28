@@ -52,6 +52,7 @@ class Notification(AggregateRoot[NotificationId]):
             NotificationStatusUpdated.create(
                 data={
                     "notification_id": str(self.id_.value),
+                    "channel": self.channel.value,
                     "external_id": self.external_id,
                     "from_status": self.status.value,
                     "to_status": status.value,

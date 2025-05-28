@@ -18,3 +18,6 @@ class LogNotificationGateway(NotificationGateway):
 
     async def get_status(self, external_id: str) -> str:
         raise NotImplementedError()
+
+    async def redact_notification_body(self, external_id: str) -> None:
+        raise NotImplementedError()

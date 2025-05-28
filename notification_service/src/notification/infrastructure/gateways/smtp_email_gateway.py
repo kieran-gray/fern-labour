@@ -59,5 +59,8 @@ class SMTPEmailNotificationGateway(EmailNotificationGateway):
             log.critical("Failed to send email notification", exc_info=e)
             return NotificationSendResult(success=False, status=NotificationStatus.FAILURE)
 
-    async def get_status(self, external_id: str) -> str:
+    async def get_status(self, external_id: str) -> str | None:
+        raise NotImplementedError()
+
+    async def redact_notification_body(self, external_id: str) -> None:
         raise NotImplementedError()
