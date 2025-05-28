@@ -135,7 +135,7 @@ omit = [
     "src/setup/app_factory.py",
     "src/run.py",
     "src/run_consumer.py",
-    "src/scripts/*"
+    "src/cli.py"
 ]
 show_missing = true
 fail_under = 100

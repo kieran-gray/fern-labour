@@ -6,7 +6,9 @@ from keycloak import KeycloakAdmin
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import Settings
 from src.user.domain.repository import UserRepository
-from src.user.infrastructure.persistence.repositories.user_repository import KeycloakUserRepository
+from src.user.infrastructure.persistence.user_repository import (
+    KeycloakUserRepository,
+)
 
 
 class UserInfrastructureProvider(Provider):
