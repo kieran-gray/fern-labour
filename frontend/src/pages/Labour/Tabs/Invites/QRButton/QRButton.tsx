@@ -21,7 +21,7 @@ export default function QRButton({ url }: { url: string }) {
         }}
         opened={opened}
         onClose={close}
-        title="Your share QR code"
+        title="Your invite QR code"
       >
         <Space h="lg" />
         <div className={baseClasses.flexRow} style={{ width: '100%' }}>
@@ -29,7 +29,7 @@ export default function QRButton({ url }: { url: string }) {
             value={url}
             style={{ width: '70%', height: '70%', margin: 'auto' }}
             bgColor="light-dark(var(--mantine-color-white), var(--mantine-color-primary-2))"
-            fgColor="var(--mantine-color-primary-9)"
+            fgColor="light-dark(var(--mantine-primary-color-9), var(--mantine-primary-color-0)"
           />
         </div>
         <Space h="lg" />
