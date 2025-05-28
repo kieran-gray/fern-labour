@@ -16,7 +16,12 @@ export const SubscriptionsPage = () => {
   const prompt = searchParams.get('prompt');
 
   if (subscriptionId) {
-    return <SubscriptionPage />;
+    return (
+      <>
+        <SubscriptionPage />
+        <SubscriptionRequestedModal opened={opened || prompt === 'requested'} close={close} />
+      </>
+    );
   }
   return (
     <AppShell>
