@@ -8,11 +8,6 @@ from src.notification.application.interfaces.notification_gateway import (
     SMSNotificationGateway,
     WhatsAppNotificationGateway,
 )
-from src.notification.application.interfaces.template_engine import (
-    EmailTemplateEngine,
-    SMSTemplateEngine,
-    WhatsAppTemplateEngine,
-)
 from src.notification.application.services.notification_delivery_service import (
     NotificationDeliveryService,
 )
@@ -37,6 +32,13 @@ from src.notification.infrastructure.gateways.twilio_whatsapp_gateway import (
 )
 from src.notification.infrastructure.security.request_verification_service import (
     RequestVerificationService,
+)
+from src.notification.infrastructure.template_engines.jinja2_email_template_engine import (
+    Jinja2EmailTemplateEngine,
+)
+from src.notification.infrastructure.template_engines.sms_template_engine import SMSTemplateEngine
+from src.notification.infrastructure.template_engines.whatsapp_template_engine import (
+    WhatsAppTemplateEngine,
 )
 from src.notification.infrastructure.twilio.twilio_request_verification_service import (
     TwilioRequestVerificationService,
@@ -137,23 +139,21 @@ class NotificationsApplicationProvider(Provider):
     @provide
     def get_notification_generation_service(
         self,
-        email_template_engine: Annotated[
-            EmailTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
-        ],
-        sms_template_engine: Annotated[
-            SMSTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
-        ],
-        whatsapp_template_engine: Annotated[
-            WhatsAppTemplateEngine, FromComponent(ComponentEnum.NOTIFICATION_GENERATORS)
-        ],
         notification_repository: NotificationRepository,
     ) -> NotificationGenerationService:
-        return NotificationGenerationService(
-            notification_repo=notification_repository,
-            email_template_engine=email_template_engine,
-            sms_template_engine=sms_template_engine,
-            whatsapp_template_engine=whatsapp_template_engine,
+        notification_generation_service = NotificationGenerationService(
+            notification_repo=notification_repository
         )
+        notification_generation_service.register_template_engine(
+            channel=NotificationChannel.EMAIL, template_engine=Jinja2EmailTemplateEngine()
+        )
+        notification_generation_service.register_template_engine(
+            channel=NotificationChannel.SMS, template_engine=SMSTemplateEngine()
+        )
+        notification_generation_service.register_template_engine(
+            channel=NotificationChannel.WHATSAPP, template_engine=WhatsAppTemplateEngine()
+        )
+        return notification_generation_service
 
     @provide
     def get_notification_service(

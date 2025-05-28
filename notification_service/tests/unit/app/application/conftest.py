@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 from unittest.mock import AsyncMock
 
-import pytest
 import pytest_asyncio
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import BaseNotificationData
@@ -13,15 +12,7 @@ from src.notification.application.interfaces.notification_gateway import (
     SMSNotificationGateway,
     WhatsAppNotificationGateway,
 )
-from src.notification.application.interfaces.template_engine import (
-    EmailTemplateEngine,
-)
-from src.notification.application.interfaces.template_engine import (
-    SMSTemplateEngine as SMSTemplateEngineInterface,
-)
-from src.notification.application.interfaces.template_engine import (
-    WhatsAppTemplateEngine as WhatsAppTemplateEngineInterface,
-)
+from src.notification.application.interfaces.template_engine import NotificationTemplateEngine
 from src.notification.application.services.notification_delivery_service import (
     NotificationDeliveryService,
 )
@@ -159,7 +150,7 @@ class MockWhatsAppNotificationGateway(WhatsAppNotificationGateway):
         return NotificationStatus.SENT
 
 
-class MockEmailTemplateEngine(EmailTemplateEngine):
+class MockEmailTemplateEngine(NotificationTemplateEngine):
     directory = Path()
 
     def generate_subject(
@@ -178,34 +169,23 @@ async def user_service(user_repo: UserRepository) -> UserQueryService:
     return UserQueryService(user_repository=user_repo)
 
 
-@pytest.fixture
-def email_template_engine() -> EmailTemplateEngine:
-    return MockEmailTemplateEngine()
-
-
-@pytest.fixture
-def sms_template_engine() -> SMSTemplateEngineInterface:
-    return SMSTemplateEngine()
-
-
-@pytest.fixture
-def whatsapp_template_engine() -> WhatsAppTemplateEngineInterface:
-    return WhatsAppTemplateEngine()
-
-
 @pytest_asyncio.fixture
 async def notification_generation_service(
     notification_repo: NotificationRepository,
-    email_template_engine: EmailTemplateEngine,
-    sms_template_engine: SMSTemplateEngine,
-    whatsapp_template_engine: WhatsAppTemplateEngine,
 ) -> NotificationGenerationService:
-    return NotificationGenerationService(
+    notification_generation_service = NotificationGenerationService(
         notification_repo=notification_repo,
-        email_template_engine=email_template_engine,
-        sms_template_engine=sms_template_engine,
-        whatsapp_template_engine=whatsapp_template_engine,
     )
+    notification_generation_service.register_template_engine(
+        channel=NotificationChannel.EMAIL, template_engine=MockEmailTemplateEngine()
+    )
+    notification_generation_service.register_template_engine(
+        channel=NotificationChannel.SMS, template_engine=SMSTemplateEngine()
+    )
+    notification_generation_service.register_template_engine(
+        channel=NotificationChannel.WHATSAPP, template_engine=WhatsAppTemplateEngine()
+    )
+    return notification_generation_service
 
 
 @pytest_asyncio.fixture
