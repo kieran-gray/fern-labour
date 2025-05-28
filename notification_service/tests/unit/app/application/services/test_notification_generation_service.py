@@ -12,12 +12,16 @@ from src.notification.application.services.notification_generation_service impor
 from src.notification.application.services.notification_service import NotificationService
 from src.notification.domain.enums import NotificationChannel
 from src.notification.domain.exceptions import (
+    InvalidNotificationChannel,
     InvalidNotificationId,
     InvalidNotificationTemplate,
     NotificationNotFoundById,
     NotificationProcessingError,
 )
+from src.notification.domain.repository import NotificationRepository
 from src.notification.domain.value_objects.notification_id import NotificationId
+from src.notification.infrastructure.template_engines.sms_template_engine import SMSTemplateEngine
+from tests.unit.app.application.conftest import MockEmailTemplateEngine
 
 
 @pytest_asyncio.fixture
@@ -30,6 +34,47 @@ async def notification(notification_service: NotificationService) -> Notificatio
             email="test@email.com", name="test", message="test", user_id="abc123"
         ).to_dict(),
     )
+
+
+async def test_can_register_template_engine(
+    notification_repo: NotificationRepository,
+) -> NotificationGenerationService:
+    notification_generation_service = NotificationGenerationService(
+        notification_repo=notification_repo,
+    )
+    email_template_engine = MockEmailTemplateEngine()
+    notification_generation_service.register_template_engine(
+        channel=NotificationChannel.EMAIL, template_engine=email_template_engine
+    )
+    assert notification_generation_service._engines
+
+
+async def test_cannot_register_template_engine_invalid_channel(
+    notification_repo: NotificationRepository,
+) -> NotificationGenerationService:
+    notification_generation_service = NotificationGenerationService(
+        notification_repo=notification_repo,
+    )
+    email_template_engine = MockEmailTemplateEngine()
+    with pytest.raises(InvalidNotificationChannel):
+        notification_generation_service.register_template_engine(
+            channel="test", template_engine=email_template_engine
+        )
+
+
+async def test_channel_missing_engine_raises_not_implmemented_error(
+    notification_repo: NotificationRepository,
+    notification: NotificationDTO,
+) -> NotificationGenerationService:
+    notification_generation_service = NotificationGenerationService(
+        notification_repo=notification_repo,
+    )
+    sms_template_engine = SMSTemplateEngine()
+    notification_generation_service.register_template_engine(
+        channel=NotificationChannel.SMS, template_engine=sms_template_engine
+    )
+    with pytest.raises(NotImplementedError):
+        await notification_generation_service.generate_content(notification.id)
 
 
 async def test_can_generate_notification_content(

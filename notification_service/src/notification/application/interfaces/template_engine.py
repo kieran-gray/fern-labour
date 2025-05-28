@@ -28,12 +28,3 @@ class NotificationTemplateEngine(Protocol):
             template: The name of the template to use for generation
             data: The data to add to the template
         """
-
-
-class EmailTemplateEngine(NotificationTemplateEngine, Protocol): ...
-
-
-class SMSTemplateEngine(NotificationTemplateEngine, Protocol): ...
-
-
-class WhatsAppTemplateEngine(NotificationTemplateEngine, Protocol): ...

@@ -8,9 +8,6 @@ from src.setup.ioc.di_providers.events.infrastructure import EventsInfrastructur
 from src.setup.ioc.di_providers.notification_events.application import (
     NotificationEventsApplicationProvider,
 )
-from src.setup.ioc.di_providers.notification_generators.infrastructure import (
-    NotificationGeneratorsInfrastructureProvider,
-)
 from src.setup.ioc.di_providers.notifications.application import NotificationsApplicationProvider
 from src.setup.ioc.di_providers.notifications.infrastructure import (
     NotificationsInfrastructureProvider,
@@ -27,7 +24,6 @@ def get_providers() -> Iterable[Provider]:
         NotificationsApplicationProvider(),
         NotificationsInfrastructureProvider(),
         NotificationEventsApplicationProvider(),
-        NotificationGeneratorsInfrastructureProvider(),
         UserApplicationProvider(),
         UserInfrastructureProvider(),
     )

@@ -1,16 +1,14 @@
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import BaseNotificationData
 
-from src.notification.application.interfaces.template_engine import (
-    SMSTemplateEngine as SMSTemplateEngineInterface,
-)
+from src.notification.application.interfaces.template_engine import NotificationTemplateEngine
 from src.notification.domain.exceptions import GenerationTemplateNotFound
 from src.notification.infrastructure.templates.sms.message_templates import (
     TEMPLATE_TO_MESSAGE_STRING_TEMPLATE,
 )
 
 
-class SMSTemplateEngine(SMSTemplateEngineInterface):
+class SMSTemplateEngine(NotificationTemplateEngine):
     def generate_subject(
         self, template_name: NotificationTemplate, data: BaseNotificationData
     ) -> str:

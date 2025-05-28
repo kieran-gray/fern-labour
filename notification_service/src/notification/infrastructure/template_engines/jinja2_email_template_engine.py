@@ -4,14 +4,14 @@ from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import BaseNotificationData
 from jinja2 import Template
 
-from src.notification.application.interfaces.template_engine import EmailTemplateEngine
+from src.notification.application.interfaces.template_engine import NotificationTemplateEngine
 from src.notification.domain.exceptions import GenerationTemplateNotFound
 from src.notification.infrastructure.templates.email.subject_templates import (
     TEMPLATE_TO_SUBJECT_STRING_TEMPLATE,
 )
 
 
-class Jinja2EmailTemplateEngine(EmailTemplateEngine):
+class Jinja2EmailTemplateEngine(NotificationTemplateEngine):
     def __init__(self) -> None:
         self.directory = Path(__file__).parent.parent / "templates" / "email" / "build"
 
