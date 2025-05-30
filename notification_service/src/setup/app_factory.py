@@ -10,12 +10,7 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
-from src.api.exception_handler import (
-    ExceptionHandler,
-    ExceptionHeaderMapper,
-    ExceptionMapper,
-    ExceptionMessageProvider,
-)
+from src.api.exception_handler import ExceptionHandler
 from src.api.routes.router_root import root_router
 from src.core.infrastructure.persistence.initialize_mapping import map_all
 from src.setup.ioc.ioc_registry import get_providers
@@ -82,11 +77,5 @@ def configure_app(new_app: FastAPI, settings: Settings) -> None:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-    exception_message_provider = ExceptionMessageProvider()
-    exception_mapper = ExceptionMapper()
-    exception_header_mapper = ExceptionHeaderMapper()
-    exception_handler = ExceptionHandler(
-        new_app, exception_message_provider, exception_mapper, exception_header_mapper
-    )
+    exception_handler = ExceptionHandler(new_app)
     exception_handler.setup_handlers()

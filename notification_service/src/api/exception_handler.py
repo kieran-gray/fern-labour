@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass
-from typing import Any
+from types import MappingProxyType
+from typing import Any, Final
 
 import pydantic
 from fastapi import FastAPI, status
@@ -9,7 +10,6 @@ from fastapi.requests import Request
 from fastapi.responses import ORJSONResponse
 from fern_labour_core.exceptions.application import ApplicationError
 from fern_labour_core.exceptions.domain import DomainError
-from pydantic_core import ErrorDetails
 
 from src.notification.application.exceptions import (
     CannotGenerateNotificationContent,
@@ -39,96 +39,57 @@ class ExceptionSchemaRich:
     details: list[dict[str, Any]] | None = None
 
 
-class ExceptionMessageProvider:
-    @staticmethod
-    def get_exception_message(exc: Exception, status_code: int) -> str:
-        return "Internal server error." if status_code == 500 else str(exc)
-
-
-class ExceptionMapper:
-    def __init__(self) -> None:
-        self.exceptions_status_code_map: dict[type[Exception], int] = {
-            pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
-            DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-            ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-            AuthorizationError: status.HTTP_401_UNAUTHORIZED,
-            InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
-            InvalidNotificationStatus: status.HTTP_400_BAD_REQUEST,
-            InvalidNotificationId: status.HTTP_400_BAD_REQUEST,
-            NotificationNotFoundById: status.HTTP_404_NOT_FOUND,
-            NotificationNotFoundByExternalId: status.HTTP_404_NOT_FOUND,
-            UserNotFoundById: status.HTTP_404_NOT_FOUND,
-            UnauthorizedWebhookRequest: status.HTTP_403_FORBIDDEN,
-            CannotGenerateNotificationContent: status.HTTP_400_BAD_REQUEST,
-            CannotResendNotification: status.HTTP_400_BAD_REQUEST,
-        }
-
-    def get_status_code(self, exc: Exception) -> int:
-        return self.exceptions_status_code_map.get(type(exc), status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class ExceptionHeaderMapper:
-    def __init__(self) -> None:
-        self._exceptions_headers_map: dict[type[Exception], dict[str, Any]] = {
-            InvalidTokenError: {"WWW-Authenticate": "Bearer"}
-        }
-
-    def get_headers(self, exc: Exception) -> dict[str, Any] | None:
-        return self._exceptions_headers_map.get(type(exc))
-
-
 class ExceptionHandler:
-    def __init__(
-        self,
-        app: FastAPI,
-        exception_message_provider: ExceptionMessageProvider,
-        exception_mapper: ExceptionMapper,
-        exception_header_mapper: ExceptionHeaderMapper,
-    ):
+    _ERROR_MAPPING: Final[dict[type[Exception], int]] = MappingProxyType({
+        pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
+        DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+        ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+        AuthorizationError: status.HTTP_401_UNAUTHORIZED,
+        InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
+        InvalidNotificationStatus: status.HTTP_400_BAD_REQUEST,
+        InvalidNotificationId: status.HTTP_400_BAD_REQUEST,
+        NotificationNotFoundById: status.HTTP_404_NOT_FOUND,
+        NotificationNotFoundByExternalId: status.HTTP_404_NOT_FOUND,
+        UserNotFoundById: status.HTTP_404_NOT_FOUND,
+        UnauthorizedWebhookRequest: status.HTTP_403_FORBIDDEN,
+        CannotGenerateNotificationContent: status.HTTP_400_BAD_REQUEST,
+        CannotResendNotification: status.HTTP_400_BAD_REQUEST,
+    })
+
+    def __init__(self, app: FastAPI) -> None:
         self._app = app
-        self._mapper = exception_mapper
-        self._header_mapper = exception_header_mapper
-        self._exception_message_provider = exception_message_provider
 
-    def setup_handlers(self) -> None:
-        for exc_class in self._mapper.exceptions_status_code_map:
-            self._app.add_exception_handler(exc_class, self._handle_exception)
-        self._app.add_exception_handler(Exception, self._handle_unexpected_exceptions)
-
-    async def _handle_exception(self, _: Request, exc: Exception) -> ORJSONResponse:
-        status_code = self._mapper.get_status_code(exc)
-        headers = self._header_mapper.get_headers(exc)
+    async def _handle(self, _: Request, exc: Exception) -> ORJSONResponse:
+        status_code: int = self._ERROR_MAPPING.get(
+            type(exc),
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+        message = str(exc) if status_code < 500 else "Internal server error."
 
         if status_code >= 500:
-            log.error(f"Exception {type(exc).__name__} occurred: {exc}", exc_info=True)
+            log.error(
+                "Exception '%s' occurred: '%s'.",
+                type(exc).__name__,
+                exc,
+                exc_info=exc,
+            )
         else:
-            log.warning(f"Exception {type(exc).__name__} occurred: {exc}")
+            log.warning("Exception '%s' occurred: '%s'.", type(exc).__name__, exc)
 
-        exception_message = self._exception_message_provider.get_exception_message(exc, status_code)
+        if isinstance(exc, pydantic.ValidationError):
+            response: ExceptionSchema | ExceptionSchemaRich = ExceptionSchemaRich(
+                message,
+                jsonable_encoder(exc.errors()),
+            )
+        else:
+            response = ExceptionSchema(message)
 
-        details = exc.errors() if isinstance(exc, pydantic.ValidationError) else None
-        return self._create_exception_response(status_code, exception_message, details, headers)
-
-    async def _handle_unexpected_exceptions(self, _: Request, exc: Exception) -> ORJSONResponse:
-        log.error(f"Unexpected exception {type(exc).__name__} occurred: {exc}", exc_info=True)
-        exception_message: str = "Internal server error."
-        return self._create_exception_response(
-            status.HTTP_500_INTERNAL_SERVER_ERROR, exception_message
-        )
-
-    @staticmethod
-    def _create_exception_response(
-        status_code: int,
-        exception_message: str,
-        details: list[ErrorDetails] | None = None,
-        headers: dict[str, Any] | None = None,
-    ) -> ORJSONResponse:
         return ORJSONResponse(
             status_code=status_code,
-            content=(
-                ExceptionSchemaRich(exception_message, jsonable_encoder(details))
-                if details
-                else ExceptionSchema(exception_message)
-            ),
-            headers=headers,
+            content=response,
         )
+
+    def setup_handlers(self) -> None:
+        for exc_class in self._ERROR_MAPPING:
+            self._app.add_exception_handler(exc_class, self._handle)
+        self._app.add_exception_handler(Exception, self._handle)
