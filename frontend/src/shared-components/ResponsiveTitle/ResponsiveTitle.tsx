@@ -1,4 +1,5 @@
 import { Title } from '@mantine/core';
+import classes from './ResponsiveTitle.module.css';
 
 interface ResponsiveTitleProps {
   title: string;
@@ -7,13 +8,13 @@ interface ResponsiveTitleProps {
 export function ResponsiveTitle({ title }: ResponsiveTitleProps) {
   return (
     <>
-      <Title order={4} hiddenFrom="xs">
+      <Title order={4} hiddenFrom="xs" className={classes.title}>
         {title}
       </Title>
-      <Title order={3} hiddenFrom="sm" visibleFrom="xs">
+      <Title order={3} hiddenFrom="sm" visibleFrom="xs" className={classes.title}>
         {title}
       </Title>
-      <Title order={2} visibleFrom="sm">
+      <Title order={2} visibleFrom="sm" className={classes.title}>
         {title}
       </Title>
     </>

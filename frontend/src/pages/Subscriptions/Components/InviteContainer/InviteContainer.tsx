@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateEmail } from '@base/shared-components/utils';
 import {
   ApiError,
   OpenAPI,
@@ -28,7 +29,7 @@ export function InviteContainer() {
     },
 
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      email: (value) => (validateEmail(value) ? null : 'Invalid email'),
     },
   });
 

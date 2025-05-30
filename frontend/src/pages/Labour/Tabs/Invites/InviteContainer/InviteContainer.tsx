@@ -4,6 +4,7 @@ import { useLabour } from '@labour/LabourContext';
 import { Error, Success } from '@shared/Notifications';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { validateEmail } from '@shared/utils';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from 'react-oidc-context';
@@ -25,7 +26,7 @@ export function InviteContainer() {
     },
 
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      email: (value) => (validateEmail(value) ? null : 'Invalid email'),
     },
   });
 

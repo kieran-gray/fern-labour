@@ -17,6 +17,11 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import {
+  validateEmail,
+  validateMessage,
+  validateName,
+} from '../../FormValidation/FormValidation.tsx';
 import { ContactIconsList } from './ContactIcons.tsx';
 import classes from './ContactUs.module.css';
 
@@ -42,7 +47,9 @@ export function ContactUs() {
     },
 
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      email: (value) => (validateEmail(value) ? null : 'Invalid email'),
+      name: (value) => validateName(value),
+      message: (value) => validateMessage(value),
     },
   });
 

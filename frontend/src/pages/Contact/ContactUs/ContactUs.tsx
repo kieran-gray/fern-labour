@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateMessage } from '@base/shared-components/utils.tsx';
 import { ContactUsService } from '@clients/contact_service/sdk.gen.ts';
 import { ContactUsRequest } from '@clients/contact_service/types.gen.ts';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription.tsx';
@@ -45,6 +46,7 @@ export function ContactUs() {
       category: 'error_report',
       message: '',
     },
+    validate: { message: (message) => validateMessage(message) },
   });
 
   const mutation = useMutation({
