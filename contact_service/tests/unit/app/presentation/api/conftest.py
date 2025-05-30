@@ -9,12 +9,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from src.api.exception_handler import (
-    ExceptionHandler,
-    ExceptionHeaderMapper,
-    ExceptionMapper,
-    ExceptionMessageProvider,
-)
+from src.api.exception_handler import ExceptionHandler
 from src.api.routes.router_root import root_router
 from src.application.contact_message_service import ContactMessageService
 from src.infrastructure.security.request_verification.interface import (
@@ -180,12 +175,7 @@ def app() -> FastAPI:
     """Create a test FastAPI application."""
     new_app: FastAPI = FastAPI()
     new_app.include_router(root_router)
-    exception_message_provider = ExceptionMessageProvider()
-    exception_mapper = ExceptionMapper()
-    exception_header_mapper = ExceptionHeaderMapper()
-    exception_handler = ExceptionHandler(
-        new_app, exception_message_provider, exception_mapper, exception_header_mapper
-    )
+    exception_handler = ExceptionHandler(new_app)
     exception_handler.setup_handlers()
     return new_app
 
