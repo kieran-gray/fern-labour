@@ -34,17 +34,19 @@ class ExceptionSchemaRich:
 
 
 class ExceptionHandler:
-    _ERROR_MAPPING: Final[dict[type[Exception], int]] = MappingProxyType({
-        pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
-        DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-        ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-        UserNotFoundById: status.HTTP_404_NOT_FOUND,
-        AuthorizationError: status.HTTP_401_UNAUTHORIZED,
-        InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
-        RequestVerificationError: status.HTTP_400_BAD_REQUEST,
-        VerificationTokenAlreadyUsedException: status.HTTP_400_BAD_REQUEST,
-        InvalidVerificationTokenException: status.HTTP_400_BAD_REQUEST,
-    })
+    _ERROR_MAPPING: Final[MappingProxyType[type[Exception], int]] = MappingProxyType(
+        {
+            pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
+            DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+            ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+            UserNotFoundById: status.HTTP_404_NOT_FOUND,
+            AuthorizationError: status.HTTP_401_UNAUTHORIZED,
+            InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
+            RequestVerificationError: status.HTTP_400_BAD_REQUEST,
+            VerificationTokenAlreadyUsedException: status.HTTP_400_BAD_REQUEST,
+            InvalidVerificationTokenException: status.HTTP_400_BAD_REQUEST,
+        }
+    )
 
     def __init__(self, app: FastAPI) -> None:
         self._app = app

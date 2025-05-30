@@ -40,21 +40,23 @@ class ExceptionSchemaRich:
 
 
 class ExceptionHandler:
-    _ERROR_MAPPING: Final[dict[type[Exception], int]] = MappingProxyType({
-        pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
-        DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-        ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
-        AuthorizationError: status.HTTP_401_UNAUTHORIZED,
-        InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
-        InvalidNotificationStatus: status.HTTP_400_BAD_REQUEST,
-        InvalidNotificationId: status.HTTP_400_BAD_REQUEST,
-        NotificationNotFoundById: status.HTTP_404_NOT_FOUND,
-        NotificationNotFoundByExternalId: status.HTTP_404_NOT_FOUND,
-        UserNotFoundById: status.HTTP_404_NOT_FOUND,
-        UnauthorizedWebhookRequest: status.HTTP_403_FORBIDDEN,
-        CannotGenerateNotificationContent: status.HTTP_400_BAD_REQUEST,
-        CannotResendNotification: status.HTTP_400_BAD_REQUEST,
-    })
+    _ERROR_MAPPING: Final[MappingProxyType[type[Exception], int]] = MappingProxyType(
+        {
+            pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
+            DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+            ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+            AuthorizationError: status.HTTP_401_UNAUTHORIZED,
+            InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
+            InvalidNotificationStatus: status.HTTP_400_BAD_REQUEST,
+            InvalidNotificationId: status.HTTP_400_BAD_REQUEST,
+            NotificationNotFoundById: status.HTTP_404_NOT_FOUND,
+            NotificationNotFoundByExternalId: status.HTTP_404_NOT_FOUND,
+            UserNotFoundById: status.HTTP_404_NOT_FOUND,
+            UnauthorizedWebhookRequest: status.HTTP_403_FORBIDDEN,
+            CannotGenerateNotificationContent: status.HTTP_400_BAD_REQUEST,
+            CannotResendNotification: status.HTTP_400_BAD_REQUEST,
+        }
+    )
 
     def __init__(self, app: FastAPI) -> None:
         self._app = app

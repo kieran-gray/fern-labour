@@ -78,7 +78,8 @@ class ExceptionSchemaRich:
 
 
 class ExceptionHandler:
-    _ERROR_MAPPING: Final[dict[type[Exception], int]] = MappingProxyType({
+    _ERROR_MAPPING: Final[MappingProxyType[type[Exception], int]] = MappingProxyType(
+        {
             pydantic.ValidationError: status.HTTP_400_BAD_REQUEST,
             DomainError: status.HTTP_500_INTERNAL_SERVER_ERROR,
             ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -122,10 +123,11 @@ class ExceptionHandler:
             SubscriptionAccessLevelInvalid: status.HTTP_400_BAD_REQUEST,
             WebhookHasInvalidSignature: status.HTTP_403_FORBIDDEN,
             InvalidLabourUpdateRequest: status.HTTP_400_BAD_REQUEST,
-        })
+        }
+    )
+
     def __init__(self, app: FastAPI) -> None:
         self._app = app
-
 
     async def _handle(self, _: Request, exc: Exception) -> ORJSONResponse:
         status_code: int = self._ERROR_MAPPING.get(
