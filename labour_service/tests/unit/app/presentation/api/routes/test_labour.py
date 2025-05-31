@@ -46,6 +46,65 @@ def test_plan_labour(client: TestClient, mock_labour_dto: LabourDTO) -> None:
     assert response.json() == {"labour": mock_labour_dto.to_dict()}
 
 
+def test_plan_labour_name_at_max_length(client: TestClient) -> None:
+    """Test planning labour with labour_name at max length (255 characters)."""
+    max_length_name = "a" * 255  # Exactly 255 characters
+    response = client.post(
+        "/api/v1/labour/plan",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "first_labour": True,
+            "due_date": (datetime.now() + timedelta(days=30)).isoformat(),
+            "labour_name": max_length_name,
+        },
+    )
+    assert response.status_code == 200
+
+
+def test_plan_labour_name_exceeds_max_length(client: TestClient) -> None:
+    """Test planning labour with labour_name exceeding max length (255 characters)."""
+    too_long_name = "a" * 256  # Exceeds 255 character limit
+    response = client.post(
+        "/api/v1/labour/plan",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "first_labour": True,
+            "due_date": (datetime.now() + timedelta(days=30)).isoformat(),
+            "labour_name": too_long_name,
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_plan_labour_name_much_longer_than_max(client: TestClient) -> None:
+    """Test planning labour with labour_name much longer than max length."""
+    very_long_name = "a" * 1000  # Way over the 255 character limit
+    response = client.post(
+        "/api/v1/labour/plan",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "first_labour": True,
+            "due_date": (datetime.now() + timedelta(days=30)).isoformat(),
+            "labour_name": very_long_name,
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_plan_labour_name_one_character(client: TestClient) -> None:
+    """Test planning labour with labour_name of one character."""
+    response = client.post(
+        "/api/v1/labour/plan",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "first_labour": True,
+            "due_date": (datetime.now() + timedelta(days=30)).isoformat(),
+            "labour_name": "A",
+        },
+    )
+    assert response.status_code == 200
+
+
 def test_begin_labour(client: TestClient, mock_labour_dto: LabourDTO) -> None:
     """Test beginning a labour."""
     response = client.post(
