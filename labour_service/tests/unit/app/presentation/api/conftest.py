@@ -281,6 +281,8 @@ class MockLabourProvider(Provider):
         service.plan_labour.return_value = mock_labour_dto
         service.update_labour_plan.return_value = mock_labour_dto
         service.begin_labour.return_value = mock_labour_dto
+        service.post_labour_update.return_value = mock_labour_dto
+        service.update_labour_update.return_value = mock_labour_dto
         return service
 
     @provide()
