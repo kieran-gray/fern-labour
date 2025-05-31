@@ -21,6 +21,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
+import { validateEmail, validateMessage, validateName } from '../FormValidation/FormValidation';
 import classes from './ContactMessageFloating.module.css';
 
 const categories = [
@@ -47,7 +48,9 @@ export function ContactMessageFloating() {
     },
 
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      email: (value) => (validateEmail(value) ? null : 'Invalid email'),
+      name: (value) => validateName(value),
+      message: (value) => validateMessage(value),
     },
   });
 
@@ -228,8 +231,8 @@ export function ContactMessageFloating() {
           {(transitionStyles) => (
             <ActionIcon
               onClick={() => (opened ? close() : open())}
-              size="xl"
-              radius="lg"
+              size={65}
+              radius="xl"
               style={transitionStyles}
             >
               <IconMessageQuestion size={30} />

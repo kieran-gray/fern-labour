@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+import { LABOUR_UPDATE_MAX_LENGTH } from '@base/constants';
 import { Button, Modal, Space, Textarea } from '@mantine/core';
 import classes from '@shared/Modal.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -15,6 +17,12 @@ export default function EditLabourUpdateModal({
   onChange: Function;
   onCancel: Function;
 }) {
+  const handleMessageChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (event.currentTarget.value.length <= LABOUR_UPDATE_MAX_LENGTH) {
+      onChange(event.currentTarget.value);
+    }
+  }, []);
+
   return (
     <Modal
       overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
@@ -36,7 +44,7 @@ export default function EditLabourUpdateModal({
         label="Your status update"
         placeholder="Enter your updated message..."
         value={message}
-        onChange={(event) => onChange(event.currentTarget.value)}
+        onChange={handleMessageChange}
         minRows={3}
         maxRows={6}
         radius="lg"

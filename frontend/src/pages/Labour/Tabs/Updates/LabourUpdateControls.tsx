@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { LABOUR_UPDATE_MAX_LENGTH } from '@base/constants';
 import {
   LabourDTO,
   LabourUpdateDTO,
@@ -47,7 +48,9 @@ export function LabourUpdateControls() {
   };
 
   const handleMessageChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(event.currentTarget.value);
+    if (event.currentTarget.value.length <= LABOUR_UPDATE_MAX_LENGTH) {
+      setMessage(event.currentTarget.value);
+    }
   }, []);
 
   const mutation = useMutation({

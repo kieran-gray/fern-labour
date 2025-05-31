@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateLabourName } from '@base/shared-components/utils';
 import { LabourDTO, LabourService, OpenAPI, PlanLabourRequest } from '@clients/labour_service';
 import { Error, Success } from '@shared/Notifications';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
@@ -43,6 +44,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
       firstLabour: labour ? boolToString(labour.first_labour) : 'true',
       labourName: labour ? labour.labour_name : '',
     },
+    validate: { labourName: (value) => validateLabourName(value) },
   });
 
   const mutation = useMutation({
