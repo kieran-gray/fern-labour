@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 LABOUR_NAME_MAX_LENGTH = 255
+LABOUR_NOTES_MAX_LENGTH = 1000
 
 
 class PlanLabourRequest(BaseModel):
@@ -13,7 +14,7 @@ class PlanLabourRequest(BaseModel):
 
 class CompleteLabourRequest(BaseModel):
     end_time: datetime | None = None
-    notes: str | None = None
+    notes: str | None = Field(default=None, max_length=LABOUR_NOTES_MAX_LENGTH)
 
 
 class SendInviteRequest(BaseModel):

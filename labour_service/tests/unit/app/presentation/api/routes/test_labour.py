@@ -116,6 +116,147 @@ def test_begin_labour(client: TestClient, mock_labour_dto: LabourDTO) -> None:
     assert response.json() == {"labour": mock_labour_dto.to_dict()}
 
 
+def test_complete_labour_with_both_fields(client: TestClient) -> None:
+    """Test completing labour with both end_time and notes."""
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": datetime.now().isoformat(),
+            "notes": "Labour went smoothly, baby arrived healthy",
+        },
+    )
+    assert response.status_code == 200
+
+
+def test_complete_labour_with_end_time_only(client: TestClient) -> None:
+    """Test completing labour with only end_time."""
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": datetime.now().isoformat(),
+        },
+    )
+    assert response.status_code == 200
+
+
+def test_complete_labour_with_notes_only(client: TestClient) -> None:
+    """Test completing labour with only notes."""
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "notes": "Additional notes about the labour experience",
+        },
+    )
+    assert response.status_code == 200
+
+
+def test_complete_labour_with_no_fields(client: TestClient) -> None:
+    """Test completing labour with no fields (both optional)."""
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={},
+    )
+    assert response.status_code == 200
+
+
+def test_complete_labour_notes_at_max_length(client: TestClient) -> None:
+    """Test completing labour with notes at max length (1000 characters)."""
+    max_length_notes = "a" * 1000  # Exactly 1000 characters
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": datetime.now().isoformat(),
+            "notes": max_length_notes,
+        },
+    )
+    assert response.status_code == 200
+
+
+def test_complete_labour_notes_exceeds_max_length(client: TestClient) -> None:
+    """Test completing labour with notes exceeding max length (1000 characters)."""
+    too_long_notes = "a" * 1001  # Exceeds 1000 character limit
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": datetime.now().isoformat(),
+            "notes": too_long_notes,
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_complete_labour_notes_much_longer_than_max(client: TestClient) -> None:
+    """Test completing labour with notes much longer than max length."""
+    very_long_notes = "a" * 2000  # Way over the 1000 character limit
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": datetime.now().isoformat(),
+            "notes": very_long_notes,
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_complete_labour_notes_empty_string(client: TestClient) -> None:
+    """Test completing labour with empty notes string."""
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": datetime.now().isoformat(),
+            "notes": "",
+        },
+    )
+    assert response.status_code == 200
+
+
+def test_complete_labour_notes_one_character(client: TestClient) -> None:
+    """Test completing labour with notes of one character."""
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": datetime.now().isoformat(),
+            "notes": "A",
+        },
+    )
+    assert response.status_code == 200
+
+
+def test_complete_labour_notes_null(client: TestClient) -> None:
+    """Test completing labour with null notes."""
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": datetime.now().isoformat(),
+            "notes": None,
+        },
+    )
+    assert response.status_code == 200
+
+
+def test_complete_labour_end_time_null(client: TestClient) -> None:
+    """Test completing labour with null end_time."""
+    response = client.put(
+        "/api/v1/labour/complete",
+        headers={"Authorization": "Bearer test_token"},
+        json={
+            "end_time": None,
+            "notes": "Some completion notes",
+        },
+    )
+    assert response.status_code == 200
+
+
 def test_start_contraction(client: TestClient, mock_labour_dto: LabourDTO) -> None:
     """Test starting a contraction."""
     start_time = datetime.now()
