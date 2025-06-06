@@ -14,11 +14,17 @@ class LabourPlanned(DomainEvent):
 
     @classmethod
     def from_domain(cls, labour: Labour) -> Self:
+        labour_id = str(labour.id_.value)
         data = {
-            "labour_id": str(labour.id_.value),
+            "labour_id": labour_id,
             "birthing_person_id": labour.birthing_person_id.value,
         }
-        return super().create(event_type=cls.event_type, data=data)
+        return super().create(
+            aggregate_id=labour_id,
+            aggregate_type="labour",
+            data=data,
+            event_type=cls.event_type,
+        )
 
 
 @dataclass
@@ -27,13 +33,19 @@ class LabourBegun(DomainEvent):
 
     @classmethod
     def from_domain(cls, labour: Labour) -> Self:
+        labour_id = str(labour.id_.value)
         start_time = labour.start_time or datetime.now(UTC)
         data = {
-            "labour_id": str(labour.id_.value),
+            "labour_id": labour_id,
             "birthing_person_id": labour.birthing_person_id.value,
             "start_time": start_time,
         }
-        return super().create(event_type=cls.event_type, data=data)
+        return super().create(
+            aggregate_id=labour_id,
+            aggregate_type="labour",
+            data=data,
+            event_type=cls.event_type,
+        )
 
 
 @dataclass
@@ -42,14 +54,20 @@ class LabourCompleted(DomainEvent):
 
     @classmethod
     def from_domain(cls, labour: Labour) -> Self:
+        labour_id = str(labour.id_.value)
         end_time = labour.end_time or datetime.now(UTC)
         data = {
-            "labour_id": str(labour.id_.value),
+            "labour_id": labour_id,
             "birthing_person_id": labour.birthing_person_id.value,
             "end_time": end_time,
             "notes": labour.notes if labour.notes else "",
         }
-        return super().create(event_type=cls.event_type, data=data)
+        return super().create(
+            aggregate_id=labour_id,
+            aggregate_type="labour",
+            data=data,
+            event_type=cls.event_type,
+        )
 
 
 @dataclass
@@ -58,12 +76,18 @@ class LabourUpdatePosted(DomainEvent):
 
     @classmethod
     def from_domain(cls, labour: Labour, labour_update: LabourUpdate) -> Self:
+        labour_id = str(labour.id_.value)
         data = {
             "birthing_person_id": labour.birthing_person_id.value,
-            "labour_id": str(labour.id_.value),
+            "labour_id": labour_id,
             "labour_update_type": labour_update.labour_update_type.value,
             "labour_update_id": str(labour_update.id_.value),
             "message": labour_update.message,
             "sent_time": labour_update.sent_time.isoformat(),
         }
-        return super().create(event_type=cls.event_type, data=data)
+        return super().create(
+            aggregate_id=labour_id,
+            aggregate_type="labour",
+            data=data,
+            event_type=cls.event_type,
+        )

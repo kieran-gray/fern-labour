@@ -1,8 +1,10 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
-from fern_labour_core.events.producer import EventProducer
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.application.unit_of_work import UnitOfWork
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.setup.ioc.di_component_enum import ComponentEnum
@@ -34,15 +36,23 @@ class SubscriptionApplicationProvider(Provider):
     def provide_subscription_service(
         self,
         subscription_repository: SubscriptionRepository,
+        domain_event_repository: Annotated[
+            DomainEventRepository, FromComponent(ComponentEnum.DEFAULT)
+        ],
+        unit_of_work: Annotated[UnitOfWork, FromComponent(ComponentEnum.DEFAULT)],
         labour_query_service: Annotated[LabourQueryService, FromComponent(ComponentEnum.LABOUR)],
         token_generator: Annotated[TokenGenerator, FromComponent(ComponentEnum.LABOUR)],
-        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+        domain_event_publisher: Annotated[
+            DomainEventPublisher, FromComponent(ComponentEnum.DEFAULT)
+        ],
     ) -> SubscriptionService:
         return SubscriptionService(
             subscription_repository=subscription_repository,
+            domain_event_repository=domain_event_repository,
+            unit_of_work=unit_of_work,
             labour_query_service=labour_query_service,
             token_generator=token_generator,
-            event_producer=event_producer,
+            domain_event_publisher=domain_event_publisher,
         )
 
     @provide
@@ -60,11 +70,19 @@ class SubscriptionApplicationProvider(Provider):
     def provide_subscription_management_service(
         self,
         subscription_repository: SubscriptionRepository,
+        domain_event_repository: Annotated[
+            DomainEventRepository, FromComponent(ComponentEnum.DEFAULT)
+        ],
+        unit_of_work: Annotated[UnitOfWork, FromComponent(ComponentEnum.DEFAULT)],
         subscription_authorization_service: SubscriptionAuthorizationService,
-        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+        domain_event_publisher: Annotated[
+            DomainEventPublisher, FromComponent(ComponentEnum.DEFAULT)
+        ],
     ) -> SubscriptionManagementService:
         return SubscriptionManagementService(
             subscription_repository=subscription_repository,
+            domain_event_repository=domain_event_repository,
+            unit_of_work=unit_of_work,
             subscription_authorization_service=subscription_authorization_service,
-            event_producer=event_producer,
+            domain_event_publisher=domain_event_publisher,
         )

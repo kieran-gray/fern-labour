@@ -2,6 +2,9 @@ import logging
 from datetime import datetime
 from uuid import UUID
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.application.unit_of_work import UnitOfWork
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.domain.contraction.exceptions import ContractionIdInvalid
 from src.labour.domain.contraction.services.delete_contraction import DeleteContractionService
@@ -18,8 +21,17 @@ log = logging.getLogger(__name__)
 
 
 class ContractionService:
-    def __init__(self, labour_repository: LabourRepository):
+    def __init__(
+        self,
+        labour_repository: LabourRepository,
+        domain_event_repository: DomainEventRepository,
+        unit_of_work: UnitOfWork,
+        domain_event_publisher: DomainEventPublisher,
+    ):
         self._labour_repository = labour_repository
+        self._domain_event_repository = domain_event_repository
+        self._unit_of_work = unit_of_work
+        self._domain_event_publisher = domain_event_publisher
 
     async def _get_labour(self, birthing_person_id: str) -> Labour:
         domain_id = UserId(birthing_person_id)
@@ -40,7 +52,12 @@ class ContractionService:
         labour = StartContractionService().start_contraction(
             labour=labour, intensity=intensity, start_time=start_time, notes=notes
         )
-        await self._labour_repository.save(labour)
+
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
+
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -56,7 +73,11 @@ class ContractionService:
         labour = EndContractionService().end_contraction(
             labour=labour, intensity=intensity, end_time=end_time, notes=notes
         )
-        await self._labour_repository.save(labour)
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
+
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -84,7 +105,11 @@ class ContractionService:
             intensity=intensity,
             notes=notes,
         )
-        await self._labour_repository.save(labour)
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
+
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -100,6 +125,10 @@ class ContractionService:
             labour=labour,
             contraction_id=contraction_domain_id,
         )
-        await self._labour_repository.save(labour)
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
+
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)

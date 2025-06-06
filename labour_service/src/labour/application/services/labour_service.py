@@ -2,8 +2,9 @@ import logging
 from datetime import datetime
 from uuid import UUID
 
-from fern_labour_core.events.producer import EventProducer
-
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.application.unit_of_work import UnitOfWork
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.exceptions import InvalidLabourUpdateRequest
 from src.labour.domain.labour.entity import Labour
@@ -30,9 +31,17 @@ log = logging.getLogger(__name__)
 
 
 class LabourService:
-    def __init__(self, labour_repository: LabourRepository, event_producer: EventProducer):
+    def __init__(
+        self,
+        labour_repository: LabourRepository,
+        domain_event_repository: DomainEventRepository,
+        unit_of_work: UnitOfWork,
+        domain_event_publisher: DomainEventPublisher,
+    ):
         self._labour_repository = labour_repository
-        self._event_producer = event_producer
+        self._domain_event_repository = domain_event_repository
+        self._unit_of_work = unit_of_work
+        self._domain_event_publisher = domain_event_publisher
 
     async def _get_labour(self, birthing_person_id: str) -> Labour:
         domain_id = UserId(birthing_person_id)
@@ -62,9 +71,11 @@ class LabourService:
             labour_name=labour_name,
         )
 
-        await self._labour_repository.save(labour)
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
 
-        await self._event_producer.publish_batch(labour.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -79,9 +90,11 @@ class LabourService:
 
         labour.update_plan(first_labour=first_labour, due_date=due_date, labour_name=labour_name)
 
-        await self._labour_repository.save(labour)
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
 
-        await self._event_producer.publish_batch(labour.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -89,9 +102,12 @@ class LabourService:
         labour = await self._get_labour(birthing_person_id=birthing_person_id)
 
         labour = BeginLabourService().begin_labour(labour=labour)
-        await self._labour_repository.save(labour)
 
-        await self._event_producer.publish_batch(labour.clear_domain_events())
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
+
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -103,9 +119,12 @@ class LabourService:
         labour = CompleteLabourService().complete_labour(
             labour=labour, end_time=end_time, notes=notes
         )
-        await self._labour_repository.save(labour)
 
-        await self._event_producer.publish_batch(labour.clear_domain_events())
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
+
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -125,9 +144,12 @@ class LabourService:
             message=message,
             sent_time=sent_time,
         )
-        await self._labour_repository.save(labour)
 
-        await self._event_producer.publish_batch(labour.clear_domain_events())
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
+
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -162,9 +184,11 @@ class LabourService:
                 labour=labour, labour_update_id=labour_update_domain_id, message=message
             )
 
-        await self._labour_repository.save(labour)
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
 
-        await self._event_producer.publish_batch(labour.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -181,9 +205,11 @@ class LabourService:
 
         labour.delete_labour_update(labour_update_id=labour_update_domain_id)
 
-        await self._labour_repository.save(labour)
+        async with self._unit_of_work:
+            await self._labour_repository.save(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
 
-        await self._event_producer.publish_batch(labour.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return LabourDTO.from_domain(labour)
 
@@ -207,8 +233,10 @@ class LabourService:
         if labour.is_active:
             raise CannotDeleteActiveLabour()
 
-        await self._labour_repository.delete(labour)
+        async with self._unit_of_work:
+            await self._labour_repository.delete(labour)
+            await self._domain_event_repository.save_many(labour.clear_domain_events())
 
-        await self._event_producer.publish_batch(labour.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return None

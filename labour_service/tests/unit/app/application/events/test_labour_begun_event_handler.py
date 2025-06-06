@@ -33,6 +33,8 @@ def generate_domain_event(birthing_person_id: str, labour_id: str) -> DomainEven
     return DomainEvent(
         id="event_id",
         type="labour.begun",
+        aggregate_id=labour_id,
+        aggregate_type="labour",
         data={"birthing_person_id": birthing_person_id, "labour_id": labour_id},
         time=datetime.now(UTC),
     )

@@ -13,6 +13,8 @@ from starlette.middleware.cors import CORSMiddleware
 from src.api.exception_handler import ExceptionHandler
 from src.api.routes.router_root import root_router
 from src.core.infrastructure.persistence.initialize_mapping import map_all
+from src.setup.background_tasks.background_worker import BackgroundWorker
+from src.setup.background_tasks.domain_event_publisher_task import DomainEventPublisherTask
 from src.setup.ioc.ioc_registry import get_providers
 from src.setup.settings import Settings
 
@@ -20,7 +22,20 @@ from src.setup.settings import Settings
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     map_all()
+
+    app.state.background_worker = BackgroundWorker(container=app.state.dishka_container)
+    app.state.background_worker.register(
+        DomainEventPublisherTask(
+            name="long_running_domain_event_publishing_task",
+            interval_seconds=60,
+            max_concurrent=1,
+        )
+    )
+    app.state.background_worker.start()
+
     yield None
+
+    await app.state.background_worker.stop()
     await app.state.dishka_container.close()  # noqa; app.state is the place where dishka_container lives
 
 

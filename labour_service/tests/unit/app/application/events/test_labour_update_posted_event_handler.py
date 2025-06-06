@@ -42,6 +42,8 @@ def generate_domain_event(
     return DomainEvent(
         id="event_id",
         type="labour.update-posted",
+        aggregate_id=labour_id,
+        aggregate_type="labour",
         data={
             "birthing_person_id": birthing_person_id,
             "labour_id": labour_id,

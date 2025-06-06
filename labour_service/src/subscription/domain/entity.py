@@ -52,12 +52,14 @@ class Subscription(AggregateRoot[SubscriptionId]):
         )
         subscription.add_domain_event(
             SubscriberRequested.create(
+                aggregate_id=str(subscription_id),
+                aggregate_type="subscription",
                 data={
                     "labour_id": str(labour_id.value),
                     "birthing_person_id": birthing_person_id.value,
                     "subscriber_id": subscriber_id.value,
                     "subscription_id": str(subscription.id_),
-                }
+                },
             )
         )
         return subscription
@@ -65,12 +67,14 @@ class Subscription(AggregateRoot[SubscriptionId]):
     def request(self) -> None:
         self.add_domain_event(
             SubscriberRequested.create(
+                aggregate_id=str(self.id_.value),
+                aggregate_type="subscription",
                 data={
                     "labour_id": str(self.labour_id.value),
                     "birthing_person_id": self.birthing_person_id.value,
                     "subscriber_id": self.subscriber_id.value,
                     "subscription_id": str(self.id_),
-                }
+                },
             )
         )
         self.status = SubscriptionStatus.REQUESTED
@@ -78,12 +82,14 @@ class Subscription(AggregateRoot[SubscriptionId]):
     def approve(self) -> None:
         self.add_domain_event(
             SubscriberApproved.create(
+                aggregate_id=str(self.id_.value),
+                aggregate_type="subscription",
                 data={
                     "labour_id": str(self.labour_id.value),
                     "birthing_person_id": self.birthing_person_id.value,
                     "subscriber_id": self.subscriber_id.value,
                     "subscription_id": str(self.id_),
-                }
+                },
             )
         )
         self.status = SubscriptionStatus.SUBSCRIBED

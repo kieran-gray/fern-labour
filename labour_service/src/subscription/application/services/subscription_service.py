@@ -1,8 +1,9 @@
 import logging
 from uuid import UUID
 
-from fern_labour_core.events.producer import EventProducer
-
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.application.unit_of_work import UnitOfWork
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_query_service import LabourQueryService
 from src.labour.domain.labour.exceptions import (
@@ -31,13 +32,17 @@ class SubscriptionService:
         self,
         labour_query_service: LabourQueryService,
         subscription_repository: SubscriptionRepository,
+        domain_event_repository: DomainEventRepository,
+        unit_of_work: UnitOfWork,
         token_generator: TokenGenerator,
-        event_producer: EventProducer,
+        domain_event_publisher: DomainEventPublisher,
     ):
         self._labour_query_service = labour_query_service
         self._subscription_repository = subscription_repository
+        self._domain_event_repository = domain_event_repository
+        self._unit_of_work = unit_of_work
         self._token_generator = token_generator
-        self._event_producer = event_producer
+        self._domain_event_publisher = domain_event_publisher
 
     async def subscribe_to(self, subscriber_id: str, labour_id: str, token: str) -> SubscriptionDTO:
         if not self._token_generator.validate(labour_id, token):
@@ -68,9 +73,11 @@ class SubscriptionService:
                 subscriber_id=subscriber_domain_id,
             )
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)
 
@@ -91,9 +98,11 @@ class SubscriptionService:
 
         subscription = UnsubscribeFromService().unsubscribe_from(subscription=subscription)
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)
 

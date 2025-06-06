@@ -90,12 +90,14 @@ class LabourBegunEventHandler(EventHandler):
                     to_user_id=subscriber.id,
                 )
                 notification_event = NotificationRequested.create(
+                    aggregate_id=labour_id,
+                    aggregate_type="labour",
                     data={
                         "channel": method,
                         "destination": destination,
                         "template": self._template.value,
                         "data": notification_data.to_dict(),
                         "metadata": notification_metadata.to_dict(),
-                    }
+                    },
                 )
                 await self._event_producer.publish(event=notification_event)

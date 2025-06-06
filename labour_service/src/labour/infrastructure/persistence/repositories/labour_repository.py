@@ -21,7 +21,6 @@ class SQLAlchemyLabourRepository(LabourRepository):
             labour: The labour to save
         """
         self._session.add(labour)
-        await self._session.commit()
 
     async def delete(self, labour: Labour) -> None:
         """
@@ -31,7 +30,6 @@ class SQLAlchemyLabourRepository(LabourRepository):
             labour: The labour to delete
         """
         await self._session.delete(labour)
-        await self._session.commit()
 
     async def get_by_id(self, labour_id: LabourId) -> Labour | None:
         """

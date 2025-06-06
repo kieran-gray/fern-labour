@@ -22,6 +22,8 @@ def generate_domain_event() -> DomainEvent:
     return DomainEvent(
         id="event_id",
         type="subscriber.approved",
+        aggregate_id="just-metadata",
+        aggregate_type="subscription",
         data={
             "birthing_person_id": BIRTHING_PERSON,
             "subscriber_id": SUBSCRIBER,
