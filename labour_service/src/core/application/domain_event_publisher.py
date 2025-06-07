@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from uuid import uuid4
 
@@ -33,7 +32,6 @@ class DomainEventPublisher:
         log.debug("Publishing domain event batch")
         async with self._unit_of_work:
             domain_events = await self._domain_event_repository.get_unpublished()
-            await asyncio.sleep(5)
             if not domain_events:
                 log.info("No domain events to publish.")
                 return
