@@ -29,7 +29,6 @@ class DomainEventPublisher:
         )
 
     async def publish_batch(self) -> None:
-        log.debug("Publishing domain event batch")
         async with self._unit_of_work:
             domain_events = await self._domain_event_repository.get_unpublished()
             if not domain_events:
@@ -39,7 +38,6 @@ class DomainEventPublisher:
             result = await self._event_producer.publish_batch(events=domain_events)
 
             log.info(f"{len(result.success_ids)} domain events successfully published.")
-            log.info(f"Published ids: {result.success_ids}")
 
             await self._domain_event_repository.mark_many_as_published(
                 domain_event_ids=result.success_ids
