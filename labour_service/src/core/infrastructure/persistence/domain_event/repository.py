@@ -12,6 +12,12 @@ class SQLAlchemyDomainEventRepository(DomainEventRepository):
     def __init__(self, session: AsyncSession):
         self._session = session
 
+    async def commit(self) -> None:
+        """
+        Commit changes to the aggregate.
+        """
+        await self._session.commit()
+
     async def save(self, domain_event: DomainEvent) -> None:
         """
         Save or update a domain event.

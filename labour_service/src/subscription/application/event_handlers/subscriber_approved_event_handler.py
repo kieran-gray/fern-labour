@@ -4,11 +4,12 @@ from typing import Any
 
 from fern_labour_core.events.event import DomainEvent
 from fern_labour_core.events.event_handler import EventHandler
-from fern_labour_core.events.producer import EventProducer
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.events import NotificationRequested
 from fern_labour_notifications_shared.notification_data import SubscriberApprovedData
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.subscription.domain.enums import ContactMethod
 from src.user.application.dtos.user import UserDTO
 from src.user.application.services.user_query_service import UserQueryService
@@ -36,11 +37,13 @@ class SubscriberApprovedEventHandler(EventHandler):
     def __init__(
         self,
         user_service: UserQueryService,
-        event_producer: EventProducer,
+        domain_event_repository: DomainEventRepository,
+        domain_event_publisher: DomainEventPublisher,
         tracking_link: str,
     ):
         self._user_service = user_service
-        self._event_producer = event_producer
+        self._domain_event_repository = domain_event_repository
+        self._domain_event_publisher = domain_event_publisher
         self._tracking_link = tracking_link
         self._template = NotificationTemplate.SUBSCRIBER_APPROVED
 
@@ -79,4 +82,11 @@ class SubscriberApprovedEventHandler(EventHandler):
                 "metadata": notification_metadata.to_dict(),
             },
         )
-        await self._event_producer.publish(event=notification_event)
+        await self._domain_event_repository.save(domain_event=notification_event)
+
+        await self._domain_event_repository.commit()
+
+        try:
+            await self._domain_event_publisher.publish_batch()
+        except Exception as err:
+            log.error(f"Error creating background publishing job: {err}")

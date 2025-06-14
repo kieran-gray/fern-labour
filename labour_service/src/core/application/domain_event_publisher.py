@@ -2,9 +2,9 @@ import logging
 from uuid import uuid4
 
 from fern_labour_core.events.producer import EventProducer
+from fern_labour_core.unit_of_work import UnitOfWork
 
 from src.core.application.task_manager import TaskManager
-from src.core.application.unit_of_work import UnitOfWork
 from src.core.domain.domain_event.repository import DomainEventRepository
 
 log = logging.getLogger(__name__)

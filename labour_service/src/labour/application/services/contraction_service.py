@@ -2,8 +2,9 @@ import logging
 from datetime import datetime
 from uuid import UUID
 
+from fern_labour_core.unit_of_work import UnitOfWork
+
 from src.core.application.domain_event_publisher import DomainEventPublisher
-from src.core.application.unit_of_work import UnitOfWork
 from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.domain.contraction.exceptions import ContractionIdInvalid

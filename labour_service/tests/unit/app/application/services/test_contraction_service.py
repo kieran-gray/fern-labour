@@ -3,9 +3,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
+from fern_labour_core.unit_of_work import UnitOfWork
 
 from src.core.application.domain_event_publisher import DomainEventPublisher
-from src.core.application.unit_of_work import UnitOfWork
 from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.services.contraction_service import ContractionService

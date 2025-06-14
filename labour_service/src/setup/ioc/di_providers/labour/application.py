@@ -1,9 +1,9 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
+from fern_labour_core.unit_of_work import UnitOfWork
 
 from src.core.application.domain_event_publisher import DomainEventPublisher
-from src.core.application.unit_of_work import UnitOfWork
 from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.security.labour_authorization_service import LabourAuthorizationService
 from src.labour.application.services.contraction_service import ContractionService

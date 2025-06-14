@@ -2,9 +2,8 @@ import logging
 from types import TracebackType
 from typing import Self
 
+from fern_labour_core.unit_of_work import UnitOfWork
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.core.application.unit_of_work import UnitOfWork
 
 log = logging.getLogger(__name__)
 

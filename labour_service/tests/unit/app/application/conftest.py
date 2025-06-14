@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 from fern_labour_core.events.event import DomainEvent
+from fern_labour_core.unit_of_work import UnitOfWork
 
 from src.core.application.domain_event_publisher import DomainEventPublisher
-from src.core.application.unit_of_work import UnitOfWork
 from src.core.domain.domain_event.repository import DomainEventRepository
 from src.core.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.core.infrastructure.security.rate_limiting.in_memory import InMemoryRateLimiter
@@ -178,6 +178,9 @@ class MockSubscriptionRepository(SubscriptionRepository):
 class MockDomainEventRepository(DomainEventRepository):
     _data: dict[str, tuple[DomainEvent, datetime | None]] = {}
     _changes: dict[str, tuple[DomainEvent, datetime | None]] = {}
+
+    async def commit(self) -> None:
+        self._data.update(self._changes)
 
     async def save(self, domain_event: DomainEvent) -> None:
         self._changes[domain_event.id] = (domain_event, None)

@@ -6,6 +6,11 @@ from fern_labour_core.events.event import DomainEvent
 class DomainEventRepository(Protocol):
     """Repository interface for Domain Events"""
 
+    async def commit(self) -> None:
+        """
+        Commit changes to the aggregate.
+        """
+
     async def save(self, domain_event: DomainEvent) -> None:
         """
         Save or update a domain event.

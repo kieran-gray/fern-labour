@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock
 
 import pytest_asyncio
 from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
+from fern_labour_core.unit_of_work import UnitOfWork
 
 from src.core.application.domain_event_publisher import DomainEventPublisher
-from src.core.application.unit_of_work import UnitOfWork
 from src.core.domain.domain_event.repository import DomainEventRepository
 from src.core.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.setup.background_tasks.background_worker import BackgroundWorker

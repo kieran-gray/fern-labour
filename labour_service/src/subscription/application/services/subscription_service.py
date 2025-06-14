@@ -1,8 +1,9 @@
 import logging
 from uuid import UUID
 
+from fern_labour_core.unit_of_work import UnitOfWork
+
 from src.core.application.domain_event_publisher import DomainEventPublisher
-from src.core.application.unit_of_work import UnitOfWork
 from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_query_service import LabourQueryService

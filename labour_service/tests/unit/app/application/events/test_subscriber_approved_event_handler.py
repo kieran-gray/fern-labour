@@ -1,11 +1,12 @@
+import logging
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
+import pytest
 import pytest_asyncio
 from fern_labour_core.events.event import DomainEvent
-from fern_labour_notifications_shared.enums import NotificationChannel
-from fern_labour_notifications_shared.events import NotificationRequested
 
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.subscription.application.event_handlers.mapping import SUBSCRIPTION_EVENT_HANDLER_MAPPING
 from src.subscription.application.event_handlers.subscriber_approved_event_handler import (
     SubscriberApprovedEventHandler,
@@ -13,6 +14,7 @@ from src.subscription.application.event_handlers.subscriber_approved_event_handl
 from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.entity import User
 from src.user.domain.value_objects.user_id import UserId
+from tests.unit.app.application.events.conftest import has_sent_email
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"
@@ -34,17 +36,10 @@ def generate_domain_event() -> DomainEvent:
     )
 
 
-def has_sent_email(event_handler: SubscriberApprovedEventHandler) -> bool:
-    for call in event_handler._event_producer.publish.mock_calls:
-        event: NotificationRequested = call.kwargs["event"]
-        if event.data["channel"] == NotificationChannel.EMAIL.value:
-            return True
-    return False
-
-
 @pytest_asyncio.fixture
 async def subscriber_approved_event_handler(
     user_service: UserQueryService,
+    domain_event_repo: DomainEventRepository,
 ) -> SubscriberApprovedEventHandler:
     await user_service._user_repository.save(
         User(
@@ -67,7 +62,8 @@ async def subscriber_approved_event_handler(
     )
     return SubscriberApprovedEventHandler(
         user_service=user_service,
-        event_producer=AsyncMock(),
+        domain_event_repository=domain_event_repo,
+        domain_event_publisher=AsyncMock(),
         tracking_link="http://localhost:5173",
     )
 
@@ -78,6 +74,23 @@ async def test_subscriber_approved_event_handler(
     event = generate_domain_event()
     await subscriber_approved_event_handler.handle(event.to_dict())
     assert has_sent_email(subscriber_approved_event_handler)
+
+
+async def test_subscriber_approved_publish_error(
+    subscriber_approved_event_handler: SubscriberApprovedEventHandler,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    event = generate_domain_event()
+
+    publish_mock = AsyncMock()
+    publish_mock.side_effect = Exception()
+    subscriber_approved_event_handler._domain_event_publisher.publish_batch = publish_mock
+
+    with caplog.at_level(logging.ERROR):
+        await subscriber_approved_event_handler.handle(event.to_dict())
+
+    assert has_sent_email(subscriber_approved_event_handler)
+    assert "Error creating background publishing job" in caplog.text
 
 
 def test_mapping():

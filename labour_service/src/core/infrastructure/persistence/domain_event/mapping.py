@@ -1,4 +1,5 @@
 from fern_labour_core.events.event import DomainEvent
+from fern_labour_notifications_shared.events import NotificationRequested
 
 from src.core.infrastructure.persistence.domain_event.table import domain_events_table
 from src.core.infrastructure.persistence.orm_registry import mapper_registry
@@ -54,4 +55,9 @@ def map_domain_events_table() -> None:
         SubscriberRequested,
         inherits=domain_event_mapper,
         polymorphic_identity="subscriber.requested",
+    )
+    mapper_registry.map_imperatively(
+        NotificationRequested,
+        inherits=domain_event_mapper,
+        polymorphic_identity="notification.requested",
     )

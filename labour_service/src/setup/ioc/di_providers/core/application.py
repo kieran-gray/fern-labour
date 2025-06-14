@@ -4,10 +4,10 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 from fern_labour_core.events.producer import EventProducer
+from fern_labour_core.unit_of_work import UnitOfWork
 
 from src.core.application.domain_event_publisher import DomainEventPublisher
 from src.core.application.task_manager import TaskManager
-from src.core.application.unit_of_work import UnitOfWork
 from src.core.domain.domain_event.repository import DomainEventRepository
 from src.core.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.setup.ioc.di_component_enum import ComponentEnum
