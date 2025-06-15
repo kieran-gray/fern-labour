@@ -21,12 +21,14 @@ class MockConfigReader(ConfigReader):
                     "KEYCLOAK_REALM": "test",
                     "KEYCLOAK_CLIENT_ID": "test_client",
                     "KEYCLOAK_CLIENT_SECRET": "ABC123",
-                    "KEYCLOAK_ADMIN": "user",
-                    "KEYCLOAK_ADMIN_PASSWORD": "pass",
                 },
                 "cloudflare": {
                     "CLOUDFLARE_URL": "test",
                     "CLOUDFLARE_SECRET_KEY": "secret",
+                },
+                "user_management": {
+                    "USER_MANAGEMENT_SERVICE_CLIENT_ID": "test",
+                    "USER_MANAGEMENT_SERVICE_CLIENT_SECRET": "secret",
                 },
             },
             "logging": {

@@ -33,6 +33,10 @@ class MockConfigReader(ConfigReader):
                     "SUBSCRIBER_INVITE_RATE_LIMIT": 20,
                     "SUBSCRIBER_INVITE_RATE_LIMIT_EXPIRY": 86400,
                 },
+                "user_management": {
+                    "USER_MANAGEMENT_SERVICE_CLIENT_ID": "test",
+                    "USER_MANAGEMENT_SERVICE_CLIENT_SECRET": "secret",
+                },
             },
             "logging": {
                 "LOG_LEVEL": "WARNING",

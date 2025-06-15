@@ -20,9 +20,8 @@ class UserInfrastructureProvider(Provider):
         return KeycloakAdmin(
             server_url=settings.security.keycloak.server_url,
             realm_name=settings.security.keycloak.realm,
-            username=settings.security.keycloak.admin_username,
-            password=settings.security.keycloak.admin_password,
-            client_id="admin-cli",
+            client_id=settings.security.user_management.client_id,
+            client_secret_key=settings.security.user_management.client_secret,
             verify=True,
         )
 
