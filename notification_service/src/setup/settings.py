@@ -21,8 +21,11 @@ class KeycloakSettings(BaseModel):
     realm: str = Field(alias="KEYCLOAK_REALM")
     client_id: str = Field(alias="KEYCLOAK_CLIENT_ID")
     client_secret: str = Field(alias="KEYCLOAK_CLIENT_SECRET")
-    admin_username: str = Field(alias="KEYCLOAK_ADMIN")
-    admin_password: str = Field(alias="KEYCLOAK_ADMIN_PASSWORD")
+
+
+class UserManagementSettings(BaseModel):
+    client_id: str = Field(alias="USER_MANAGEMENT_SERVICE_CLIENT_ID")
+    client_secret: str = Field(alias="USER_MANAGEMENT_SERVICE_CLIENT_SECRET")
 
 
 class CORSSettings(BaseModel):
@@ -38,6 +41,7 @@ class CORSSettings(BaseModel):
 class SecuritySettings(BaseModel):
     cors: CORSSettings
     keycloak: KeycloakSettings
+    user_management: UserManagementSettings
 
 
 class LoggingSettings(BaseModel):

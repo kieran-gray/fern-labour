@@ -10,8 +10,11 @@ KEYCLOAK_DOCKER_URL = "http://keycloak:8080"
 KEYCLOAK_REALM  = "labour_tracker"
 KEYCLOAK_CLIENT_ID  = "labour_tracker_backend"
 KEYCLOAK_CLIENT_SECRET  = "changeme"
-KEYCLOAK_ADMIN = ""
-KEYCLOAK_ADMIN_PASSWORD = ""
+
+
+[security.user_management]
+USER_MANAGEMENT_SERVICE_CLIENT_ID = "user-management-service"
+USER_MANAGEMENT_SERVICE_CLIENT_SECRET = ""
 
 
 [security.subscriber_token]
