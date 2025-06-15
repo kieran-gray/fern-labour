@@ -1,8 +1,10 @@
 import logging
 from uuid import UUID
 
-from fern_labour_core.events.producer import EventProducer
+from fern_labour_core.unit_of_work import UnitOfWork
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.subscription.application.dtos import SubscriptionDTO
 from src.subscription.application.security.subscription_authorization_service import (
     SubscriptionAuthorizationService,
@@ -33,12 +35,16 @@ class SubscriptionManagementService:
     def __init__(
         self,
         subscription_repository: SubscriptionRepository,
+        domain_event_repository: DomainEventRepository,
+        unit_of_work: UnitOfWork,
         subscription_authorization_service: SubscriptionAuthorizationService,
-        event_producer: EventProducer,
+        domain_event_publisher: DomainEventPublisher,
     ):
         self._subscription_repository = subscription_repository
+        self._domain_event_repository = domain_event_repository
+        self._unit_of_work = unit_of_work
         self._subscription_authorization_service = subscription_authorization_service
-        self._event_producer = event_producer
+        self._domain_event_publisher = domain_event_publisher
 
     async def _get_subscription(self, subscription_id: str) -> Subscription:
         try:
@@ -61,9 +67,11 @@ class SubscriptionManagementService:
 
         subscription = ApproveSubscriberService().approve_subscriber(subscription=subscription)
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)
 
@@ -76,9 +84,11 @@ class SubscriptionManagementService:
 
         subscription = RemoveSubscriberService().remove_subscriber(subscription=subscription)
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)
 
@@ -91,9 +101,11 @@ class SubscriptionManagementService:
 
         subscription = BlockSubscriberService().block_subscriber(subscription=subscription)
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)
 
@@ -106,9 +118,11 @@ class SubscriptionManagementService:
 
         subscription = UnblockSubscriberService().unblock_subscriber(subscription=subscription)
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)
 
@@ -128,9 +142,11 @@ class SubscriptionManagementService:
 
         subscription.update_role(new_role)
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)
 
@@ -154,9 +170,11 @@ class SubscriptionManagementService:
             subscription=subscription, contact_methods=new_contact_methods
         )
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)
 
@@ -170,8 +188,10 @@ class SubscriptionManagementService:
 
         subscription.update_access_level(access_level=domain_access_level)
 
-        await self._subscription_repository.save(subscription)
+        async with self._unit_of_work:
+            await self._subscription_repository.save(subscription)
+            await self._domain_event_repository.save_many(subscription.clear_domain_events())
 
-        await self._event_producer.publish_batch(subscription.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
         return SubscriptionDTO.from_domain(subscription)

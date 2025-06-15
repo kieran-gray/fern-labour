@@ -1,8 +1,9 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
-from fern_labour_core.events.producer import EventProducer
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import Settings
 from src.subscription.application.event_handlers.subscriber_approved_event_handler import (
@@ -22,12 +23,18 @@ class SubscriptionEventsApplicationProvider(Provider):
     def get_subscriber_approved_event_handler(
         self,
         user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
-        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+        domain_event_repository: Annotated[
+            DomainEventRepository, FromComponent(ComponentEnum.DEFAULT)
+        ],
+        domain_event_publisher: Annotated[
+            DomainEventPublisher, FromComponent(ComponentEnum.DEFAULT)
+        ],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> SubscriberApprovedEventHandler:
         return SubscriberApprovedEventHandler(
             user_service=user_service,
-            event_producer=event_producer,
+            domain_event_repository=domain_event_repository,
+            domain_event_publisher=domain_event_publisher,
             tracking_link=settings.security.cors.frontend_host,
         )
 
@@ -35,11 +42,17 @@ class SubscriptionEventsApplicationProvider(Provider):
     def get_subscriber_requested_event_handler(
         self,
         user_service: Annotated[UserQueryService, FromComponent(ComponentEnum.USER)],
-        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+        domain_event_repository: Annotated[
+            DomainEventRepository, FromComponent(ComponentEnum.DEFAULT)
+        ],
+        domain_event_publisher: Annotated[
+            DomainEventPublisher, FromComponent(ComponentEnum.DEFAULT)
+        ],
         settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
     ) -> SubscriberRequestedEventHandler:
         return SubscriberRequestedEventHandler(
             user_service=user_service,
-            event_producer=event_producer,
+            domain_event_repository=domain_event_repository,
+            domain_event_publisher=domain_event_publisher,
             tracking_link=settings.security.cors.frontend_host,
         )

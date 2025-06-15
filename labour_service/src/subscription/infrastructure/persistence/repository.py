@@ -24,7 +24,6 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             subscription: The subscription to save
         """
         self._session.add(subscription)
-        await self._session.commit()
 
     async def delete(self, subscription: Subscription) -> None:
         """
@@ -34,7 +33,6 @@ class SQLAlchemySubscriptionRepository(SubscriptionRepository):
             subscription: The subscription to delete
         """
         await self._session.delete(subscription)
-        await self._session.commit()
 
     async def filter(
         self,

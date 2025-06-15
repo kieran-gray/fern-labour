@@ -91,12 +91,14 @@ class LabourInviteService:
             from_user_id=birthing_person_id,
         )
         notification_event = NotificationRequested.create(
+            aggregate_id=labour_id,
+            aggregate_type="labour",
             data={
                 "channel": ContactMethod.EMAIL,
                 "destination": invite_email,
                 "template": self._template.value,
                 "data": notification_data.to_dict(),
                 "metadata": notification_metadata.to_dict(),
-            }
+            },
         )
         await self._event_producer.publish(event=notification_event)

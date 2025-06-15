@@ -4,8 +4,10 @@ from uuid import uuid4
 
 import pytest
 import pytest_asyncio
-from fern_labour_core.events.producer import EventProducer
+from fern_labour_core.unit_of_work import UnitOfWork
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.exceptions import InvalidLabourUpdateRequest
 from src.labour.application.services.contraction_service import ContractionService
@@ -40,9 +42,11 @@ def event_producer():
 
 @pytest_asyncio.fixture
 async def labour_service(
-    labour_repo: LabourRepository,
     user_service: UserQueryService,
-    event_producer: EventProducer,
+    labour_repo: LabourRepository,
+    domain_event_repo: DomainEventRepository,
+    unit_of_work: UnitOfWork,
+    domain_event_publisher: DomainEventPublisher,
 ) -> LabourService:
     user_service._user_repository._data = {
         BIRTHING_PERSON: User(
@@ -62,7 +66,9 @@ async def labour_service(
     }
     return LabourService(
         labour_repository=labour_repo,
-        event_producer=event_producer,
+        domain_event_repository=domain_event_repo,
+        unit_of_work=unit_of_work,
+        domain_event_publisher=domain_event_publisher,
     )
 
 

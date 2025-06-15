@@ -1,4 +1,7 @@
-__all__ = ("alembic_postgresql_enum",)
+__all__ = (
+    "alembic_postgresql_enum",
+    "idempotency_table",
+)
 import asyncio
 import os
 from logging.config import fileConfig
@@ -9,6 +12,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from src.core.infrastructure.persistence.idempotency import table as idempotency_table
 from src.core.infrastructure.persistence.initialize_mapping import map_all
 from src.core.infrastructure.persistence.orm_registry import mapper_registry
 

@@ -3,7 +3,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
+from fern_labour_core.unit_of_work import UnitOfWork
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.services.contraction_service import ContractionService
 from src.labour.application.services.labour_service import LabourService
@@ -30,6 +33,9 @@ def event_producer():
 async def contraction_service(
     labour_repo: LabourRepository,
     user_service: UserQueryService,
+    domain_event_repo: DomainEventRepository,
+    unit_of_work: UnitOfWork,
+    domain_event_publisher: DomainEventPublisher,
 ) -> ContractionService:
     user_service._user_repository._data = {
         BIRTHING_PERSON: User(
@@ -47,7 +53,12 @@ async def contraction_service(
             email="test@smith.com",
         ),
     }
-    return ContractionService(labour_repository=labour_repo)
+    return ContractionService(
+        labour_repository=labour_repo,
+        domain_event_repository=domain_event_repo,
+        unit_of_work=unit_of_work,
+        domain_event_publisher=domain_event_publisher,
+    )
 
 
 @pytest_asyncio.fixture

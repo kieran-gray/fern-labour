@@ -1,10 +1,12 @@
 from datetime import UTC, datetime
-from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from fern_labour_core.unit_of_work import UnitOfWork
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.security.token_generator import TokenGenerator
 from src.labour.application.services.labour_query_service import LabourQueryService
@@ -45,7 +47,10 @@ async def subscription_service(
     labour_query_service: LabourQueryService,
     user_service: UserQueryService,
     subscription_repo: SubscriptionRepository,
+    domain_event_repo: DomainEventRepository,
+    unit_of_work: UnitOfWork,
     token_generator: TokenGenerator,
+    domain_event_publisher: DomainEventPublisher,
 ) -> SubscriptionService:
     await user_service._user_repository.save(
         User(
@@ -69,8 +74,10 @@ async def subscription_service(
     return SubscriptionService(
         labour_query_service=labour_query_service,
         subscription_repository=subscription_repo,
+        domain_event_repository=domain_event_repo,
+        unit_of_work=unit_of_work,
         token_generator=token_generator,
-        event_producer=AsyncMock(),
+        domain_event_publisher=domain_event_publisher,
     )
 
 

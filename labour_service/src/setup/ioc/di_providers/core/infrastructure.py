@@ -2,6 +2,8 @@ import logging
 from collections.abc import AsyncIterable
 
 from dishka import Provider, Scope, provide
+from fern_labour_core.unit_of_work import UnitOfWork
+from fern_labour_pub_sub.idempotency_store import IdempotencyStore
 from keycloak import KeycloakOpenID
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -10,6 +12,12 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from src.core.domain.domain_event.repository import DomainEventRepository
+from src.core.infrastructure.persistence.domain_event.repository import (
+    SQLAlchemyDomainEventRepository,
+)
+from src.core.infrastructure.persistence.idempotency.store import SQLAlchemyIdempotencyStore
+from src.core.infrastructure.persistence.unit_of_work import SQLAlchemyUnitOfWork
 from src.core.infrastructure.security.rate_limiting.in_memory import InMemoryRateLimiter
 from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
 from src.setup.ioc.di_component_enum import ComponentEnum
@@ -73,6 +81,10 @@ class CommonInfrastructureProvider(Provider):
             log.debug("Closing async session.")
         log.debug("Async session closed for '%s'.", self.component)
 
+    @provide(scope=Scope.REQUEST)
+    async def provide_unit_of_work(self, async_session: AsyncSession) -> UnitOfWork:
+        return SQLAlchemyUnitOfWork(session=async_session)
+
     @provide
     def provide_auth_client(self, settings: Settings) -> KeycloakOpenID:
         return KeycloakOpenID(
@@ -94,3 +106,11 @@ class CommonInfrastructureProvider(Provider):
     @provide
     def provide_rate_limiter(self) -> RateLimiter:
         return InMemoryRateLimiter()
+
+    @provide(scope=Scope.REQUEST)
+    def provide_domain_event_repository(self, async_session: AsyncSession) -> DomainEventRepository:
+        return SQLAlchemyDomainEventRepository(session=async_session)
+
+    @provide(scope=Scope.REQUEST)
+    def provide_idempotency_store(self, async_session: AsyncSession) -> IdempotencyStore:
+        return SQLAlchemyIdempotencyStore(session=async_session)

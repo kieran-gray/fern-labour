@@ -1,8 +1,15 @@
+from datetime import UTC, datetime
+from typing import Self
 from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
+from fern_labour_core.events.event import DomainEvent
+from fern_labour_core.unit_of_work import UnitOfWork
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
+from src.core.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.core.infrastructure.security.rate_limiting.in_memory import InMemoryRateLimiter
 from src.core.infrastructure.security.rate_limiting.interface import RateLimiter
 from src.labour.application.security.token_generator import TokenGenerator
@@ -54,12 +61,13 @@ class MockUserRepository(UserRepository):
 
 class MockLabourRepository(LabourRepository):
     _data = {}
+    _changes = {}
 
     async def save(self, labour: Labour) -> None:
-        self._data[labour.id_.value] = labour
+        self._changes[labour.id_.value] = labour
 
     async def delete(self, labour: Labour) -> None:
-        self._data.pop(labour.id_.value)
+        self._changes.pop(labour.id_.value)
 
     async def get_by_id(self, labour_id: LabourId) -> Labour | None:
         return self._data.get(labour_id.value, None)
@@ -100,12 +108,13 @@ class MockLabourRepository(LabourRepository):
 
 class MockSubscriptionRepository(SubscriptionRepository):
     _data: dict[str, Subscription] = {}
+    _changes: dict[str, Subscription] = {}
 
     async def save(self, subscription: Subscription) -> None:
-        self._data[subscription.id_.value] = subscription
+        self._changes[subscription.id_.value] = subscription
 
     async def delete(self, subscription: Subscription) -> None:
-        self._data.pop(subscription.id_.value)
+        self._changes.pop(subscription.id_.value)
 
     async def get_by_id(self, subscription_id: SubscriptionId) -> Subscription | None:
         return self._data.get(subscription_id.value, None)
@@ -166,6 +175,36 @@ class MockSubscriptionRepository(SubscriptionRepository):
         return found_subscription
 
 
+class MockDomainEventRepository(DomainEventRepository):
+    _data: dict[str, tuple[DomainEvent, datetime | None]] = {}
+    _changes: dict[str, tuple[DomainEvent, datetime | None]] = {}
+
+    async def commit(self) -> None:
+        self._data.update(self._changes)
+
+    async def save(self, domain_event: DomainEvent) -> None:
+        self._changes[domain_event.id] = (domain_event, None)
+
+    async def save_many(self, domain_events: list[DomainEvent]):
+        for domain_event in domain_events:
+            self._changes[domain_event.id] = (domain_event, None)
+
+    async def get_unpublished(self, limit=100) -> list[DomainEvent]:
+        unpublished = []
+        for domain_event, published in self._changes.values():
+            if not published:
+                unpublished.append(domain_event)
+        return unpublished
+
+    async def mark_as_published(self, domain_event_id: str) -> None:
+        domain_event = self._changes.get(domain_event_id)
+        domain_event[1] = datetime.now(UTC)
+
+    async def mark_many_as_published(self, domain_event_ids: list[str]) -> None:
+        for domain_event_id in domain_event_ids:
+            self.mark_as_published(domain_event_id)
+
+
 @pytest_asyncio.fixture
 async def user_repo() -> UserRepository:
     repo = MockUserRepository()
@@ -177,6 +216,7 @@ async def user_repo() -> UserRepository:
 async def labour_repo() -> LabourRepository:
     repo = MockLabourRepository()
     repo._data = {}
+    repo._changes = {}
     return repo
 
 
@@ -184,7 +224,56 @@ async def labour_repo() -> LabourRepository:
 async def subscription_repo() -> SubscriptionRepository:
     repo = MockSubscriptionRepository()
     repo._data = {}
+    repo._changes = {}
     return repo
+
+
+@pytest_asyncio.fixture
+async def domain_event_repo() -> DomainEventRepository:
+    repo = MockDomainEventRepository()
+    repo._data = {}
+    repo._changes = {}
+    return repo
+
+
+class MockUnitOfWork(UnitOfWork):
+    def __init__(self, repositories) -> None:
+        self._repositories: list = repositories
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb,
+    ) -> None:
+        try:
+            if exc_type is not None:
+                await self.rollback()
+            else:
+                await self.commit()
+        except Exception:
+            raise
+        return None
+
+    async def commit(self) -> None:
+        for repository in self._repositories:
+            repository._data.update(repository._changes)
+
+    async def rollback(self) -> None:
+        for repository in self._repositories:
+            repository._changes = {}
+
+
+@pytest_asyncio.fixture
+async def unit_of_work(
+    labour_repo: LabourRepository,
+    domain_event_repo: DomainEventRepository,
+    subscription_repo: SubscriptionRepository,
+) -> UnitOfWork:
+    return MockUnitOfWork(repositories=[labour_repo, domain_event_repo, subscription_repo])
 
 
 class MockTokenGenerator(TokenGenerator):
@@ -206,6 +295,18 @@ def rate_limiter() -> RateLimiter:
 
 
 @pytest_asyncio.fixture
+async def domain_event_publisher(
+    domain_event_repo: DomainEventRepository, unit_of_work: UnitOfWork
+) -> DomainEventPublisher:
+    return DomainEventPublisher(
+        domain_event_repository=domain_event_repo,
+        unit_of_work=unit_of_work,
+        event_producer=AsyncMock(),
+        task_manager=AsyncioTaskManager(),
+    )
+
+
+@pytest_asyncio.fixture
 async def user_service(user_repo: UserRepository) -> UserQueryService:
     return UserQueryService(user_repository=user_repo)
 
@@ -213,18 +314,31 @@ async def user_service(user_repo: UserRepository) -> UserQueryService:
 @pytest_asyncio.fixture
 async def labour_service(
     labour_repo: LabourRepository,
+    domain_event_repo: DomainEventRepository,
+    unit_of_work: UnitOfWork,
+    domain_event_publisher: DomainEventPublisher,
 ) -> LabourService:
     return LabourService(
         labour_repository=labour_repo,
-        event_producer=AsyncMock(),
+        domain_event_repository=domain_event_repo,
+        unit_of_work=unit_of_work,
+        domain_event_publisher=domain_event_publisher,
     )
 
 
 @pytest_asyncio.fixture
 async def contraction_service(
     labour_repo: LabourRepository,
+    domain_event_repo: DomainEventRepository,
+    unit_of_work: UnitOfWork,
+    domain_event_publisher: DomainEventPublisher,
 ) -> ContractionService:
-    return ContractionService(labour_repository=labour_repo)
+    return ContractionService(
+        labour_repository=labour_repo,
+        domain_event_repository=domain_event_repo,
+        unit_of_work=unit_of_work,
+        domain_event_publisher=domain_event_publisher,
+    )
 
 
 @pytest_asyncio.fixture
@@ -247,13 +361,18 @@ async def subscription_authorization_service(
 async def subscription_service(
     labour_query_service: LabourQueryService,
     subscription_repo: SubscriptionRepository,
+    domain_event_repo: DomainEventRepository,
+    unit_of_work: UnitOfWork,
     token_generator: TokenGenerator,
+    domain_event_publisher: DomainEventPublisher,
 ) -> SubscriptionService:
     return SubscriptionService(
         labour_query_service=labour_query_service,
         subscription_repository=subscription_repo,
+        domain_event_repository=domain_event_repo,
+        unit_of_work=unit_of_work,
         token_generator=token_generator,
-        event_producer=AsyncMock(),
+        domain_event_publisher=domain_event_publisher,
     )
 
 
@@ -271,10 +390,15 @@ async def subscription_query_service(
 @pytest_asyncio.fixture
 async def subscription_management_service(
     subscription_repo: SubscriptionRepository,
+    domain_event_repo: DomainEventRepository,
+    unit_of_work: UnitOfWork,
     subscription_authorization_service: SubscriptionAuthorizationService,
+    domain_event_publisher: DomainEventPublisher,
 ) -> SubscriptionManagementService:
     return SubscriptionManagementService(
         subscription_repository=subscription_repo,
+        domain_event_repository=domain_event_repo,
+        unit_of_work=unit_of_work,
         subscription_authorization_service=subscription_authorization_service,
-        event_producer=AsyncMock(),
+        domain_event_publisher=domain_event_publisher,
     )

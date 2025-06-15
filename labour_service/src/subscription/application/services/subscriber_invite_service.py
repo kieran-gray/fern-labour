@@ -62,12 +62,14 @@ class SubscriberInviteService:
         notification_data = self._generate_notification_data(subscriber=subscriber)
         notification_metadata = SubscriberInviteNotificationMetadata(from_user_id=subscriber_id)
         notification_event = NotificationRequested.create(
+            aggregate_id=subscriber_id,
+            aggregate_type="user",
             data={
                 "channel": ContactMethod.EMAIL.value,
                 "destination": invite_email,
                 "template": self._template.value,
                 "data": notification_data.to_dict(),
                 "metadata": notification_metadata.to_dict(),
-            }
+            },
         )
         await self._event_producer.publish(event=notification_event)

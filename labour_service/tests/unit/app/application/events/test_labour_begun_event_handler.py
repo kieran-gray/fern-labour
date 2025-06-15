@@ -5,9 +5,8 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 from fern_labour_core.events.event import DomainEvent
-from fern_labour_notifications_shared.enums import NotificationChannel
-from fern_labour_notifications_shared.events import NotificationRequested
 
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.labour.application.dtos.labour import LabourDTO
 from src.labour.application.event_handlers.labour_begun_event_handler import LabourBegunEventHandler
 from src.labour.application.services.labour_service import LabourService
@@ -24,6 +23,7 @@ from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.entity import User
 from src.user.domain.exceptions import UserNotFoundById
 from src.user.domain.value_objects.user_id import UserId
+from tests.unit.app.application.events.conftest import has_sent_email, has_sent_sms
 
 BIRTHING_PERSON = "test_birthing_person_id"
 SUBSCRIBER = "test_subscriber_id"
@@ -33,30 +33,17 @@ def generate_domain_event(birthing_person_id: str, labour_id: str) -> DomainEven
     return DomainEvent(
         id="event_id",
         type="labour.begun",
+        aggregate_id=labour_id,
+        aggregate_type="labour",
         data={"birthing_person_id": birthing_person_id, "labour_id": labour_id},
         time=datetime.now(UTC),
     )
 
 
-def has_sent_email(event_handler: LabourBegunEventHandler) -> bool:
-    for call in event_handler._event_producer.publish.mock_calls:
-        event: NotificationRequested = call.kwargs["event"]
-        if event.data["channel"] == NotificationChannel.EMAIL.value:
-            return True
-    return False
-
-
-def has_sent_sms(event_handler: LabourBegunEventHandler) -> bool:
-    for call in event_handler._event_producer.publish.mock_calls:
-        event: NotificationRequested = call.kwargs["event"]
-        if event.data["channel"] == NotificationChannel.SMS.value:
-            return True
-    return False
-
-
 @pytest_asyncio.fixture
 async def labour_begun_event_handler(
     user_service: UserQueryService,
+    domain_event_repo: DomainEventRepository,
     subscription_query_service: SubscriptionQueryService,
 ) -> LabourBegunEventHandler:
     await user_service._user_repository.save(
@@ -80,7 +67,8 @@ async def labour_begun_event_handler(
     )
     return LabourBegunEventHandler(
         user_service=user_service,
-        event_producer=AsyncMock(),
+        domain_event_repository=domain_event_repo,
+        domain_event_publisher=AsyncMock(),
         subscription_query_service=subscription_query_service,
         tracking_link="http://localhost:5173",
     )
@@ -290,3 +278,31 @@ async def test_labour_begun_event_basic_subscriber(
     await labour_begun_event_handler.handle(event.to_dict())
     assert not has_sent_email(labour_begun_event_handler)
     assert not has_sent_sms(labour_begun_event_handler)
+
+
+async def test_labour_begun_event_publish_failure(
+    labour_begun_event_handler: LabourBegunEventHandler,
+    subscription_management_service: SubscriptionManagementService,
+    paid_subscription: SubscriptionDTO,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    await subscription_management_service.update_contact_methods(
+        requester_id=paid_subscription.subscriber_id,
+        subscription_id=paid_subscription.id,
+        contact_methods=[ContactMethod.SMS.value, ContactMethod.EMAIL.value],
+    )
+    event = generate_domain_event(
+        birthing_person_id=paid_subscription.birthing_person_id,
+        labour_id=paid_subscription.labour_id,
+    )
+    publish_mock = AsyncMock()
+    publish_mock.side_effect = Exception()
+
+    labour_begun_event_handler._domain_event_publisher.publish_batch = publish_mock
+
+    with caplog.at_level(logging.ERROR):
+        await labour_begun_event_handler.handle(event.to_dict())
+
+    assert has_sent_email(labour_begun_event_handler)
+    assert has_sent_sms(labour_begun_event_handler)
+    assert "Error creating background publishing job" in caplog.text
