@@ -35,8 +35,51 @@ class NotificationRequestedData:
 @dataclass
 class NotificationRequested(DomainEvent):
     @classmethod
-    def create(cls, data: dict[str, Any], event_type: str = "notification.requested") -> Self:
-        return super().create(event_type=event_type, data=data)
+    def create(
+        cls,
+        aggregate_id: str,
+        aggregate_type: str,
+        data: dict[str, Any],
+        event_type: str = "notification.requested",
+    ) -> Self:
+        return super().create(
+            aggregate_id=aggregate_id,
+            aggregate_type=aggregate_type,
+            event_type=event_type,
+            data=data,
+        )
+
+
+@dataclass
+class NotificationCreatedData:
+    notification_id: str
+
+    @classmethod
+    def from_dict(cls, event_data: dict[str, Any]) -> Self:
+        return cls(notification_id=event_data["notification_id"])
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "notification_id": self.notification_id,
+        }
+
+
+@dataclass
+class NotificationCreated(DomainEvent):
+    @classmethod
+    def create(
+        cls,
+        aggregate_id: str,
+        aggregate_type: str,
+        data: dict[str, Any],
+        event_type: str = "notification.created",
+    ) -> Self:
+        return super().create(
+            aggregate_id=aggregate_id,
+            aggregate_type=aggregate_type,
+            event_type=event_type,
+            data=data,
+        )
 
 
 @dataclass
@@ -70,5 +113,16 @@ class NotificationStatusUpdatedData:
 @dataclass
 class NotificationStatusUpdated(DomainEvent):
     @classmethod
-    def create(cls, data: dict[str, Any], event_type: str = "notification.status-updated") -> Self:
-        return super().create(event_type=event_type, data=data)
+    def create(
+        cls,
+        aggregate_id: str,
+        aggregate_type: str,
+        data: dict[str, Any],
+        event_type: str = "notification.status-updated",
+    ) -> Self:
+        return super().create(
+            aggregate_id=aggregate_id,
+            aggregate_type=aggregate_type,
+            event_type=event_type,
+            data=data,
+        )

@@ -4,12 +4,12 @@ from unittest.mock import AsyncMock, patch
 
 from fern_labour_core.events.consumer import EventConsumer
 
-from src.run_consumer import ConsumerRunner, TaskManager
+from src.run_consumer import ConsumerRunner, AsyncioTaskManager
 
 
 async def test_task_manager():
     """Test the TaskManager functionality."""
-    task_manager = TaskManager()
+    task_manager = AsyncioTaskManager()
 
     async def sample_task():
         await asyncio.sleep(0.01)

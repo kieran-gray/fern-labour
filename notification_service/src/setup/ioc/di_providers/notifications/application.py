@@ -1,8 +1,10 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
-from fern_labour_core.events.producer import EventProducer
+from fern_labour_core.unit_of_work import UnitOfWork
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
     SMSNotificationGateway,
@@ -161,13 +163,21 @@ class NotificationsApplicationProvider(Provider):
         notification_router: NotificationRouter,
         notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
-        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+        domain_event_repository: Annotated[
+            DomainEventRepository, FromComponent(ComponentEnum.DEFAULT)
+        ],
+        domain_event_publisher: Annotated[
+            DomainEventPublisher, FromComponent(ComponentEnum.DEFAULT)
+        ],
+        unit_of_work: Annotated[UnitOfWork, FromComponent(ComponentEnum.DEFAULT)],
     ) -> NotificationService:
         return NotificationService(
             notification_router=notification_router,
             notification_generation_service=notification_generation_service,
             notification_repository=notification_repository,
-            event_producer=event_producer,
+            domain_event_repository=domain_event_repository,
+            domain_event_publisher=domain_event_publisher,
+            unit_of_work=unit_of_work,
         )
 
     @provide
@@ -176,11 +186,19 @@ class NotificationsApplicationProvider(Provider):
         notification_service: NotificationService,
         notification_router: NotificationRouter,
         notification_repository: NotificationRepository,
-        event_producer: Annotated[EventProducer, FromComponent(ComponentEnum.EVENTS)],
+        domain_event_repository: Annotated[
+            DomainEventRepository, FromComponent(ComponentEnum.DEFAULT)
+        ],
+        domain_event_publisher: Annotated[
+            DomainEventPublisher, FromComponent(ComponentEnum.DEFAULT)
+        ],
+        unit_of_work: Annotated[UnitOfWork, FromComponent(ComponentEnum.DEFAULT)],
     ) -> NotificationDeliveryService:
         return NotificationDeliveryService(
             notification_service=notification_service,
             notification_router=notification_router,
             notification_repository=notification_repository,
-            event_producer=event_producer,
+            domain_event_repository=domain_event_repository,
+            domain_event_publisher=domain_event_publisher,
+            unit_of_work=unit_of_work,
         )
