@@ -1,7 +1,9 @@
 import logging
 
-from fern_labour_core.events.producer import EventProducer
+from fern_labour_core.unit_of_work import UnitOfWork
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.notification.application.services.notification_router import NotificationRouter
 from src.notification.application.services.notification_service import NotificationService
 from src.notification.domain.enums import NotificationStatus
@@ -20,12 +22,16 @@ class NotificationDeliveryService:
         notification_service: NotificationService,
         notification_router: NotificationRouter,
         notification_repository: NotificationRepository,
-        event_producer: EventProducer,
+        domain_event_repository: DomainEventRepository,
+        domain_event_publisher: DomainEventPublisher,
+        unit_of_work: UnitOfWork,
     ):
         self._notification_service = notification_service
         self._notification_router = notification_router
         self._notification_repository = notification_repository
-        self._event_producer = event_producer
+        self._domain_event_repository = domain_event_repository
+        self._domain_event_publisher = domain_event_publisher
+        self._unit_of_work = unit_of_work
 
     async def update_undelivered_notification_delivery_status(self) -> None:
         undelivered = await self._notification_repository.get_undelivered_notifications()
@@ -45,10 +51,13 @@ class NotificationDeliveryService:
 
             notification.update_status(notification_status)
 
-            await self._notification_repository.save(notification=notification)
+            async with self._unit_of_work:
+                await self._notification_repository.save(notification=notification)
+                await self._domain_event_repository.save_many(notification.clear_domain_events())
+
             log.info(f"Status updated for notification ID {notification.id_}")
 
-            await self._event_producer.publish_batch(notification.clear_domain_events())
+        await self._domain_event_publisher.publish_batch()
 
     async def redact_delivered_notification_body(self, external_id: str, channel: str) -> None:
         gateway = self._notification_router.get_gateway(channel=channel)
@@ -68,6 +77,8 @@ class NotificationDeliveryService:
 
         notification.update_status(notification_status)
 
-        await self._notification_repository.save(notification=notification)
+        async with self._unit_of_work:
+            await self._notification_repository.save(notification=notification)
+            await self._domain_event_repository.save_many(notification.clear_domain_events())
 
-        await self._event_producer.publish_batch(notification.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()

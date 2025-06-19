@@ -56,7 +56,7 @@ SRC_DIR=src
 TEST_DIR=tests
 PYPROJECT_TOML=pyproject.toml
 
-generate-revision:
+revision:
 	POSTGRES_DB=notification_service POSTGRES_HOST=0.0.0.0 PYTHONPATH=. \
 	uv run alembic revision --autogenerate
 

@@ -1,8 +1,6 @@
-from unittest.mock import AsyncMock
 from uuid import UUID
 
 import pytest
-import pytest_asyncio
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import ContactUsData, LabourBegunData
 
@@ -11,7 +9,6 @@ from src.notification.application.interfaces.notification_gateway import Notific
 from src.notification.application.services.notification_delivery_service import (
     NotificationDeliveryService,
 )
-from src.notification.application.services.notification_router import NotificationRouter
 from src.notification.application.services.notification_service import NotificationService
 from src.notification.domain.enums import (
     NotificationChannel,
@@ -21,22 +18,7 @@ from src.notification.domain.exceptions import (
     InvalidNotificationStatus,
     NotificationNotFoundByExternalId,
 )
-from src.notification.domain.repository import NotificationRepository
 from src.notification.domain.value_objects.notification_id import NotificationId
-
-
-@pytest_asyncio.fixture
-async def notification_delivery_service(
-    notification_service: NotificationService,
-    notification_repo: NotificationRepository,
-    notification_router: NotificationRouter,
-) -> NotificationDeliveryService:
-    return NotificationDeliveryService(
-        notification_service=notification_service,
-        notification_router=notification_router,
-        notification_repository=notification_repo,
-        event_producer=AsyncMock(),
-    )
 
 
 async def test_status_callback_updates_status(

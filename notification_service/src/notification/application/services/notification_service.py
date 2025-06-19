@@ -2,9 +2,11 @@ import logging
 from typing import Any
 from uuid import UUID
 
-from fern_labour_core.events.producer import EventProducer
+from fern_labour_core.unit_of_work import UnitOfWork
 from fern_labour_notifications_shared.enums import NotificationTemplate
 
+from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.domain.domain_event.repository import DomainEventRepository
 from src.notification.application.dtos.notification import NotificationDTO
 from src.notification.application.services.notification_generation_service import (
     NotificationGenerationService,
@@ -37,12 +39,16 @@ class NotificationService:
         notification_router: NotificationRouter,
         notification_generation_service: NotificationGenerationService,
         notification_repository: NotificationRepository,
-        event_producer: EventProducer,
+        domain_event_repository: DomainEventRepository,
+        domain_event_publisher: DomainEventPublisher,
+        unit_of_work: UnitOfWork,
     ):
         self._notification_router = notification_router
         self._notification_generation_service = notification_generation_service
         self._notification_repository = notification_repository
-        self._event_producer = event_producer
+        self._domain_event_repository = domain_event_repository
+        self._domain_event_publisher = domain_event_publisher
+        self._unit_of_work = unit_of_work
 
     async def _get_notification(self, notification_id: str) -> Notification:
         try:
@@ -73,9 +79,11 @@ class NotificationService:
 
         notification.update_status(result.status)
 
-        await self._notification_repository.save(notification=notification)
+        async with self._unit_of_work:
+            await self._notification_repository.save(notification=notification)
+            await self._domain_event_repository.save_many(notification.clear_domain_events())
 
-        await self._event_producer.publish_batch(notification.clear_domain_events())
+        self._domain_event_publisher.publish_batch_in_background()
 
     async def create_notification(
         self,
@@ -109,7 +117,12 @@ class NotificationService:
             metadata=metadata,
             status=notification_status,
         )
-        await self._notification_repository.save(notification)
+
+        async with self._unit_of_work:
+            await self._notification_repository.save(notification)
+            await self._domain_event_repository.save_many(notification.clear_domain_events())
+
+        self._domain_event_publisher.publish_batch_in_background()
 
         return NotificationDTO.from_domain(notification)
 

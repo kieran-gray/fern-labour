@@ -2,6 +2,9 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
+from src.notification.application.event_handlers.notification_created_event_handler import (
+    NotificationCreatedEventHandler,
+)
 from src.notification.application.event_handlers.notification_requested_event_handler import (
     NotificationRequestedEventHandler,
 )
@@ -38,3 +41,12 @@ class NotificationEventsApplicationProvider(Provider):
         return NotificationStatusUpdatedEventHandler(
             notification_delivery_service=notification_delivery_service
         )
+
+    @provide
+    def get_notification_created_event_handler(
+        self,
+        notification_service: Annotated[
+            NotificationService, FromComponent(ComponentEnum.NOTIFICATIONS)
+        ],
+    ) -> NotificationCreatedEventHandler:
+        return NotificationCreatedEventHandler(notification_service=notification_service)
