@@ -25,5 +25,7 @@ async def test_can_handle_notification_requested_event(
             email="email@test.com", name="first last", message="message", user_id=""
         ).to_dict(),
     )
-    event = NotificationRequested.create(aggregate_id="test", aggregate_type="notification", data=event_data.to_dict())
+    event = NotificationRequested.create(
+        aggregate_id="test", aggregate_type="notification", data=event_data.to_dict()
+    )
     await notification_requested_event_handler.handle(event=event.to_dict())

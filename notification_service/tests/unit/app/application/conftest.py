@@ -1,18 +1,18 @@
-from datetime import UTC, datetime
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Self
 from unittest.mock import AsyncMock
 
 import pytest_asyncio
-from fern_labour_notifications_shared.enums import NotificationTemplate
-from fern_labour_notifications_shared.notification_data import BaseNotificationData
 from fern_labour_core.events.event import DomainEvent
 from fern_labour_core.unit_of_work import UnitOfWork
+from fern_labour_notifications_shared.enums import NotificationTemplate
+from fern_labour_notifications_shared.notification_data import BaseNotificationData
 
 from src.core.application.domain_event_publisher import DomainEventPublisher
-from src.core.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.core.domain.domain_event.repository import DomainEventRepository
+from src.core.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
 from src.notification.application.interfaces.notification_gateway import (
     EmailNotificationGateway,
@@ -65,7 +65,6 @@ class MockUserRepository(UserRepository):
 class MockNotificationRepository(NotificationRepository):
     _data: dict[str, Notification] = {}
     _changes: dict[str, Notification] = {}
-
 
     async def save(self, notification: Notification) -> None:
         self._changes[notification.id_.value] = notification
@@ -258,7 +257,7 @@ class MockEmailTemplateEngine(NotificationTemplateEngine):
         self, template_name: NotificationTemplate, data: BaseNotificationData
     ) -> str:
         return f"Mock HTML email: {template_name} {json.dumps(data.to_dict())}"
-    
+
 
 @pytest_asyncio.fixture
 async def domain_event_publisher(
@@ -327,7 +326,7 @@ async def notification_service(
         notification_repository=notification_repo,
         domain_event_repository=domain_event_repo,
         domain_event_publisher=domain_event_publisher,
-        unit_of_work=unit_of_work
+        unit_of_work=unit_of_work,
     )
 
 
@@ -346,5 +345,5 @@ async def notification_delivery_service(
         notification_repository=notification_repo,
         domain_event_repository=domain_event_repo,
         domain_event_publisher=domain_event_publisher,
-        unit_of_work=unit_of_work
+        unit_of_work=unit_of_work,
     )

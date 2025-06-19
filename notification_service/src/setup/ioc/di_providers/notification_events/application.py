@@ -2,7 +2,9 @@ from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
 
-from src.notification.application.event_handlers.notification_created_event_handler import NotificationCreatedEventHandler
+from src.notification.application.event_handlers.notification_created_event_handler import (
+    NotificationCreatedEventHandler,
+)
 from src.notification.application.event_handlers.notification_requested_event_handler import (
     NotificationRequestedEventHandler,
 )

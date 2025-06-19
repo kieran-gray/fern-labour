@@ -32,7 +32,9 @@ async def test_can_handle_notification_status_updated_event(
         to_status=NotificationStatus.SUCCESS,
         external_id="EXT123",
     )
-    event = NotificationStatusUpdated.create(aggregate_id="test", aggregate_type="notification", data=event_data.to_dict())
+    event = NotificationStatusUpdated.create(
+        aggregate_id="test", aggregate_type="notification", data=event_data.to_dict()
+    )
     with caplog.at_level(level=logging.INFO):
         await notification_status_updated_event_handler.handle(event=event.to_dict())
 
@@ -50,7 +52,9 @@ async def test_does_not_redact_notification_email(
         to_status=NotificationStatus.SUCCESS,
         external_id="EXT123",
     )
-    event = NotificationStatusUpdated.create(aggregate_id="test", aggregate_type="notification", data=event_data.to_dict())
+    event = NotificationStatusUpdated.create(
+        aggregate_id="test", aggregate_type="notification", data=event_data.to_dict()
+    )
     with caplog.at_level(level=logging.INFO):
         await notification_status_updated_event_handler.handle(event=event.to_dict())
 
@@ -68,7 +72,9 @@ async def test_does_not_redact_notification_no_external_id(
         to_status=NotificationStatus.SUCCESS,
         external_id=None,
     )
-    event = NotificationStatusUpdated.create(aggregate_id="test", aggregate_type="notification", data=event_data.to_dict())
+    event = NotificationStatusUpdated.create(
+        aggregate_id="test", aggregate_type="notification", data=event_data.to_dict()
+    )
     with caplog.at_level(level=logging.INFO):
         await notification_status_updated_event_handler.handle(event=event.to_dict())
 
@@ -86,7 +92,9 @@ async def test_does_not_redact_notification_not_success_status(
         to_status=NotificationStatus.SENT,
         external_id="EXT123",
     )
-    event = NotificationStatusUpdated.create(aggregate_id="test", aggregate_type="notification", data=event_data.to_dict())
+    event = NotificationStatusUpdated.create(
+        aggregate_id="test", aggregate_type="notification", data=event_data.to_dict()
+    )
     with caplog.at_level(level=logging.INFO):
         await notification_status_updated_event_handler.handle(event=event.to_dict())
 

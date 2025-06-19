@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 from fern_labour_core.events.consumer import EventConsumer
 
-from src.run_consumer import ConsumerRunner, AsyncioTaskManager
+from src.run_consumer import AsyncioTaskManager, ConsumerRunner
 
 
 async def test_task_manager():

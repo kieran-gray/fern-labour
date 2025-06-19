@@ -1,12 +1,10 @@
 from uuid import UUID, uuid4
 
 import pytest
-
 from fern_labour_notifications_shared.enums import NotificationTemplate
 from fern_labour_notifications_shared.notification_data import ContactUsData, LabourBegunData
 
 from src.notification.application.dtos.notification import NotificationDTO, NotificationSendResult
-
 from src.notification.application.services.notification_service import NotificationService
 from src.notification.domain.enums import (
     NotificationChannel,
