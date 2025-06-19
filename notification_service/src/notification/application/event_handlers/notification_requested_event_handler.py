@@ -2,9 +2,10 @@ import logging
 from typing import Any
 
 from fern_labour_core.events.event_handler import EventHandler
+from fern_labour_notifications_shared.events import NotificationRequested
 
 from src.notification.application.services.notification_service import NotificationService
-from src.notification.domain.events import NotificationRequested, NotificationRequestedData
+from src.notification.domain.events import NotificationRequestedData
 
 log = logging.getLogger(__name__)
 
