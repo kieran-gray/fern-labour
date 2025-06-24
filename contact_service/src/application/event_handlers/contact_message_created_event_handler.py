@@ -44,12 +44,14 @@ class ContactMessageCreatedEventHandler(EventHandler):
             from_user_id=contact_message.user_id or "null"
         )
         notification_event = NotificationRequested.create(
+            aggregate_id=contact_message_id,
+            aggregate_type="contact_message",
             data={
                 "channel": NotificationChannel.EMAIL,
                 "destination": self._contact_email,
                 "template": self._template.value,
                 "data": contact_message.to_dict(),
                 "metadata": notification_metadata.to_dict(),
-            }
+            },
         )
         await self._event_producer.publish(event=notification_event)

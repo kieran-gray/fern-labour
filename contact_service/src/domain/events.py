@@ -7,5 +7,16 @@ from fern_labour_core.events.event import DomainEvent
 @dataclass
 class ContactMessageCreated(DomainEvent):
     @classmethod
-    def create(cls, data: dict[str, Any], event_type: str = "contact-message.created") -> Self:
-        return super().create(event_type=event_type, data=data)
+    def create(
+        cls,
+        aggregate_id: str,
+        aggregate_type: str,
+        data: dict[str, Any],
+        event_type: str = "contact-message.created",
+    ) -> Self:
+        return super().create(
+            aggregate_id=aggregate_id,
+            aggregate_type=aggregate_type,
+            event_type=event_type,
+            data=data,
+        )
