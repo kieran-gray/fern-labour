@@ -29,6 +29,8 @@ async def domain_event(contact_message_service: ContactMessageService) -> Domain
     return DomainEvent(
         id="event_id",
         type="contact-message.created",
+        aggregate_id="aggregate_id",
+        aggregate_type="test_aggregate",
         data={"contact_message_id": message.id},
         time=datetime.now(UTC),
     )

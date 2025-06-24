@@ -42,6 +42,10 @@ class ContactMessage(AggregateRoot[ContactMessageId]):
             user_id=user_id,
         )
         contact_message.add_domain_event(
-            ContactMessageCreated.create(data={"contact_message_id": str(contact_message_id)})
+            ContactMessageCreated.create(
+                aggregate_id=str(contact_message_id),
+                aggregate_type="contact_message",
+                data={"contact_message_id": str(contact_message_id)},
+            )
         )
         return contact_message
