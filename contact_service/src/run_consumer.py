@@ -2,13 +2,14 @@ import asyncio
 import logging
 import signal
 import sys
-from collections.abc import AsyncIterator, Coroutine
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import Any
 
+import uvloop
 from dishka import AsyncContainer, make_async_container
 from fern_labour_core.events.consumer import EventConsumer
 
+from src.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.infrastructure.persistence.initialize_mapping import map_all
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.ioc.ioc_registry import get_providers
@@ -20,38 +21,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class TaskManager:
-    """Manages the lifecycle of asyncio tasks."""
-
-    def __init__(self) -> None:
-        self._tasks: set[asyncio.Task[Coroutine[Any, Any, Any]]] = set()
-
-    def create_task(self, coro: Coroutine[Any, Any, Any], name: str = "Task") -> None:
-        """Create and manage a task."""
-        task = asyncio.create_task(coro, name=name)
-        task.add_done_callback(self._tasks.discard)
-        self._tasks.add(task)
-
-    async def cancel_all(self) -> None:
-        """Cancel all running tasks."""
-        for task in self._tasks:
-            task.cancel()
-
-        if self._tasks:
-            await asyncio.gather(*self._tasks, return_exceptions=True)
-
-    async def wait(self) -> None:
-        """Wait for all tasks to complete."""
-        await asyncio.gather(*self._tasks, return_exceptions=True)
-
-
 class ConsumerRunner:
     def __init__(self, consumer: EventConsumer, container: AsyncContainer) -> None:
         self._consumer = consumer
         if hasattr(self._consumer, "set_container"):
             self._consumer.set_container(container)
         self._should_exit = asyncio.Event()
-        self._task_manager: TaskManager = TaskManager()
+        self._task_manager: AsyncioTaskManager = AsyncioTaskManager()
 
     async def start(self) -> None:
         """Start the consumer and initialize signal handlers"""
@@ -97,7 +73,6 @@ class ConsumerRunner:
 @asynccontextmanager
 async def setup_container() -> AsyncIterator[AsyncContainer]:
     """Context manager for setting up and tearing down the dishka container"""
-
     settings: Settings = Settings.from_file()
     container = make_async_container(*get_providers(), context={Settings: settings})
     try:
@@ -106,28 +81,25 @@ async def setup_container() -> AsyncIterator[AsyncContainer]:
         await container.close()
 
 
-async def main(container: AsyncContainer) -> None:
+async def main() -> None:
     """Main entry point for the consumer script"""
-    consumer = await container.get(EventConsumer, component=ComponentEnum.EVENTS)
-    runner = ConsumerRunner(consumer=consumer, container=container)
-    runner.setup_signal_handlers()
+    async with setup_container() as container:
+        consumer = await container.get(EventConsumer, component=ComponentEnum.EVENTS)
+        runner = ConsumerRunner(consumer=consumer, container=container)
+        runner.setup_signal_handlers()
 
-    try:
-        await runner.start()
-    except Exception as e:
-        logger.error("Fatal error in consumer.", exc_info=e)
-        sys.exit(1)
+        try:
+            await runner.start()
+        except Exception as e:
+            logger.error("Fatal error in consumer.", exc_info=e)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
     map_all()
 
-    async def run() -> None:
-        async with setup_container() as container:
-            await main(container)
-
     try:
-        asyncio.run(run())
+        uvloop.run(main())
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt, shutting down...")
     except Exception as e:

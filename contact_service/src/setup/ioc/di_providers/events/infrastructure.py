@@ -38,4 +38,5 @@ class EventsInfrastructureProvider(Provider):
             topic_handlers=topic_handlers,
             mode=ConsumerMode(settings.consumer_mode),
             batch_max_messages=settings.max_batch_size,
+            idempotent=False,
         )

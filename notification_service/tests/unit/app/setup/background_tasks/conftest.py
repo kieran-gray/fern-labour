@@ -20,9 +20,7 @@ class MockProvider(Provider):
 
     @provide
     async def provide_domain_event_repo(self) -> DomainEventRepository:
-        repo = MockDomainEventRepository()
-        repo._data = {}
-        return repo
+        return MockDomainEventRepository()
 
     @provide
     async def provide_unit_of_work(self, domain_event_repo: DomainEventRepository) -> UnitOfWork:

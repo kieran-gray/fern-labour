@@ -15,7 +15,8 @@ from src.user.domain.value_objects.user_id import UserId
 
 
 class MockUserRepository(UserRepository):
-    _data = {}
+    def __init__(self) -> None:
+        self._data = {}
 
     async def save(self, user: User) -> None:
         self._data[user.id_.value] = user
@@ -35,7 +36,8 @@ class MockUserRepository(UserRepository):
 
 
 class MockContactMessageRepository(ContactMessageRepository):
-    _data = {}
+    def __init__(self) -> None:
+        self._data = {}
 
     async def save(self, contact_message: ContactMessage) -> None:
         self._data[contact_message.id_.value] = contact_message
@@ -56,9 +58,7 @@ class MockContactMessageRepository(ContactMessageRepository):
 
 @pytest_asyncio.fixture
 async def user_repo() -> UserRepository:
-    repo = MockUserRepository()
-    repo._data = {}
-    return repo
+    return MockUserRepository()
 
 
 @pytest_asyncio.fixture
@@ -68,9 +68,7 @@ async def user_service(user_repo: UserRepository) -> UserQueryService:
 
 @pytest_asyncio.fixture
 async def contact_message_repo() -> ContactMessageRepository:
-    repo = MockContactMessageRepository()
-    repo._data = {}
-    return repo
+    return MockContactMessageRepository()
 
 
 @pytest_asyncio.fixture
