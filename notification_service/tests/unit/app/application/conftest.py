@@ -43,7 +43,8 @@ from src.user.domain.value_objects.user_id import UserId
 
 
 class MockUserRepository(UserRepository):
-    _data = {}
+    def __init__(self) -> None:
+        self._data = {}
 
     async def save(self, user: User) -> None:
         self._data[user.id_.value] = user
@@ -63,8 +64,9 @@ class MockUserRepository(UserRepository):
 
 
 class MockNotificationRepository(NotificationRepository):
-    _data: dict[str, Notification] = {}
-    _changes: dict[str, Notification] = {}
+    def __init__(self) -> None:
+        self._data: dict[str, Notification] = {}
+        self._changes: dict[str, Notification] = {}
 
     async def save(self, notification: Notification) -> None:
         self._changes[notification.id_.value] = notification
@@ -106,8 +108,9 @@ class MockNotificationRepository(NotificationRepository):
 
 
 class MockDomainEventRepository(DomainEventRepository):
-    _data: dict[str, tuple[DomainEvent, datetime | None]] = {}
-    _changes: dict[str, tuple[DomainEvent, datetime | None]] = {}
+    def __init__(self) -> None:
+        self._data: dict[str, tuple[DomainEvent, datetime | None]] = {}
+        self._changes: dict[str, tuple[DomainEvent, datetime | None]] = {}
 
     async def commit(self) -> None:
         self._data.update(self._changes)
@@ -137,25 +140,17 @@ class MockDomainEventRepository(DomainEventRepository):
 
 @pytest_asyncio.fixture
 async def user_repo() -> UserRepository:
-    repo = MockUserRepository()
-    repo._data = {}
-    return repo
+    return MockUserRepository()
 
 
 @pytest_asyncio.fixture
 async def notification_repo() -> NotificationRepository:
-    repo = MockNotificationRepository()
-    repo._data = {}
-    repo._changes = {}
-    return repo
+    return MockNotificationRepository()
 
 
 @pytest_asyncio.fixture
 async def domain_event_repo() -> DomainEventRepository:
-    repo = MockDomainEventRepository()
-    repo._data = {}
-    repo._changes = {}
-    return repo
+    return MockDomainEventRepository()
 
 
 class MockUnitOfWork(UnitOfWork):

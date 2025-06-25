@@ -4,29 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 from fern_labour_core.events.consumer import EventConsumer
 
-from src.run_consumer import ConsumerRunner, TaskManager
-
-
-async def test_task_manager():
-    """Test the TaskManager functionality."""
-    task_manager = TaskManager()
-
-    async def sample_task():
-        await asyncio.sleep(0.01)
-        return "Task Complete"
-
-    # Test task creation
-    task_manager.create_task(sample_task(), name="SampleTask")
-    assert len(task_manager._tasks) == 1
-
-    # Wait for tasks to complete
-    await task_manager.wait()
-    assert len(task_manager._tasks) == 0
-
-    # Test task cancellation
-    task_manager.create_task(sample_task(), name="SampleTaskToCancel")
-    await task_manager.cancel_all()
-    assert len(task_manager._tasks) == 0
+from src.run_consumer import ConsumerRunner
 
 
 async def test_consumer_runner_start_and_shutdown():

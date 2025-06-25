@@ -5,6 +5,7 @@ import sys
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import uvloop
 from dishka import AsyncContainer, make_async_container
 from fern_labour_core.events.consumer import EventConsumer
 
@@ -72,7 +73,6 @@ class ConsumerRunner:
 @asynccontextmanager
 async def setup_container() -> AsyncIterator[AsyncContainer]:
     """Context manager for setting up and tearing down the dishka container"""
-
     settings: Settings = Settings.from_file()
     container = make_async_container(*get_providers(), context={Settings: settings})
     try:
@@ -81,28 +81,25 @@ async def setup_container() -> AsyncIterator[AsyncContainer]:
         await container.close()
 
 
-async def main(container: AsyncContainer) -> None:
+async def main() -> None:
     """Main entry point for the consumer script"""
-    consumer = await container.get(EventConsumer, component=ComponentEnum.EVENTS)
-    runner = ConsumerRunner(consumer=consumer, container=container)
-    runner.setup_signal_handlers()
+    async with setup_container() as container:
+        consumer = await container.get(EventConsumer, component=ComponentEnum.EVENTS)
+        runner = ConsumerRunner(consumer=consumer, container=container)
+        runner.setup_signal_handlers()
 
-    try:
-        await runner.start()
-    except Exception as e:
-        logger.error("Fatal error in consumer.", exc_info=e)
-        sys.exit(1)
+        try:
+            await runner.start()
+        except Exception as e:
+            logger.error("Fatal error in consumer.", exc_info=e)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
     map_all()
 
-    async def run() -> None:
-        async with setup_container() as container:
-            await main(container)
-
     try:
-        asyncio.run(run())
+        uvloop.run(main())
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt, shutting down...")
     except Exception as e:

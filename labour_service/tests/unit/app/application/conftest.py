@@ -40,7 +40,8 @@ from src.user.domain.value_objects.user_id import UserId
 
 
 class MockUserRepository(UserRepository):
-    _data = {}
+    def __init__(self) -> None:
+        self._data = {}
 
     async def save(self, user: User) -> None:
         self._data[user.id_.value] = user
@@ -60,8 +61,9 @@ class MockUserRepository(UserRepository):
 
 
 class MockLabourRepository(LabourRepository):
-    _data = {}
-    _changes = {}
+    def __init__(self) -> None:
+        self._data = {}
+        self._changes = {}
 
     async def save(self, labour: Labour) -> None:
         self._changes[labour.id_.value] = labour
@@ -107,8 +109,9 @@ class MockLabourRepository(LabourRepository):
 
 
 class MockSubscriptionRepository(SubscriptionRepository):
-    _data: dict[str, Subscription] = {}
-    _changes: dict[str, Subscription] = {}
+    def __init__(self) -> None:
+        self._data: dict[str, Subscription] = {}
+        self._changes: dict[str, Subscription] = {}
 
     async def save(self, subscription: Subscription) -> None:
         self._changes[subscription.id_.value] = subscription
@@ -176,8 +179,10 @@ class MockSubscriptionRepository(SubscriptionRepository):
 
 
 class MockDomainEventRepository(DomainEventRepository):
-    _data: dict[str, tuple[DomainEvent, datetime | None]] = {}
-    _changes: dict[str, tuple[DomainEvent, datetime | None]] = {}
+    def __init__(self) -> None:
+        super().__init__()
+        self._data: dict[str, tuple[DomainEvent, datetime | None]] = {}
+        self._changes: dict[str, tuple[DomainEvent, datetime | None]] = {}
 
     async def commit(self) -> None:
         self._data.update(self._changes)
@@ -207,33 +212,22 @@ class MockDomainEventRepository(DomainEventRepository):
 
 @pytest_asyncio.fixture
 async def user_repo() -> UserRepository:
-    repo = MockUserRepository()
-    repo._data = {}
-    return repo
+    return MockUserRepository()
 
 
 @pytest_asyncio.fixture
 async def labour_repo() -> LabourRepository:
-    repo = MockLabourRepository()
-    repo._data = {}
-    repo._changes = {}
-    return repo
+    return MockLabourRepository()
 
 
 @pytest_asyncio.fixture
 async def subscription_repo() -> SubscriptionRepository:
-    repo = MockSubscriptionRepository()
-    repo._data = {}
-    repo._changes = {}
-    return repo
+    return MockSubscriptionRepository()
 
 
 @pytest_asyncio.fixture
 async def domain_event_repo() -> DomainEventRepository:
-    repo = MockDomainEventRepository()
-    repo._data = {}
-    repo._changes = {}
-    return repo
+    return MockDomainEventRepository()
 
 
 class MockUnitOfWork(UnitOfWork):
