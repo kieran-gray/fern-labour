@@ -1,13 +1,9 @@
 from typing import Annotated
 
 from dishka import FromComponent, Provider, Scope, provide
-from fern_labour_core.events.consumer import EventConsumer
 from fern_labour_core.events.producer import EventProducer
-from fern_labour_pub_sub.consumer import PubSubEventConsumer
 from fern_labour_pub_sub.producer import PubSubEventProducer
-from fern_labour_pub_sub.topic_handler import TopicHandler
 
-from src.notification.application.event_handlers.mapping import NOTIFICATION_EVENT_HANDLER_MAPPING
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.settings import GCPSettings, Settings
 
@@ -25,11 +21,3 @@ class EventsInfrastructureProvider(Provider):
     @provide
     def get_gcp_pub_sub_event_producer(self, settings: GCPSettings) -> EventProducer:
         return PubSubEventProducer(project_id=settings.project_id, retries=settings.retries)
-
-    @provide
-    def get_gcp_pub_sub_event_consumer(self, settings: GCPSettings) -> EventConsumer:
-        topic_handlers = [
-            TopicHandler(topic, handler, ComponentEnum.NOTIFICATION_EVENTS)
-            for topic, handler in NOTIFICATION_EVENT_HANDLER_MAPPING.items()
-        ]
-        return PubSubEventConsumer(project_id=settings.project_id, topic_handlers=topic_handlers)
