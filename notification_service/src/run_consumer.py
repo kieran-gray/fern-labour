@@ -8,9 +8,12 @@ from contextlib import asynccontextmanager
 import uvloop
 from dishka import AsyncContainer, make_async_container
 from fern_labour_core.events.consumer import EventConsumer
+from fern_labour_pub_sub.consumer import PubSubEventConsumer
+from fern_labour_pub_sub.topic_handler import TopicHandler
 
 from src.core.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.core.infrastructure.persistence.initialize_mapping import map_all
+from src.notification.application.event_handlers.mapping import NOTIFICATION_EVENT_HANDLER_MAPPING
 from src.setup.ioc.di_component_enum import ComponentEnum
 from src.setup.ioc.ioc_registry import get_providers
 from src.setup.settings import Settings
@@ -22,12 +25,11 @@ logger = logging.getLogger(__name__)
 
 
 class ConsumerRunner:
-    def __init__(self, consumer: EventConsumer, container: AsyncContainer) -> None:
+    def __init__(self, consumer: EventConsumer) -> None:
         self._consumer = consumer
-        if hasattr(self._consumer, "set_container"):
-            self._consumer.set_container(container)
         self._should_exit = asyncio.Event()
         self._task_manager: AsyncioTaskManager = AsyncioTaskManager()
+        self.setup_signal_handlers()
 
     async def start(self) -> None:
         """Start the consumer and initialize signal handlers"""
@@ -71,9 +73,8 @@ class ConsumerRunner:
 
 
 @asynccontextmanager
-async def setup_container() -> AsyncIterator[AsyncContainer]:
+async def setup_container(settings: Settings) -> AsyncIterator[AsyncContainer]:
     """Context manager for setting up and tearing down the dishka container"""
-    settings: Settings = Settings.from_file()
     container = make_async_container(*get_providers(), context={Settings: settings})
     try:
         yield container
@@ -81,12 +82,26 @@ async def setup_container() -> AsyncIterator[AsyncContainer]:
         await container.close()
 
 
+def setup_consumer(settings: Settings, container: AsyncContainer) -> PubSubEventConsumer:
+    topic_handlers = [
+        TopicHandler(topic, handler, ComponentEnum.NOTIFICATION_EVENTS)
+        for topic, handler in NOTIFICATION_EVENT_HANDLER_MAPPING.items()
+    ]
+    consumer = PubSubEventConsumer(
+        project_id=settings.events.gcp.project_id,
+        topic_handlers=topic_handlers,
+        container=container,
+    )
+    return consumer
+
+
 async def main() -> None:
     """Main entry point for the consumer script"""
-    async with setup_container() as container:
-        consumer = await container.get(EventConsumer, component=ComponentEnum.EVENTS)
-        runner = ConsumerRunner(consumer=consumer, container=container)
-        runner.setup_signal_handlers()
+    settings: Settings = Settings.from_file()
+
+    async with setup_container(settings=settings) as container:
+        consumer = setup_consumer(settings=settings, container=container)
+        runner = ConsumerRunner(consumer=consumer)
 
         try:
             await runner.start()

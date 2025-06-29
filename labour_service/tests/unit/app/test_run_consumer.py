@@ -34,7 +34,7 @@ async def test_consumer_runner_start_and_shutdown():
     mock_consumer = AsyncMock(spec=EventConsumer)
     mock_consumer.is_healthy.return_value = True
 
-    runner = ConsumerRunner(consumer=mock_consumer, container=AsyncMock())
+    runner = ConsumerRunner(consumer=mock_consumer)
 
     async def stop_after_delay():
         await asyncio.sleep(0.01)
@@ -53,7 +53,7 @@ async def test_consumer_runner_health_check():
     mock_consumer = AsyncMock(spec=EventConsumer)
     mock_consumer.is_healthy.side_effect = [True, False, Exception("Test Error")]
 
-    runner = ConsumerRunner(consumer=mock_consumer, container=AsyncMock())
+    runner = ConsumerRunner(consumer=mock_consumer)
 
     async def stop_after_delay():
         await asyncio.sleep(0.01)
@@ -69,7 +69,7 @@ async def test_consumer_runner_health_check():
 async def test_consumer_runner_signal_handling():
     """Test signal handling in ConsumerRunner."""
     mock_consumer = AsyncMock(spec=EventConsumer)
-    runner = ConsumerRunner(consumer=mock_consumer, container=AsyncMock())
+    runner = ConsumerRunner(consumer=mock_consumer)
 
     with patch("asyncio.get_event_loop") as mock_loop:
         runner.setup_signal_handlers()
