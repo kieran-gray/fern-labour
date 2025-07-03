@@ -106,12 +106,14 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   const privateLabourBegunMessage = MESSAGES.PRIVATE_LABOUR_BEGUN;
 
   const scrollToBottom = useCallback(() => {
-    if (viewport.current) {
-      viewport.current.scrollTo({
-        top: viewport.current.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
+    setTimeout(() => {
+      if (viewport.current) {
+        viewport.current.scrollTo({
+          top: viewport.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+    }, 1);
   }, []);
 
   const labourUpdateDisplay = useMemo(() => {
