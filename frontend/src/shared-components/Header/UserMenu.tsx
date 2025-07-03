@@ -65,39 +65,36 @@ export function MobileUserMenu() {
     );
 
   const appSettings = (
-    <>
+    <Group>
+      <Space h="xs" />
+      <Button
+        key="theme"
+        className={classes.mainLink}
+        onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
+        leftSection={themeIcon}
+        size="md"
+        w="100%"
+        variant="transparent"
+      >
+        {colorScheme === 'light' ? 'Night Mode' : 'Day Mode'}
+      </Button>
       {mode === null && pathname !== '/' && (
-        <Group>
-          <Space h="xs" />
-          <Button
-            key="home"
-            className={classes.mainLink}
-            onClick={() => {
-              navigate('/');
-            }}
-            leftSection={<IconHome size={16} stroke={1.5} />}
-            size="md"
-            w="100%"
-            variant="transparent"
-          >
-            Home
-          </Button>
-        </Group>
+        <Button
+          key="home"
+          className={classes.mainLink}
+          onClick={() => {
+            navigate('/');
+          }}
+          leftSection={<IconHome size={16} stroke={1.5} />}
+          size="md"
+          w="100%"
+          variant="transparent"
+        >
+          Home
+        </Button>
       )}
       {mode !== null && (
-        <Group>
-          <Space h="xs" />
-          <Button
-            key="theme"
-            className={classes.mainLink}
-            onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
-            leftSection={themeIcon}
-            size="md"
-            w="100%"
-            variant="transparent"
-          >
-            {colorScheme === 'light' ? 'Night Mode' : 'Day Mode'}
-          </Button>
+        <>
           <Button
             key="update"
             className={classes.mainLink}
@@ -138,9 +135,9 @@ export function MobileUserMenu() {
               Your Labour History
             </Button>
           )}
-        </Group>
+        </>
       )}
-    </>
+    </Group>
   );
 
   const accountSettings = (
