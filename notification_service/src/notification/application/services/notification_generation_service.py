@@ -92,14 +92,16 @@ class NotificationGenerationService:
             data = payload_data_type.from_dict(notification.data)
         except KeyError:
             raise NotificationProcessingError(
-                f"Failed to convert data to payload data type for notification {notification_id}"
+                "Failed to convert data to payload data type for notification "
+                f"{str(notification.id_)}"
             )
         template_engine = self._get_template_engine(notification.channel)
         generated_content = self._generate(
             template_engine=template_engine, template=template, data=data
         )
         log.info(
-            f"Successfully generated {notification.channel.value} content for {notification_id}"
+            f"Successfully generated {notification.channel.value} content for "
+            f"{str(notification.id_)}"
         )
         return generated_content
 
