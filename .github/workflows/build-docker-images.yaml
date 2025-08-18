@@ -26,7 +26,7 @@ jobs:
       notification_service: ${{ steps.filter.outputs.notification_service }}
       contact_service: ${{ steps.filter.outputs.contact_service }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@v3
