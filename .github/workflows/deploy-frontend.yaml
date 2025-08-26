@@ -41,10 +41,9 @@ jobs:
           VITE_CLOUDFLARE_SITEKEY: ${{ vars.CLOUDFLARE_SITEKEY }}
 
       - name: Publish
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ vars.CLOUDFLARE_PAGES_FRONTEND_PROJECT }}
-          directory: ./frontend/dist
+          command: pages deploy ./frontend/dist --project-name=${{ vars.CLOUDFLARE_PAGES_FRONTEND_PROJECT }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

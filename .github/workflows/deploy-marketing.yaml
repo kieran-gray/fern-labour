@@ -38,10 +38,9 @@ jobs:
           NEXT_PUBLIC_CLOUDFLARE_SITEKEY: ${{ vars.CLOUDFLARE_SITEKEY }}
 
       - name: Publish
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ vars.CLOUDFLARE_PAGES_MARKETING_PROJECT }}
-          directory: ./marketing/out
+          command: pages deploy ./marketing/out --project-name=${{ vars.CLOUDFLARE_PAGES_MARKETING_PROJECT }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
