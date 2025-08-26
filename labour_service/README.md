@@ -1,101 +1,236 @@
-# Labour Tracker Backend
+# Labour Service
 
-A FastAPI-based backend service for tracking labour-related data, built as a first attempt to use Domain-Driven Design principles and clean architecture.
+## Overview
 
-## Setup
+The Labour Service is the core backend service for the labour tracking application. It manages all labour-related activities including labour sessions, contractions, subscriptions, and user management. This service handles the primary business logic for tracking pregnancy labour progress and coordinating with other services via event-driven messaging.
 
-To install the necessary dependencies, run the command:
-`make deps`
+**Key Responsibilities:**
+- Labour session management (start, stop, updates)
+- Contraction tracking and timing
+- Subscription management for birth partners
+- User authentication and authorization
+- Payment processing integration (Stripe)
+- Event publishing for cross-service communication
 
+## Architecture & Dependencies
 
-Test that all of the dependencies have been install correctly by running the tests with the command:
-`make test`
+**Framework & Technologies:**
+- **FastAPI** - High-performance async web framework
+- **SQLAlchemy 2.0** - Database ORM with async support
+- **Dishka** - Dependency injection container
+- **Alembic** - Database migration management
+- **Pydantic** - Data validation and serialization
+- **PostgreSQL** - Primary database
+- **Keycloak** - Authentication and authorization
+- **Google Cloud PubSub** - Event messaging (emulated locally)
+- **Stripe** - Payment processing
+- **uvloop** - High-performance event loop
 
-## Features
+**Architecture Pattern:**
+- **Domain-Driven Design (DDD)** with Clean Architecture
+- **Event-Driven Architecture** for service communication
+- **CQRS patterns** with separate command/query handlers
 
-- REST API built with FastAPI
-- Event-driven architecture using Apache Kafka
-- Notification system integrated with:
-  - Twilio for SMS
-  - SMTP for email delivery
-- PostgreSQL database for persistent storage
-- Clean/layered architecture with dependency injection using Dishka
+**Directory Structure:**
+```
+src/
+├── labour/          # Labour domain (sessions, contractions)
+├── subscription/    # Subscription management domain  
+├── user/           # User management and authentication
+├── payments/       # Stripe payment integration
+├── core/           # Shared domain infrastructure
+├── api/            # FastAPI routes and schemas
+└── setup/          # Application configuration and DI
+```
 
-## Architecture
+## Setup Instructions
 
-The application is structured in the following layers:
+### Prerequisites
 
-- **Domain Layer**: Contains business logic and domain models
-- **Application Layer**: Orchestrates use cases and application flow
-- **Infrastructure Layer**: Handles external concerns (database, messaging, etc.)
-- **Presentation Layer**: API endpoints and request/response handling
+1. **Python 3.12+**
+2. **UV package manager**
+3. **PostgreSQL** (handled via Docker Compose)
+4. **Google Cloud SDK** (for authentication to private package registry)
 
-## Domain Model
+### Authentication Setup
 
-A simplified domain model is as follows:
-![preview](./docs/images/domain_model.svg)
+```bash
+# Required for accessing private package registry
+gcloud auth login
+gcloud init  
+gcloud auth application-default login
+```
 
-- **Generic Domain**: Contains the identity and access bounded context. Interactions with other bounded contexts should go through an Anti-Corruption Layer (ACL) which translates the auth providier specific User implementation into the domain User implementation.
+### Installation
 
-- **Core Domain**: Contains the labour tracking and subscriptions bounded contexts. Interactions between these bounded contexts take place through a messaging mechanism.
+1. **Install Dependencies:**
+   ```bash
+   make deps
+   ```
 
-### Event-Driven System
+2. **Environment Configuration:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration values
+   ```
 
-The application uses Kafka for asynchronous event processing, for two different reasons:
-- Decoupling notification handling (sending emails and texts) from the triggers of the notifications (endpoints).
-  - The event types used for this purpose are:
-    - `labour.begun`
-    - `labour.completed`
-    - `contraction.ended`
-<br>
+3. **Database Setup:**
+   ```bash
+   # Generate new migration (if schema changes made)
+   make revision
+   
+   # Database migrations run automatically on service startup
+   ```
 
-- Triggering side-effects across multiple aggregates.
-  - The event types used for this purpose are:
-    - `subscriber.subscribed_to`
-    - `subscriber.unsubscribed_from`
-  - These events are triggered in the `Subscriber` aggregate, and cause additional logic to run on the `BirthingPerson` aggregate.
+### Running Locally
 
-## Technical Stack
+**Via Docker Compose (Recommended):**
+```bash
+# From project root
+make run
+```
 
-- **Framework**: FastAPI
-- **Database**: PostgreSQL
-- **Message Broker**: Kafka
-- **Dependency Injection**: Dishka
-- **Notifications**:
-  - Twilio SDK for SMS
-  - SMTP for email delivery
-- **Development Tools**:
-  - Ruff for linting and formatting
-  - isort for import sorting
-  - mypy for static type checking
+**Direct Development:**
+```bash
+# Install dependencies
+make deps
 
-## Usage
+# Run with hot reload
+python -m src.run
+```
 
-To login:
-1. Navigate to [Keycloak](localhost:8080/realms/labour_tracker/account) and register
-![preview](./docs/images/login.png)
-2. With your credentials, login with the swagger endpoint `/api/v1/auth/login`
-3. Click the `Authorize` button in the top right and copy in the token string from the login response
+The service will be available at `http://localhost:8000`
 
-The flow for a Birthing Person is as follows:
-1. Sign in through Keycloak
-2. Register at: `/api/v1/birthing-person/register`
-3. Begin Labour at: `/api/v1/labour/begin`
-4. Start Contractions at: `/api/v1/labour/contraction/start`
-5. End Contractions at: `/api/v1/labour/contraction/end`
-6. Complete Labour at: `/api/v1/labour/complete`
+## Deployment
 
-The flow for a subscriber is as follows:
-1. Sign in through Keycloak
-2. Register at: `/api/v1/subscriber/register`
-3. Have a Birthing Person provide you with their ID and token
-    1. Birthing Person ID can be found here: `/api/v1/birthing-person`
-    2. Tokens can be generated here: `/api/v1/birthing-person/subscription-token`
-4. Subscribe to them here: `/api/v1/subscriber/subscribe_to/{birthing_person_id}`
-    1. Valid contact methods are:
-        1. "sms"
-        2. "email"
-    2. Use email for testing purposes
-5. Now if the Birthing Person Begins or Completes Labour a notification will be sent to that user
-6. You will see the event handled in the consumer logs
-7. The email can be viewed in MailCatcher here: http://localhost:1080/
+### Docker Build
+The service uses multi-stage Docker builds:
+- `migrations` stage - Runs Alembic database migrations
+- `http` stage - Production HTTP server
+
+### Environment-Specific Configuration
+Configuration is managed through:
+- `config.toml` - Default configuration values
+- `.env` files - Environment-specific overrides
+- Environment variables - Runtime overrides
+
+### Health Checks
+The service exposes health check endpoints:
+- `GET /api/v1/health` - Service health status
+
+## Testing
+
+### Running Tests
+```bash
+# Run full test suite with coverage
+make test
+
+# Run tests with debugging support
+make test-debug
+
+# Run all quality checks (lint + test)
+make check
+```
+
+### Test Structure
+- **Location:** `tests/unit/`
+- **Framework:** pytest with async support
+- **Coverage:** 100% required (enforced)
+- **Mocking:** Uses pytest fixtures and dependency injection overrides
+
+### Code Quality
+```bash
+# Format code
+make format
+
+# Run linting, type checking, and security scans
+make lint
+```
+
+## Environment Variables
+
+### Required Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `ENVIRONMENT` | Deployment environment | `local`, `staging`, `production` |
+| `POSTGRES_*` | Database connection settings | See `.env.example` |
+| `KEYCLOAK_*` | Authentication service config | See `.env.example` |
+| `SUBSCRIBER_TOKEN_SALT` | Token generation salt | Random string |
+| `DATABASE_ENCRYPTION_KEY` | Database field encryption | Secure random key |
+
+### Optional Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `LOG_LEVEL` | Logging verbosity | `INFO` |
+| `UVICORN_PORT` | HTTP server port | `8000` |
+| `STRIPE_API_KEY` | Payment processing | Required for payments |
+| `GCP_PROJECT_ID` | PubSub project ID | `test` (for emulator) |
+
+See `.env.example` for complete configuration reference.
+
+## API Documentation
+
+### Core Endpoints
+
+**Authentication:**
+- `POST /api/v1/auth/token` - Get access token
+- `POST /api/v1/auth/refresh` - Refresh token
+
+**Labour Management:**
+- `GET /api/v1/labour` - List user's labour sessions
+- `POST /api/v1/labour` - Create new labour session
+- `PUT /api/v1/labour/{id}` - Update labour session
+- `POST /api/v1/labour/{id}/complete` - Complete labour session
+
+**Contractions:**
+- `GET /api/v1/labour/{id}/contractions` - Get contractions
+- `POST /api/v1/labour/{id}/contractions` - Record contraction
+
+**Subscriptions:**
+- `GET /api/v1/subscriptions` - List subscriptions
+- `POST /api/v1/subscriptions/{id}/invite` - Invite subscriber
+- `PUT /api/v1/subscriptions/{id}/subscribers/{subscriber_id}` - Manage subscribers
+
+**Payments:**
+- `POST /api/v1/payments/create-checkout-session` - Create Stripe checkout
+- `POST /api/v1/payments/webhook` - Handle payment webhooks
+
+### OpenAPI Documentation
+- **Swagger UI:** `http://localhost:8000/docs`
+- **ReDoc:** `http://localhost:8000/redoc`
+- **OpenAPI JSON:** `http://localhost:8000/openapi.json`
+
+## Contributing Notes
+
+### Code Standards
+- **100% test coverage** required for all new code
+- **Type hints** mandatory for all functions
+- **Async/await** patterns for all I/O operations
+- **Domain-driven design** principles for business logic
+
+### Development Workflow
+1. Create feature branch from `main`
+2. Implement changes following DDD patterns
+3. Add comprehensive unit tests
+4. Run `make check` to validate code quality
+5. Submit pull request with descriptive commits
+
+### Database Changes
+1. Modify SQLAlchemy models in appropriate domain
+2. Generate migration: `make revision`
+3. Test migration in development environment
+4. Include migration in pull request
+
+### Event Integration
+- Publish domain events for cross-service communication
+- Use type-safe event schemas from shared packages
+- Handle event failures gracefully with retries
+- Test event handlers in isolation
+
+### Performance Considerations
+- Use SQLAlchemy async patterns for database operations
+- Implement proper database connection pooling
+- Consider caching strategies for frequently accessed data
+- Monitor and optimize query performance
