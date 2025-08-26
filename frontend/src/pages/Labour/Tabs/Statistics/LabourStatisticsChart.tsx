@@ -56,7 +56,20 @@ export const LabourStatisticsChart = ({
       yAxisLabel="Duration (s)"
       xAxisProps={{ domain: [startTime, endX] }}
       valueFormatter={{
-        x: (value) => `${new Date(value).toTimeString().slice(0, 5)}`,
+        x: (value) => {
+          const date = new Date(value);
+          const now = new Date();
+          const isToday = date.toDateString() === now.toDateString();
+          const isYesterday =
+            date.toDateString() === new Date(now.getTime() - 86400000).toDateString();
+
+          if (isToday) {
+            return `Today ${date.toTimeString().slice(0, 5)}`;
+          } else if (isYesterday) {
+            return `Yesterday ${date.toTimeString().slice(0, 5)}`;
+          }
+          return `${date.toLocaleDateString()} ${date.toTimeString().slice(0, 5)}`;
+        },
         y: (value) => `${value}s`,
       }}
       classNames={{
