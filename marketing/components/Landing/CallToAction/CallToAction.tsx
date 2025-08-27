@@ -23,7 +23,7 @@ export const CallToAction01 = ({ title, description, cta }: CallToActionProps) =
       <Card radius="lg" mih={400} bg="transparent">
         <Stack align="center" justify="center" h="100%" gap="xl" flex={1}>
           <JumboTitle
-            order={3}
+            order={2}
             fz="xs"
             ta="center"
             style={{ textWrap: 'balance' }}
