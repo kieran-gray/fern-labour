@@ -12,6 +12,9 @@ export default withBundleAnalyzer({
   },
   compress: false,
   experimental: {
-    optimizePackageImports: ['@mantine/core', '@mantine/hooks', '@mantine/carousel']
-  }
+    optimizePackageImports: ['@mantine/core', '@mantine/hooks', '@mantine/carousel', '@tabler/icons-react']
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 });
