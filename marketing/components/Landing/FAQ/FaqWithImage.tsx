@@ -3,7 +3,7 @@ import classes from './FaqWithImage.module.css';
 
 export function FaqWithImage() {
   return (
-    <div className={classes.wrapper}>
+    <Container py="calc(var(--mantine-spacing-lg) * 3)" px="15px" fluid>
       <Container size="lg" className={classes.container} id="#faqs">
         <Grid id="faq-grid" gutter={50}>
           <Grid.Col span={{ base: 12, sm: 6 }}>
@@ -85,6 +85,6 @@ export function FaqWithImage() {
           </Grid.Col>
         </Grid>
       </Container>
-    </div>
+    </Container>
   );
 }

@@ -1,19 +1,26 @@
 import Link from 'next/link';
 import { IconArrowRight } from '@tabler/icons-react';
 import { motion } from 'motion/react';
-import { Badge, Box, Button, Container, ContainerProps, Flex, Stack, Text } from '@mantine/core';
+import { Box, Button, Container, ContainerProps, Flex, Stack, Text } from '@mantine/core';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './HeroMotion.module.css';
 
 type Hero03Props = ContainerProps & {
-  badge?: string;
   title?: string;
   description?: string;
 };
 
-export const Hero03 = ({ badge, title, description, ...containerProps }: Hero03Props) => (
-  <Container pos="relative" h="100vh" mah={750} style={{ overflow: 'hidden' }} fluid id="#home">
-    <Container component="section" h="100vh" mah={750} mx="auto" size="xl" {...containerProps}>
+export const Hero03 = ({ title, description, ...containerProps }: Hero03Props) => (
+  <Container
+    pos="relative"
+    h="80vh"
+    mah={600}
+    style={{ overflow: 'hidden' }}
+    px="15px"
+    fluid
+    id="#home"
+  >
+    <Container component="section" h="80vh" mah={600} mx="auto" size="xl" {...containerProps}>
       <Box
         pos="absolute"
         top={0}
@@ -30,52 +37,6 @@ export const Hero03 = ({ badge, title, description, ...containerProps }: Hero03P
           gap="lg"
           style={{ zIndex: 1 }}
         >
-          {badge && (
-            <motion.div
-              initial={{ opacity: 0.0 }}
-              transition={{ duration: 0.8, ease: 'easeInOut' }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1 }}
-            >
-              <Badge
-                variant="default"
-                p="md"
-                bg="var(--mantine-color-pink-5)"
-                c="var(--mantine-color-white)"
-                size="xl"
-                mb="lg"
-                style={{ textTransform: 'none', border: 'none' }}
-                visibleFrom="sm"
-              >
-                {badge}
-              </Badge>
-              <Badge
-                variant="default"
-                p="md"
-                bg="var(--mantine-color-pink-5)"
-                c="var(--mantine-color-white)"
-                size="lg"
-                mb="lg"
-                style={{ textTransform: 'none', border: 'none' }}
-                hiddenFrom="sm"
-                visibleFrom="xs"
-              >
-                {badge}
-              </Badge>
-              <Badge
-                variant="default"
-                p="md"
-                bg="var(--mantine-color-pink-5)"
-                c="var(--mantine-color-white)"
-                size="sm"
-                mb="lg"
-                style={{ textTransform: 'none', border: 'none' }}
-                hiddenFrom="xs"
-              >
-                {badge}
-              </Badge>
-            </motion.div>
-          )}
           <motion.div
             initial={{ opacity: 0.0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -114,7 +75,7 @@ export const Hero03 = ({ badge, title, description, ...containerProps }: Hero03P
                 className={classes.control}
                 rightSection={<IconArrowRight />}
               >
-                Join now!
+                Start tracking free
               </Button>
             </Link>
           </motion.div>

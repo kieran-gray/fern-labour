@@ -160,7 +160,8 @@ export const Header01 = ({
       component="header"
       style={{ borderRadius: radius, ...style }}
       mt="10px"
-      w={{ base: '100%', [breakpoint]: 'fit-content' }}
+      mx={{ base: '15px', [breakpoint]: 'auto' }}
+      w={{ base: 'auto', [breakpoint]: 'fit-content' }}
       h={h}
       {...containerProps}
     >

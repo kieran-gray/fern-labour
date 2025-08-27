@@ -234,6 +234,7 @@ export function ContactMessageFloating() {
               size={65}
               radius="xl"
               style={transitionStyles}
+              aria-label="Contact Us"
             >
               <IconMessageQuestion size={30} />
             </ActionIcon>

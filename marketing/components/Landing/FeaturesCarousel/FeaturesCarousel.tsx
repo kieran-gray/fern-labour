@@ -3,7 +3,6 @@
 import { motion } from 'motion/react';
 import { Carousel } from '@mantine/carousel';
 import { Container, Image } from '@mantine/core';
-import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesCarousel.module.css';
 
 const images = [
@@ -34,10 +33,17 @@ export function FeaturesCarousel() {
         loop
         align="start"
         pos="relative"
+        previousControlProps={{ 'aria-label': 'Previous Feature' }}
+        nextControlProps={{ 'aria-label': 'Next Feature' }}
       >
         {images.map((imageData) => (
-          <Carousel.Slide id={imageData.alt}>
-            <Image src={imageData.src} className={classes.image} alt={imageData.alt} />
+          <Carousel.Slide key={imageData.alt} id={imageData.alt}>
+            <Image
+              src={imageData.src}
+              className={classes.image}
+              alt={imageData.alt}
+              loading="lazy"
+            />
           </Carousel.Slide>
         ))}
       </Carousel>
@@ -46,21 +52,8 @@ export function FeaturesCarousel() {
 }
 
 export const FeaturesDemo = () => (
-  <Container
-    bg="var(--mantine-color-body)"
-    py={{
-      base: 'calc(var(--mantine-spacing-lg) * 4)',
-      xs: 'calc(var(--mantine-spacing-lg) * 5)',
-      lg: 'calc(var(--mantine-spacing-lg) * 6)',
-    }}
-    fluid
-  >
-    <Container size="lg" px={0} style={{ position: 'relative' }} id="#features">
-      <JumboTitle order={2} fz="md" style={{ textWrap: 'balance' }}>
-        Gallery
-      </JumboTitle>
-    </Container>
-    <Container size="lg" p={0} mt="xl">
+  <Container py="calc(var(--mantine-spacing-lg) * 3)" px="15px" fluid>
+    <Container size="lg" p={0}>
       <FeaturesCarousel />
     </Container>
   </Container>

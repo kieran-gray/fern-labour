@@ -1,4 +1,4 @@
-import { Space } from '@mantine/core';
+import { Container, Space } from '@mantine/core';
 import { CallToAction01 } from './CallToAction/CallToAction';
 import { FaqWithImage } from './FAQ/FaqWithImage';
 import { Feature02 } from './FeaturesMotion/FeaturesMotion';
@@ -25,21 +25,27 @@ type LandingPageProps = {
 
 export const LandingPage = ({ callToActionUrl = '#' }: LandingPageProps) => {
   return (
-    <div style={{ padding: '15px' }}>
+    <>
       <Hero03 {...HeroText} />
-      <div style={{ overflow: 'hidden' }}>
+      <Container
+        bg="var(--mantine-color-body)"
+        py="calc(var(--mantine-spacing-lg) * 3)"
+        px="15px"
+        fluid
+        style={{ overflow: 'hidden' }}
+      >
         <Story01 {...Story01Text} />
-        <Space h="xl" />
+        <Space h="md" />
         <Story02 {...Story02Text} />
-        <Space h="xl" />
+        <Space h="md" />
         <Story03 {...Story03Text} />
-        <Space h="xl" />
+        <Space h="md" />
         <Story04 {...Story04Text} />
-      </div>
+      </Container>
       <Feature02 />
       <Pricing01 callToActionUrl={callToActionUrl} {...PricingText} />
       <FaqWithImage />
       <CallToAction01 {...CallToActionText} />
-    </div>
+    </>
   );
 };
