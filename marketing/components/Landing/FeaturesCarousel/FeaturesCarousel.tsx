@@ -33,14 +33,14 @@ export function FeaturesCarousel() {
         loop
         align="start"
         pos="relative"
-        previousControlProps={{'aria-label': 'Previous Feature'}}
-        nextControlProps={{'aria-label': 'Next Feature'}}
+        previousControlProps={{ 'aria-label': 'Previous Feature' }}
+        nextControlProps={{ 'aria-label': 'Next Feature' }}
       >
         {images.map((imageData) => (
           <Carousel.Slide key={imageData.alt} id={imageData.alt}>
-            <Image 
-              src={imageData.src} 
-              className={classes.image} 
+            <Image
+              src={imageData.src}
+              className={classes.image}
               alt={imageData.alt}
               loading="lazy"
             />
