@@ -291,7 +291,6 @@ services:
     image: '${DOCKER_IMAGE_FRONTEND?unset}:latest'
     build:
       context: ./frontend
-      target: build-stage
       args:
         - VITE_LABOUR_SERVICE_URL=${LABOUR_SERVICE_URL?unset}
         - VITE_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
@@ -306,16 +305,14 @@ services:
       - traefik-public
       - default
     ports:
-      - "5173:5173"
+      - "5173:80"
     volumes:
       - ./frontend:/app
-    command: [ "npm", "run", "dev" ]
 
   marketing:
     image: '${DOCKER_IMAGE_MARKETING?unset}:latest'
     build:
       context: ./marketing
-      target: build-stage
       args:
         - NODE_ENV=development
         - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
@@ -327,7 +324,7 @@ services:
       - traefik-public
       - default
     ports:
-      - "3000:3000"
+      - "3000:81"
     environment:
       - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
       - NEXT_PUBLIC_FRONTEND_URL=${FRONTEND_URL?unset}
@@ -335,7 +332,6 @@ services:
       - NEXT_PUBLIC_CLOUDFLARE_SITEKEY=${CLOUDFLARE_SITEKEY?unset}
     volumes:
       - ./marketing:/app
-    command: [ "npm", "run", "dev" ]
 
   mailcatcher:
     image: schickling/mailcatcher

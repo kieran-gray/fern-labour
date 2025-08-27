@@ -11,13 +11,10 @@ export type CallToActionProps = {
 
 export const CallToAction01 = ({ title, description, cta }: CallToActionProps) => (
   <Container
-    py={{
-      base: 'calc(var(--mantine-spacing-lg))',
-      xs: 'calc(var(--mantine-spacing-lg) * 2)',
-      lg: 'calc(var(--mantine-spacing-lg) * 3)',
-    }}
-    px={0}
-    w="100%"
+    bg="var(--mantine-color-body)"
+    py="calc(var(--mantine-spacing-lg) * 3)"
+    px="15px"
+    fluid
   >
     <Container w="100%">
       <Card radius="lg" mih={400} bg="transparent">

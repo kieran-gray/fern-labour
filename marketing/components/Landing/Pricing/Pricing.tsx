@@ -131,11 +131,8 @@ export const Pricing01 = ({ title, description, callToActionUrl = '#' }: Pricing
   return (
     <Container
       bg="var(--mantine-color-body)"
-      py={{
-        base: 'calc(var(--mantine-spacing-lg) * 1)',
-        xs: 'calc(var(--mantine-spacing-lg) * 2)',
-        lg: 'calc(var(--mantine-spacing-lg) * 3)',
-      }}
+      py="calc(var(--mantine-spacing-lg) * 3)"
+      px="15px"
       fluid
     >
       <Container size="md" id="#pricing" style={{ position: 'relative' }}>

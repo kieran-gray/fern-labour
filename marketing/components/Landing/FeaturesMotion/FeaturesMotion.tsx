@@ -18,6 +18,7 @@ import { motion } from 'motion/react';
 import { Box, Card, Container, Flex, Grid, SegmentedControl, Stack, Text } from '@mantine/core';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesMotion.module.css';
+import { FeaturesDemo } from '../FeaturesCarousel/FeaturesCarousel';
 
 type Feature = {
   icon: ReactNode;
@@ -165,18 +166,15 @@ export const Feature02 = ({
 
   return (
     <Container
-      bg="var(--mantine-color-body)"
-      py={{
-        base: 'calc(var(--mantine-spacing-lg) * 4)',
-        xs: 'calc(var(--mantine-spacing-lg) * 5)',
-        lg: 'calc(var(--mantine-spacing-lg) * 6)',
-      }}
+      py="calc(var(--mantine-spacing-lg) * 3)"
+      px="15px"
       fluid
     >
       <Container size="lg" px={0} style={{ position: 'relative' }} id="#features">
-        <JumboTitle order={2} fz="md" style={{ textWrap: 'balance' }}>
+        <JumboTitle order={2} fz="md" ta="center" style={{ textWrap: 'balance' }}>
           {title}
         </JumboTitle>
+        <FeaturesDemo />
         <SegmentedControl
           size="xl"
           visibleFrom="sm"
@@ -201,7 +199,7 @@ export const Feature02 = ({
         />
       </Container>
       <Container size="lg" p={0} mt="xl">
-        <Grid gutter="xl">
+        <Grid gutter="lg">
           {featuresToRender.map((feature, index) => (
             <Grid.Col key={`${feature.title}-${mode}`} span={{ base: 12, xs: 6, md: 4 }} mih="100%">
               <FeatureCell
