@@ -27,10 +27,10 @@ export const LandingPage = ({ callToActionUrl = '#' }: LandingPageProps) => {
   return (
     <>
       <Hero03 {...HeroText} />
-      <Container 
+      <Container
         bg="var(--mantine-color-body)"
-        py="calc(var(--mantine-spacing-lg) * 3)" 
-        px="15px" 
+        py="calc(var(--mantine-spacing-lg) * 3)"
+        px="15px"
         fluid
         style={{ overflow: 'hidden' }}
       >

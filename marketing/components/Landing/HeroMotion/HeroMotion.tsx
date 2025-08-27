@@ -11,7 +11,15 @@ type Hero03Props = ContainerProps & {
 };
 
 export const Hero03 = ({ title, description, ...containerProps }: Hero03Props) => (
-  <Container pos="relative" h="80vh" mah={600} style={{ overflow: 'hidden' }} px="15px" fluid id="#home">
+  <Container
+    pos="relative"
+    h="80vh"
+    mah={600}
+    style={{ overflow: 'hidden' }}
+    px="15px"
+    fluid
+    id="#home"
+  >
     <Container component="section" h="80vh" mah={600} mx="auto" size="xl" {...containerProps}>
       <Box
         pos="absolute"

@@ -10,7 +10,7 @@ const footerSections = [
       { name: 'How It Works', href: '#features' },
       { name: 'Pricing', href: '#pricing' },
       { name: 'Go to App', href: 'https://track.fernlabour.com', external: true },
-    ]
+    ],
   },
   {
     title: 'Support & Info',
@@ -19,8 +19,8 @@ const footerSections = [
       { name: 'Privacy Policy', href: '/privacy' },
       { name: 'Terms of Service', href: '/terms-of-service' },
       { name: 'FAQ', href: '#faqs' },
-    ]
-  }
+    ],
+  },
 ];
 
 export function FooterSimple() {
@@ -34,7 +34,9 @@ export function FooterSimple() {
             <Link href="/">
               <img src="/logo/logo.svg" className={classes.icon} alt="Fern Logo" />
             </Link>
-            <Title order={3} className={classes.logoText}>Fern Labour</Title>
+            <Title order={3} className={classes.logoText}>
+              Fern Labour
+            </Title>
           </Group>
         </div>
 

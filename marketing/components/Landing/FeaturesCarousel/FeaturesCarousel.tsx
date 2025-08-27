@@ -45,11 +45,7 @@ export function FeaturesCarousel() {
 }
 
 export const FeaturesDemo = () => (
-  <Container
-    py="calc(var(--mantine-spacing-lg) * 3)"
-    px="15px"
-    fluid
-  >
+  <Container py="calc(var(--mantine-spacing-lg) * 3)" px="15px" fluid>
     <Container size="lg" p={0}>
       <FeaturesCarousel />
     </Container>

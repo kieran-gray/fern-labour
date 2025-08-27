@@ -15,10 +15,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <MantineProvider theme={theme}>
       <Head>
         <title>Fern Labour</title>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
-        />
+        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <meta
           name="description"
           content="Fern Labour: Effortlessly plan and track your labour with our app. Monitor contractions and share updates with loved ones seamlessly. No download required!"

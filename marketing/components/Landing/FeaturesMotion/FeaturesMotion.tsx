@@ -16,9 +16,9 @@ import {
 } from '@tabler/icons-react';
 import { motion } from 'motion/react';
 import { Box, Card, Container, Flex, Grid, SegmentedControl, Stack, Text } from '@mantine/core';
+import { FeaturesDemo } from '../FeaturesCarousel/FeaturesCarousel';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesMotion.module.css';
-import { FeaturesDemo } from '../FeaturesCarousel/FeaturesCarousel';
 
 type Feature = {
   icon: ReactNode;
@@ -165,11 +165,7 @@ export const Feature02 = ({
   };
 
   return (
-    <Container
-      py="calc(var(--mantine-spacing-lg) * 3)"
-      px="15px"
-      fluid
-    >
+    <Container py="calc(var(--mantine-spacing-lg) * 3)" px="15px" fluid>
       <Container size="lg" px={0} style={{ position: 'relative' }} id="#features">
         <JumboTitle order={2} fz="md" ta="center" style={{ textWrap: 'balance' }}>
           {title}
