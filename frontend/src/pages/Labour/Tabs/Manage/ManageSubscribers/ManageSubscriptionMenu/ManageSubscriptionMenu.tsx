@@ -2,11 +2,12 @@ import { useState } from 'react';
 import {
   ApproveSubscriberRequest,
   BlockSubscriberRequest,
-  OpenAPI,
   RemoveSubscriberRequest,
   SubscriptionManagementService,
   UnblockSubscriberRequest,
 } from '@clients/labour_service';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error } from '@shared/Notifications';
 import {
   IconBan,
@@ -17,10 +18,8 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import ConfirmActionModal from './ConfirmActionModal';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({
@@ -32,10 +31,7 @@ export function ManageSubscriptionMenu({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [action, setAction] = useState('');
-  const auth = useAuth();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
+  const { user } = useApiAuth();
   const queryClient = useQueryClient();
 
   const approveSubscriberMutation = useMutation({
@@ -44,7 +40,7 @@ export function ManageSubscriptionMenu({
       await SubscriptionManagementService.approveSubscriber({ requestBody });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', user?.profile.sub] });
     },
     onError: () => {
       notifications.show({
@@ -61,7 +57,7 @@ export function ManageSubscriptionMenu({
       await SubscriptionManagementService.removeSubscriber({ requestBody });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', user?.profile.sub] });
     },
     onError: () => {
       notifications.show({
@@ -78,7 +74,7 @@ export function ManageSubscriptionMenu({
       await SubscriptionManagementService.blockSubscriber({ requestBody });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', user?.profile.sub] });
     },
     onError: () => {
       notifications.show({
@@ -95,7 +91,7 @@ export function ManageSubscriptionMenu({
       await SubscriptionManagementService.unblockSubscriber({ requestBody });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', user?.profile.sub] });
     },
     onError: () => {
       notifications.show({
@@ -110,7 +106,7 @@ export function ManageSubscriptionMenu({
     setIsModalOpen(false);
   };
 
-  const handleConfirm = (action: string) => {
+  const handleConfirm = () => {
     setIsModalOpen(false);
     if (action === 'remove') {
       removeSubscriberMutation.mutate();
@@ -182,9 +178,15 @@ export function ManageSubscriptionMenu({
           )}
         </Menu.Dropdown>
       </Menu>
-      {isModalOpen && (
-        <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} action={action} />
-      )}
+      <GenericConfirmModal
+        isOpen={isModalOpen}
+        title={action === 'block' ? 'Block Subscriber?' : 'Remove Subscriber?'}
+        confirmText={action === 'block' ? 'Block' : 'Remove'}
+        message="This can't be undone."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        isDangerous
+      />
     </>
   );
 }

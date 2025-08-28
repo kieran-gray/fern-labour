@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
-import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Text, Title } from '@mantine/core';
 import classes from './SelectAppMode.module.css';
@@ -19,8 +19,8 @@ interface ModeContextType {
 const ModeContext = createContext<ModeContextType | undefined>(undefined);
 
 export const ModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const auth = useAuth();
-  const userId = auth.user?.profile.sub;
+  const { user } = useApiAuth();
+  const userId = user?.profile.sub;
   const [mode, setMode] = useState<AppMode | null>(() => {
     const stored = localStorage.getItem(`${userId}:appMode`);
     return stored === AppMode.Birth || stored === AppMode.Subscriber ? stored : null;

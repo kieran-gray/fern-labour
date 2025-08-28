@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { ApiError, CreateCheckoutRequest, OpenAPI, PaymentsService } from '@clients/labour_service';
+import { ApiError, CreateCheckoutRequest, PaymentsService } from '@clients/labour_service';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error } from '@shared/Notifications';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowUp } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Button, Image, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useSubscription } from '../SubscriptionContext';
@@ -14,13 +14,9 @@ import classes from './PayWall.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export const PayWall = () => {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const { subscriptionId } = useSubscription();
   const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
-
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
   const queryClient = useQueryClient();
 
   const stripeCheckout = useMutation({
@@ -45,7 +41,7 @@ export const PayWall = () => {
     },
     onSuccess: async (data) => {
       window.location.href = data.url!;
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour', user?.profile.sub] });
       setMutationInProgress(false);
     },
     onError: async (error) => {

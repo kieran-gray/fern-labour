@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { OpenAPI, SubscribeToRequest, SubscriptionService } from '@clients/labour_service';
+import { SubscribeToRequest, SubscriptionService } from '@clients/labour_service';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error } from '@shared/Notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -22,7 +22,7 @@ export default function SubscribeForm({
   token: string | null;
 }) {
   const [mutationInProgress, setMutationInProgress] = useState(false);
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const navigate = useNavigate();
   const { setMode } = useMode();
   const form = useForm({
@@ -35,10 +35,6 @@ export default function SubscribeForm({
     },
   });
 
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
-
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -49,10 +45,7 @@ export default function SubscribeForm({
       return response.subscription;
     },
     onSuccess: (subscription) => {
-      queryClient.setQueryData(
-        ['subscription', subscription.id, auth.user?.profile.sub],
-        subscription
-      );
+      queryClient.setQueryData(['subscription', subscription.id, user?.profile.sub], subscription);
       setMode(AppMode.Subscriber);
       navigate(`/?prompt=requested`);
     },

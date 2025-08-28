@@ -1,13 +1,13 @@
 import { NotFoundError } from '@base/Errors';
-import { ApiError, LabourQueriesService, OpenAPI } from '@clients/labour_service';
+import { ApiError, LabourQueriesService } from '@clients/labour_service';
 import { useLabour } from '@labour/LabourContext';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { dueDateToGestationalAge } from '@shared/utils';
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Image, Text } from '@mantine/core';
 import image from './Meditate.svg';
@@ -15,16 +15,12 @@ import classes from './LabourDetails.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export default function LabourDetails({ setActiveTab }: { setActiveTab: Function }) {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const navigate = useNavigate();
   const { labourId } = useLabour();
 
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
-
   const { isPending, isError, data, error } = useQuery({
-    queryKey: ['labour', auth.user?.profile.sub],
+    queryKey: ['labour', user?.profile.sub],
     queryFn: async () => {
       try {
         const response = await LabourQueriesService.getLabourById({ labourId: labourId! });

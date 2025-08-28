@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import {
-  OpenAPI,
   SubscriptionDTO,
   SubscriptionManagementService,
   UpdateContactMethodsRequest,
 } from '@clients/labour_service';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error } from '@shared/Notifications';
 import { IconCheck, IconLoader, IconSelector, IconUpload, IconX } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { useSearchParams } from 'react-router-dom';
 import { Button, Modal, MultiSelect } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -27,17 +26,13 @@ export default function ContactMethodsForm({
   opened: boolean;
   close: CloseFunctionType;
 }) {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const prompt = searchParams.get('prompt');
 
   const defaultIcon = <IconUpload size={18} stroke={1.5} />;
   const [icon, setIcon] = useState<React.ReactNode>(defaultIcon);
   const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
-
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
   const queryClient = useQueryClient();
 
   const form = useForm({
@@ -66,15 +61,12 @@ export default function ContactMethodsForm({
     },
     onSuccess: async (subscription) => {
       queryClient.invalidateQueries({
-        queryKey: ['subscription_data', subscription.id, auth.user?.profile.sub],
+        queryKey: ['subscription_data', subscription.id, user?.profile.sub],
       });
       queryClient.invalidateQueries({
-        queryKey: ['subscriber_subscriptions', auth.user?.profile.sub],
+        queryKey: ['subscriber_subscriptions', user?.profile.sub],
       });
-      queryClient.setQueryData(
-        ['subscription', subscription.id, auth.user?.profile.sub],
-        subscription
-      );
+      queryClient.setQueryData(['subscription', subscription.id, user?.profile.sub], subscription);
       setMutationInProgress(false);
       setIcon(<IconCheck size={18} stroke={1.5} />);
       if (prompt === 'contactMethods') {

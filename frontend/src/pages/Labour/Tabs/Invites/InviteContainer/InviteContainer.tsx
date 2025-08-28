@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { ApiError, LabourService, OpenAPI, SendInviteRequest } from '@clients/labour_service';
+import { ApiError, LabourService, SendInviteRequest } from '@clients/labour_service';
 import { useLabour } from '@labour/LabourContext';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error, Success } from '@shared/Notifications';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { validateEmail } from '@shared/utils';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
@@ -16,7 +16,7 @@ import classes from './InviteContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function InviteContainer() {
-  const auth = useAuth();
+  useApiAuth();
   const { labourId } = useLabour();
   const [mutationInProgress, setMutationInProgress] = useState(false);
   const form = useForm({
@@ -29,10 +29,6 @@ export function InviteContainer() {
       email: (value) => (validateEmail(value) ? null : 'Invalid email'),
     },
   });
-
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
 
   const mutation = useMutation({
     mutationFn: async (values: typeof form.values) => {

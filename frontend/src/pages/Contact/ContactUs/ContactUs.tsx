@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useApiAuth } from '@base/shared-components/hooks/useApiAuth.ts';
 import { validateMessage } from '@base/shared-components/utils.tsx';
 import { ContactUsService } from '@clients/contact_service/sdk.gen.ts';
 import { ContactUsRequest } from '@clients/contact_service/types.gen.ts';
@@ -6,7 +7,6 @@ import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveD
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle.tsx';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import Turnstile from 'react-turnstile';
 import {
   Alert,
@@ -35,11 +35,11 @@ const categories = [
 
 export function ContactUs() {
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useApiAuth();
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [rating, setRating] = useState(5);
   const [checked, setChecked] = useState(false);
-  const auth = useAuth();
 
   const form = useForm({
     initialValues: {
@@ -58,11 +58,11 @@ export function ContactUs() {
       }
 
       const requestBody: ContactUsRequest = {
-        email: `${auth.user?.profile.email}`,
-        name: `${auth.user?.profile.given_name} ${auth.user?.profile.family_name}`,
+        email: `${user?.profile.email}`,
+        name: `${user?.profile.given_name} ${user?.profile.family_name}`,
         message: values.message,
         token: turnstileToken!,
-        user_id: auth.user?.profile.sub,
+        user_id: user?.profile.sub,
         category: values.category,
         data,
       };

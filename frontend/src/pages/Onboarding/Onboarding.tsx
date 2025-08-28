@@ -1,27 +1,23 @@
 import { NotFoundError } from '@base/Errors.tsx';
-import { ApiError, OpenAPI } from '@clients/labour_service/index.ts';
+import { ApiError } from '@clients/labour_service/index.ts';
 import { LabourQueriesService } from '@clients/labour_service/sdk.gen.ts';
 import { useLabour } from '@labour/LabourContext.tsx';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Stepper } from '@mantine/core';
 import Plan from './Components/Plan/Plan.tsx';
 import classes from './Onboarding.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export const OnboardingPage = () => {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const { setLabourId } = useLabour();
 
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
-
   const { isPending, isError, data, error } = useQuery({
-    queryKey: ['labour', auth.user?.profile.sub],
+    queryKey: ['labour', user?.profile.sub],
     queryFn: async () => {
       try {
         const response = await LabourQueriesService.getActiveLabour();

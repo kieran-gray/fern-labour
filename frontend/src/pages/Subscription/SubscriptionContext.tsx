@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth } from 'react-oidc-context';
+import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
 
 interface SubscriptionContextType {
   subscriptionId: string | null;
@@ -9,8 +9,8 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const auth = useAuth();
-  const userId = auth.user?.profile.sub;
+  const { user } = useApiAuth();
+  const userId = user?.profile.sub;
   const [subscriptionId, setSubscriptionId] = useState<string | null>(() => {
     return localStorage.getItem(`${userId}:subscriptionId`);
   });

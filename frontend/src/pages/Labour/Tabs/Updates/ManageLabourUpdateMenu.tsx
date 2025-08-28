@@ -3,13 +3,12 @@ import {
   ApiError,
   DeleteLabourUpdateRequest,
   LabourUpdatesService,
-  OpenAPI,
   UpdateLabourUpdateRequest,
 } from '@clients/labour_service';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error, Success } from '@shared/Notifications';
 import { IconDots, IconPencil, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -27,15 +26,11 @@ export function ManageLabourUpdateMenu({
   statusUpdateId,
   currentMessage = '',
 }: ManageLabourUpdateMenuProps) {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false);
   const [announceOpened, { open: openAnnounce, close: closeAnnounce }] = useDisclosure(false);
   const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [editMessage, setEditMessage] = useState(currentMessage);
-
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
   const queryClient = useQueryClient();
 
   const editStatusUpdate = useMutation({
@@ -47,7 +42,7 @@ export function ManageLabourUpdateMenu({
       await LabourUpdatesService.updateLabourUpdate({ requestBody });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour', user?.profile.sub] });
       notifications.show({
         ...Success,
         title: 'Success',
@@ -70,7 +65,7 @@ export function ManageLabourUpdateMenu({
       await LabourUpdatesService.deleteLabourUpdate({ requestBody });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour', user?.profile.sub] });
       notifications.show({
         ...Success,
         title: 'Success',
@@ -95,7 +90,7 @@ export function ManageLabourUpdateMenu({
       await LabourUpdatesService.updateLabourUpdate({ requestBody });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour', user?.profile.sub] });
       notifications.show({
         ...Success,
         title: 'Success',

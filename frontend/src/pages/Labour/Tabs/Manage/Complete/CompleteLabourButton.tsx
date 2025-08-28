@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Error } from '@base/shared-components/Notifications';
-import { CompleteLabourRequest, LabourService, OpenAPI } from '@clients/labour_service';
+import { CompleteLabourRequest, LabourService } from '@clients/labour_service';
 import { useLabour } from '@labour/LabourContext';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { IconConfetti } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
@@ -17,14 +17,11 @@ export default function CompleteLabourButton({
   labourNotes: string;
   disabled: boolean;
 }) {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const navigate = useNavigate();
   const { setLabourId } = useLabour();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -37,8 +34,8 @@ export default function CompleteLabourButton({
       await LabourService.completeLabour({ requestBody });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['birthingPerson', auth.user?.profile.sub] });
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['birthingPerson', user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour', user?.profile.sub] });
       setLabourId(null);
       navigate('/completed');
     },

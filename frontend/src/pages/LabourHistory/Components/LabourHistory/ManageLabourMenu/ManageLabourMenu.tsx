@@ -1,20 +1,17 @@
 import { useState } from 'react';
-import { ApiError, LabourService, OpenAPI } from '@clients/labour_service';
+import { ApiError, LabourService } from '@clients/labour_service';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error } from '@shared/Notifications';
 import { IconDots, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import ConfirmActionModal from './ConfirmActionModal';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageLabourMenu({ labourId }: { labourId: string }) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const auth = useAuth();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
+  const { user } = useApiAuth();
   const queryClient = useQueryClient();
 
   const deleteLabourMutation = useMutation({
@@ -22,7 +19,7 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
       await LabourService.deleteLabour({ labourId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labours', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labours', user?.profile.sub] });
     },
     onError: (error) => {
       let message = 'Unknown error occurred';
@@ -70,7 +67,16 @@ export function ManageLabourMenu({ labourId }: { labourId: string }) {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      {isModalOpen && <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} />}
+      <GenericConfirmModal
+        isOpen={isModalOpen}
+        title="Delete Labour?"
+        confirmText="Delete"
+        message="This can't be undone."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        isDangerous
+        showCloseButton={false}
+      />
     </>
   );
 }

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { NotFoundError, PermissionDenied } from '@base/Errors';
-import { ApiError, LabourQueriesService, OpenAPI } from '@clients/labour_service';
+import { ApiError, LabourQueriesService } from '@clients/labour_service';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
 import {
   IconChartHistogram,
@@ -12,7 +13,6 @@ import {
   IconStopwatch,
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Center, Space, Tabs, Text } from '@mantine/core';
@@ -37,7 +37,7 @@ const TABS = [
 const tabOrder = TABS.map((tab) => tab.id);
 
 export const LabourPage = () => {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const navigate = useNavigate();
   const { labourId, setLabourId } = useLabour();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,8 +67,6 @@ export const LabourPage = () => {
     preventScrollOnSwipe: true,
   });
 
-  OpenAPI.TOKEN = async () => auth.user?.access_token || '';
-
   const getLabourId = (labourId: string | null, labourIdParam: string | null): string | null => {
     if (labourId !== null && labourId !== '') {
       return labourId;
@@ -82,7 +80,7 @@ export const LabourPage = () => {
     data: labour,
     error,
   } = useQuery({
-    queryKey: ['labour', auth.user?.profile.sub],
+    queryKey: ['labour', user?.profile.sub],
     queryFn: async () => {
       try {
         let response;

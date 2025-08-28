@@ -1,22 +1,19 @@
 import { useState } from 'react';
-import { OpenAPI, SubscriptionService, UnsubscribeFromRequest } from '@clients/labour_service';
+import { SubscriptionService, UnsubscribeFromRequest } from '@clients/labour_service';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error } from '@shared/Notifications';
 import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconDots, IconUserMinus } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import ConfirmActionModal from './ConfirmActionModal';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { setSubscriptionId } = useSubscription();
-  const auth = useAuth();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
+  const { user } = useApiAuth();
   const queryClient = useQueryClient();
 
   const unsubscribeMutation = useMutation({
@@ -26,7 +23,7 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['subscriber_subscriptions', auth.user?.profile.sub],
+        queryKey: ['subscriber_subscriptions', user?.profile.sub],
       });
       setSubscriptionId('');
     },
@@ -67,7 +64,15 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      {isModalOpen && <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} />}
+      <GenericConfirmModal
+        isOpen={isModalOpen}
+        title="Unsubscribe?"
+        confirmText="Unsubscribe"
+        message="This can't be undone."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        isDangerous
+      />
     </>
   );
 }

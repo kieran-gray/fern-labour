@@ -1,18 +1,13 @@
 import { useState } from 'react';
 import { validateEmail } from '@base/shared-components/utils';
-import {
-  ApiError,
-  OpenAPI,
-  SendSubscriberInviteRequest,
-  SubscriberService,
-} from '@clients/labour_service';
+import { ApiError, SendSubscriberInviteRequest, SubscriberService } from '@clients/labour_service';
 import image from '@labour/Tabs/Invites/InviteContainer/invite.svg';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error, Success } from '@shared/Notifications';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconAt, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
@@ -21,7 +16,7 @@ import baseClasses from '@shared/shared-styles.module.css';
 
 export function InviteContainer() {
   const [mutationInProgress, setMutationInProgress] = useState(false);
-  const auth = useAuth();
+  useApiAuth();
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -32,10 +27,6 @@ export function InviteContainer() {
       email: (value) => (validateEmail(value) ? null : 'Invalid email'),
     },
   });
-
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
 
   const mutation = useMutation({
     mutationFn: async (values: typeof form.values) => {

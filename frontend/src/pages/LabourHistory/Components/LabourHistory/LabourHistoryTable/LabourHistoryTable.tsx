@@ -1,10 +1,10 @@
-import { LabourQueriesService, OpenAPI } from '@clients/labour_service';
+import { LabourQueriesService } from '@clients/labour_service';
 import { useLabour } from '@labour/LabourContext';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Table, Text } from '@mantine/core';
 import { ManageLabourMenu } from '../ManageLabourMenu/ManageLabourMenu';
@@ -12,16 +12,13 @@ import classes from './LabourHistoryTable.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function LabourHistoryTable() {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const { labourId, setLabourId } = useLabour();
   const navigate = useNavigate();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
   const queryClient = useQueryClient();
 
   const { isPending, isError, data, error } = useQuery({
-    queryKey: ['labours', auth.user?.profile.sub],
+    queryKey: ['labours', user?.profile.sub],
     queryFn: async () => {
       try {
         const response = await LabourQueriesService.getAllLabours();

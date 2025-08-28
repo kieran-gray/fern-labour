@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { validateLabourName } from '@base/shared-components/utils';
-import { LabourDTO, LabourService, OpenAPI, PlanLabourRequest } from '@clients/labour_service';
+import { LabourDTO, LabourService, PlanLabourRequest } from '@clients/labour_service';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error, Success } from '@shared/Notifications';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, Radio, TextInput, Title } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
@@ -17,12 +17,8 @@ import baseClasses from '@shared/shared-styles.module.css';
 
 export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
   const navigate = useNavigate();
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
-
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
 
   const icon =
     labour === undefined ? (
@@ -64,7 +60,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
       return response.labour;
     },
     onSuccess: async (labour, variables) => {
-      queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
+      queryClient.setQueryData(['labour', user?.profile.sub], labour);
       const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';
       notifications.show({
         ...Success,

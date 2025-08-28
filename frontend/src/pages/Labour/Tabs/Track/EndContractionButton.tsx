@@ -4,14 +4,13 @@ import {
   ContractionsService,
   EndContractionRequest,
   LabourDTO,
-  OpenAPI,
 } from '@clients/labour_service';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { Error } from '@shared/Notifications';
 import { contractionDurationSeconds } from '@shared/utils';
 import { IconHourglassHigh } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
-import { useAuth } from 'react-oidc-context';
 import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 
@@ -25,10 +24,7 @@ export default function EndContractionButton({
   disabled: boolean;
 }) {
   const [mutationInProgress, setMutationInProgress] = useState(false);
-  const auth = useAuth();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
+  const { user } = useApiAuth();
 
   const queryClient = useQueryClient();
 
@@ -40,10 +36,10 @@ export default function EndContractionButton({
       return response.labour;
     },
     onMutate: async ({ intensity, endTime }: { intensity: number; endTime: string }) => {
-      await queryClient.cancelQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      await queryClient.cancelQueries({ queryKey: ['labour', user?.profile.sub] });
       const previousLabourState: LabourDTO | undefined = queryClient.getQueryData([
         'labour',
-        auth.user?.profile.sub,
+        user?.profile.sub,
       ]);
       if (previousLabourState != null) {
         const newLabourState = _.cloneDeep(previousLabourState);
@@ -55,16 +51,16 @@ export default function EndContractionButton({
         contraction.intensity = intensity;
         contraction.end_time = endTime;
         contraction.duration = contractionDurationSeconds(contraction);
-        queryClient.setQueryData(['labour', auth.user?.profile.sub], newLabourState);
+        queryClient.setQueryData(['labour', user?.profile.sub], newLabourState);
       }
       return { previousLabourState };
     },
     onSuccess: (labour) => {
-      queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
+      queryClient.setQueryData(['labour', user?.profile.sub], labour);
     },
     onError: (error, _, context) => {
       if (context != null) {
-        queryClient.setQueryData(['labour', auth.user?.profile.sub], context.previousLabourState);
+        queryClient.setQueryData(['labour', user?.profile.sub], context.previousLabourState);
       }
       notifications.show({
         ...Error,
@@ -73,7 +69,7 @@ export default function EndContractionButton({
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
+      queryClient.invalidateQueries({ queryKey: ['labour', user?.profile.sub] });
       setMutationInProgress(false);
     },
   });

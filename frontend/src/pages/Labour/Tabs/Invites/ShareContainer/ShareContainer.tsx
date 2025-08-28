@@ -1,10 +1,10 @@
-import { LabourService, OpenAPI } from '@clients/labour_service';
+import { LabourService } from '@clients/labour_service';
 import { useLabour } from '@labour/LabourContext';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Group, Image, Space, Text, Title } from '@mantine/core';
 import { CopyButton } from '../CopyButton/CopyButton';
 import QRButton from '../QRButton/QRButton';
@@ -13,14 +13,11 @@ import classes from './ShareContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ShareContainer() {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const { labourId } = useLabour();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
 
   const { isPending, isError, data, error } = useQuery({
-    queryKey: ['token', auth.user?.profile.sub],
+    queryKey: ['token', user?.profile.sub],
     queryFn: async () => {
       const response = await LabourService.getSubscriptionToken();
       return response.token;

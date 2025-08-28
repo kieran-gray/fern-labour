@@ -1,24 +1,21 @@
 import { ReactElement } from 'react';
-import { OpenAPI, SubscriptionService } from '@clients/labour_service';
+import { SubscriptionService } from '@clients/labour_service';
+import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconArrowRight, IconX } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Avatar, Button, Group, Table, Text } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import classes from './SubscriptionsTable.module.css';
 
 export function SubscriptionsTable() {
-  const auth = useAuth();
+  const { user } = useApiAuth();
   const { subscriptionId, setSubscriptionId } = useSubscription();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
 
   const { isPending, isError, data, error } = useQuery({
-    queryKey: ['subscriber_subscriptions', auth.user?.profile.sub],
+    queryKey: ['subscriber_subscriptions', user?.profile.sub],
     queryFn: async () => {
       try {
         const response = await SubscriptionService.getSubscriberSubscriptions();
