@@ -1,30 +1,16 @@
 import { ReactElement } from 'react';
-import { SubscriptionService } from '@clients/labour_service';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
+import { useSubscriberSubscriptions } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconArrowRight, IconX } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
 import { Avatar, Button, Group, Table, Text } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import classes from './SubscriptionsTable.module.css';
 
 export function SubscriptionsTable() {
-  const { user } = useApiAuth();
   const { subscriptionId, setSubscriptionId } = useSubscription();
-
-  const { isPending, isError, data, error } = useQuery({
-    queryKey: ['subscriber_subscriptions', user?.profile.sub],
-    queryFn: async () => {
-      try {
-        const response = await SubscriptionService.getSubscriberSubscriptions();
-        return response;
-      } catch (err) {
-        throw new Error('Failed to load subscriptions. Please try again later.');
-      }
-    },
-  });
+  const { isPending, isError, data, error } = useSubscriberSubscriptions();
 
   if (isPending) {
     return (

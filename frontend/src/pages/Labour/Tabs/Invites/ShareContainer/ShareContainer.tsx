@@ -1,10 +1,8 @@
-import { LabourService } from '@clients/labour_service';
+import { useSubscriptionToken } from '@base/shared-components/hooks';
 import { useLabour } from '@labour/LabourContext';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import { useQuery } from '@tanstack/react-query';
 import { Group, Image, Space, Text, Title } from '@mantine/core';
 import { CopyButton } from '../CopyButton/CopyButton';
 import QRButton from '../QRButton/QRButton';
@@ -13,16 +11,8 @@ import classes from './ShareContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ShareContainer() {
-  const { user } = useApiAuth();
   const { labourId } = useLabour();
-
-  const { isPending, isError, data, error } = useQuery({
-    queryKey: ['token', user?.profile.sub],
-    queryFn: async () => {
-      const response = await LabourService.getSubscriptionToken();
-      return response.token;
-    },
-  });
+  const { isPending, isError, data, error } = useSubscriptionToken();
 
   if (isPending) {
     return (

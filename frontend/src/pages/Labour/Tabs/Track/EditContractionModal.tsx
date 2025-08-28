@@ -1,18 +1,11 @@
 import { useState } from 'react';
-import {
-  ContractionsService,
-  DeleteContractionRequest,
-  UpdateContractionRequest,
-} from '@clients/labour_service';
+import { useDeleteContraction, useUpdateContraction } from '@base/shared-components/hooks';
+import { UpdateContractionRequest } from '@clients/labour_service';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
-import { Error, Success } from '@shared/Notifications';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
 import { ContractionData } from './ContractionTimeline';
 import { updateTime } from './UpdateTime';
 import classes from './Contractions.module.css';
@@ -29,11 +22,9 @@ export const EditContractionModal = ({
   opened: boolean;
   close: CloseFunctionType;
 }) => {
-  const { user } = useApiAuth();
   const [updateMutationInProgress, setUpdateMutationInProgress] = useState<boolean>(false);
   const [deleteMutationInProgress, setDeleteMutationInProgress] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const queryClient = useQueryClient();
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -44,86 +35,53 @@ export const EditContractionModal = ({
     },
   });
 
-  const deleteContractionMutation = useMutation({
-    mutationFn: async ({ contractionId }: { contractionId: string }) => {
-      setDeleteMutationInProgress(true);
-      const requestBody: DeleteContractionRequest = { contraction_id: contractionId };
-      const response = await ContractionsService.deleteContraction({ requestBody });
-      return response.labour;
-    },
-    onSuccess: async (labour) => {
-      queryClient.setQueryData(['labour', user?.profile.sub], labour);
-      setDeleteMutationInProgress(false);
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Contraction Deleted`,
-      });
-      close();
-    },
-    onError: async (_) => {
-      setDeleteMutationInProgress(false);
-      notifications.show({
-        ...Error,
-        title: 'Error Deleting Contraction',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-  });
+  const deleteContractionMutation = useDeleteContraction();
+  const updateContractionMutation = useUpdateContraction();
 
-  const updateContractionMutation = useMutation({
-    mutationFn: async ({
-      values,
-      contractionId,
-    }: {
-      values: typeof form.values;
-      contractionId: string;
-    }) => {
-      setUpdateMutationInProgress(true);
-      const startTime =
-        values.startTime !== ''
-          ? updateTime(contractionData!.startTime, values.startTime)
-          : contractionData!.startTime;
-      const endTime =
-        values.endTime !== ''
-          ? updateTime(contractionData!.endTime, values.endTime)
-          : contractionData!.endTime;
+  const handleDeleteContraction = async (contractionId: string) => {
+    setDeleteMutationInProgress(true);
+    try {
+      await deleteContractionMutation.mutateAsync(contractionId);
+    } finally {
+      setDeleteMutationInProgress(false);
+    }
+  };
 
-      const requestBody: UpdateContractionRequest = {
-        start_time: startTime,
-        end_time: endTime,
-        intensity: values.intensity != null ? values.intensity : contractionData!.intensity,
-        contraction_id: contractionId,
-      };
-      const response = await ContractionsService.updateContraction({ requestBody });
-      return response.labour;
-    },
-    onSuccess: async (labour) => {
-      queryClient.setQueryData(['labour', user?.profile.sub], labour);
+  const handleUpdateContraction = async ({
+    values,
+    contractionId,
+  }: {
+    values: typeof form.values;
+    contractionId: string;
+  }) => {
+    setUpdateMutationInProgress(true);
+    const startTime =
+      values.startTime !== ''
+        ? updateTime(contractionData!.startTime, values.startTime)
+        : contractionData!.startTime;
+    const endTime =
+      values.endTime !== ''
+        ? updateTime(contractionData!.endTime, values.endTime)
+        : contractionData!.endTime;
+
+    const requestBody: UpdateContractionRequest = {
+      start_time: startTime,
+      end_time: endTime,
+      intensity: values.intensity != null ? values.intensity : contractionData!.intensity,
+      contraction_id: contractionId,
+    };
+
+    try {
+      await updateContractionMutation.mutateAsync(requestBody);
+    } finally {
       setUpdateMutationInProgress(false);
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Contraction Updated`,
-      });
-      close();
-    },
-    onError: async (_) => {
-      setUpdateMutationInProgress(false);
-      notifications.show({
-        ...Error,
-        title: 'Error Updating Contraction',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-    onSettled: () => {
       form.reset();
-    },
-  });
+    }
+  };
 
   const handleConfirm = () => {
     setIsModalOpen(false);
-    deleteContractionMutation.mutate({ contractionId: contractionData!.contractionId });
+    handleDeleteContraction(contractionData!.contractionId);
   };
 
   const handleCancel = () => {
@@ -157,7 +115,7 @@ export const EditContractionModal = ({
       >
         <form
           onSubmit={form.onSubmit((values) =>
-            updateContractionMutation.mutate({
+            handleUpdateContraction({
               values,
               contractionId: contractionData!.contractionId,
             })

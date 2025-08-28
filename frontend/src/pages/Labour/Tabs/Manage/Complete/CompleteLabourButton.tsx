@@ -1,14 +1,8 @@
 import { useState } from 'react';
-import { Error } from '@base/shared-components/Notifications';
-import { CompleteLabourRequest, LabourService } from '@clients/labour_service';
-import { useLabour } from '@labour/LabourContext';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
+import { GenericConfirmModal } from '@base/shared-components/GenericConfirmModal/GenericConfirmModal';
+import { useCompleteLabour } from '@base/shared-components/hooks';
 import { IconConfetti } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import ConfirmCompleteLabourModal from './ConfirmCompleteLabour';
 
 export default function CompleteLabourButton({
   labourNotes,
@@ -17,40 +11,18 @@ export default function CompleteLabourButton({
   labourNotes: string;
   disabled: boolean;
 }) {
-  const { user } = useApiAuth();
-  const navigate = useNavigate();
-  const { setLabourId } = useLabour();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
-  const queryClient = useQueryClient();
+  const completeLabourMutation = useCompleteLabour();
 
-  const mutation = useMutation({
-    mutationFn: async (labourNotes: string) => {
-      setIsMutating(true);
-      const requestBody: CompleteLabourRequest = {
-        end_time: new Date().toISOString(),
-        notes: labourNotes,
-      };
-      await LabourService.completeLabour({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['birthingPerson', user?.profile.sub] });
-      queryClient.invalidateQueries({ queryKey: ['labour', user?.profile.sub] });
-      setLabourId(null);
-      navigate('/completed');
-    },
-    onError: (error) => {
-      console.error('Error completing labour', error);
-      notifications.show({
-        ...Error,
-        title: 'Error Completing Labour',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-    onSettled: () => {
+  const handleCompleteLabour = async (labourNotes: string) => {
+    setIsMutating(true);
+    try {
+      await completeLabourMutation.mutateAsync(labourNotes);
+    } finally {
       setIsMutating(false);
-    },
-  });
+    }
+  };
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -58,7 +30,7 @@ export default function CompleteLabourButton({
 
   const handleConfirm = () => {
     setIsModalOpen(false);
-    mutation.mutate(labourNotes);
+    handleCompleteLabour(labourNotes);
   };
 
   const icon = <IconConfetti size={25} />;
@@ -96,9 +68,15 @@ export default function CompleteLabourButton({
       >
         Complete Labour
       </Button>
-      {isModalOpen && (
-        <ConfirmCompleteLabourModal onConfirm={handleConfirm} onCancel={handleCancel} />
-      )}
+      <GenericConfirmModal
+        isOpen={isModalOpen}
+        title="Complete your labour?"
+        confirmText="Yes"
+        message="Are you sure you want to complete your current labour?"
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        isDangerous
+      />
     </>
   );
 }

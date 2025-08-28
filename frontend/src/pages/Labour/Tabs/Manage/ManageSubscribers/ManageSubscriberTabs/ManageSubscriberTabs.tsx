@@ -1,10 +1,9 @@
-import { SubscriptionDTO, SubscriptionService } from '@clients/labour_service';
-import { useLabour } from '@labour/LabourContext';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
+import { useLabour } from '@base/pages/Labour/LabourContext';
+import { SubscriptionDTO } from '@clients/labour_service';
+import { useLabourSubscriptions } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconUserCheck, IconUserOff, IconUserQuestion } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
 import { Tabs, Text } from '@mantine/core';
 import { SubscribersTable } from '../SubscribersTable/SubscribersTable';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -16,18 +15,8 @@ const TABS = [
 ] as const;
 
 export const ManageSubscribersTabs = () => {
-  const { user } = useApiAuth();
   const { labourId } = useLabour();
-
-  const { isPending, isError, data, error } = useQuery({
-    queryKey: ['labour_subscriptions', user?.profile.sub],
-    queryFn: async () => {
-      const response = await SubscriptionService.getLabourSubscriptions({ labourId: labourId! });
-      return response;
-    },
-    enabled: !!labourId,
-    refetchInterval: 30000,
-  });
+  const { isPending, isError, data, error } = useLabourSubscriptions(labourId!);
 
   if (isPending) {
     return (

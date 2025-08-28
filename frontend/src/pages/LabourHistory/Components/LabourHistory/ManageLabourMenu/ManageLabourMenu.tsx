@@ -1,47 +1,18 @@
 import { useState } from 'react';
-import { ApiError, LabourService } from '@clients/labour_service';
+import { useDeleteLabour } from '@base/shared-components/hooks';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
-import { Error } from '@shared/Notifications';
 import { IconDots, IconTrash } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ActionIcon, Menu } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageLabourMenu({ labourId }: { labourId: string }) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { user } = useApiAuth();
-  const queryClient = useQueryClient();
 
-  const deleteLabourMutation = useMutation({
-    mutationFn: async () => {
-      await LabourService.deleteLabour({ labourId });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labours', user?.profile.sub] });
-    },
-    onError: (error) => {
-      let message = 'Unknown error occurred';
-      if (error instanceof ApiError) {
-        try {
-          const body = error.body as { description: string };
-          message = body.description;
-        } catch {
-          // Do nothing
-        }
-      }
-      notifications.show({
-        ...Error,
-        title: 'Error deleting labour',
-        message,
-      });
-    },
-  });
+  const deleteLabourMutation = useDeleteLabour();
 
   const handleConfirm = () => {
     setIsModalOpen(false);
-    deleteLabourMutation.mutate();
+    deleteLabourMutation.mutate(labourId);
   };
 
   const handleCancel = () => {

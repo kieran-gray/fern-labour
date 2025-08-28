@@ -1,10 +1,9 @@
-import { LabourQueriesService } from '@clients/labour_service';
 import { useLabour } from '@labour/LabourContext';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
+import { useLabourHistory } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Table, Text } from '@mantine/core';
 import { ManageLabourMenu } from '../ManageLabourMenu/ManageLabourMenu';
@@ -12,22 +11,12 @@ import classes from './LabourHistoryTable.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function LabourHistoryTable() {
-  const { user } = useApiAuth();
   const { labourId, setLabourId } = useLabour();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isPending, isError, data, error } = useLabourHistory();
 
-  const { isPending, isError, data, error } = useQuery({
-    queryKey: ['labours', user?.profile.sub],
-    queryFn: async () => {
-      try {
-        const response = await LabourQueriesService.getAllLabours();
-        return response.labours;
-      } catch (err) {
-        throw new Error('Failed to load labours. Please try again later.');
-      }
-    },
-  });
+  const labours = data?.labours || [];
 
   if (isPending) {
     return (
@@ -41,7 +30,7 @@ export function LabourHistoryTable() {
     return <ImportantText message={error.message} />;
   }
 
-  const sortedLabours = data.sort((a, b) =>
+  const sortedLabours = labours.sort((a, b) =>
     a.due_date < b.due_date ? -1 : a.due_date > b.due_date ? 1 : 0
   );
 
