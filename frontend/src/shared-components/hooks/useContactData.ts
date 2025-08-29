@@ -1,7 +1,4 @@
-import {
-  ContactUsSendMessageApiV1ContactUsPostData,
-  ContactUsService,
-} from '@clients/contact_service';
+import { ContactUsRequest, ContactUsService } from '@clients/contact_service';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
@@ -11,10 +8,10 @@ import { useApiAuth } from './useApiAuth';
  * Custom hook for submitting contact form
  */
 export function useSubmitContactForm() {
-  useApiAuth(); // Ensure API authentication is set up
+  useApiAuth();
 
   return useMutation({
-    mutationFn: async (requestBody: ContactUsSendMessageApiV1ContactUsPostData['requestBody']) => {
+    mutationFn: async (requestBody: ContactUsRequest) => {
       const response = await ContactUsService.contactUsSendMessage({ requestBody });
       return response;
     },

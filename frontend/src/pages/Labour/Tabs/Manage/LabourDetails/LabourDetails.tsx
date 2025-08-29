@@ -1,4 +1,4 @@
-import { useLabourById } from '@base/shared-components/hooks';
+import { useLabourById } from '@shared/hooks';
 import { useLabour } from '@labour/LabourContext';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';

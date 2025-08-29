@@ -1,9 +1,9 @@
 import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
-import { SubscriptionDTO, UserService } from '@clients/labour_service';
+import { SubscriptionDTO } from '@clients/labour_service';
+import { useSubscriber } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { Badge, Button, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -39,22 +39,12 @@ export function warnNonUKNumber(
 }
 
 export default function ContactMethods({ subscription }: { subscription: SubscriptionDTO }) {
-  const { user } = useApiAuth();
+  useApiAuth();
   const [searchParams] = useSearchParams();
   const [opened, { open, close }] = useDisclosure(false);
   const prompt = searchParams.get('prompt');
 
-  const { status, data } = useQuery({
-    queryKey: ['subscriber', user?.profile.sub],
-    queryFn: async () => {
-      try {
-        const response = await UserService.getUser();
-        return response;
-      } catch (err) {
-        throw new Error('Failed to load subscriber. Please try again later.');
-      }
-    },
-  });
+  const { status, data } = useSubscriber();
 
   let contactMethodsWarning = null;
   if (status === 'success') {

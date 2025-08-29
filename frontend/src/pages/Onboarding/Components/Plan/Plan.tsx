@@ -1,24 +1,19 @@
-import { useState } from 'react';
 import { validateLabourName } from '@base/shared-components/utils';
-import { LabourDTO, LabourService, PlanLabourRequest } from '@clients/labour_service';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
-import { Error, Success } from '@shared/Notifications';
+import { LabourDTO, PlanLabourRequest } from '@clients/labour_service';
+import { usePlanLabour } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, Radio, TextInput, Title } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
 import image from './plan.svg';
 import classes from './Plan.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
   const navigate = useNavigate();
-  const { user } = useApiAuth();
-  const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
+  const planLabourMutation = usePlanLabour();
 
   const icon =
     labour === undefined ? (
@@ -26,8 +21,6 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
     ) : (
       <IconUpload size={18} stroke={1.5} />
     );
-
-  const queryClient = useQueryClient();
 
   const boolToString = (val: boolean) => {
     return val ? 'true' : 'false';
@@ -43,54 +36,21 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
     validate: { labourName: (value) => validateLabourName(value) },
   });
 
-  const mutation = useMutation({
-    mutationFn: async ({ values, existing }: { values: typeof form.values; existing: boolean }) => {
-      setMutationInProgress(true);
-      const requestBody: PlanLabourRequest = {
-        due_date: values.dueDate.toISOString(),
-        first_labour: values.firstLabour === 'true',
-        labour_name: values.labourName,
-      };
-      let response;
-      if (existing) {
-        response = await LabourService.updateLabourPlan({ requestBody });
-      } else {
-        response = await LabourService.planLabour({ requestBody });
-      }
-      return response.labour;
-    },
-    onSuccess: async (labour, variables) => {
-      queryClient.setQueryData(['labour', user?.profile.sub], labour);
-      const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message,
-      });
-    },
-    onError: async (error) => {
-      notifications.show({
-        ...Error,
-        title: 'Error Planning Labour',
-        message: 'Something went wrong. Please try again.',
-      });
-      console.error('Error planning labour', error);
-    },
-    onSettled: () => {
-      setMutationInProgress(false);
-    },
-  });
+  const handlePlanLabour = (values: typeof form.values) => {
+    const requestBody: PlanLabourRequest = {
+      due_date: values.dueDate.toISOString(),
+      first_labour: values.firstLabour === 'true',
+      labour_name: values.labourName,
+    };
+    planLabourMutation.mutate({ requestBody, existing: labour !== undefined });
+  };
 
   const title = 'Plan your upcoming labour';
   const description =
     'Add some basic details about your upcoming labour to help us provide you with the best service.';
 
   return (
-    <form
-      onSubmit={form.onSubmit((values) =>
-        mutation.mutate({ values, existing: labour !== undefined })
-      )}
-    >
+    <form onSubmit={form.onSubmit((values) => handlePlanLabour(values))}>
       <div className={classes.inner} style={{ padding: 0, marginBottom: '25px' }}>
         <div className={classes.content}>
           <Title order={3} hiddenFrom="sm">
@@ -183,7 +143,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
             className={classes.submitButton}
             styles={{ section: { marginLeft: 22 } }}
             type="submit"
-            loading={mutationInProgress}
+            loading={planLabourMutation.isPending}
           >
             Finish Planning Labour
           </Button>
@@ -200,7 +160,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
             className={classes.submitButton}
             styles={{ section: { marginRight: 22 } }}
             type="submit"
-            loading={mutationInProgress}
+            loading={planLabourMutation.isPending}
           >
             Update labour plan
           </Button>

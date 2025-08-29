@@ -1,10 +1,11 @@
 import {
   ApiError,
-  SubscribeToApiV1SubscriptionSubscribeLabourIdPostData,
+  SubscribeToRequest,
   SubscriptionManagementService,
   SubscriptionService,
+  UpdateContactMethodsRequest,
 } from '@clients/labour_service';
-import { Error as ErrorNotification, Success } from '@shared/Notifications';
+import { Error as ErrorNotification } from '@shared/Notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { queryKeys } from './queryKeys';
@@ -66,7 +67,7 @@ export function useSubscriptionById(subscriptionId: string) {
         const response = await SubscriptionService.getSubscriptionById({ subscriptionId });
         return response;
       } catch (err) {
-        if (err instanceof ApiError && err.status === 404) {
+        if (err instanceof ApiError && [403, 404].includes(err.status)) {
           throw new Error('Subscription not found');
         }
         throw new Error('Failed to load subscription data. Please try again later.');
@@ -77,43 +78,33 @@ export function useSubscriptionById(subscriptionId: string) {
 }
 
 /**
- * Custom hook for creating a subscription
+ * Custom hook for subscriber subscribing to labour
  */
-export function useCreateSubscription() {
+export function useSubscribeTo() {
   const { user } = useApiAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (request: {
-      labourId: string;
-      requestBody: SubscribeToApiV1SubscriptionSubscribeLabourIdPostData['requestBody'];
-    }) => {
+    mutationFn: async (request: { labourId: string; requestBody: SubscribeToRequest }) => {
       const response = await SubscriptionService.subscribeTo({
         labourId: request.labourId,
         requestBody: request.requestBody,
       });
-      return response;
+      return response.subscription;
     },
-    onSuccess: () => {
+    onSuccess: (subscription) => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({
         queryKey: queryKeys.subscriptions.subscriber(user?.profile.sub || ''),
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
-      });
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Subscription created successfully',
-      });
+      queryClient.setQueryData(['subscription', subscription.id, user?.profile.sub], subscription);
     },
-    onError: (error: Error) => {
+    onError: () => {
+      // Generic error
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
-        message: `Failed to create subscription: ${error.message}`,
+        message: `Token or Labour ID is incorrect.`,
       });
     },
   });
@@ -122,34 +113,27 @@ export function useCreateSubscription() {
 /**
  * Custom hook for updating subscription contact methods
  */
-export function useUpdateSubscription() {
+export function useUpdateContactMethods() {
   const { user } = useApiAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (request: { subscriptionId: string; requestBody: any }) => {
-      const response = await SubscriptionManagementService.updateContactMethods({
-        requestBody: {
-          subscription_id: request.subscriptionId,
-          ...request.requestBody,
-        },
-      });
-      return response;
+    mutationFn: async (requestBody: UpdateContactMethodsRequest) => {
+      const response = await SubscriptionManagementService.updateContactMethods({ requestBody });
+      return response.subscription;
     },
-    onSuccess: (_, { subscriptionId }) => {
+    onSuccess: (subscription) => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.byId(subscriptionId, user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.byId(subscription.id, user?.profile.sub || ''),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.subscriptions.subscriber(user?.profile.sub || ''),
       });
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Contact methods updated successfully',
-      });
+      queryClient.setQueryData(
+        queryKeys.subscriptions.byId(subscription.id, user?.profile.sub || ''),
+        subscription
+      );
     },
     onError: (error: Error) => {
       notifications.show({
@@ -162,9 +146,9 @@ export function useUpdateSubscription() {
 }
 
 /**
- * Custom hook for deleting a subscription
+ * Custom hook for unsubscribing from a labour
  */
-export function useDeleteSubscription() {
+export function useUnsubscribeFrom() {
   const { user } = useApiAuth();
   const queryClient = useQueryClient();
 
@@ -182,18 +166,12 @@ export function useDeleteSubscription() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
       });
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Subscription removed successfully',
-      });
     },
     onError: (error: Error) => {
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
-        message: `Failed to remove subscription: ${error.message}`,
+        message: `Failed to unsubscribe: ${error.message}`,
       });
     },
   });

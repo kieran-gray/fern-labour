@@ -1,4 +1,9 @@
-import { UserService } from '@clients/labour_service';
+import {
+  ApiError,
+  SendSubscriberInviteRequest,
+  SubscriberService,
+  UserService,
+} from '@clients/labour_service';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
@@ -55,6 +60,40 @@ export function useUpdateSubscriber() {
         title: 'Error',
         message: `Failed to update profile: ${error.message}`,
       });
+    },
+  });
+}
+
+/**
+ * Custom hook for sending subscriber invites
+ */
+export function useSendSubscriberInvite() {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const requestBody: SendSubscriberInviteRequest = { invite_email: email };
+      await SubscriberService.sendInvite({ requestBody });
+    },
+    onSuccess: () => {
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Invite email sent',
+      });
+    },
+    onError: (err) => {
+      if (err instanceof ApiError && err.status === 429) {
+        notifications.show({
+          ...ErrorNotification,
+          title: 'Slow down!',
+          message: 'You have sent too many invites today. Wait until tomorrow to send more.',
+        });
+      } else {
+        notifications.show({
+          ...ErrorNotification,
+          title: 'Error Sending Invite',
+          message: 'Something went wrong. Please try again.',
+        });
+      }
     },
   });
 }

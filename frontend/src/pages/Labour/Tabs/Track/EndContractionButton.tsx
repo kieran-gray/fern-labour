@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useEndContraction } from '@shared/hooks';
 import { IconHourglassHigh } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
@@ -10,23 +9,10 @@ export default function EndContractionButton({
   intensity: number;
   disabled: boolean;
 }) {
-  const [mutationInProgress, setMutationInProgress] = useState(false);
   const endContractionMutation = useEndContraction();
 
-  const handleEndContraction = async ({
-    intensity,
-    endTime,
-  }: {
-    intensity: number;
-    endTime: string;
-  }) => {
-    setMutationInProgress(true);
-
-    try {
-      await endContractionMutation.mutateAsync({ intensity, endTime });
-    } finally {
-      setMutationInProgress(false);
-    }
+  const handleEndContraction = ({ intensity, endTime }: { intensity: number; endTime: string }) => {
+    endContractionMutation.mutate({ intensity, endTime });
   };
 
   const icon = <IconHourglassHigh size={25} />;
@@ -37,7 +23,7 @@ export default function EndContractionButton({
       radius="xl"
       size="xl"
       variant="white"
-      loading={mutationInProgress}
+      loading={endContractionMutation.isPending}
       onClick={() => {
         const endTime = new Date().toISOString();
         handleEndContraction({ intensity, endTime });

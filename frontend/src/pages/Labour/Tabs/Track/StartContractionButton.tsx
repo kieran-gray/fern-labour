@@ -1,4 +1,4 @@
-import { RefObject, useState } from 'react';
+import { RefObject } from 'react';
 import { ContractionDTO } from '@clients/labour_service';
 import { useLabour } from '@labour/LabourContext';
 import { useStartContraction } from '@shared/hooks';
@@ -11,7 +11,6 @@ export default function StartContractionButton({
 }: {
   stopwatchRef: RefObject<StopwatchHandle>;
 }) {
-  const [mutationInProgress, setMutationInProgress] = useState(false);
   const { labourId } = useLabour();
   const startContractionMutation = useStartContraction();
 
@@ -29,15 +28,9 @@ export default function StartContractionButton({
     };
   };
 
-  const handleStartContraction = async (contraction: ContractionDTO) => {
-    setMutationInProgress(true);
+  const handleStartContraction = (contraction: ContractionDTO) => {
     stopwatchRef.current?.start();
-
-    try {
-      await startContractionMutation.mutateAsync(contraction);
-    } finally {
-      setMutationInProgress(false);
-    }
+    startContractionMutation.mutate(contraction);
   };
 
   const icon = <IconHourglassLow size={25} />;
@@ -48,7 +41,7 @@ export default function StartContractionButton({
       radius="xl"
       size="xl"
       variant="filled"
-      loading={mutationInProgress}
+      loading={startContractionMutation.isPending}
       color="var(--mantine-primary-color-4)"
       onClick={() => handleStartContraction(createNewContraction())}
     >

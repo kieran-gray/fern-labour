@@ -1,12 +1,8 @@
-import { useState } from 'react';
-import { SubscribeToRequest, SubscriptionService } from '@clients/labour_service';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
-import { Error } from '@shared/Notifications';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { SubscribeToRequest } from '@clients/labour_service';
+import { useSubscribeTo } from '@shared/hooks';
 import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
 import { AppMode, useMode } from '../../Home/SelectAppMode';
 import image from './protected.svg';
 import classes from './Form.module.css';
@@ -21,8 +17,6 @@ export default function SubscribeForm({
   labourId: string;
   token: string | null;
 }) {
-  const [mutationInProgress, setMutationInProgress] = useState(false);
-  const { user } = useApiAuth();
   const navigate = useNavigate();
   const { setMode } = useMode();
   const form = useForm({
@@ -35,31 +29,20 @@ export default function SubscribeForm({
     },
   });
 
-  const queryClient = useQueryClient();
+  const subscribeToMutation = useSubscribeTo();
 
-  const mutation = useMutation({
-    mutationFn: async (values: typeof form.values) => {
-      setMutationInProgress(true);
-      const requestBody: SubscribeToRequest = { token: values.token };
-      const response = await SubscriptionService.subscribeTo({ requestBody, labourId });
-      return response.subscription;
-    },
-    onSuccess: (subscription) => {
-      queryClient.setQueryData(['subscription', subscription.id, user?.profile.sub], subscription);
-      setMode(AppMode.Subscriber);
-      navigate(`/?prompt=requested`);
-    },
-    onError: () => {
-      notifications.show({
-        ...Error,
-        title: 'Error',
-        message: 'Token or Labour ID is incorrect.',
-      });
-    },
-    onSettled: () => {
-      setMutationInProgress(false);
-    },
-  });
+  const handleSubscribeTo = (values: typeof form.values) => {
+    const requestBody: SubscribeToRequest = { token: values.token };
+    subscribeToMutation.mutate(
+      { requestBody, labourId },
+      {
+        onSuccess: () => {
+          setMode(AppMode.Subscriber);
+          navigate(`/?prompt=requested`);
+        },
+      }
+    );
+  };
 
   return (
     <div className={baseClasses.root}>
@@ -78,7 +61,7 @@ export default function SubscribeForm({
             </Text>
             <Group mt={30}>
               <form
-                onSubmit={form.onSubmit((values) => mutation.mutate(values))}
+                onSubmit={form.onSubmit((values) => handleSubscribeTo(values))}
                 className={classes.form}
               >
                 <div className={baseClasses.flexRowEnd}>
@@ -104,7 +87,7 @@ export default function SubscribeForm({
                     radius="lg"
                     variant="filled"
                     type="submit"
-                    loading={mutationInProgress}
+                    loading={subscribeToMutation.isPending}
                   >
                     Submit
                   </Button>

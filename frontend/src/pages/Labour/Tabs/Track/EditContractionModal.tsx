@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useDeleteContraction, useUpdateContraction } from '@base/shared-components/hooks';
+import { useDeleteContraction, useUpdateContraction } from '@shared/hooks';
 import { UpdateContractionRequest } from '@clients/labour_service';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
@@ -22,8 +22,6 @@ export const EditContractionModal = ({
   opened: boolean;
   close: CloseFunctionType;
 }) => {
-  const [updateMutationInProgress, setUpdateMutationInProgress] = useState<boolean>(false);
-  const [deleteMutationInProgress, setDeleteMutationInProgress] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const form = useForm({
@@ -38,23 +36,21 @@ export const EditContractionModal = ({
   const deleteContractionMutation = useDeleteContraction();
   const updateContractionMutation = useUpdateContraction();
 
-  const handleDeleteContraction = async (contractionId: string) => {
-    setDeleteMutationInProgress(true);
-    try {
-      await deleteContractionMutation.mutateAsync(contractionId);
-    } finally {
-      setDeleteMutationInProgress(false);
-    }
+  const handleDeleteContraction = (contractionId: string) => {
+    deleteContractionMutation.mutate(contractionId, {
+      onSuccess: () => {
+        close();
+      },
+    });
   };
 
-  const handleUpdateContraction = async ({
+  const handleUpdateContraction = ({
     values,
     contractionId,
   }: {
     values: typeof form.values;
     contractionId: string;
   }) => {
-    setUpdateMutationInProgress(true);
     const startTime =
       values.startTime !== ''
         ? updateTime(contractionData!.startTime, values.startTime)
@@ -71,12 +67,12 @@ export const EditContractionModal = ({
       contraction_id: contractionId,
     };
 
-    try {
-      await updateContractionMutation.mutateAsync(requestBody);
-    } finally {
-      setUpdateMutationInProgress(false);
-      form.reset();
-    }
+    updateContractionMutation.mutate(requestBody, {
+      onSuccess: () => {
+        form.reset();
+        close();
+      },
+    });
   };
 
   const handleConfirm = () => {
@@ -192,7 +188,7 @@ export const EditContractionModal = ({
               styles={{ section: { marginLeft: 20 } }}
               style={{ flexShrink: 1, marginRight: '5px' }}
               onClick={() => setIsModalOpen(true)}
-              loading={deleteMutationInProgress}
+              loading={deleteContractionMutation.isPending}
             />
             <Button
               color="var(--mantine-primary-color-4)"
@@ -204,7 +200,7 @@ export const EditContractionModal = ({
               styles={{ section: { marginRight: 22 } }}
               style={{ width: '100%' }}
               type="submit"
-              loading={updateMutationInProgress}
+              loading={updateContractionMutation.isPending}
             >
               Update Contraction
             </Button>

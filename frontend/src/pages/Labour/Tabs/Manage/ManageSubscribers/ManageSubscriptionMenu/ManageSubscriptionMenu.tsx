@@ -4,7 +4,7 @@ import {
   useBlockSubscriber,
   useRemoveSubscriber,
   useUnblockSubscriber,
-} from '@base/shared-components/hooks';
+} from '@shared/hooks';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import {
   IconBan,

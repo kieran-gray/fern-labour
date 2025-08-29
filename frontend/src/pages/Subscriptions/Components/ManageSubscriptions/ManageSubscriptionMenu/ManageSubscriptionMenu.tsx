@@ -1,44 +1,21 @@
 import { useState } from 'react';
-import { SubscriptionService, UnsubscribeFromRequest } from '@clients/labour_service';
+import { useUnsubscribeFrom } from '@base/shared-components/hooks/useSubscriptionData';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
-import { Error } from '@shared/Notifications';
 import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconDots, IconUserMinus } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ActionIcon, Menu } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { setSubscriptionId } = useSubscription();
-  const { user } = useApiAuth();
-  const queryClient = useQueryClient();
 
-  const unsubscribeMutation = useMutation({
-    mutationFn: async () => {
-      const requestBody: UnsubscribeFromRequest = { labour_id };
-      await SubscriptionService.unsubscribeFrom({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['subscriber_subscriptions', user?.profile.sub],
-      });
-      setSubscriptionId('');
-    },
-    onError: () => {
-      notifications.show({
-        ...Error,
-        title: 'Error unsubscribing',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-  });
+  const unsubscribeMutation = useUnsubscribeFrom();
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setIsModalOpen(false);
-    unsubscribeMutation.mutate();
+    await unsubscribeMutation.mutateAsync(labour_id);
+    setSubscriptionId('');
   };
 
   const handleCancel = () => {

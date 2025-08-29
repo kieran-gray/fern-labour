@@ -4,7 +4,8 @@ import {
   CompleteLabourRequest,
   LabourQueriesService,
   LabourService,
-  PlanLabourApiV1LabourPlanPostData,
+  PlanLabourRequest,
+  SendInviteRequest,
 } from '@clients/labour_service';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -104,35 +105,45 @@ export function useLabourHistory() {
 }
 
 /**
- * Custom hook for starting a new labour
+ * Custom hook for planning a new labour
  */
-export function useStartLabour() {
+export function usePlanLabour() {
   const { user } = useApiAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (request: PlanLabourApiV1LabourPlanPostData['requestBody']) => {
-      const response = await LabourService.planLabour({ requestBody: request });
-      return response;
+    mutationFn: async ({
+      requestBody,
+      existing,
+    }: {
+      requestBody: PlanLabourRequest;
+      existing: boolean;
+    }) => {
+      let response;
+      if (existing) {
+        response = await LabourService.updateLabourPlan({ requestBody });
+      } else {
+        response = await LabourService.planLabour({ requestBody });
+      }
+      return response.labour;
     },
-    onSuccess: () => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.labour.history(user?.profile.sub || ''),
-      });
-
+    onSuccess: async (labour, variables) => {
+      queryClient.invalidateQueries();
+      
+      queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
+      queryClient.setQueryData(queryKeys.labour.active(user?.profile.sub || ''), labour);
+      const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';
       notifications.show({
         ...Success,
         title: 'Success',
-        message: 'Labour started successfully',
+        message,
       });
     },
-    onError: (error: Error) => {
+    onError: () => {
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
-        message: `Failed to start labour: ${error.message}`,
+        message: `Something went wrong. Please try again.`,
       });
     },
   });
@@ -154,8 +165,8 @@ export function useCompleteLabour() {
       await LabourService.completeLabour({ requestBody });
     },
     onSuccess: () => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+      queryClient.removeQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+      queryClient.removeQueries({ queryKey: queryKeys.labour.active(user?.profile.sub || '') });
       queryClient.invalidateQueries({
         queryKey: queryKeys.labour.history(user?.profile.sub || ''),
       });
@@ -205,4 +216,59 @@ export function useDeleteLabour() {
       });
     },
   });
+}
+
+/**
+ * Custom hook for sending labour invites
+ */
+export function useSendLabourInvite() {
+  return useMutation({
+    mutationFn: async ({ email, labourId }: { email: string; labourId: string }) => {
+      const requestBody: SendInviteRequest = { invite_email: email, labour_id: labourId };
+      await LabourService.sendInvite({ requestBody });
+    },
+    onSuccess: () => {
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Invite email sent',
+      });
+    },
+    onError: (err) => {
+      if (err instanceof ApiError && err.status === 429) {
+        notifications.show({
+          ...ErrorNotification,
+          title: 'Slow down!',
+          message: 'You have sent too many invites today. Wait until tomorrow to send more.',
+        });
+      } else {
+        notifications.show({
+          ...ErrorNotification,
+          title: 'Error sending invite',
+          message: 'Something went wrong. Please try again.',
+        });
+      }
+    },
+  });
+}
+
+/**
+ * Custom hook for refreshing labour data when switching labours
+ */
+export function useRefreshLabourData() {
+  const { user } = useApiAuth();
+  const queryClient = useQueryClient();
+
+  return async () => {
+    // Invalidate all labour-related queries for the current user
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') }),
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.labour.history(user?.profile.sub || ''),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
+      }),
+    ]);
+  };
 }

@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { ApiError, SubscriptionService } from '@clients/labour_service/index.ts';
+import { useSubscriptionById } from '@base/shared-components/hooks/useSubscriptionData.ts';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
 import { pluraliseName } from '@shared/utils.tsx';
 import {
@@ -12,7 +11,6 @@ import {
   IconShoppingBag,
   IconUsers,
 } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Center, Space, Tabs, Text } from '@mantine/core';
@@ -38,7 +36,6 @@ const TABS = [
 const tabOrder = TABS.map((tab) => tab.id);
 
 export const SubscriptionPage = () => {
-  const { user } = useApiAuth();
   const navigate = useNavigate();
   const { subscriptionId, setSubscriptionId } = useSubscription();
   const [activeTab, setActiveTab] = useState<string | null>('details');
@@ -71,24 +68,7 @@ export const SubscriptionPage = () => {
     preventScrollOnSwipe: true,
   });
 
-  const { isPending, isError, data, error } = useQuery({
-    queryKey: ['subscription_data', subscriptionId, user?.profile.sub],
-    queryFn: async () => {
-      try {
-        const response = await SubscriptionService.getSubscriptionById({ subscriptionId });
-        return response;
-      } catch (err) {
-        if (err instanceof ApiError && [403, 404].includes(err.status)) {
-          // User has been blocked or removed
-          // Or Birthing Person has been deleted
-          setSubscriptionId('');
-          navigate('/');
-        }
-        throw new Error('Failed to load subscription. Please try again later.');
-      }
-    },
-    refetchInterval: 30000,
-  });
+  const { isPending, isError, data, error } = useSubscriptionById(subscriptionId);
 
   if (isPending) {
     return (
@@ -99,6 +79,10 @@ export const SubscriptionPage = () => {
   }
 
   if (isError) {
+    if (error.message.includes('not found')) {
+      setSubscriptionId('');
+      navigate('/');
+    }
     return (
       <AppShell>
         <ErrorContainer message={error.message} />

@@ -1,9 +1,8 @@
 import { useLabour } from '@labour/LabourContext';
-import { useLabourHistory } from '@shared/hooks';
+import { useLabourHistory, useRefreshLabourData } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Table, Text } from '@mantine/core';
 import { ManageLabourMenu } from '../ManageLabourMenu/ManageLabourMenu';
@@ -13,7 +12,7 @@ import baseClasses from '@shared/shared-styles.module.css';
 export function LabourHistoryTable() {
   const { labourId, setLabourId } = useLabour();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const refreshLabourData = useRefreshLabourData();
   const { isPending, isError, data, error } = useLabourHistory();
 
   const labours = data?.labours || [];
@@ -35,7 +34,7 @@ export function LabourHistoryTable() {
   );
 
   const setLabour = async (newLabourId: string) => {
-    await queryClient.invalidateQueries();
+    await refreshLabourData();
     if (labourId === newLabourId) {
       setLabourId(null);
     } else {

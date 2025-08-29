@@ -1,4 +1,4 @@
-import { useSubscriptionToken } from '@base/shared-components/hooks';
+import { useSubscriptionToken } from '@shared/hooks';
 import { useLabour } from '@labour/LabourContext';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';

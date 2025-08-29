@@ -1,16 +1,11 @@
-import { useState } from 'react';
-import { ApiError, LabourService, SendInviteRequest } from '@clients/labour_service';
 import { useLabour } from '@labour/LabourContext';
-import { useApiAuth } from '@shared/hooks/useApiAuth';
-import { Error, Success } from '@shared/Notifications';
+import { useApiAuth, useSendLabourInvite } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { validateEmail } from '@shared/utils';
 import { IconAt, IconSend } from '@tabler/icons-react';
-import { useMutation } from '@tanstack/react-query';
 import { Button, Group, Image, Space, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
 import image from './invite.svg';
 import classes from './InviteContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -18,7 +13,6 @@ import baseClasses from '@shared/shared-styles.module.css';
 export function InviteContainer() {
   useApiAuth();
   const { labourId } = useLabour();
-  const [mutationInProgress, setMutationInProgress] = useState(false);
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -30,39 +24,21 @@ export function InviteContainer() {
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: async (values: typeof form.values) => {
-      setMutationInProgress(true);
-      const requestBody: SendInviteRequest = { invite_email: values.email, labour_id: labourId! };
-      await LabourService.sendInvite({ requestBody });
-    },
-    onSuccess: () => {
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Invite email sent`,
-      });
-      form.reset();
-    },
-    onError: (err) => {
-      if (err instanceof ApiError && err.status === 429) {
-        notifications.show({
-          ...Error,
-          title: 'Slow down!',
-          message: 'You have sent too many invites today. Wait until tomorrow to send more.',
-        });
-      } else {
-        notifications.show({
-          ...Error,
-          title: 'Error sending invite',
-          message: 'Something went wrong. Please try again.',
-        });
+  const sendInviteMutation = useSendLabourInvite();
+
+  const handleSubmit = (values: typeof form.values) => {
+    sendInviteMutation.mutate(
+      {
+        email: values.email,
+        labourId: labourId!,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+        },
       }
-    },
-    onSettled: () => {
-      setMutationInProgress(false);
-    },
-  });
+    );
+  };
 
   const title = 'Invite friends and family by email';
   const description =
@@ -78,10 +54,7 @@ export function InviteContainer() {
           <Image src={image} className={classes.smallImage} />
         </div>
         <Group className={classes.group}>
-          <form
-            onSubmit={form.onSubmit((values) => mutation.mutate(values))}
-            style={{ width: '100%' }}
-          >
+          <form onSubmit={form.onSubmit(handleSubmit)} style={{ width: '100%' }}>
             <div className={classes.flexRowEnd}>
               <TextInput
                 withAsterisk
@@ -109,7 +82,7 @@ export function InviteContainer() {
                 size="lg"
                 pr={14}
                 mt="var(--mantine-spacing-lg)"
-                loading={mutationInProgress}
+                loading={sendInviteMutation.isPending}
                 styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
                 type="submit"
                 visibleFrom="sm"
@@ -125,7 +98,7 @@ export function InviteContainer() {
                 pr={14}
                 h={48}
                 mt="var(--mantine-spacing-lg)"
-                loading={mutationInProgress}
+                loading={sendInviteMutation.isPending}
                 styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
                 type="submit"
                 hiddenFrom="sm"

@@ -12,7 +12,6 @@ export function LabourUpdateControls() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [labourUpdateType, setLabourUpdateType] = useState<LabourUpdateType>('status_update');
-  const [mutationInProgress, setMutationInProgress] = useState(false);
 
   const createLabourUpdateMutation = useCreateLabourUpdate();
 
@@ -22,18 +21,18 @@ export function LabourUpdateControls() {
     }
   }, []);
 
-  const handleSubmitUpdate = async (labourUpdateType: LabourUpdateType, message: string) => {
-    setMutationInProgress(true);
-
-    try {
-      await createLabourUpdateMutation.mutateAsync({
+  const handleSubmitUpdate = (labourUpdateType: LabourUpdateType, message: string) => {
+    createLabourUpdateMutation.mutate(
+      {
         labour_update_type: labourUpdateType,
         message,
-      });
-      setMessage('');
-    } finally {
-      setMutationInProgress(false);
-    }
+      },
+      {
+        onSuccess: () => {
+          setMessage('');
+        },
+      }
+    );
   };
   const handleConfirm = () => {
     setIsModalOpen(false);
@@ -67,7 +66,7 @@ export function LabourUpdateControls() {
     radius: 'xl',
     type: 'submit',
     disabled: !message,
-    loading: mutationInProgress,
+    loading: createLabourUpdateMutation.isPending,
     className: classes.statusUpdateButton,
     onClick: handleSubmit,
     style: { minWidth: '200px' },
