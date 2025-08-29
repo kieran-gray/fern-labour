@@ -42,7 +42,6 @@ export function FeaturesCarousel() {
               src={imageData.src}
               className={classes.image}
               alt={imageData.alt}
-              loading="lazy"
             />
           </Carousel.Slide>
         ))}
