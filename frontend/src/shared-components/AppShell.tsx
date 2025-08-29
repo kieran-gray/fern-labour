@@ -1,7 +1,21 @@
 import { Center, Space } from '@mantine/core';
-import { Header } from './Header/Header';
+import { PillHeader } from './PillHeader/PillHeader';
 
-export const AppShell = ({ children }: { children: React.ReactNode }) => {
+interface NavItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  requiresPaid?: boolean;
+}
+
+interface AppShellProps {
+  children: React.ReactNode;
+  navItems?: readonly NavItem[];
+  activeNav?: string | null;
+  onNavChange?: (nav: string) => void;
+}
+
+export const AppShell = ({ children, navItems, activeNav, onNavChange }: AppShellProps) => {
   return (
     <div
       style={{
@@ -9,10 +23,10 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
         transition: 'min-height 10ms',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'var(--mantine-color-primary-0)',
+        backgroundColor: 'light-dark(#ffeae6, #121212)',
       }}
     >
-      <Header />
+      <PillHeader navItems={navItems} activeNav={activeNav} onNavChange={onNavChange} />
       <Center flex="shrink">{children}</Center>
       <Space h="md" />
       <div style={{ flexGrow: 1 }} />

@@ -1,0 +1,160 @@
+/* Main Pill Container */
+.container {
+  color: var(--mantine-color-white);
+  background-color: light-dark(var(--mantine-color-primary-3), var(--mantine-color-primary-4));
+  border: 1px solid light-dark(var(--mantine-color-primary-4), var(--mantine-color-primary-2));
+  position: sticky;
+  top: 10px;
+  z-index: 100;
+  flex-shrink: 0;
+  border-radius: 50px;
+  box-shadow: 
+    0 4px 12px light-dark(rgba(254, 82, 54, 0.15), rgba(254, 82, 54, 0.25)),
+    0 2px 4px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 
+      0 6px 16px light-dark(rgba(254, 82, 54, 0.2), rgba(254, 82, 54, 0.3)),
+      0 4px 8px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25));
+    transform: translateY(-1px);
+  }
+}
+
+/* Logo Section */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 25px;
+
+  &:hover {
+    transform: scale(1.02);
+    background-color: light-dark(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  }
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    margin-left: 10px;
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+  }
+}
+
+.title {
+  color: var(--mantine-color-white);
+  font-family: "Greycliff CF", var(--mantine-font-family);
+  font-weight: 700;
+  font-size: 1.25rem;
+  white-space: nowrap;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    font-size: 1rem;
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    font-size: 0.9rem;
+  }
+}
+
+/* User Actions */
+.userAction {
+  background-color: light-dark(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  color: var(--mantine-color-white);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+  }
+}
+
+/* Mobile Drawer */
+.drawer {
+  background-color: light-dark(var(--mantine-color-primary-3), var(--mantine-color-primary-4));
+  border: none;
+}
+
+.drawerBody {
+  display: flex;
+  height: 85vh;
+  background-color: light-dark(var(--mantine-color-primary-3), var(--mantine-color-primary-4));
+}
+
+/* Navigation Menu */
+.navButton {
+  background-color: light-dark(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  color: var(--mantine-color-white);
+  transition: all 0.2s ease;
+  font-weight: 600;
+
+  &:hover {
+    background-color: light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+  }
+}
+
+.menuDropdown {
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-gray-8));
+  border: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-gray-7));
+  border-radius: 1rem;
+  box-shadow: 
+    0 4px 12px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)),
+    0 2px 4px light-dark(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.menuItem {
+  color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-1));
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-9));
+    color: light-dark(var(--mantine-color-primary-7), var(--mantine-color-primary-2));
+  }
+}
+
+.menuItemActive {
+  background-color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-8));
+  color: light-dark(var(--mantine-color-primary-8), var(--mantine-color-primary-1));
+  font-weight: 600;
+
+  &:hover {
+    background-color: light-dark(var(--mantine-color-primary-2), var(--mantine-color-primary-7));
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: $mantine-breakpoint-sm) {
+  .container {
+    margin: 10px 8px;
+    border-radius: 25px;
+  }
+}
+
+@media (max-width: $mantine-breakpoint-xs) {
+  .container {
+    margin: 8px 6px;
+    border-radius: 20px;
+  }
+  
+  .logoContainer {
+    padding: 0.125rem 0.25rem;
+  }
+}

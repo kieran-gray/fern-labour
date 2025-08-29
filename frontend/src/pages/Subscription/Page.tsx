@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSubscriptionById } from '@base/shared-components/hooks/useSubscriptionData.ts';
 import { AppShell } from '@shared/AppShell';
+import { BottomNavigation } from '@shared/BottomNavigation';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
 import { pluraliseName } from '@shared/utils.tsx';
@@ -13,7 +14,7 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
-import { Center, Space, Tabs, Text } from '@mantine/core';
+import { Center, Space } from '@mantine/core';
 import { InviteContainer } from '../Subscriptions/Components/InviteContainer/InviteContainer.tsx';
 import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions.tsx';
 import { PayWall } from './Paywall/PayWall.tsx';
@@ -134,34 +135,16 @@ export const SubscriptionPage = () => {
 
   return (
     <div {...swipeHandlers}>
-      <AppShell>
-        <Tabs
-          w="100%"
-          defaultValue="details"
-          radius="lg"
-          classNames={{
-            list: baseClasses.navTabs,
-            tab: baseClasses.navTab,
-            tabSection: baseClasses.navTabSection,
-          }}
-          value={activeTab}
-          onChange={setActiveTab}
-        >
-          <Tabs.List grow>
-            {TABS.map((tab) => (
-              <Tabs.Tab key={tab.id} value={tab.id} leftSection={<tab.icon />}>
-                <Text className={baseClasses.navTabText}>{tab.label}</Text>
-              </Tabs.Tab>
-            ))}
-          </Tabs.List>
-          <div className={baseClasses.flexPageColumn}>
-            {TABS.map((tab) => (
-              <Tabs.Panel key={tab.id} value={tab.id} keepMounted={tab.id !== 'stats'} w="100%">
-                <Center style={{ flexDirection: 'column' }}>{renderTabPanel(tab.id)}</Center>
-              </Tabs.Panel>
-            ))}
-          </div>
-        </Tabs>
+      <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
+        {/* Content Area */}
+        <div className={baseClasses.flexPageColumn} style={{ paddingBottom: '100px' }}>
+          <Center style={{ flexDirection: 'column' }}>
+            {renderTabPanel(activeTab || 'details')}
+          </Center>
+        </div>
+
+        {/* Mobile Bottom Navigation */}
+        <BottomNavigation items={TABS} activeItem={activeTab} onItemChange={setActiveTab} />
       </AppShell>
     </div>
   );

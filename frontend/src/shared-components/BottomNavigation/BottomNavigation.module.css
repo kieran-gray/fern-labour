@@ -1,0 +1,159 @@
+/* Bottom Navigation Container */
+.container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: light-dark(
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 245, 243, 0.98) 100%),
+    linear-gradient(180deg, rgba(40, 40, 40, 0.95) 0%, rgba(30, 30, 30, 0.98) 100%)
+  );
+  backdrop-filter: blur(20px);
+  border-top: 1px solid light-dark(
+    rgba(254, 82, 54, 0.15),
+    rgba(254, 82, 54, 0.25)
+  );
+  box-shadow: 
+    0 -4px 20px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.25)),
+    inset 0 1px 0 light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Tabs Container */
+.tabsContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Individual Tab */
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 0.5rem 0.25rem;
+  cursor: pointer;
+  border-radius: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  animation: tab-slide-up 0.4s ease-out;
+  
+  &:hover {
+    background-color: light-dark(
+      rgba(254, 82, 54, 0.08),
+      rgba(254, 82, 54, 0.12)
+    );
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0px);
+  }
+}
+
+/* Active Tab */
+.tabActive {
+  background-color: light-dark(
+    rgba(254, 82, 54, 0.1),
+    rgba(254, 82, 54, 0.15)
+  );
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      var(--mantine-color-primary-6), 
+      var(--mantine-color-primary-4)
+    );
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(254, 82, 54, 0.3);
+  }
+}
+
+/* Tab Content */
+.tabContent {
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Tab Icon */
+.tabIcon {
+  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-3));
+  transition: all 0.3s ease;
+  
+  .tabActive & {
+    color: light-dark(var(--mantine-color-primary-7), var(--mantine-color-primary-3));
+    transform: scale(1.1);
+  }
+  
+  .tab:hover & {
+    color: light-dark(var(--mantine-color-primary-6), var(--mantine-color-primary-4));
+  }
+}
+
+/* Tab Label */
+.tabLabel {
+  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-3));
+  font-weight: 600;
+  font-size: 0.7rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  
+  .tabActive & {
+    color: light-dark(var(--mantine-color-primary-8), var(--mantine-color-primary-2));
+    font-weight: 700;
+  }
+  
+  .tab:hover & {
+    color: light-dark(var(--mantine-color-primary-7), var(--mantine-color-primary-3));
+  }
+}
+
+/* Hide on larger screens */
+@media (min-width: $mantine-breakpoint-sm) {
+  .container {
+    display: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 375px) {
+  .tabsContainer {
+    padding: 0.5rem;
+  }
+  
+  .tab {
+    padding: 0.5rem 0.125rem;
+  }
+  
+  .tabLabel {
+    font-size: 0.65rem;
+  }
+}
+
+.tab:nth-child(1) { animation-delay: 0.1s; }
+.tab:nth-child(2) { animation-delay: 0.15s; }
+.tab:nth-child(3) { animation-delay: 0.2s; }
+.tab:nth-child(4) { animation-delay: 0.25s; }
+.tab:nth-child(5) { animation-delay: 0.3s; }
+
+@keyframes tab-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
