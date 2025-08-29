@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useDeleteLabourUpdate, useEditLabourUpdate } from '@shared/hooks';
 import { UpdateLabourUpdateRequest } from '@clients/labour_service';
+import { useDeleteLabourUpdate, useEditLabourUpdate } from '@shared/hooks';
 import { Error } from '@shared/Notifications';
 import { IconDots, IconPencil, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';

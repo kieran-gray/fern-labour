@@ -1,5 +1,5 @@
-import { useSubscriptionToken } from '@shared/hooks';
 import { useLabour } from '@labour/LabourContext';
+import { useSubscriptionToken } from '@shared/hooks';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';

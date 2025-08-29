@@ -4,9 +4,7 @@ import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
 import { useActiveLabour } from '@shared/hooks/index.ts';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
-import { Stepper } from '@mantine/core';
 import Plan from './Components/Plan/Plan.tsx';
-import classes from './Onboarding.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export const OnboardingPage = () => {
@@ -32,19 +30,7 @@ export const OnboardingPage = () => {
           <div className={baseClasses.body}>
             <div className={baseClasses.inner}>
               <div className={baseClasses.flexColumn} style={{ flexGrow: 1, width: '100%' }}>
-                <Stepper
-                  active={0}
-                  classNames={{
-                    step: classes.stepperStep,
-                    stepLabel: classes.stepperStepLabel,
-                    stepDescription: classes.stepperStepDescription,
-                    stepIcon: classes.stepperStepIcon,
-                  }}
-                >
-                  <Stepper.Step>
-                    <Plan labour={labour} />
-                  </Stepper.Step>
-                </Stepper>
+                <Plan labour={labour} />
               </div>
             </div>
           </div>

@@ -129,7 +129,7 @@ export function usePlanLabour() {
     },
     onSuccess: async (labour, variables) => {
       queryClient.invalidateQueries();
-      
+
       queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
       queryClient.setQueryData(queryKeys.labour.active(user?.profile.sub || ''), labour);
       const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';

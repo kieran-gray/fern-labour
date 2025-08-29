@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useDeleteLabour } from '@shared/hooks';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { useDeleteLabour } from '@shared/hooks';
 import { IconDots, IconTrash } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
 import baseClasses from '@shared/shared-styles.module.css';

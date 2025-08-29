@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useDeleteContraction, useUpdateContraction } from '@shared/hooks';
 import { UpdateContractionRequest } from '@clients/labour_service';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { useDeleteContraction, useUpdateContraction } from '@shared/hooks';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';

@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import {
   useApproveSubscriber,
   useBlockSubscriber,
   useRemoveSubscriber,
   useUnblockSubscriber,
 } from '@shared/hooks';
-import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import {
   IconBan,
   IconCheck,

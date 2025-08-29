@@ -42,7 +42,11 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
       first_labour: values.firstLabour === 'true',
       labour_name: values.labourName,
     };
-    planLabourMutation.mutate({ requestBody, existing: labour !== undefined });
+    const existing = labour !== undefined;
+    planLabourMutation.mutate({ requestBody, existing });
+    if (!existing) {
+      setTimeout(() => navigate('/'), 100);
+    }
   };
 
   const title = 'Plan your upcoming labour';

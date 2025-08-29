@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { useLabour } from '@base/pages/Labour/LabourContext';
 import { GenericConfirmModal } from '@base/shared-components/GenericConfirmModal/GenericConfirmModal';
 import { useCompleteLabour } from '@shared/hooks';
 import { IconConfetti } from '@tabler/icons-react';
-import { Button, Tooltip } from '@mantine/core';
-import { useLabour } from '@base/pages/Labour/LabourContext';
 import { useNavigate } from 'react-router-dom';
+import { Button, Tooltip } from '@mantine/core';
 
 export default function CompleteLabourButton({
   labourNotes,

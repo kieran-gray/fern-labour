@@ -71,6 +71,7 @@
   background-color: light-dark(var(--mantine-color-white), var(--mantine-color-primary-3));
   border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-6));
   min-height: 400px;
+  animation: slide-up 0.6s ease-out;
 
   @media (max-width: 768px) {
     max-width: 100%;
@@ -193,12 +194,6 @@
   }
 }
 
-
-/* Animation for card entrance */
-.modeCard {
-  animation: slideUp 0.6s ease-out;
-}
-
 .modeCard:nth-child(1) {
   animation-delay: 0.1s;
 }
@@ -207,18 +202,18 @@
   animation-delay: 0.2s;
 }
 
-@keyframes slideUp {
+@keyframes slide-up {
   from {
     opacity: 0;
     transform: translateY(30px);
   }
+  
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Focus states for accessibility */
 .modeCard:focus-visible {
   outline: 2px solid var(--mantine-primary-color-6);
   outline-offset: 2px;
