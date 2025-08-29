@@ -59,7 +59,7 @@ class LabourCompleted(DomainEvent):
         data = {
             "labour_id": labour_id,
             "birthing_person_id": labour.birthing_person_id.value,
-            "end_time": end_time,
+            "end_time": end_time.isoformat(),
             "notes": labour.notes if labour.notes else "",
         }
         return super().create(
