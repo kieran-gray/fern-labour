@@ -39,11 +39,15 @@
 }
 
 .navTabs {
-    background-color: var(--mantine-color-primary-3);
+    background-color: light-dark(var(--mantine-color-primary-2), var(--mantine-color-primary-5));
     color: var(--mantine-color-white);
     position: sticky;
-    top: 60px;
-    z-index: 100;
+    top: 80px; /* Account for new PillHeader positioning */
+    z-index: 90; /* Below PillHeader but above content */
+    border-radius: 0 0 1rem 1rem;
+    box-shadow: 
+        0 4px 12px light-dark(rgba(254, 82, 54, 0.1), rgba(254, 82, 54, 0.2)),
+        0 2px 4px light-dark(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
 }
 
 .navTab {
@@ -302,5 +306,18 @@
 
     &:hover {
         background-color: light-dark(var(--mantine-color-green-0), var(--mantine-color-gray-7));
+    }
+}
+
+/* Responsive Utilities */
+.desktopOnly {
+    @media (max-width: $mantine-breakpoint-sm) {
+        display: none !important;
+    }
+}
+
+.mobileOnly {
+    @media (min-width: $mantine-breakpoint-sm) {
+        display: none !important;
     }
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NotFoundError, PermissionDenied } from '@base/Errors';
 import { AppShell } from '@shared/AppShell';
+import { BottomNavigation } from '@shared/BottomNavigation';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
 import { useCurrentLabour } from '@shared/hooks';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
@@ -13,7 +14,7 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
-import { Center, Space, Tabs, Text } from '@mantine/core';
+import { Center, Space } from '@mantine/core';
 import { CompletedLabourContainer } from '../CompletedLabour/Page.tsx';
 import { useLabour } from './LabourContext.tsx';
 import { Share } from './Tabs/Invites/Share.tsx';
@@ -133,34 +134,16 @@ export const LabourPage = () => {
 
   return (
     <div {...swipeHandlers}>
-      <AppShell>
-        <Tabs
-          w="100%"
-          defaultValue="track"
-          radius="lg"
-          classNames={{
-            list: baseClasses.navTabs,
-            tab: baseClasses.navTab,
-            tabSection: baseClasses.navTabSection,
-          }}
-          value={activeTab}
-          onChange={setActiveTab}
-        >
-          <Tabs.List grow>
-            {TABS.map(({ id, label, icon: Icon }) => (
-              <Tabs.Tab key={id} value={id} leftSection={<Icon />}>
-                <Text className={baseClasses.navTabText}>{label}</Text>
-              </Tabs.Tab>
-            ))}
-          </Tabs.List>
-          <div className={baseClasses.flexPageColumn}>
-            {TABS.map(({ id }) => (
-              <Tabs.Panel key={id} value={id} w="100%">
-                <Center style={{ flexDirection: 'column' }}>{renderTabPanel(id)}</Center>
-              </Tabs.Panel>
-            ))}
-          </div>
-        </Tabs>
+      <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
+        {/* Content Area */}
+        <div className={baseClasses.flexPageColumn} style={{ paddingBottom: '100px' }}>
+          <Center style={{ flexDirection: 'column' }}>
+            {renderTabPanel(activeTab || 'track')}
+          </Center>
+        </div>
+
+        {/* Mobile Bottom Navigation */}
+        <BottomNavigation items={TABS} activeItem={activeTab} onItemChange={setActiveTab} />
       </AppShell>
     </div>
   );
