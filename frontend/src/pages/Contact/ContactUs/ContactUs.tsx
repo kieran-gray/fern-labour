@@ -1,12 +1,11 @@
 import { useState } from 'react';
+import { useApiAuth } from '@base/shared-components/hooks/useApiAuth.ts';
+import { useSubmitContactForm } from '@base/shared-components/hooks/useContactData.ts';
 import { validateMessage } from '@base/shared-components/utils.tsx';
-import { ContactUsService } from '@clients/contact_service/sdk.gen.ts';
 import { ContactUsRequest } from '@clients/contact_service/types.gen.ts';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription.tsx';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle.tsx';
 import { IconInfoCircle } from '@tabler/icons-react';
-import { useMutation } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import Turnstile from 'react-turnstile';
 import {
   Alert,
@@ -35,11 +34,11 @@ const categories = [
 
 export function ContactUs() {
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useApiAuth();
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [rating, setRating] = useState(5);
   const [checked, setChecked] = useState(false);
-  const auth = useAuth();
 
   const form = useForm({
     initialValues: {
@@ -49,35 +48,33 @@ export function ContactUs() {
     validate: { message: (message) => validateMessage(message) },
   });
 
-  const mutation = useMutation({
-    mutationFn: async (values: typeof form.values) => {
-      setIsLoading(true);
-      let data = {};
-      if (values.category === 'testimonial') {
-        data = { rating, consent: checked };
-      }
+  const contactUsMutation = useSubmitContactForm();
+  const handleContactUsSubmission = async (values: typeof form.values) => {
+    setIsLoading(true);
+    let data = {};
+    if (values.category === 'testimonial') {
+      data = { rating, consent: checked };
+    }
 
-      const requestBody: ContactUsRequest = {
-        email: `${auth.user?.profile.email}`,
-        name: `${auth.user?.profile.given_name} ${auth.user?.profile.family_name}`,
-        message: values.message,
-        token: turnstileToken!,
-        user_id: auth.user?.profile.sub,
-        category: values.category,
-        data,
-      };
-      ContactUsService.contactUsSendMessage({ requestBody });
-
-      setTimeout(() => {
-        form.reset();
-        setIsLoading(false);
-        setStatus({
-          type: 'Success',
-          message: "Message sent successfully! We'll get back to you soon.",
-        });
-      }, 250);
-    },
-  });
+    const requestBody: ContactUsRequest = {
+      email: `${user?.profile.email}`,
+      name: `${user?.profile.given_name} ${user?.profile.family_name}`,
+      message: values.message,
+      token: turnstileToken!,
+      user_id: user?.profile.sub,
+      category: values.category,
+      data,
+    };
+    contactUsMutation.mutateAsync(requestBody);
+    setTimeout(() => {
+      form.reset();
+      setIsLoading(false);
+      setStatus({
+        type: 'Success',
+        message: "Message sent successfully! We'll get back to you soon.",
+      });
+    }, 250);
+  };
 
   function getTextAreaPlaceholder(values: typeof form.values): string {
     if (values.category === 'idea') {
@@ -110,7 +107,7 @@ export function ContactUs() {
             </div>
             <form
               className={classes.form}
-              onSubmit={form.onSubmit((values) => mutation.mutate(values))}
+              onSubmit={form.onSubmit((values) => handleContactUsSubmission(values))}
             >
               {status.type && (
                 <Alert

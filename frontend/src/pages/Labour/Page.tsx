@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { NotFoundError, PermissionDenied } from '@base/Errors';
-import { ApiError, LabourQueriesService, OpenAPI } from '@clients/labour_service';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
+import { useCurrentLabour } from '@shared/hooks';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
 import {
   IconChartHistogram,
@@ -11,8 +11,6 @@ import {
   IconSettings,
   IconStopwatch,
 } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Center, Space, Tabs, Text } from '@mantine/core';
@@ -37,7 +35,6 @@ const TABS = [
 const tabOrder = TABS.map((tab) => tab.id);
 
 export const LabourPage = () => {
-  const auth = useAuth();
   const navigate = useNavigate();
   const { labourId, setLabourId } = useLabour();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,8 +64,6 @@ export const LabourPage = () => {
     preventScrollOnSwipe: true,
   });
 
-  OpenAPI.TOKEN = async () => auth.user?.access_token || '';
-
   const getLabourId = (labourId: string | null, labourIdParam: string | null): string | null => {
     if (labourId !== null && labourId !== '') {
       return labourId;
@@ -76,39 +71,20 @@ export const LabourPage = () => {
     return labourIdParam;
   };
 
-  const {
-    isPending,
-    isError,
-    data: labour,
-    error,
-  } = useQuery({
-    queryKey: ['labour', auth.user?.profile.sub],
-    queryFn: async () => {
-      try {
-        let response;
-        const id = getLabourId(labourId, labourIdParam);
-        if (id !== null) {
-          response = await LabourQueriesService.getLabourById({ labourId: id });
-        } else {
-          response = await LabourQueriesService.getActiveLabour();
-          setLabourId(response.labour.id);
-        }
-        return response.labour;
-      } catch (err) {
-        if (err instanceof ApiError) {
-          if (err.status === 404) {
-            throw new NotFoundError();
-          } else if (err.status === 403) {
-            searchParams.delete('labourId');
-            setSearchParams(searchParams);
-            throw new PermissionDenied();
-          }
-        }
-        throw new Error('Failed to load labour. Please try again later.');
-      }
-    },
-    retry: 0,
-  });
+  const currentLabourId = getLabourId(labourId, labourIdParam);
+
+  const { isPending, isError, data: labour, error } = useCurrentLabour(currentLabourId);
+
+  // Set labour ID if we got it from active labour
+  if (labour && !currentLabourId && labour.id !== labourId) {
+    setLabourId(labour.id);
+  }
+
+  // Handle permission errors by cleaning up URL params
+  if (isError && error instanceof PermissionDenied) {
+    searchParams.delete('labourId');
+    setSearchParams(searchParams);
+  }
 
   if (isPending) {
     return (

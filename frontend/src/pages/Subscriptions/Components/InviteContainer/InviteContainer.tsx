@@ -1,27 +1,16 @@
-import { useState } from 'react';
 import { validateEmail } from '@base/shared-components/utils';
-import {
-  ApiError,
-  OpenAPI,
-  SendSubscriberInviteRequest,
-  SubscriberService,
-} from '@clients/labour_service';
 import image from '@labour/Tabs/Invites/InviteContainer/invite.svg';
-import { Error, Success } from '@shared/Notifications';
+import { useApiAuth, useSendSubscriberInvite } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconAt, IconSend } from '@tabler/icons-react';
-import { useMutation } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Button, Group, Image, Space, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
 import classes from '@labour/Tabs/Invites/InviteContainer/InviteContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function InviteContainer() {
-  const [mutationInProgress, setMutationInProgress] = useState(false);
-  const auth = useAuth();
+  useApiAuth();
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -33,43 +22,15 @@ export function InviteContainer() {
     },
   });
 
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
+  const sendInviteMutation = useSendSubscriberInvite();
 
-  const mutation = useMutation({
-    mutationFn: async (values: typeof form.values) => {
-      setMutationInProgress(true);
-      const requestBody: SendSubscriberInviteRequest = { invite_email: values.email };
-      await SubscriberService.sendInvite({ requestBody });
-    },
-    onSuccess: () => {
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Invite email sent`,
-      });
-      form.reset();
-    },
-    onError: (err) => {
-      if (err instanceof ApiError && err.status === 429) {
-        notifications.show({
-          ...Error,
-          title: 'Slow down!',
-          message: 'You have sent too many invites today. Wait until tomorrow to send more.',
-        });
-      } else {
-        notifications.show({
-          ...Error,
-          title: 'Error Sending Invite',
-          message: 'Something went wrong. Please try again.',
-        });
-      }
-    },
-    onSettled: () => {
-      setMutationInProgress(false);
-    },
-  });
+  const handleSubmit = (values: typeof form.values) => {
+    sendInviteMutation.mutate(values.email, {
+      onSuccess: () => {
+        form.reset();
+      },
+    });
+  };
 
   const title = 'Know an expecting mum? Invite her to join!';
   const description =
@@ -87,10 +48,7 @@ export function InviteContainer() {
               <Image src={image} className={classes.smallImage} />
             </div>
             <Group className={classes.group}>
-              <form
-                onSubmit={form.onSubmit((values) => mutation.mutate(values))}
-                style={{ width: '100%' }}
-              >
+              <form onSubmit={form.onSubmit(handleSubmit)} style={{ width: '100%' }}>
                 <div className={classes.flexRowEnd}>
                   <TextInput
                     withAsterisk
@@ -121,7 +79,7 @@ export function InviteContainer() {
                     mt="var(--mantine-spacing-lg)"
                     styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
                     type="submit"
-                    loading={mutationInProgress}
+                    loading={sendInviteMutation.isPending}
                   >
                     Send invite
                   </Button>

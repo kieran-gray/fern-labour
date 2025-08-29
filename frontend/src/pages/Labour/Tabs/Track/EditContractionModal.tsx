@@ -1,19 +1,11 @@
 import { useState } from 'react';
-import {
-  ContractionsService,
-  DeleteContractionRequest,
-  OpenAPI,
-  UpdateContractionRequest,
-} from '@clients/labour_service';
-import { Error, Success } from '@shared/Notifications';
+import { UpdateContractionRequest } from '@clients/labour_service';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { useDeleteContraction, useUpdateContraction } from '@shared/hooks';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
-import ConfirmActionModal from './ConfirmActionModal';
 import { ContractionData } from './ContractionTimeline';
 import { updateTime } from './UpdateTime';
 import classes from './Contractions.module.css';
@@ -30,11 +22,7 @@ export const EditContractionModal = ({
   opened: boolean;
   close: CloseFunctionType;
 }) => {
-  const auth = useAuth();
-  const [updateMutationInProgress, setUpdateMutationInProgress] = useState<boolean>(false);
-  const [deleteMutationInProgress, setDeleteMutationInProgress] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const queryClient = useQueryClient();
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -45,90 +33,51 @@ export const EditContractionModal = ({
     },
   });
 
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
+  const deleteContractionMutation = useDeleteContraction();
+  const updateContractionMutation = useUpdateContraction();
+
+  const handleDeleteContraction = (contractionId: string) => {
+    deleteContractionMutation.mutate(contractionId, {
+      onSuccess: () => {
+        close();
+      },
+    });
   };
 
-  const deleteContractionMutation = useMutation({
-    mutationFn: async ({ contractionId }: { contractionId: string }) => {
-      setDeleteMutationInProgress(true);
-      const requestBody: DeleteContractionRequest = { contraction_id: contractionId };
-      const response = await ContractionsService.deleteContraction({ requestBody });
-      return response.labour;
-    },
-    onSuccess: async (labour) => {
-      queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-      setDeleteMutationInProgress(false);
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Contraction Deleted`,
-      });
-      close();
-    },
-    onError: async (_) => {
-      setDeleteMutationInProgress(false);
-      notifications.show({
-        ...Error,
-        title: 'Error Deleting Contraction',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-  });
+  const handleUpdateContraction = ({
+    values,
+    contractionId,
+  }: {
+    values: typeof form.values;
+    contractionId: string;
+  }) => {
+    const startTime =
+      values.startTime !== ''
+        ? updateTime(contractionData!.startTime, values.startTime)
+        : contractionData!.startTime;
+    const endTime =
+      values.endTime !== ''
+        ? updateTime(contractionData!.endTime, values.endTime)
+        : contractionData!.endTime;
 
-  const updateContractionMutation = useMutation({
-    mutationFn: async ({
-      values,
-      contractionId,
-    }: {
-      values: typeof form.values;
-      contractionId: string;
-    }) => {
-      setUpdateMutationInProgress(true);
-      const startTime =
-        values.startTime !== ''
-          ? updateTime(contractionData!.startTime, values.startTime)
-          : contractionData!.startTime;
-      const endTime =
-        values.endTime !== ''
-          ? updateTime(contractionData!.endTime, values.endTime)
-          : contractionData!.endTime;
+    const requestBody: UpdateContractionRequest = {
+      start_time: startTime,
+      end_time: endTime,
+      intensity: values.intensity != null ? values.intensity : contractionData!.intensity,
+      contraction_id: contractionId,
+    };
 
-      const requestBody: UpdateContractionRequest = {
-        start_time: startTime,
-        end_time: endTime,
-        intensity: values.intensity != null ? values.intensity : contractionData!.intensity,
-        contraction_id: contractionId,
-      };
-      const response = await ContractionsService.updateContraction({ requestBody });
-      return response.labour;
-    },
-    onSuccess: async (labour) => {
-      queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-      setUpdateMutationInProgress(false);
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Contraction Updated`,
-      });
-      close();
-    },
-    onError: async (_) => {
-      setUpdateMutationInProgress(false);
-      notifications.show({
-        ...Error,
-        title: 'Error Updating Contraction',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-    onSettled: () => {
-      form.reset();
-    },
-  });
+    updateContractionMutation.mutate(requestBody, {
+      onSuccess: () => {
+        form.reset();
+        close();
+      },
+    });
+  };
 
   const handleConfirm = () => {
     setIsModalOpen(false);
-    deleteContractionMutation.mutate({ contractionId: contractionData!.contractionId });
+    handleDeleteContraction(contractionData!.contractionId);
   };
 
   const handleCancel = () => {
@@ -162,7 +111,7 @@ export const EditContractionModal = ({
       >
         <form
           onSubmit={form.onSubmit((values) =>
-            updateContractionMutation.mutate({
+            handleUpdateContraction({
               values,
               contractionId: contractionData!.contractionId,
             })
@@ -239,7 +188,7 @@ export const EditContractionModal = ({
               styles={{ section: { marginLeft: 20 } }}
               style={{ flexShrink: 1, marginRight: '5px' }}
               onClick={() => setIsModalOpen(true)}
-              loading={deleteMutationInProgress}
+              loading={deleteContractionMutation.isPending}
             />
             <Button
               color="var(--mantine-primary-color-4)"
@@ -251,14 +200,22 @@ export const EditContractionModal = ({
               styles={{ section: { marginRight: 22 } }}
               style={{ width: '100%' }}
               type="submit"
-              loading={updateMutationInProgress}
+              loading={updateContractionMutation.isPending}
             >
               Update Contraction
             </Button>
           </div>
         </form>
       </Modal>
-      {isModalOpen && <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} />}
+      <GenericConfirmModal
+        isOpen={isModalOpen}
+        title="Delete Contraction?"
+        confirmText="Delete"
+        message="This can't be undone."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        isDangerous
+      />
     </>
   );
 };

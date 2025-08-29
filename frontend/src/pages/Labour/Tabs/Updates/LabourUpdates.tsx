@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
 import { LabourDTO, LabourUpdateDTO } from '@clients/labour_service';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconBook } from '@tabler/icons-react';
-import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Image, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import image from './image.svg';
@@ -93,8 +93,8 @@ const mapLabourUpdateToProps = (
 export function LabourUpdates({ labour }: LabourUpdatesProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
-  const auth = useAuth();
-  const firstName = auth.user?.profile.given_name || '';
+  const { user } = useApiAuth();
+  const firstName = user?.profile.given_name || '';
   const completed = labour.end_time != null;
   const labourUpdates = labour.labour_updates;
 

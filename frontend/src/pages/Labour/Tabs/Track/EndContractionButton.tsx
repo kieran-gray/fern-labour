@@ -1,82 +1,19 @@
-import { useState } from 'react';
-import {
-  ContractionDTO,
-  ContractionsService,
-  EndContractionRequest,
-  LabourDTO,
-  OpenAPI,
-} from '@clients/labour_service';
-import { Error } from '@shared/Notifications';
-import { contractionDurationSeconds } from '@shared/utils';
+import { useEndContraction } from '@shared/hooks';
 import { IconHourglassHigh } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import _ from 'lodash';
-import { useAuth } from 'react-oidc-context';
 import { Button } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 
 export default function EndContractionButton({
   intensity,
-  activeContraction,
   disabled,
 }: {
   intensity: number;
-  activeContraction: ContractionDTO;
   disabled: boolean;
 }) {
-  const [mutationInProgress, setMutationInProgress] = useState(false);
-  const auth = useAuth();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
+  const endContractionMutation = useEndContraction();
+
+  const handleEndContraction = ({ intensity, endTime }: { intensity: number; endTime: string }) => {
+    endContractionMutation.mutate({ intensity, endTime });
   };
-
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: async ({ intensity, endTime }: { intensity: number; endTime: string }) => {
-      setMutationInProgress(true);
-      const requestBody: EndContractionRequest = { end_time: endTime, intensity };
-      const response = await ContractionsService.endContraction({ requestBody });
-      return response.labour;
-    },
-    onMutate: async ({ intensity, endTime }: { intensity: number; endTime: string }) => {
-      await queryClient.cancelQueries({ queryKey: ['labour', auth.user?.profile.sub] });
-      const previousLabourState: LabourDTO | undefined = queryClient.getQueryData([
-        'labour',
-        auth.user?.profile.sub,
-      ]);
-      if (previousLabourState != null) {
-        const newLabourState = _.cloneDeep(previousLabourState);
-
-        const contraction = newLabourState.contractions.find(
-          (contraction) => contraction.id === activeContraction.id
-        )!;
-        contraction.is_active = false;
-        contraction.intensity = intensity;
-        contraction.end_time = endTime;
-        contraction.duration = contractionDurationSeconds(contraction);
-        queryClient.setQueryData(['labour', auth.user?.profile.sub], newLabourState);
-      }
-      return { previousLabourState };
-    },
-    onSuccess: (labour) => {
-      queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-    },
-    onError: (error, _, context) => {
-      if (context != null) {
-        queryClient.setQueryData(['labour', auth.user?.profile.sub], context.previousLabourState);
-      }
-      notifications.show({
-        ...Error,
-        title: 'Error',
-        message: `Error ending contraction: ${error.message}`,
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
-      setMutationInProgress(false);
-    },
-  });
 
   const icon = <IconHourglassHigh size={25} />;
 
@@ -86,10 +23,10 @@ export default function EndContractionButton({
       radius="xl"
       size="xl"
       variant="white"
-      loading={mutationInProgress}
+      loading={endContractionMutation.isPending}
       onClick={() => {
         const endTime = new Date().toISOString();
-        mutation.mutate({ intensity, endTime });
+        handleEndContraction({ intensity, endTime });
       }}
       disabled={disabled}
     >

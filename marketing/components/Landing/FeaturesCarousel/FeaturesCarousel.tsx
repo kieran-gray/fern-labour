@@ -38,12 +38,7 @@ export function FeaturesCarousel() {
       >
         {images.map((imageData) => (
           <Carousel.Slide key={imageData.alt} id={imageData.alt}>
-            <Image
-              src={imageData.src}
-              className={classes.image}
-              alt={imageData.alt}
-              loading="lazy"
-            />
+            <Image src={imageData.src} className={classes.image} alt={imageData.alt} />
           </Carousel.Slide>
         ))}
       </Carousel>

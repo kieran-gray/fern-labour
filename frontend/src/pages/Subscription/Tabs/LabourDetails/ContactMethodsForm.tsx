@@ -1,18 +1,9 @@
-import { useState } from 'react';
-import {
-  OpenAPI,
-  SubscriptionDTO,
-  SubscriptionManagementService,
-  UpdateContactMethodsRequest,
-} from '@clients/labour_service';
-import { Error } from '@shared/Notifications';
-import { IconCheck, IconLoader, IconSelector, IconUpload, IconX } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
+import { SubscriptionDTO, UpdateContactMethodsRequest } from '@clients/labour_service';
+import { useUpdateContactMethods } from '@shared/hooks';
+import { IconSelector, IconUpload } from '@tabler/icons-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button, Modal, MultiSelect } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
 import classes from './ContactMethodsForm.module.css';
 import modalClasses from '@shared/Modal.module.css';
 
@@ -27,18 +18,10 @@ export default function ContactMethodsForm({
   opened: boolean;
   close: CloseFunctionType;
 }) {
-  const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const prompt = searchParams.get('prompt');
 
   const defaultIcon = <IconUpload size={18} stroke={1.5} />;
-  const [icon, setIcon] = useState<React.ReactNode>(defaultIcon);
-  const [mutationInProgress, setMutationInProgress] = useState<boolean>(false);
-
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
-  const queryClient = useQueryClient();
 
   const form = useForm({
     mode: 'controlled',
@@ -47,57 +30,22 @@ export default function ContactMethodsForm({
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: async ({
-      values,
-      subscriptionId,
-    }: {
-      values: typeof form.values;
-      subscriptionId: string;
-    }) => {
-      setMutationInProgress(true);
-      setIcon(<IconLoader size={18} stroke={1.5} />);
-      const requestBody: UpdateContactMethodsRequest = {
-        contact_methods: values.contactMethods,
-        subscription_id: subscriptionId,
-      };
-      const response = await SubscriptionManagementService.updateContactMethods({ requestBody });
-      return response.subscription;
-    },
-    onSuccess: async (subscription) => {
-      queryClient.invalidateQueries({
-        queryKey: ['subscription_data', subscription.id, auth.user?.profile.sub],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['subscriber_subscriptions', auth.user?.profile.sub],
-      });
-      queryClient.setQueryData(
-        ['subscription', subscription.id, auth.user?.profile.sub],
-        subscription
-      );
-      setMutationInProgress(false);
-      setIcon(<IconCheck size={18} stroke={1.5} />);
-      if (prompt === 'contactMethods') {
-        searchParams.delete('prompt');
-        setSearchParams(searchParams);
-      }
-      close();
-    },
-    onError: async (error) => {
-      setMutationInProgress(false);
-      setIcon(<IconX size={18} stroke={1.5} />);
-      notifications.show({
-        ...Error,
-        title: 'Error Updating Contact Methods',
-        message: 'Something went wrong. Please try again.',
-      });
-      console.error('Error updating contact methods', error);
-    },
-    onSettled: async () => {
-      await new Promise((r) => setTimeout(r, 1000));
-      setIcon(defaultIcon);
-    },
-  });
+  const updateContactMethodsMutation = useUpdateContactMethods();
+  const handleUpdateContactMethods = (values: typeof form.values) => {
+    const requestBody: UpdateContactMethodsRequest = {
+      contact_methods: values.contactMethods,
+      subscription_id: subscription.id,
+    };
+    updateContactMethodsMutation.mutate(requestBody, {
+      onSuccess: () => {
+        if (prompt === 'contactMethods') {
+          searchParams.delete('prompt');
+          setSearchParams(searchParams);
+        }
+        close();
+      },
+    });
+  };
 
   const options = [
     { value: 'whatsapp', label: 'WhatsApp', disabled: form.values.contactMethods.includes('sms') },
@@ -126,11 +74,7 @@ export default function ContactMethodsForm({
       }}
     >
       <div style={{ padding: '20px 10px 10px' }}>
-        <form
-          onSubmit={form.onSubmit((values) =>
-            mutation.mutate({ values, subscriptionId: subscription.id })
-          )}
-        >
+        <form onSubmit={form.onSubmit((values) => handleUpdateContactMethods(values))}>
           <div className={classes.flexColumn}>
             <MultiSelect
               rightSection={<IconSelector size={18} stroke={1.5} />}
@@ -158,7 +102,7 @@ export default function ContactMethodsForm({
             />
             <Button
               color="var(--mantine-primary-color-4)"
-              leftSection={icon}
+              leftSection={defaultIcon}
               variant="outline"
               radius="xl"
               size="md"
@@ -166,14 +110,14 @@ export default function ContactMethodsForm({
               className={classes.submitButton}
               styles={{ section: { marginRight: 22 } }}
               type="submit"
-              loading={mutationInProgress}
+              loading={updateContactMethodsMutation.isPending}
               visibleFrom="xs"
             >
               Update Contact Methods
             </Button>
             <Button
               color="var(--mantine-primary-color-4)"
-              leftSection={icon}
+              leftSection={defaultIcon}
               variant="outline"
               radius="xl"
               size="sm"
@@ -181,7 +125,7 @@ export default function ContactMethodsForm({
               className={classes.submitButton}
               styles={{ section: { marginRight: 22 } }}
               type="submit"
-              loading={mutationInProgress}
+              loading={updateContactMethodsMutation.isPending}
               hiddenFrom="xs"
             >
               Update Contact Methods

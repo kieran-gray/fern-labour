@@ -1,13 +1,11 @@
 import { useState } from 'react';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import {
-  ApproveSubscriberRequest,
-  BlockSubscriberRequest,
-  OpenAPI,
-  RemoveSubscriberRequest,
-  SubscriptionManagementService,
-  UnblockSubscriberRequest,
-} from '@clients/labour_service';
-import { Error } from '@shared/Notifications';
+  useApproveSubscriber,
+  useBlockSubscriber,
+  useRemoveSubscriber,
+  useUnblockSubscriber,
+} from '@shared/hooks';
 import {
   IconBan,
   IconCheck,
@@ -16,11 +14,7 @@ import {
   IconDots,
   IconX,
 } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import ConfirmActionModal from './ConfirmActionModal';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({
@@ -32,90 +26,22 @@ export function ManageSubscriptionMenu({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [action, setAction] = useState('');
-  const auth = useAuth();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
-  const queryClient = useQueryClient();
 
-  const approveSubscriberMutation = useMutation({
-    mutationFn: async () => {
-      const requestBody: ApproveSubscriberRequest = { subscription_id };
-      await SubscriptionManagementService.approveSubscriber({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
-    },
-    onError: () => {
-      notifications.show({
-        ...Error,
-        title: 'Error approving subscriber',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-  });
-
-  const removeSubscriberMutation = useMutation({
-    mutationFn: async () => {
-      const requestBody: RemoveSubscriberRequest = { subscription_id };
-      await SubscriptionManagementService.removeSubscriber({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
-    },
-    onError: () => {
-      notifications.show({
-        ...Error,
-        title: 'Error removing subscriber',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-  });
-
-  const blockSubscriberMutation = useMutation({
-    mutationFn: async () => {
-      const requestBody: BlockSubscriberRequest = { subscription_id };
-      await SubscriptionManagementService.blockSubscriber({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
-    },
-    onError: () => {
-      notifications.show({
-        ...Error,
-        title: 'Error blocking subscriber',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-  });
-
-  const unblockSubscriberMutation = useMutation({
-    mutationFn: async () => {
-      const requestBody: UnblockSubscriberRequest = { subscription_id };
-      await SubscriptionManagementService.unblockSubscriber({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour_subscriptions', auth.user?.profile.sub] });
-    },
-    onError: () => {
-      notifications.show({
-        ...Error,
-        title: 'Error unblocking subscriber',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-  });
+  const approveSubscriberMutation = useApproveSubscriber();
+  const removeSubscriberMutation = useRemoveSubscriber();
+  const blockSubscriberMutation = useBlockSubscriber();
+  const unblockSubscriberMutation = useUnblockSubscriber();
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
-  const handleConfirm = (action: string) => {
+  const handleConfirm = () => {
     setIsModalOpen(false);
     if (action === 'remove') {
-      removeSubscriberMutation.mutate();
+      removeSubscriberMutation.mutate(subscription_id);
     } else if (action === 'block') {
-      blockSubscriberMutation.mutate();
+      blockSubscriberMutation.mutate(subscription_id);
     }
   };
 
@@ -134,14 +60,14 @@ export function ManageSubscriptionMenu({
               <Menu.Item
                 className={baseClasses.actionMenuOk}
                 leftSection={<IconCheck size={20} stroke={1.5} />}
-                onClick={() => approveSubscriberMutation.mutate()}
+                onClick={() => approveSubscriberMutation.mutate(subscription_id)}
               >
                 Approve
               </Menu.Item>
               <Menu.Item
                 className={baseClasses.actionMenuDanger}
                 leftSection={<IconX size={20} stroke={1.5} />}
-                onClick={() => removeSubscriberMutation.mutate()}
+                onClick={() => removeSubscriberMutation.mutate(subscription_id)}
               >
                 Reject
               </Menu.Item>
@@ -175,16 +101,22 @@ export function ManageSubscriptionMenu({
             <Menu.Item
               className={baseClasses.actionMenuOk}
               leftSection={<IconCircleCheck size={20} stroke={1.5} />}
-              onClick={() => unblockSubscriberMutation.mutate()}
+              onClick={() => unblockSubscriberMutation.mutate(subscription_id)}
             >
               Unblock
             </Menu.Item>
           )}
         </Menu.Dropdown>
       </Menu>
-      {isModalOpen && (
-        <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} action={action} />
-      )}
+      <GenericConfirmModal
+        isOpen={isModalOpen}
+        title={action === 'block' ? 'Block Subscriber?' : 'Remove Subscriber?'}
+        confirmText={action === 'block' ? 'Block' : 'Remove'}
+        message="This can't be undone."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        isDangerous
+      />
     </>
   );
 }

@@ -1,15 +1,8 @@
 import { useState } from 'react';
-import {
-  ApiError,
-  DeleteLabourUpdateRequest,
-  LabourUpdatesService,
-  OpenAPI,
-  UpdateLabourUpdateRequest,
-} from '@clients/labour_service';
-import { Error, Success } from '@shared/Notifications';
+import { UpdateLabourUpdateRequest } from '@clients/labour_service';
+import { useDeleteLabourUpdate, useEditLabourUpdate } from '@shared/hooks';
+import { Error } from '@shared/Notifications';
 import { IconDots, IconPencil, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -27,97 +20,33 @@ export function ManageLabourUpdateMenu({
   statusUpdateId,
   currentMessage = '',
 }: ManageLabourUpdateMenuProps) {
-  const auth = useAuth();
   const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false);
   const [announceOpened, { open: openAnnounce, close: closeAnnounce }] = useDisclosure(false);
   const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [editMessage, setEditMessage] = useState(currentMessage);
 
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
+  const editStatusUpdateMutation = useEditLabourUpdate();
+  const deleteStatusUpdateMutation = useDeleteLabourUpdate();
+
+  const handleEditStatusUdpate = async (newMessage: string) => {
+    const requestBody: UpdateLabourUpdateRequest = {
+      labour_update_id: statusUpdateId,
+      message: newMessage,
+    };
+    await editStatusUpdateMutation.mutateAsync(requestBody);
+    closeEdit();
   };
-  const queryClient = useQueryClient();
-
-  const editStatusUpdate = useMutation({
-    mutationFn: async (newMessage: string) => {
-      const requestBody: UpdateLabourUpdateRequest = {
-        labour_update_id: statusUpdateId,
-        message: newMessage,
-      };
-      await LabourUpdatesService.updateLabourUpdate({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Status update edited successfully`,
-      });
-      closeEdit();
-    },
-    onError: (_) => {
-      notifications.show({
-        ...Error,
-        title: 'Error',
-        message: `Error editing status update. Please try again.`,
-      });
-    },
-  });
-
-  const deleteStatusUpdate = useMutation({
-    mutationFn: async () => {
-      const requestBody: DeleteLabourUpdateRequest = { labour_update_id: statusUpdateId };
-      await LabourUpdatesService.deleteLabourUpdate({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Status update deleted`,
-      });
-    },
-    onError: (_) => {
-      notifications.show({
-        ...Error,
-        title: 'Error',
-        message: `Error deleting status update. Please try again.`,
-      });
-    },
-  });
-
-  const announceStatusUpdate = useMutation({
-    mutationFn: async () => {
-      const requestBody: UpdateLabourUpdateRequest = {
-        labour_update_id: statusUpdateId,
-        labour_update_type: 'announcement',
-      };
-      await LabourUpdatesService.updateLabourUpdate({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: `Status update announced`,
-      });
-    },
-    onError: (error) => {
-      let message = 'Something went wrong. Please try again.';
-      if (error instanceof ApiError) {
-        message = 'Wait at least 10 seconds between announcements';
-      }
-      notifications.show({
-        ...Error,
-        title: 'Error making announcement',
-        message,
-      });
-    },
-  });
+  const handleAnnounceStatusUdpate = async () => {
+    const requestBody: UpdateLabourUpdateRequest = {
+      labour_update_id: statusUpdateId,
+      labour_update_type: 'announcement',
+    };
+    await editStatusUpdateMutation.mutateAsync(requestBody);
+  };
 
   const handleConfirmDelete = () => {
     closeDelete();
-    deleteStatusUpdate.mutate();
+    deleteStatusUpdateMutation.mutate(statusUpdateId);
   };
 
   const handleCancelDelete = () => {
@@ -126,7 +55,7 @@ export function ManageLabourUpdateMenu({
 
   const handleConfirmAnnounce = () => {
     closeAnnounce();
-    announceStatusUpdate.mutate();
+    handleAnnounceStatusUdpate();
   };
 
   const handleCancelAnnounce = () => {
@@ -147,7 +76,7 @@ export function ManageLabourUpdateMenu({
       });
       return;
     }
-    editStatusUpdate.mutate(editMessage.trim());
+    handleEditStatusUdpate(editMessage.trim());
   };
 
   return (

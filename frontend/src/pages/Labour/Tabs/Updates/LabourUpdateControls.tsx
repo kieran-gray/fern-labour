@@ -1,51 +1,19 @@
 import { useCallback, useState } from 'react';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/constants';
-import {
-  LabourDTO,
-  LabourUpdateDTO,
-  LabourUpdateRequest,
-  LabourUpdatesService,
-  LabourUpdateType,
-  OpenAPI,
-} from '@clients/labour_service';
-import { useLabour } from '@labour/LabourContext';
-import { Error } from '@shared/Notifications';
+import { LabourUpdateType } from '@clients/labour_service';
+import { useCreateLabourUpdate } from '@shared/hooks';
 import { IconPencil, IconSend, IconSpeakerphone } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import _ from 'lodash';
-import { useAuth } from 'react-oidc-context';
 import { Button, SegmentedControl, Textarea } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-
-function createLabourUpdate(message: string, labourId: string | null, labourUpdateType: string) {
-  const labourUpdate: LabourUpdateDTO = {
-    id: 'placeholder',
-    labour_update_type: labourUpdateType,
-    message,
-    labour_id: labourId || '',
-    sent_time: new Date().toISOString(),
-    edited: false,
-    application_generated: false,
-  };
-  return labourUpdate;
-}
 
 export function LabourUpdateControls() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [labourUpdateType, setLabourUpdateType] = useState<LabourUpdateType>('status_update');
-  const [mutationInProgress, setMutationInProgress] = useState(false);
 
-  const auth = useAuth();
-  const { labourId } = useLabour();
-  const queryClient = useQueryClient();
-
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
+  const createLabourUpdateMutation = useCreateLabourUpdate();
 
   const handleMessageChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (event.currentTarget.value.length <= LABOUR_UPDATE_MAX_LENGTH) {
@@ -53,53 +21,22 @@ export function LabourUpdateControls() {
     }
   }, []);
 
-  const mutation = useMutation({
-    mutationFn: async (labourUpdate: LabourUpdateDTO) => {
-      setMutationInProgress(true);
-      const requestBody: LabourUpdateRequest = {
+  const handleSubmitUpdate = (labourUpdateType: LabourUpdateType, message: string) => {
+    createLabourUpdateMutation.mutate(
+      {
         labour_update_type: labourUpdateType,
-        sent_time: labourUpdate.sent_time,
-        message: labourUpdate.message,
-      };
-      const response = await LabourUpdatesService.postLabourUpdate({ requestBody });
-      return response.labour;
-    },
-    onMutate: async (labourUpdate: LabourUpdateDTO) => {
-      await queryClient.cancelQueries({ queryKey: ['labour', auth.user?.profile.sub] });
-      const previousLabourState: LabourDTO | undefined = queryClient.getQueryData([
-        'labour',
-        auth.user?.profile.sub,
-      ]);
-      if (previousLabourState != null) {
-        const newLabourState = _.cloneDeep(previousLabourState);
-        newLabourState.labour_updates.push(labourUpdate);
-        queryClient.setQueryData(['labour', auth.user?.profile.sub], newLabourState);
+        message,
+      },
+      {
+        onSuccess: () => {
+          setMessage('');
+        },
       }
-      return { previousLabourState };
-    },
-    onSuccess: (labour) => {
-      queryClient.setQueryData(['labour', auth.user?.profile.sub], labour);
-      setMessage('');
-    },
-    onError: (error, _, context) => {
-      if (context != null) {
-        queryClient.setQueryData(['labour', auth.user?.profile.sub], context.previousLabourState);
-      }
-      notifications.show({
-        ...Error,
-        title: 'Error',
-        message: `Error posting ${labourUpdateType === 'status_update' ? 'status update' : 'announcement'}: ${error.message}`,
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['labour', auth.user?.profile.sub] });
-      setMutationInProgress(false);
-    },
-  });
-
+    );
+  };
   const handleConfirm = () => {
     setIsModalOpen(false);
-    mutation.mutate(createLabourUpdate(message, labourId, labourUpdateType));
+    handleSubmitUpdate(labourUpdateType, message);
   };
 
   const handleCancel = () => {
@@ -110,7 +47,7 @@ export function LabourUpdateControls() {
     if (labourUpdateType === 'announcement') {
       setIsModalOpen(true);
     } else {
-      mutation.mutate(createLabourUpdate(message, labourId, labourUpdateType));
+      handleSubmitUpdate(labourUpdateType, message);
     }
   };
 
@@ -129,7 +66,7 @@ export function LabourUpdateControls() {
     radius: 'xl',
     type: 'submit',
     disabled: !message,
-    loading: mutationInProgress,
+    loading: createLabourUpdateMutation.isPending,
     className: classes.statusUpdateButton,
     onClick: handleSubmit,
     style: { minWidth: '200px' },

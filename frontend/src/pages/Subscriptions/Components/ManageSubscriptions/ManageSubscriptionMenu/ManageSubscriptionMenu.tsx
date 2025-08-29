@@ -1,47 +1,21 @@
 import { useState } from 'react';
-import { OpenAPI, SubscriptionService, UnsubscribeFromRequest } from '@clients/labour_service';
-import { Error } from '@shared/Notifications';
+import { useUnsubscribeFrom } from '@base/shared-components/hooks/useSubscriptionData';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconDots, IconUserMinus } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from 'react-oidc-context';
 import { ActionIcon, Menu } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import ConfirmActionModal from './ConfirmActionModal';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { setSubscriptionId } = useSubscription();
-  const auth = useAuth();
-  OpenAPI.TOKEN = async () => {
-    return auth.user?.access_token || '';
-  };
-  const queryClient = useQueryClient();
 
-  const unsubscribeMutation = useMutation({
-    mutationFn: async () => {
-      const requestBody: UnsubscribeFromRequest = { labour_id };
-      await SubscriptionService.unsubscribeFrom({ requestBody });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['subscriber_subscriptions', auth.user?.profile.sub],
-      });
-      setSubscriptionId('');
-    },
-    onError: () => {
-      notifications.show({
-        ...Error,
-        title: 'Error unsubscribing',
-        message: 'Something went wrong. Please try again.',
-      });
-    },
-  });
+  const unsubscribeMutation = useUnsubscribeFrom();
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setIsModalOpen(false);
-    unsubscribeMutation.mutate();
+    await unsubscribeMutation.mutateAsync(labour_id);
+    setSubscriptionId('');
   };
 
   const handleCancel = () => {
@@ -67,7 +41,15 @@ export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      {isModalOpen && <ConfirmActionModal onConfirm={handleConfirm} onCancel={handleCancel} />}
+      <GenericConfirmModal
+        isOpen={isModalOpen}
+        title="Unsubscribe?"
+        confirmText="Unsubscribe"
+        message="This can't be undone."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        isDangerous
+      />
     </>
   );
 }
