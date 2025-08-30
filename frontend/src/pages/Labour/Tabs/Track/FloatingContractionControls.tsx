@@ -54,7 +54,7 @@ export function FloatingContractionControls({
           {isExpanded ? <IconChevronDown size={16} /> : <IconChevronUp size={16} />}
         </ActionIcon>
       </div>
-      
+
       {isExpanded && (
         <div className={classes.controlsContent}>
           {activeContraction ? (

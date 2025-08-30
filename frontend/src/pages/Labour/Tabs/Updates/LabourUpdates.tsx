@@ -112,7 +112,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
           behavior: 'auto',
         });
       }
-      
+
       window.scrollTo({
         top: document.documentElement.scrollHeight,
         behavior: smooth ? 'smooth' : 'auto',
@@ -137,17 +137,17 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   }, [labourUpdates, firstName, completed]);
 
   const prevLengthRef = useRef(labourUpdates.length);
-  
+
   useEffect(() => {
     const currentLength = labourUpdates.length;
     const prevLength = prevLengthRef.current;
-    
+
     if (currentLength > prevLength && prevLength > 0) {
       scrollToBottom(true);
     } else if (currentLength > 0) {
       scrollToBottom(false);
     }
-    
+
     prevLengthRef.current = currentLength;
   }, [labourUpdates.length, scrollToBottom]);
 

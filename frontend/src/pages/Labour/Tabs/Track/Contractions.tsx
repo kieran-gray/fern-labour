@@ -24,7 +24,7 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
   useEffect(() => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   }, [labour]);
 

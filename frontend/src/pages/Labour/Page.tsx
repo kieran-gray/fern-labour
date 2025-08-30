@@ -24,8 +24,8 @@ import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
 import { Contractions } from './Tabs/Track/Contractions.tsx';
 import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls.tsx';
 import { StopwatchHandle } from './Tabs/Track/Stopwatch/Stopwatch.tsx';
-import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls.tsx';
+import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [
@@ -120,18 +120,18 @@ export const LabourPage = () => {
     if (completed) {
       return '100px';
     }
-    
+
     if (activeTab === 'track') {
       if (!isContractionControlsExpanded) {
         return '120px';
       }
       return activeContraction ? '400px' : '200px';
     }
-    
+
     if (activeTab === 'updates') {
       return isUpdateControlsExpanded ? '320px' : '120px';
     }
-    
+
     return '100px';
   };
 
@@ -178,7 +178,7 @@ export const LabourPage = () => {
           activeTab={activeTab}
           onToggle={setIsContractionControlsExpanded}
         />
-        
+
         {/* Floating Labour Update Controls */}
         <FloatingLabourUpdateControls
           labour={labour}

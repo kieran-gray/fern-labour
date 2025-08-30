@@ -11,10 +11,10 @@ interface FloatingLabourUpdateControlsProps {
   onToggle?: (isExpanded: boolean) => void;
 }
 
-export function FloatingLabourUpdateControls({ 
-  labour, 
+export function FloatingLabourUpdateControls({
+  labour,
   activeTab,
-  onToggle 
+  onToggle,
 }: FloatingLabourUpdateControlsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const completed = labour.end_time !== null;
@@ -42,7 +42,7 @@ export function FloatingLabourUpdateControls({
           {isExpanded ? <IconChevronDown size={16} /> : <IconChevronUp size={16} />}
         </ActionIcon>
       </div>
-      
+
       {isExpanded && (
         <div className={classes.controlsContent}>
           <LabourUpdateControls />
