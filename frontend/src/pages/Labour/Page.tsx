@@ -116,24 +116,23 @@ export const LabourPage = () => {
   const completed = labour.end_time !== null;
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
 
-  // Dynamic padding based on floating controls size
   const getFloatingControlsPadding = () => {
     if (completed) {
-      return '100px'; // Just bottom navigation for completed labour
+      return '100px';
     }
     
     if (activeTab === 'track') {
       if (!isContractionControlsExpanded) {
         return '120px';
       }
-      return activeContraction ? '400px' : '200px'; // Active controls are taller
+      return activeContraction ? '400px' : '200px';
     }
     
     if (activeTab === 'updates') {
-      return isUpdateControlsExpanded ? '300px' : '120px'; // Collapsed controls are much smaller
+      return isUpdateControlsExpanded ? '320px' : '120px';
     }
     
-    return '100px'; // Just bottom navigation for other tabs
+    return '100px';
   };
 
   const renderTabPanel = (tabId: string) => {

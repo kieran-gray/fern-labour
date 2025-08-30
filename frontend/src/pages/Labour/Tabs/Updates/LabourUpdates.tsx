@@ -104,15 +104,20 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
 
   const privateLabourBegunMessage = MESSAGES.PRIVATE_LABOUR_BEGUN;
 
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = useCallback((smooth: boolean = false) => {
     setTimeout(() => {
       if (viewport.current) {
         viewport.current.scrollTo({
           top: viewport.current.scrollHeight,
-          behavior: 'smooth',
+          behavior: 'auto',
         });
       }
-    }, 1);
+      
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: smooth ? 'smooth' : 'auto',
+      });
+    }, 50);
   }, []);
 
   const labourUpdateDisplay = useMemo(() => {
@@ -131,9 +136,20 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
     });
   }, [labourUpdates, firstName, completed]);
 
+  const prevLengthRef = useRef(labourUpdates.length);
+  
   useEffect(() => {
-    scrollToBottom();
-  }, [labourUpdates, scrollToBottom]);
+    const currentLength = labourUpdates.length;
+    const prevLength = prevLengthRef.current;
+    
+    if (currentLength > prevLength && prevLength > 0) {
+      scrollToBottom(true);
+    } else if (currentLength > 0) {
+      scrollToBottom(false);
+    }
+    
+    prevLengthRef.current = currentLength;
+  }, [labourUpdates.length, scrollToBottom]);
 
   const title = completed ? 'Your labour updates' : 'Share an update';
   const description = completed
