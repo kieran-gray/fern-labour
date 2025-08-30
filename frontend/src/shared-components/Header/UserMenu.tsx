@@ -36,9 +36,16 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
   ({ name, icon, ...others }: UserButtonProps, ref) => (
     <UnstyledButton ref={ref} className={classes.userButton} {...others}>
       <Group>
-        <Avatar radius="xl" color="var(--mantine-primary-color-4)" />
+        <Avatar
+          radius="xl"
+          color="light-dark(var(--mantine-color-dark-6), var(--mantine-color-gray-4))"
+        />
         <div style={{ flex: 1 }}>
-          <Text size="sm" fw={500} c="var(--mantine-primary-color-4)">
+          <Text
+            size="sm"
+            fw={500}
+            c="light-dark(var(--mantine-color-dark-2), var(--mantine-color-gray-3))"
+          >
             {name}
           </Text>
         </div>
