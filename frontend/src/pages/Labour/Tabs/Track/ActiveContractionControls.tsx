@@ -58,6 +58,6 @@ export function ActiveContractionControls({
       />
       <Space h="xl" />
       <EndContractionButton intensity={intensity} disabled={disabled} />
-      </>
+    </>
   );
 }

@@ -81,14 +81,14 @@
 
 /* Mobile Drawer */
 .drawer {
-  background-color: var(--mantine-color-primary-3);
+  background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-3));
   border: none;
 }
 
 .drawerBody {
   display: flex;
   height: 85vh;
-  background-color: var(--mantine-color-primary-3);
+  background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-3));
 }
 
 /* Navigation Menu */

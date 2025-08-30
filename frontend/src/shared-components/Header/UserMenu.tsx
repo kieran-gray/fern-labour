@@ -36,9 +36,9 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
   ({ name, icon, ...others }: UserButtonProps, ref) => (
     <UnstyledButton ref={ref} className={classes.userButton} {...others}>
       <Group>
-        <Avatar radius="xl" color="var(--mantine-color-white)" />
+        <Avatar radius="xl" color="var(--mantine-primary-color-4)" />
         <div style={{ flex: 1 }}>
-          <Text size="sm" fw={500} c="var(--mantine-color-white)">
+          <Text size="sm" fw={500} c="var(--mantine-primary-color-4)">
             {name}
           </Text>
         </div>
@@ -209,7 +209,7 @@ export function MobileUserMenu() {
         styles={{
           root: {
             backgroundColor:
-              'light-dark(var(--mantine-primary-color-0), var(--mantine-color-primary-8))',
+              'light-dark(var(--mantine-primary-color-1), var(--mantine-color-primary-8))',
           },
         }}
       />

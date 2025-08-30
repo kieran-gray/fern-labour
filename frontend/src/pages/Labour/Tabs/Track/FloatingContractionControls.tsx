@@ -11,14 +11,14 @@ interface FloatingContractionControlsProps {
   activeTab: string | null;
 }
 
-export function FloatingContractionControls({ 
-  labour, 
-  stopwatchRef, 
-  activeTab 
+export function FloatingContractionControls({
+  labour,
+  stopwatchRef,
+  activeTab,
 }: FloatingContractionControlsProps) {
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
   const completed = labour.end_time !== null;
-  
+
   const anyPlaceholderContractions = (contractions: ContractionDTO[]) => {
     return contractions.some((contraction) => contraction.id === 'placeholder');
   };
@@ -30,7 +30,9 @@ export function FloatingContractionControls({
   }
 
   return (
-    <div className={`${classes.floatingControls} ${activeContraction ? classes.activeContraction : ''}`}>
+    <div
+      className={`${classes.floatingControls} ${activeContraction ? classes.activeContraction : ''}`}
+    >
       <div className={classes.controlsContent}>
         {activeContraction ? (
           <ActiveContractionControls

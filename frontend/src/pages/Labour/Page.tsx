@@ -112,10 +112,12 @@ export const LabourPage = () => {
 
   const completed = labour.end_time !== null;
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
-  
+
   // Dynamic padding based on floating controls size
   const getFloatingControlsPadding = () => {
-    if (activeTab !== 'track' || completed) { return '100px' }; // Just bottom navigation
+    if (activeTab !== 'track' || completed) {
+      return '100px';
+    } // Just bottom navigation
     return activeContraction ? '400px' : '160px'; // Active controls are taller
   };
 
@@ -146,19 +148,22 @@ export const LabourPage = () => {
     <div {...swipeHandlers}>
       <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
         {/* Content Area */}
-        <div className={baseClasses.flexPageColumn} style={{ paddingBottom: getFloatingControlsPadding() }}>
+        <div
+          className={baseClasses.flexPageColumn}
+          style={{ paddingBottom: getFloatingControlsPadding() }}
+        >
           <Center style={{ flexDirection: 'column' }}>
             {renderTabPanel(activeTab || 'track')}
           </Center>
         </div>
 
         {/* Floating Contraction Controls */}
-        <FloatingContractionControls 
-          labour={labour} 
-          stopwatchRef={stopwatchRef} 
+        <FloatingContractionControls
+          labour={labour}
+          stopwatchRef={stopwatchRef}
           activeTab={activeTab}
         />
-        
+
         {/* Mobile Bottom Navigation */}
         <BottomNavigation items={TABS} activeItem={activeTab} onItemChange={setActiveTab} />
       </AppShell>

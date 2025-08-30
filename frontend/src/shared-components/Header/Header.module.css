@@ -7,7 +7,7 @@
   }
 
   .drawer {
-    background-color: var(--mantine-color-primary-3);
+    background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-3));
   }
 
   .body {
@@ -84,7 +84,7 @@
     flex-direction: column;
     justify-content: space-between;
     flex-grow:1;
-    background-color: var(--mantine-color-primary-3);
+    background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-3));
   }
 
   .linksDrawer > *{
@@ -99,18 +99,19 @@
     text-transform: uppercase;
     border-radius: 20px;
     font-size: var(--mantine-font-size-sm);
-    color: var(--mantine-color-white);
+    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-white));
     padding: 7px var(--mantine-spacing-sm);
     font-weight: 700;
     border: 2px solid transparent;
+    background-color: var(--mantine-color-primary-1);
     transition:
       border-color 200ms ease,
       background-color 200ms ease,
       color 200ms ease;
   
     @mixin hover {
+      background-color: var(--mantine-color-primary-2);
       color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-white));
-      background-color: var(--mantine-color-primary-1);
       text-decoration: none;
     }
   
@@ -127,10 +128,11 @@
   }
 
   .footer {
-    border-top: 1px solid light-dark(var(--mantine-color-primary-2), var(--mantine-color-primary-7));
+    border-top: 1px solid light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-7));
     padding-top: var(--mantine-spacing-md);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
+  
