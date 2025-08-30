@@ -6,7 +6,7 @@ import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle.tsx';
 import { sortContractions } from '@shared/utils.tsx';
 import { IconBook } from '@tabler/icons-react';
 import { ActionIcon, Image, Space, Stack } from '@mantine/core';
-import { useDisclosure, useScrollIntoView } from '@mantine/hooks';
+import { useDisclosure } from '@mantine/hooks';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert.tsx';
 import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital.tsx';
@@ -18,15 +18,14 @@ import baseClasses from '@shared/shared-styles.module.css';
 
 export function Contractions({ labour }: { labour: LabourDTO }) {
   const [opened, { open, close }] = useDisclosure(false);
-  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
-    duration: 200,
-    offset: 50,
-  });
 
   const sortedContractions = sortContractions(labour.contractions);
 
   useEffect(() => {
-    scrollIntoView({ alignment: 'end' });
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth'
+    });
   }, [labour]);
 
   const completed = labour.end_time !== null;
@@ -72,7 +71,6 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
                 {labour.recommendations.call_midwife && <CallMidwifeAlert />}
                 {labour.recommendations.go_to_hospital && <GoToHospitalAlert />}
                 {labour.recommendations.prepare_for_hospital && <PrepareForHospitalAlert />}
-                <div ref={targetRef} />
               </Stack>
             </div>
           </div>
