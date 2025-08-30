@@ -144,14 +144,14 @@
 @media (max-width: $mantine-breakpoint-sm) {
   .container {
     margin: 10px 8px;
-    border-radius: 25px;
+    border-radius: 35px;
   }
 }
 
 @media (max-width: $mantine-breakpoint-xs) {
   .container {
     margin: 8px 6px;
-    border-radius: 20px;
+    border-radius: 35px;
   }
   
   .logoContainer {

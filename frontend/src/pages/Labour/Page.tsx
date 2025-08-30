@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { NotFoundError, PermissionDenied } from '@base/Errors';
 import { AppShell } from '@shared/AppShell';
 import { BottomNavigation } from '@shared/BottomNavigation';
@@ -22,6 +22,8 @@ import { LabourControls } from './Tabs/Manage/LabourControls.tsx';
 import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubscribers.tsx';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
 import { Contractions } from './Tabs/Track/Contractions.tsx';
+import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls.tsx';
+import { StopwatchHandle } from './Tabs/Track/Stopwatch/Stopwatch.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import baseClasses from '@shared/shared-styles.module.css';
 
@@ -41,6 +43,7 @@ export const LabourPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const labourIdParam = searchParams.get('labourId');
   const [activeTab, setActiveTab] = useState<string | null>('track');
+  const stopwatchRef = useRef<StopwatchHandle>(null);
 
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
@@ -108,6 +111,13 @@ export const LabourPage = () => {
   }
 
   const completed = labour.end_time !== null;
+  const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
+  
+  // Dynamic padding based on floating controls size
+  const getFloatingControlsPadding = () => {
+    if (activeTab !== 'track' || completed) { return '100px' }; // Just bottom navigation
+    return activeContraction ? '400px' : '160px'; // Active controls are taller
+  };
 
   const renderTabPanel = (tabId: string) => {
     switch (tabId) {
@@ -136,12 +146,19 @@ export const LabourPage = () => {
     <div {...swipeHandlers}>
       <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
         {/* Content Area */}
-        <div className={baseClasses.flexPageColumn} style={{ paddingBottom: '100px' }}>
+        <div className={baseClasses.flexPageColumn} style={{ paddingBottom: getFloatingControlsPadding() }}>
           <Center style={{ flexDirection: 'column' }}>
             {renderTabPanel(activeTab || 'track')}
           </Center>
         </div>
 
+        {/* Floating Contraction Controls */}
+        <FloatingContractionControls 
+          labour={labour} 
+          stopwatchRef={stopwatchRef} 
+          activeTab={activeTab}
+        />
+        
         {/* Mobile Bottom Navigation */}
         <BottomNavigation items={TABS} activeItem={activeTab} onItemChange={setActiveTab} />
       </AppShell>

@@ -1,5 +1,5 @@
 .counter {
-    color: var(--mantine-color-white);
+    color: light-dark(var(--mantine-color-dark-9), var(--mantine-color-gray-1));
     text-transform: uppercase;
     font-weight: 700;
     font-size: 40pt;

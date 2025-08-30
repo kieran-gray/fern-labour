@@ -22,7 +22,7 @@ export default function EndContractionButton({
       leftSection={icon}
       radius="xl"
       size="xl"
-      variant="white"
+      variant="outline"
       loading={endContractionMutation.isPending}
       onClick={() => {
         const endTime = new Date().toISOString();

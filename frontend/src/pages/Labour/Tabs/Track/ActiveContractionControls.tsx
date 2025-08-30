@@ -28,7 +28,7 @@ export function ActiveContractionControls({
   }, [stopwatchRef]);
 
   return (
-    <div className={classes.controlsBackground}>
+    <>
       <div className={baseClasses.flexRowNoBP} style={{ justifyContent: 'center' }}>
         {stopwatch}
       </div>
@@ -58,6 +58,6 @@ export function ActiveContractionControls({
       />
       <Space h="xl" />
       <EndContractionButton intensity={intensity} disabled={disabled} />
-    </div>
+      </>
   );
 }

@@ -40,8 +40,8 @@ export function PillHeader({ navItems, activeNav, onNavChange }: PillHeaderProps
       component="header"
       mt="10px"
       mx={{ base: '15px', sm: 'auto' }}
-      w={{ base: 'auto', sm: '80%' }}
-      maw={{ sm: 800 }}
+      w={{ base: 'auto', sm: "95%" }}
+      maw={{ sm: 1050 }}
       h={60}
     >
       <Flex
