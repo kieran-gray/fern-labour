@@ -1,0 +1,57 @@
+name: Marketing CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'marketing/**'
+      - '.github/workflows/**'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - 'marketing/**'
+      - '.github/workflows/**'
+
+jobs:
+  marketing-ci:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./marketing
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: './marketing/.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: ./marketing/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting and type checking
+        run: npm test
+
+      - name: Build project
+        run: npm run build
+        env:
+          NEXT_PUBLIC_CONTACT_SERVICE_URL: ${{ vars.CONTACT_SERVICE_URL }}
+          NEXT_PUBLIC_FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+          NEXT_PUBLIC_INSTAGRAM_URL: ${{ vars.INSTAGRAM_URL }}
+          NEXT_PUBLIC_CLOUDFLARE_SITEKEY: ${{ vars.CLOUDFLARE_SITEKEY }}
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketing-build-${{ github.sha }}
+          path: ./marketing/out/
+          retention-days: 7
