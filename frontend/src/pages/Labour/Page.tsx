@@ -22,6 +22,8 @@ import { LabourControls } from './Tabs/Manage/LabourControls.tsx';
 import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubscribers.tsx';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
 import { Contractions } from './Tabs/Track/Contractions.tsx';
+import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls.tsx';
+import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import baseClasses from '@shared/shared-styles.module.css';
 
@@ -41,6 +43,8 @@ export const LabourPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const labourIdParam = searchParams.get('labourId');
   const [activeTab, setActiveTab] = useState<string | null>('track');
+  const [isUpdateControlsExpanded, setIsUpdateControlsExpanded] = useState(true);
+  const [isContractionControlsExpanded, setIsContractionControlsExpanded] = useState(true);
 
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
@@ -108,6 +112,32 @@ export const LabourPage = () => {
   }
 
   const completed = labour.end_time !== null;
+  const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
+
+  const getFloatingControlsPadding = () => {
+    // No padding needed on desktop since controls are inline and there's no bottom navigation
+    if (window.innerWidth >= 768) {
+      // Mantine breakpoint-sm
+      return '30px';
+    }
+
+    if (completed) {
+      return '100px';
+    }
+
+    if (activeTab === 'track') {
+      if (!isContractionControlsExpanded) {
+        return '120px';
+      }
+      return activeContraction ? '400px' : '200px';
+    }
+
+    if (activeTab === 'updates') {
+      return isUpdateControlsExpanded ? '320px' : '120px';
+    }
+
+    return '100px';
+  };
 
   const renderTabPanel = (tabId: string) => {
     switch (tabId) {
@@ -136,11 +166,28 @@ export const LabourPage = () => {
     <div {...swipeHandlers}>
       <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
         {/* Content Area */}
-        <div className={baseClasses.flexPageColumn} style={{ paddingBottom: '100px' }}>
+        <div
+          className={baseClasses.flexPageColumn}
+          style={{ paddingBottom: getFloatingControlsPadding() }}
+        >
           <Center style={{ flexDirection: 'column' }}>
             {renderTabPanel(activeTab || 'track')}
           </Center>
         </div>
+
+        {/* Floating Contraction Controls */}
+        <FloatingContractionControls
+          labour={labour}
+          activeTab={activeTab}
+          onToggle={setIsContractionControlsExpanded}
+        />
+
+        {/* Floating Labour Update Controls */}
+        <FloatingLabourUpdateControls
+          labour={labour}
+          activeTab={activeTab}
+          onToggle={setIsUpdateControlsExpanded}
+        />
 
         {/* Mobile Bottom Navigation */}
         <BottomNavigation items={TABS} activeItem={activeTab} onItemChange={setActiveTab} />

@@ -10,13 +10,9 @@
     linear-gradient(180deg, rgba(40, 40, 40, 0.95) 0%, rgba(30, 30, 30, 0.98) 100%)
   );
   backdrop-filter: blur(20px);
-  border-top: 1px solid light-dark(
-    rgba(254, 82, 54, 0.15),
-    rgba(254, 82, 54, 0.25)
-  );
   box-shadow: 
-    0 -4px 20px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.25)),
-    inset 0 1px 0 light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+    0 -4px 20px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.05)),
+    inset 0 1px 0 light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.05));
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -75,7 +71,7 @@
       var(--mantine-color-primary-4)
     );
     border-radius: 2px;
-    box-shadow: 0 1px 3px rgba(254, 82, 54, 0.3);
+    box-shadow: light-dark(0 1px 3px rgba(254, 82, 54, 0.3), none);
   }
 }
 
@@ -91,12 +87,12 @@
   transition: all 0.3s ease;
   
   .tabActive & {
-    color: light-dark(var(--mantine-color-primary-7), var(--mantine-color-primary-3));
+    color: light-dark(var(--mantine-color-primary-7), var(--mantine-color-gray-3));
     transform: scale(1.1);
   }
   
   .tab:hover & {
-    color: light-dark(var(--mantine-color-primary-6), var(--mantine-color-primary-4));
+    color: light-dark(var(--mantine-color-primary-6), var(--mantine-color-white));
   }
 }
 
@@ -109,12 +105,12 @@
   white-space: nowrap;
   
   .tabActive & {
-    color: light-dark(var(--mantine-color-primary-8), var(--mantine-color-primary-2));
+    color: light-dark(var(--mantine-color-primary-8), var(--mantine-color-gray-3));
     font-weight: 700;
   }
   
   .tab:hover & {
-    color: light-dark(var(--mantine-color-primary-7), var(--mantine-color-primary-3));
+    color: light-dark(var(--mantine-color-primary-7), var(--mantine-color-white));
   }
 }
 

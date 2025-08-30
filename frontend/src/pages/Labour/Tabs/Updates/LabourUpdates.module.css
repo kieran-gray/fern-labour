@@ -1,3 +1,15 @@
+/* Desktop controls - only visible on larger screens */
+.desktopControls {
+  display: none;
+}
+
+@media (min-width: $mantine-breakpoint-sm) {
+  .desktopControls {
+    display: block;
+    margin-top: 2rem;
+  }
+}
+
 .inner {
   display: flex;
   justify-content: space-between;

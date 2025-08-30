@@ -9,13 +9,13 @@
   flex-shrink: 0;
   border-radius: 50px;
   box-shadow: 
-    0 4px 12px light-dark(rgba(254, 82, 54, 0.15), rgba(254, 82, 54, 0.25)),
+    0 4px 12px light-dark(rgba(254, 82, 54, 0.15), rgba(254, 82, 54, 0.05)),
     0 2px 4px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
   transition: all 0.3s ease;
 
   &:hover {
     box-shadow: 
-      0 6px 16px light-dark(rgba(254, 82, 54, 0.2), rgba(254, 82, 54, 0.3)),
+      0 6px 16px light-dark(rgba(254, 82, 54, 0.2), rgba(254, 82, 54, 0.1)),
       0 4px 8px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25));
     transform: translateY(-1px);
   }
@@ -81,14 +81,14 @@
 
 /* Mobile Drawer */
 .drawer {
-  background-color: light-dark(var(--mantine-color-primary-3), var(--mantine-color-primary-4));
+  background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-3));
   border: none;
 }
 
 .drawerBody {
   display: flex;
   height: 85vh;
-  background-color: light-dark(var(--mantine-color-primary-3), var(--mantine-color-primary-4));
+  background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-3));
 }
 
 /* Navigation Menu */
@@ -144,14 +144,14 @@
 @media (max-width: $mantine-breakpoint-sm) {
   .container {
     margin: 10px 8px;
-    border-radius: 25px;
+    border-radius: 35px;
   }
 }
 
 @media (max-width: $mantine-breakpoint-xs) {
   .container {
     margin: 8px 6px;
-    border-radius: 20px;
+    border-radius: 35px;
   }
   
   .logoContainer {
