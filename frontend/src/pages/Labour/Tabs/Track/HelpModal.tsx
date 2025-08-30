@@ -111,7 +111,7 @@ export const ContractionsHelpModal = ({
               leftSection={<IconHourglassHigh size={25} />}
               radius="xl"
               size="lg"
-              variant="white"
+              variant="outline"
             >
               End Contraction
             </Button>
