@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO notifications (\n                id, status, notification_type, destination, template, data, metadata, external_id\n            ) VALUES (\n                $1, $2, $3, $4, $5, $6, $7, $8\n            )\n            ON CONFLICT (id) DO UPDATE SET\n                status = EXCLUDED.status,\n                notification_type = EXCLUDED.notification_type,\n                destination = EXCLUDED.destination,\n                template = EXCLUDED.template,\n                data = EXCLUDED.data,\n                metadata = EXCLUDED.metadata,\n                external_id = EXCLUDED.external_id\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Jsonb",
+        "Jsonb",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b97aa33195a27f150cd0de05ae7ecebbb3e0c781b670450393767b90e97beefa"
+}
