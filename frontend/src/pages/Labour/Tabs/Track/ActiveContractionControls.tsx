@@ -57,7 +57,9 @@ export function ActiveContractionControls({
         ]}
       />
       <Space h="xl" />
-      <EndContractionButton intensity={intensity} disabled={disabled} />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <EndContractionButton intensity={intensity} disabled={disabled} />
+      </div>
     </>
   );
 }

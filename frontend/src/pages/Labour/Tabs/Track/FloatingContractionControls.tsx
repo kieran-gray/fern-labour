@@ -1,33 +1,24 @@
-import { RefObject, useState } from 'react';
-import { ContractionDTO, LabourDTO } from '@clients/labour_service/index.ts';
+import { useState } from 'react';
+import { LabourDTO } from '@clients/labour_service/index.ts';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { ActionIcon } from '@mantine/core';
-import { ActiveContractionControls } from './ActiveContractionControls.tsx';
-import StartContractionButton from './StartContractionButton.tsx';
-import { StopwatchHandle } from './Stopwatch/Stopwatch.tsx';
+import { ContractionControls } from './ContractionControls.tsx';
 import classes from './FloatingContractionControls.module.css';
 
 interface FloatingContractionControlsProps {
   labour: LabourDTO;
-  stopwatchRef: RefObject<StopwatchHandle>;
   activeTab: string | null;
   onToggle?: (isExpanded: boolean) => void;
 }
 
 export function FloatingContractionControls({
   labour,
-  stopwatchRef,
   activeTab,
   onToggle,
 }: FloatingContractionControlsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
   const completed = labour.end_time !== null;
-
-  const anyPlaceholderContractions = (contractions: ContractionDTO[]) => {
-    return contractions.some((contraction) => contraction.id === 'placeholder');
-  };
-  const containsPlaceholderContractions = anyPlaceholderContractions(labour.contractions);
 
   // Only show on track tab and when labour is not completed
   if (activeTab !== 'track' || completed) {
@@ -57,15 +48,7 @@ export function FloatingContractionControls({
 
       {isExpanded && (
         <div className={classes.controlsContent}>
-          {activeContraction ? (
-            <ActiveContractionControls
-              stopwatchRef={stopwatchRef}
-              activeContraction={activeContraction}
-              disabled={containsPlaceholderContractions}
-            />
-          ) : (
-            <StartContractionButton stopwatchRef={stopwatchRef} />
-          )}
+          <ContractionControls labour={labour} />
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { NotFoundError, PermissionDenied } from '@base/Errors';
 import { AppShell } from '@shared/AppShell';
 import { BottomNavigation } from '@shared/BottomNavigation';
@@ -23,7 +23,6 @@ import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubs
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
 import { Contractions } from './Tabs/Track/Contractions.tsx';
 import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls.tsx';
-import { StopwatchHandle } from './Tabs/Track/Stopwatch/Stopwatch.tsx';
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -46,7 +45,6 @@ export const LabourPage = () => {
   const [activeTab, setActiveTab] = useState<string | null>('track');
   const [isUpdateControlsExpanded, setIsUpdateControlsExpanded] = useState(true);
   const [isContractionControlsExpanded, setIsContractionControlsExpanded] = useState(true);
-  const stopwatchRef = useRef<StopwatchHandle>(null);
 
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
@@ -117,6 +115,12 @@ export const LabourPage = () => {
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
 
   const getFloatingControlsPadding = () => {
+    // No padding needed on desktop since controls are inline and there's no bottom navigation
+    if (window.innerWidth >= 768) {
+      // Mantine breakpoint-sm
+      return '30px';
+    }
+
     if (completed) {
       return '100px';
     }
@@ -174,7 +178,6 @@ export const LabourPage = () => {
         {/* Floating Contraction Controls */}
         <FloatingContractionControls
           labour={labour}
-          stopwatchRef={stopwatchRef}
           activeTab={activeTab}
           onToggle={setIsContractionControlsExpanded}
         />

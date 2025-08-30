@@ -10,6 +10,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert.tsx';
 import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital.tsx';
+import { ContractionControls } from './ContractionControls.tsx';
 import ContractionTimeline from './ContractionTimeline.tsx';
 import { ContractionsHelpModal } from './HelpModal.tsx';
 import image from './Track.svg';
@@ -71,6 +72,11 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
                 {labour.recommendations.call_midwife && <CallMidwifeAlert />}
                 {labour.recommendations.go_to_hospital && <GoToHospitalAlert />}
                 {labour.recommendations.prepare_for_hospital && <PrepareForHospitalAlert />}
+
+                {/* Desktop controls - only show on larger screens */}
+                <div className={classes.desktopControls}>
+                  <ContractionControls labour={labour} />
+                </div>
               </Stack>
             </div>
           </div>
