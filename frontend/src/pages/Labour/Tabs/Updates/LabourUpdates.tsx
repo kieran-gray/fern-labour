@@ -9,7 +9,6 @@ import { ActionIcon, Image, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import image from './image.svg';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
-import { LabourUpdateControls } from './LabourUpdateControls';
 import { LabourUpdatesHelpModal } from './Modals/HelpModal';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -172,7 +171,6 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
                 <ImportantText message="You haven't posted any updates yet." />
               </>
             )}
-            {!completed && <LabourUpdateControls />}
           </div>
         </div>
       </div>

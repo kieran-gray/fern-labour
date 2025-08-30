@@ -1,4 +1,4 @@
-/* Floating Controls */
+/* Floating Labour Update Controls */
 .floatingControls {
   position: fixed;
   bottom: 0;
@@ -6,6 +6,11 @@
   right: 0;
   z-index: 99;
   background: light-dark(rgba(255, 255, 255, 0.98), rgba(40, 40, 40, 0.98));
+  backdrop-filter: blur(20px);
+  border-top: 1px solid light-dark(
+    rgba(254, 82, 54, 0.15),
+    rgba(254, 82, 54, 0.25)
+  );
   box-shadow: 
     0 -4px 20px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.15)),
     inset 0 1px 0 light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.05));
@@ -28,7 +33,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 0.5rem;
 }
 
 .collapsed .header {
@@ -48,11 +52,6 @@
   ) !important;
 }
 
-/* Active contraction background */
-.activeContraction {
-  background: light-dark(rgba(255, 255, 255, 0.98), rgba(40, 40, 40, 0.98)) !important;
-}
-
 /* Controls content container for centering */
 .controlsContent {
   display: flex;
@@ -61,9 +60,10 @@
   width: 100%;
 }
 
-/* Ensure slider components take full width within centered container */
-.controlsContent :global(.mantine-Slider-root),
-.controlsContent :global([class*="slider"]) {
+/* Ensure form components take full width within centered container */
+.controlsContent :global(.mantine-SegmentedControl-root),
+.controlsContent :global(.mantine-Textarea-root),
+.controlsContent :global(.mantine-Button-root) {
   width: 100% !important;
 }
 

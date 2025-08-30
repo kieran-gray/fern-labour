@@ -25,6 +25,7 @@ import { Contractions } from './Tabs/Track/Contractions.tsx';
 import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls.tsx';
 import { StopwatchHandle } from './Tabs/Track/Stopwatch/Stopwatch.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
+import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls.tsx';
 import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [
@@ -43,6 +44,8 @@ export const LabourPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const labourIdParam = searchParams.get('labourId');
   const [activeTab, setActiveTab] = useState<string | null>('track');
+  const [isUpdateControlsExpanded, setIsUpdateControlsExpanded] = useState(true);
+  const [isContractionControlsExpanded, setIsContractionControlsExpanded] = useState(true);
   const stopwatchRef = useRef<StopwatchHandle>(null);
 
   const swipeHandlers = useSwipeable({
@@ -115,10 +118,22 @@ export const LabourPage = () => {
 
   // Dynamic padding based on floating controls size
   const getFloatingControlsPadding = () => {
-    if (activeTab !== 'track' || completed) {
-      return '100px';
-    } // Just bottom navigation
-    return activeContraction ? '400px' : '160px'; // Active controls are taller
+    if (completed) {
+      return '100px'; // Just bottom navigation for completed labour
+    }
+    
+    if (activeTab === 'track') {
+      if (!isContractionControlsExpanded) {
+        return '120px';
+      }
+      return activeContraction ? '400px' : '200px'; // Active controls are taller
+    }
+    
+    if (activeTab === 'updates') {
+      return isUpdateControlsExpanded ? '300px' : '120px'; // Collapsed controls are much smaller
+    }
+    
+    return '100px'; // Just bottom navigation for other tabs
   };
 
   const renderTabPanel = (tabId: string) => {
@@ -162,6 +177,14 @@ export const LabourPage = () => {
           labour={labour}
           stopwatchRef={stopwatchRef}
           activeTab={activeTab}
+          onToggle={setIsContractionControlsExpanded}
+        />
+        
+        {/* Floating Labour Update Controls */}
+        <FloatingLabourUpdateControls
+          labour={labour}
+          activeTab={activeTab}
+          onToggle={setIsUpdateControlsExpanded}
         />
 
         {/* Mobile Bottom Navigation */}
