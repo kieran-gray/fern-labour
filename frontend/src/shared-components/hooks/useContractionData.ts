@@ -3,6 +3,7 @@ import {
   ContractionsService,
   DeleteContractionRequest,
   EndContractionRequest,
+  LabourDTO,
   StartContractionRequest,
   UpdateContractionRequest,
 } from '@clients/labour_service';
@@ -248,7 +249,36 @@ export function useUpdateContraction() {
       const response = await ContractionsService.updateContraction({ requestBody: request });
       return response.labour;
     },
+    onMutate: async (request: UpdateContractionRequest) => {
+      if (isGuestMode) {
+        return;
+      }
+      const sub = user?.profile.sub || '';
+      const labourKey = queryKeys.labour.user(sub);
+      const previous = queryClient.getQueryData(labourKey) as any;
+      if (!previous) {
+        return { labourKey, previous };
+      }
+
+      const next: LabourDTO = { ...previous, contractions: [...(previous.contractions || [])] };
+      const idx = next.contractions.findIndex(
+        (c: ContractionDTO) => c.id === request.contraction_id
+      );
+      if (idx !== -1) {
+        const active = next.contractions[idx];
+        active.start_time = request.start_time ? request.start_time : active.start_time;
+        active.end_time = request.end_time ? request.end_time : active.end_time;
+        active.intensity = request.intensity != null ? request.intensity : active.intensity;
+        active.duration = contractionDurationSeconds(active);
+        next.contractions[idx] = active;
+        queryClient.setQueryData(labourKey, next);
+      }
+      return { labourKey, previous };
+    },
     onSuccess: (labour) => {
+      if (!labour) {
+        return;
+      }
       if (isGuestMode && guestProfile) {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {
@@ -309,7 +339,26 @@ export function useDeleteContraction() {
       const response = await ContractionsService.deleteContraction({ requestBody });
       return response.labour;
     },
+    onMutate: async (contractionId: string) => {
+      if (isGuestMode) {
+        return;
+      }
+      const sub = user?.profile.sub || '';
+      const labourKey = queryKeys.labour.user(sub);
+      const previous = queryClient.getQueryData(labourKey) as any;
+      if (!previous) {
+        return { labourKey, previous };
+      }
+
+      const next: LabourDTO = { ...previous, contractions: [...(previous.contractions || [])] };
+      next.contractions = next.contractions.filter((c: ContractionDTO) => c.id !== contractionId);
+      queryClient.setQueryData(labourKey, next);
+      return { labourKey, previous };
+    },
     onSuccess: (labour) => {
+      if (!labour) {
+        return;
+      }
       if (isGuestMode && guestProfile) {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {

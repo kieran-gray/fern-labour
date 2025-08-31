@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/constants';
+import { useNetworkState } from '@base/offline/hooks';
 import { LabourUpdateType } from '@clients/labour_service';
 import { useCreateLabourUpdate } from '@shared/hooks';
 import { IconPencil, IconSend, IconSpeakerphone, IconWifiOff } from '@tabler/icons-react';
-import { Button, SegmentedControl, Textarea, Text } from '@mantine/core';
+import { Button, SegmentedControl, Text, Textarea } from '@mantine/core';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-import { useNetworkState } from '@base/offline/hooks';
 
 export function LabourUpdateControls() {
   const [message, setMessage] = useState('');
@@ -57,13 +57,13 @@ export function LabourUpdateControls() {
     return (
       <>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <IconWifiOff size={18} color='var(--mantine-primary-color-7)' />
+          <IconWifiOff size={18} color="var(--mantine-primary-color-7)" />
           <Text size="sm" fw={500} className={baseClasses.description}>
             You are offline. Labour updates cannot be posted in offline mode.
           </Text>
         </div>
       </>
-    )
+    );
   }
 
   const buttonIcon =
