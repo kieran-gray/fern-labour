@@ -114,8 +114,11 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
         });
       }
 
+      const isMobile = window.innerWidth < 768;
+      const bottomNavHeight = isMobile ? 80 : 0;
+
       window.scrollTo({
-        top: document.documentElement.scrollHeight,
+        top: document.documentElement.scrollHeight - window.innerHeight + bottomNavHeight,
         behavior: smooth ? 'smooth' : 'auto',
       });
     }, 50);
