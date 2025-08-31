@@ -11,7 +11,7 @@ import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { useGuestMode } from '../../offline/hooks/useGuestMode';
-import { useOfflineMutation, useOnlineMutation } from '../../offline/hooks/useOfflineMutation';
+import { useOnlineMutation } from '../../offline/hooks/useOfflineMutation';
 import { GuestProfileManager } from '../../offline/storage/guestProfile';
 import { queryKeys } from './queryKeys';
 import { useApiAuth } from './useApiAuth';
@@ -143,18 +143,14 @@ export function useLabourHistory() {
 
 /**
  * Custom hook for planning a new labour
- * Supports offline queueing and guest mode
+ * Supports guest mode
  */
 export function usePlanLabour() {
   const { user } = useApiAuth();
   const { isGuestMode, guestProfile } = useGuestMode();
   const queryClient = useQueryClient();
 
-  return useOfflineMutation({
-    eventType: 'plan_labour',
-    getAggregateId: () => {
-      return isGuestMode ? `guest-labour-${Date.now()}` : `labour-${Date.now()}`;
-    },
+  return useOnlineMutation({
     mutationFn: async ({
       requestBody,
       existing,
@@ -187,7 +183,6 @@ export function usePlanLabour() {
         } else {
           await GuestProfileManager.addGuestLabour(guestProfile.guestId, newLabour);
         }
-
         return newLabour;
       }
       let response;
@@ -226,16 +221,14 @@ export function usePlanLabour() {
 
 /**
  * Custom hook for completing labour
- * Supports offline queueing and guest mode
+ * Supports guest mode
  */
 export function useCompleteLabour() {
   const { user } = useApiAuth();
   const { isGuestMode, guestProfile } = useGuestMode();
   const queryClient = useQueryClient();
 
-  return useOfflineMutation({
-    eventType: 'complete_labour',
-    getAggregateId: (labourId: string) => labourId,
+  return useOnlineMutation({
     mutationFn: async (labourId: string, labourNotes?: string) => {
       const requestBody: CompleteLabourRequest = {
         end_time: new Date().toISOString(),
@@ -285,7 +278,7 @@ export function useCompleteLabour() {
 /**
  * Custom hook for deleting labour
  * Guest mode: removes from local storage
- * Authenticated: uses online mutation (no offline queueing for deletions)
+ * Authenticated: uses online mutation
  */
 export function useDeleteLabour() {
   const { user } = useApiAuth();
