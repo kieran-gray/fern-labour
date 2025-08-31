@@ -182,3 +182,7 @@ backup.sql
 deployment/
 
 .artifact-registry-token
+
+coverage
+
+.claude

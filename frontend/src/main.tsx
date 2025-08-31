@@ -7,10 +7,25 @@ import App from './App.tsx';
 import { OpenAPI as ContactService } from './clients/contact_service';
 import { OpenAPI as LabourService } from './clients/labour_service';
 import { onSigninCallback, queryClient, userManager } from './config.ts';
+import { SyncEngineProvider } from './offline/hooks/SyncEngineProvider.tsx';
+import { GuestModeProvider } from './offline/hooks/useGuestMode.tsx';
+import { initializeQueryPersistence } from './offline/persistence/queryPersistence.ts';
+import { initializeDatabase } from './offline/storage/database.ts';
 import { ProtectedApp } from './shared-components/ProtectedApp.tsx';
 
 LabourService.BASE = import.meta.env.VITE_LABOUR_SERVICE_URL;
 ContactService.BASE = import.meta.env.VITE_CONTACT_SERVICE_URL;
+
+async function initializeOfflineInfrastructure() {
+  try {
+    await initializeDatabase();
+    await initializeQueryPersistence(queryClient);
+  } catch (error) {
+    // Continue without offline features
+  }
+}
+
+initializeOfflineInfrastructure();
 
 // biome-ignore lint/style/noNonNullAssertion: We expect this element to always exist
 reactDom.createRoot(document.getElementById('root')!).render(
@@ -18,9 +33,13 @@ reactDom.createRoot(document.getElementById('root')!).render(
     <BrowserRouter basename="/">
       <AuthProvider userManager={userManager} onSigninCallback={onSigninCallback}>
         <QueryClientProvider client={queryClient}>
-          <ProtectedApp>
-            <App />
-          </ProtectedApp>
+          <SyncEngineProvider>
+            <GuestModeProvider>
+              <ProtectedApp>
+                <App />
+              </ProtectedApp>
+            </GuestModeProvider>
+          </SyncEngineProvider>
         </QueryClientProvider>
       </AuthProvider>
     </BrowserRouter>
