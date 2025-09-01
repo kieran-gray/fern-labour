@@ -300,6 +300,7 @@ services:
         - VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID}
         - VITE_POST_LOGOUT_REDIRECT=${MARKETING_URL}
         - VITE_CLOUDFLARE_SITEKEY=${CLOUDFLARE_SITEKEY}
+        - VITE_OFFLINE_SYNC_DELAY_MS=${OFFLINE_SYNC_DELAY_MS}
     restart: "no"
     networks:
       - traefik-public

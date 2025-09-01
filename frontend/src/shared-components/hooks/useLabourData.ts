@@ -8,44 +8,81 @@ import {
   SendInviteRequest,
 } from '@clients/labour_service';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
+import { useGuestMode } from '../../offline/hooks/useGuestMode';
+import { useOnlineMutation } from '../../offline/hooks/useOfflineMutation';
+import { GuestProfileManager } from '../../offline/storage/guestProfile';
 import { queryKeys } from './queryKeys';
 import { useApiAuth } from './useApiAuth';
 
 /**
  * Custom hook for fetching active labour data
+ * Supports both authenticated and guest modes
  */
 export function useActiveLabour() {
   const { user } = useApiAuth();
+  const { isGuestMode, guestProfile } = useGuestMode();
 
   return useQuery({
-    queryKey: queryKeys.labour.active(user?.profile.sub || ''),
+    queryKey: isGuestMode
+      ? ['labour', 'guest', guestProfile?.guestId, 'active']
+      : queryKeys.labour.active(user?.profile.sub || ''),
     queryFn: async () => {
+      if (isGuestMode && guestProfile) {
+        const labours = await GuestProfileManager.getGuestLabours(guestProfile.guestId);
+        const activeLabour = labours.find((labour) => labour.current_phase !== 'completed');
+        return activeLabour || undefined;
+      }
       const response = await LabourQueriesService.getActiveLabour();
       return response.labour;
     },
-    enabled: !!user?.profile.sub,
+    enabled: !!user?.profile.sub || (isGuestMode && !!guestProfile),
     retry: 0,
   });
 }
 
 /**
  * Custom hook for fetching labour by ID
+ * Supports both authenticated and guest modes
  */
 export function useLabourById(labourId: string | null) {
   const { user } = useApiAuth();
+  const { isGuestMode, guestProfile } = useGuestMode();
 
   return useQuery({
-    queryKey: labourId ? queryKeys.labour.byId(labourId) : [],
+    queryKey: labourId
+      ? isGuestMode
+        ? ['labour', 'guest', guestProfile?.guestId, 'byId', labourId]
+        : queryKeys.labour.byId(labourId)
+      : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
       }
-      const response = await LabourQueriesService.getLabourById({ labourId });
-      return response.labour;
+
+      if (isGuestMode && guestProfile) {
+        const labour = await GuestProfileManager.getGuestLabour(guestProfile.guestId, labourId);
+        if (!labour) {
+          throw new NotFoundError();
+        }
+        return labour;
+      }
+      try {
+        const response = await LabourQueriesService.getLabourById({ labourId });
+        return response.labour;
+      } catch (err) {
+        if (err instanceof ApiError) {
+          if (err.status === 404) {
+            throw new NotFoundError();
+          } else if (err.status === 403) {
+            throw new PermissionDenied();
+          }
+        }
+        throw new Error('Failed to load labour. Please try again later.');
+      }
     },
-    enabled: !!labourId && !!user?.profile.sub,
+    enabled: !!labourId && (!!user?.profile.sub || (isGuestMode && !!guestProfile)),
     retry: 0,
   });
 }
@@ -106,12 +143,14 @@ export function useLabourHistory() {
 
 /**
  * Custom hook for planning a new labour
+ * Supports guest mode
  */
 export function usePlanLabour() {
   const { user } = useApiAuth();
+  const { isGuestMode, guestProfile } = useGuestMode();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useOnlineMutation({
     mutationFn: async ({
       requestBody,
       existing,
@@ -119,6 +158,33 @@ export function usePlanLabour() {
       requestBody: PlanLabourRequest;
       existing: boolean;
     }) => {
+      if (isGuestMode && guestProfile) {
+        const newLabour = {
+          id: `guest-labour-${Date.now()}`,
+          birthing_person_id: guestProfile.guestId,
+          current_phase: 'planned' as const,
+          due_date: requestBody.due_date,
+          first_labour: requestBody.first_labour,
+          labour_name: requestBody.labour_name || null,
+          start_time: null,
+          end_time: null,
+          notes: null,
+          recommendations: {},
+          contractions: [],
+          labour_updates: [],
+        };
+
+        if (existing) {
+          await GuestProfileManager.updateGuestLabour(
+            guestProfile.guestId,
+            newLabour.id,
+            newLabour
+          );
+        } else {
+          await GuestProfileManager.addGuestLabour(guestProfile.guestId, newLabour);
+        }
+        return newLabour;
+      }
       let response;
       if (existing) {
         response = await LabourService.updateLabourPlan({ requestBody });
@@ -128,10 +194,14 @@ export function usePlanLabour() {
       return response.labour;
     },
     onSuccess: async (labour, variables) => {
-      queryClient.invalidateQueries();
+      if (isGuestMode && guestProfile) {
+        queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
+      } else {
+        queryClient.invalidateQueries();
+        queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
+        queryClient.setQueryData(queryKeys.labour.active(user?.profile.sub || ''), labour);
+      }
 
-      queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
-      queryClient.setQueryData(queryKeys.labour.active(user?.profile.sub || ''), labour);
       const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';
       notifications.show({
         ...Success,
@@ -151,28 +221,43 @@ export function usePlanLabour() {
 
 /**
  * Custom hook for completing labour
+ * Supports guest mode
  */
 export function useCompleteLabour() {
   const { user } = useApiAuth();
+  const { isGuestMode, guestProfile } = useGuestMode();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (labourNotes: string) => {
+  return useOnlineMutation({
+    mutationFn: async (labourId: string, labourNotes?: string) => {
       const requestBody: CompleteLabourRequest = {
         end_time: new Date().toISOString(),
-        notes: labourNotes,
+        notes: labourNotes || null,
       };
-      await LabourService.completeLabour({ requestBody });
+
+      if (isGuestMode && guestProfile) {
+        await GuestProfileManager.updateGuestLabour(guestProfile.guestId, labourId, {
+          current_phase: 'completed' as const,
+          end_time: requestBody.end_time,
+          notes: requestBody.notes,
+        });
+      } else {
+        await LabourService.completeLabour({ requestBody });
+      }
     },
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
-      queryClient.removeQueries({ queryKey: queryKeys.labour.active(user?.profile.sub || '') });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.labour.history(user?.profile.sub || ''),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.birthingPerson.user(user?.profile.sub || ''),
-      });
+      if (isGuestMode && guestProfile) {
+        queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
+      } else {
+        queryClient.removeQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+        queryClient.removeQueries({ queryKey: queryKeys.labour.active(user?.profile.sub || '') });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.labour.history(user?.profile.sub || ''),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.birthingPerson.user(user?.profile.sub || ''),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -192,21 +277,31 @@ export function useCompleteLabour() {
 
 /**
  * Custom hook for deleting labour
+ * Guest mode: removes from local storage
+ * Authenticated: uses online mutation
  */
 export function useDeleteLabour() {
   const { user } = useApiAuth();
+  const { isGuestMode, guestProfile } = useGuestMode();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useOnlineMutation({
     mutationFn: async (labourId: string) => {
-      await LabourService.deleteLabour({ labourId });
+      if (isGuestMode && guestProfile) {
+        await GuestProfileManager.deleteGuestLabour(guestProfile.guestId, labourId);
+      } else {
+        await LabourService.deleteLabour({ labourId });
+      }
     },
     onSuccess: () => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.labour.history(user?.profile.sub || ''),
-      });
+      if (isGuestMode && guestProfile) {
+        queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.labour.history(user?.profile.sub || ''),
+        });
+      }
     },
     onError: (error: Error) => {
       notifications.show({
@@ -220,10 +315,19 @@ export function useDeleteLabour() {
 
 /**
  * Custom hook for sending labour invites
+ * Only available in authenticated mode (requires server API)
  */
 export function useSendLabourInvite() {
-  return useMutation({
+  const { isGuestMode } = useGuestMode();
+
+  return useOnlineMutation({
     mutationFn: async ({ email, labourId }: { email: string; labourId: string }) => {
+      if (isGuestMode) {
+        throw new Error(
+          'Invites are not available in guest mode. Sign up to share your labour progress!'
+        );
+      }
+
       const requestBody: SendInviteRequest = { invite_email: email, labour_id: labourId };
       await LabourService.sendInvite({ requestBody });
     },
