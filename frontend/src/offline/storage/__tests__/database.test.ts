@@ -25,7 +25,7 @@ describe('OfflineDatabase', () => {
   describe('schema validation', () => {
     it('should have all required tables', () => {
       const tableNames = db.tables.map((t) => t.name).sort();
-      expect(tableNames).toEqual(['guestProfiles', 'outbox', 'sequences']);
+      expect(tableNames).toEqual(['contractionIdMap', 'guestProfiles', 'outbox', 'sequences']);
     });
 
     it('should have composite index for event ordering', () => {

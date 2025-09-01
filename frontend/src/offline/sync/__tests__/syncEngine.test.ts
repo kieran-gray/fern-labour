@@ -4,6 +4,7 @@ import 'fake-indexeddb/auto';
 
 // Get mocked services for test verification
 import * as labourServiceModule from '@clients/labour_service';
+import { ContractionIdMapper } from '../../storage/contractionIdMap';
 import { OfflineDatabase } from '../../storage/database';
 import { OutboxManager } from '../../storage/outbox';
 import { networkDetector } from '../networkDetector';
@@ -54,11 +55,19 @@ describe('SyncEngine', () => {
     await testDb.open();
     await testDb.transaction(
       'rw',
-      [testDb.outbox, testDb.guestProfiles, testDb.sequences],
+      [
+        testDb.outbox,
+        testDb.guestProfiles,
+        testDb.sequences,
+        // @ts-ignore - table exists from DB v2
+        testDb.contractionIdMap,
+      ],
       async () => {
         await testDb.outbox.clear();
         await testDb.guestProfiles.clear();
         await testDb.sequences.clear();
+        // @ts-ignore - table exists from DB v2
+        await testDb.contractionIdMap.clear();
       }
     );
 
@@ -181,7 +190,7 @@ describe('SyncEngine', () => {
     });
 
     it('should execute update_contraction events', async () => {
-      const payload = { contractionId: 'contraction-1', intensity: 7 };
+      const payload = { contraction_id: 'contraction-1', intensity: 7 };
       await OutboxManager.addEvent('labour-1', 'update_contraction', payload);
 
       mockContractionsService.updateContraction.mockResolvedValue({ labour: {} });
@@ -194,7 +203,7 @@ describe('SyncEngine', () => {
     });
 
     it('should execute delete_contraction events', async () => {
-      const payload = { contractionId: 'contraction-1' };
+      const payload = { contraction_id: 'contraction-1' };
       await OutboxManager.addEvent('labour-1', 'delete_contraction', payload);
 
       mockContractionsService.deleteContraction.mockResolvedValue(undefined);
@@ -575,6 +584,116 @@ describe('SyncEngine', () => {
 
       const failedEventsAfter = await OutboxManager.getEventsByStatus('failed');
       expect(failedEventsAfter).toHaveLength(0);
+    });
+  });
+
+  describe('contraction ID mapping', () => {
+    beforeEach(() => {
+      syncEngine.start();
+    });
+
+    it('translates optimistic ID to real ID for update after start sync', async () => {
+      const aggregateId = 'labour-1';
+      const startTime = '2023-01-01T00:00:00Z';
+      const tempId = 'optimistic-123';
+
+      await OutboxManager.addEvent(aggregateId, 'start_contraction', { start_time: startTime });
+      await ContractionIdMapper.addTempMapping(aggregateId, tempId, startTime);
+      await OutboxManager.addEvent(aggregateId, 'update_contraction', {
+        contraction_id: tempId,
+        intensity: 9,
+      });
+
+      mockContractionsService.startContraction.mockResolvedValue({
+        labour: {
+          contractions: [{ id: 'real-abc', start_time: startTime }],
+        },
+      });
+      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} });
+
+      await syncEngine.triggerSync();
+
+      expect(mockContractionsService.updateContraction).toHaveBeenCalledTimes(1);
+      const arg = mockContractionsService.updateContraction.mock.calls[0][0];
+      expect(arg.requestBody.contraction_id).toBe('real-abc');
+    });
+
+    it('resolves mapping via active contraction or time tolerance when start_time differs slightly', async () => {
+      const aggregateId = 'labour-22';
+      const startTime = '2023-01-01T00:00:00.500Z'; // client has ms component
+      const tempId = 'optimistic-zzz';
+
+      await OutboxManager.addEvent(aggregateId, 'start_contraction', { start_time: startTime });
+      await ContractionIdMapper.addTempMapping(aggregateId, tempId, startTime);
+      await OutboxManager.addEvent(aggregateId, 'update_contraction', {
+        contraction_id: tempId,
+        intensity: 3,
+      });
+
+      // Server returns trimmed milliseconds and marks it active
+      mockContractionsService.startContraction.mockResolvedValue({
+        labour: {
+          contractions: [{ id: 'real-tol', start_time: '2023-01-01T00:00:00Z', is_active: true }],
+        },
+      } as any);
+      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} } as any);
+
+      await syncEngine.triggerSync();
+
+      expect(mockContractionsService.updateContraction).toHaveBeenCalledTimes(1);
+      const arg = mockContractionsService.updateContraction.mock.calls[0][0];
+      expect(arg.requestBody.contraction_id).toBe('real-tol');
+    });
+
+    it('translates optimistic ID to real ID for delete after start sync', async () => {
+      const aggregateId = 'labour-1';
+      const startTime = '2023-01-01T00:00:10Z';
+      const tempId = 'optimistic-999';
+
+      await OutboxManager.addEvent(aggregateId, 'start_contraction', { start_time: startTime });
+      await ContractionIdMapper.addTempMapping(aggregateId, tempId, startTime);
+      await OutboxManager.addEvent(aggregateId, 'delete_contraction', {
+        contraction_id: tempId,
+      });
+
+      mockContractionsService.startContraction.mockResolvedValue({
+        labour: {
+          contractions: [{ id: 'real-del-1', start_time: startTime }],
+        },
+      });
+      mockContractionsService.deleteContraction.mockResolvedValue({ labour: {} });
+
+      await syncEngine.triggerSync();
+
+      expect(mockContractionsService.deleteContraction).toHaveBeenCalledTimes(1);
+      const arg = mockContractionsService.deleteContraction.mock.calls[0][0];
+      expect(arg.requestBody.contraction_id).toBe('real-del-1');
+    });
+
+    it('passes through real IDs unchanged for update', async () => {
+      const aggregateId = 'labour-1';
+      await OutboxManager.addEvent(aggregateId, 'update_contraction', {
+        contraction_id: 'real-1',
+        intensity: 4,
+      });
+      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} });
+      await syncEngine.triggerSync();
+      expect(mockContractionsService.updateContraction).toHaveBeenCalledTimes(1);
+      const arg = mockContractionsService.updateContraction.mock.calls[0][0];
+      expect(arg.requestBody.contraction_id).toBe('real-1');
+    });
+
+    it('falls back to optimistic ID when no mapping is resolved yet', async () => {
+      const aggregateId = 'labour-1';
+      await ContractionIdMapper.addTempMapping(aggregateId, 'optimistic-x', '2023-01-01T00:02:00Z');
+      await OutboxManager.addEvent(aggregateId, 'update_contraction', {
+        contraction_id: 'optimistic-x',
+        intensity: 6,
+      });
+      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} });
+      await syncEngine.triggerSync();
+      const arg = mockContractionsService.updateContraction.mock.calls[0][0];
+      expect(arg.requestBody.contraction_id).toBe('optimistic-x');
     });
   });
 

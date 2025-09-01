@@ -1,5 +1,6 @@
 import { LabourDTO } from '@clients/labour_service';
 import Dexie, { Table } from 'dexie';
+import type { ContractionIdMap } from './contractionIdMap';
 
 export interface OutboxEvent {
   id: string;
@@ -38,6 +39,7 @@ export class OfflineDatabase extends Dexie {
   outbox!: Table<OutboxEvent>;
   guestProfiles!: Table<GuestProfile>;
   sequences!: Table<SequenceCounter>;
+  contractionIdMap!: Table<ContractionIdMap>;
 
   constructor() {
     super('FernLabourOfflineDB');
@@ -58,6 +60,14 @@ export class OfflineDatabase extends Dexie {
       `,
       guestProfiles: 'guestId, createdAt, isUpgraded, lastActiveAt',
       sequences: 'aggregateId, sequence',
+      contractionIdMap: `
+        tempId,
+        aggregateId,
+        startTime,
+        realId,
+        createdAt,
+        [aggregateId+startTime]
+      `,
     });
   }
 }

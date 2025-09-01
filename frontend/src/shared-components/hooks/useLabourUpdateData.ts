@@ -8,7 +8,7 @@ import {
 } from '@clients/labour_service';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import _ from 'lodash';
+import { cloneDeep } from 'lodash';
 import { notifications } from '@mantine/notifications';
 import { queryKeys } from './queryKeys';
 import { useApiAuth } from './useApiAuth';
@@ -47,7 +47,7 @@ export function useCreateLabourUpdate() {
           application_generated: false,
         };
 
-        const newLabourState = _.cloneDeep(previousLabourState);
+        const newLabourState = cloneDeep(previousLabourState);
         newLabourState.labour_updates.unshift(newLabourUpdate); // Add to beginning
         queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), newLabourState);
       }

@@ -12,6 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { useGuestMode } from '../../offline/hooks/useGuestMode';
 import { useOfflineMutation } from '../../offline/hooks/useOfflineMutation';
+import { ContractionIdMapper } from '../../offline/storage/contractionIdMap';
 import { GuestProfileManager } from '../../offline/storage/guestProfile';
 import { contractionDurationSeconds } from '../utils';
 import { queryKeys } from './queryKeys';
@@ -80,6 +81,12 @@ export function useStartContraction() {
         notes: null,
         is_active: true,
       };
+      try {
+        const aggregateId = `labour-${sub || 'unknown'}`;
+        await ContractionIdMapper.addTempMapping(aggregateId, optimistic.id, optimistic.start_time);
+      } catch {
+        // no-op
+      }
       const next = {
         ...previous,
         contractions: [...(previous.contractions || []), optimistic],
@@ -208,10 +215,25 @@ export function useUpdateContraction() {
 
   return useOfflineMutation({
     eventType: 'update_contraction',
-    getAggregateId: () => {
-      return isGuestMode
+    getAggregateId: (request: UpdateContractionRequest) => {
+      const aggregateId = isGuestMode
         ? `guest-labour-${guestProfile?.guestId || 'unknown'}`
         : `labour-${user?.profile.sub || 'unknown'}`;
+
+      if (isGuestMode && guestProfile) {
+        return aggregateId;
+      }
+
+      const sub = user?.profile.sub || '';
+      const labourKey = queryKeys.labour.user(sub);
+      const current = queryClient.getQueryData(labourKey) as LabourDTO | undefined;
+      if (current) {
+        const c = current.contractions.find((co) => co.id === request.contraction_id);
+        if (c && c.is_active) {
+          throw new Error('Cannot edit an in-progress contraction');
+        }
+      }
+      return aggregateId;
     },
     mutationFn: async (request: UpdateContractionRequest) => {
       if (isGuestMode && guestProfile) {
@@ -223,6 +245,9 @@ export function useUpdateContraction() {
         );
         if (contractionIndex !== -1) {
           const contraction = labour.contractions[contractionIndex];
+          if (contraction.is_active) {
+            throw new Error('Cannot edit an in-progress contraction');
+          }
           if (request.intensity !== undefined) {
             contraction.intensity = request.intensity;
           }
@@ -313,11 +338,26 @@ export function useDeleteContraction() {
 
   return useOfflineMutation({
     eventType: 'delete_contraction',
-    getAggregateId: () => {
-      return isGuestMode
+    getAggregateId: (contractionId: string) => {
+      const aggregateId = isGuestMode
         ? `guest-labour-${guestProfile?.guestId || 'unknown'}`
         : `labour-${user?.profile.sub || 'unknown'}`;
+
+      if (isGuestMode && guestProfile) {
+        return aggregateId;
+      }
+      const sub = user?.profile.sub || '';
+      const labourKey = queryKeys.labour.user(sub);
+      const current = queryClient.getQueryData(labourKey) as LabourDTO | undefined;
+      if (current) {
+        const c = current.contractions.find((co) => co.id === contractionId);
+        if (c && c.is_active) {
+          throw new Error('Cannot delete an in-progress contraction');
+        }
+      }
+      return aggregateId;
     },
+    getPayload: (contractionId: string) => ({ contraction_id: contractionId }),
     mutationFn: async (contractionId: string) => {
       if (isGuestMode && guestProfile) {
         const labours = await GuestProfileManager.getGuestLabours(guestProfile.guestId);
@@ -326,6 +366,9 @@ export function useDeleteContraction() {
         if (labour) {
           const contractionIndex = labour.contractions.findIndex((c) => c.id === contractionId);
           if (contractionIndex !== -1) {
+            if (labour.contractions[contractionIndex].is_active) {
+              throw new Error('Cannot delete an in-progress contraction');
+            }
             labour.contractions.splice(contractionIndex, 1);
             await GuestProfileManager.updateGuestLabour(guestProfile.guestId, labour.id, {
               contractions: labour.contractions,
