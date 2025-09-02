@@ -5,7 +5,7 @@ import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveD
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle.tsx';
 import { sortContractions } from '@shared/utils.tsx';
 import { IconBook } from '@tabler/icons-react';
-import { ActionIcon, Image, Space, Stack } from '@mantine/core';
+import { ActionIcon, Image, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert.tsx';
@@ -58,7 +58,7 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
                 <ContractionTimeline contractions={sortedContractions} completed={completed} />
               )}
               {sortedContractions.length === 0 && !completed && (
-                <div style={{ width: '100%', marginBottom: '25px' }}>
+                <div style={{ width: '100%' }}>
                   <div className={classes.imageFlexRow}>
                     <Image src={image} className={classes.image} />
                   </div>
@@ -67,7 +67,6 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
               )}
             </Stack>
             <div className={baseClasses.flexColumnEnd}>
-              {sortedContractions.length > 0 && <Space h="xl" />}
               <Stack align="stretch" justify="flex-end">
                 {labour.recommendations.call_midwife && <CallMidwifeAlert />}
                 {labour.recommendations.go_to_hospital && <GoToHospitalAlert />}

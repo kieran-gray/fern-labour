@@ -164,7 +164,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   const showEmptyState = !hasUpdates && !completed;
 
   return (
-    <div className={baseClasses.root} style={{ maxHeight: 'calc(80% - 120px)' }}>
+    <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={classes.titleRow}>
           <div className={classes.title} style={{ paddingBottom: 0 }}>
@@ -175,11 +175,11 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
           </ActionIcon>
           <LabourUpdatesHelpModal close={close} opened={opened} />
         </div>
-        <div className={baseClasses.inner} style={{ paddingTop: 0 }}>
+        <div className={baseClasses.inner} style={{ paddingTop: 0, paddingBottom: 0 }}>
           <div className={classes.content}>
             <ResponsiveDescription description={description} marginTop={0} />
             {hasUpdates && (
-              <ScrollArea.Autosize mt={20} mah="55svh" viewportRef={viewport}>
+              <ScrollArea.Autosize mt={20} mah="calc(100dvh - 400px)" viewportRef={viewport}>
                 <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
               </ScrollArea.Autosize>
             )}

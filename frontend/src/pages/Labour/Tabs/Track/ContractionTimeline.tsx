@@ -108,7 +108,7 @@ export default function ContractionTimeline({
       {contractionData && !completed && (
         <EditContractionModal contractionData={contractionData} opened={opened} close={close} />
       )}
-      <ScrollArea.Autosize mah="50vh" viewportRef={viewport}>
+      <ScrollArea.Autosize mah="calc(100dvh - 400px)" viewportRef={viewport}>
         <Timeline
           ml={30}
           active={timelineContractions.length}
