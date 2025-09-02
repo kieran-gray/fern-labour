@@ -1,5 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { UserManager, WebStorageStateStore } from 'oidc-client-ts';
+import { appRoutes } from './constants';
 
 export const userManager = new UserManager({
   authority: import.meta.env.VITE_KEYCLOAK_AUTHORITY,
@@ -10,8 +11,13 @@ export const userManager = new UserManager({
   redirect_uri: `${window.location.origin}${window.location.pathname}${window.location.search}`,
   // biome-ignore lint/style/useNamingConvention: Expected
   post_logout_redirect_uri: import.meta.env.VITE_POST_LOGOUT_REDIRECT,
-  userStore: new WebStorageStateStore({ store: window.sessionStorage }),
-  monitorSession: true, // this allows cross tab login/logout detection
+  userStore: new WebStorageStateStore({ store: window.localStorage }),
+  monitorSession: window.isSecureContext && location.protocol === 'https:',
+  automaticSilentRenew: true,
+  // Used by iframe-based silent renew and as a fallback when refresh_token cannot be used
+  // biome-ignore lint/style/useNamingConvention: library option
+  silent_redirect_uri: `${window.location.origin}${appRoutes.SilentRedirect}`,
+  scope: 'openid profile offline_access',
 });
 
 export const onSigninCallback = () => {
