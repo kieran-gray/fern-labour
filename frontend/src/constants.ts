@@ -6,6 +6,7 @@ export const appRoutes = {
   subscribe: '/subscribe/:id',
   contact: '/contact',
   completed: '/completed',
+  SilentRedirect: '/silent-redirect',
 } as const;
 
 export const EMAIL_REGEX = /^[\w-+.]+@([\w-]+.)+[\w-]{2,4}$/;
