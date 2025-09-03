@@ -2,9 +2,10 @@ import { validateLabourName } from '@base/shared-components/utils';
 import { LabourDTO, PlanLabourRequest } from '@clients/labour_service';
 import { usePlanLabour } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Group, Image, Radio, TextInput, Title } from '@mantine/core';
+import { Button, Group, Image, Radio, TextInput } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import image from './plan.svg';
@@ -57,12 +58,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
     <form onSubmit={form.onSubmit((values) => handlePlanLabour(values))}>
       <div className={classes.inner} style={{ padding: 0, marginBottom: '25px' }}>
         <div className={classes.content}>
-          <Title order={3} hiddenFrom="sm">
-            {title}
-          </Title>
-          <Title order={2} visibleFrom="sm">
-            {title}
-          </Title>
+          <ResponsiveTitle title={title} />
           <ResponsiveDescription description={description} marginTop={10} />
           <div className={classes.imageFlexRow}>
             <Image className={classes.smallImage} src={image} />
