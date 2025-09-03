@@ -12,6 +12,7 @@ import { GuestModeProvider } from './offline/hooks/useGuestMode.tsx';
 import { initializeQueryPersistence } from './offline/persistence/queryPersistence.ts';
 import { initializeDatabase } from './offline/storage/database.ts';
 import { ProtectedApp } from './shared-components/ProtectedApp.tsx';
+import { PWAUpdateHandler } from './shared-components/PWAUpdateHandler.tsx';
 
 LabourService.BASE = import.meta.env.VITE_LABOUR_SERVICE_URL;
 ContactService.BASE = import.meta.env.VITE_CONTACT_SERVICE_URL;
@@ -36,6 +37,7 @@ reactDom.createRoot(document.getElementById('root')!).render(
           <SyncEngineProvider>
             <GuestModeProvider>
               <ProtectedApp>
+                <PWAUpdateHandler />
                 <App />
               </ProtectedApp>
             </GuestModeProvider>
