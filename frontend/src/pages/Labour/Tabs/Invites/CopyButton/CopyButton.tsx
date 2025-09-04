@@ -5,7 +5,7 @@ import { useClipboard, useMediaQuery } from '@mantine/hooks';
 
 interface CopyButtonProps {
   text: string;
-  shareData?: {
+  shareData: {
     title: string;
     url: string;
   };
@@ -14,7 +14,7 @@ interface CopyButtonProps {
 export function CopyButton({ text, shareData }: CopyButtonProps) {
   const clipboard = useClipboard();
   const isMobile = useMediaQuery('(min-width: 48em)');
-  const canShare = typeof navigator !== 'undefined' && !!navigator.share && !!shareData;
+  const canShare = typeof navigator !== 'undefined' && !!navigator.share;
 
   const handleAction = async () => {
     if (canShare) {
@@ -26,10 +26,10 @@ export function CopyButton({ text, shareData }: CopyButtonProps) {
         });
       } catch (err) {
         console.error('Error sharing:', err);
-        clipboard.copy(text);
+        clipboard.copy(`${text}${shareData.url}`);
       }
     } else {
-      clipboard.copy(text);
+      clipboard.copy(`${text}${shareData.url}`);
     }
   };
 

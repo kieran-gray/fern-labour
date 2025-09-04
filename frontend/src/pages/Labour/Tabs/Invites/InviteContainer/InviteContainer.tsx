@@ -40,7 +40,7 @@ export function InviteContainer() {
     );
   };
 
-  const title = 'Invite friends and family by email';
+  const title = 'Or send invites by email';
   const description =
     "Invite your friends and family, we'll give them instructions on how to sign up and what to expect.";
 
