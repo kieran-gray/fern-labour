@@ -8,13 +8,13 @@ export function Share() {
     <>
       <div className={baseClasses.root}>
         <div className={baseClasses.body}>
-          <InviteContainer />
+          <ShareContainer />
         </div>
       </div>
       <Space h="xl" />
       <div className={baseClasses.root}>
         <div className={baseClasses.body}>
-          <ShareContainer />
+          <InviteContainer />
         </div>
       </div>
     </>

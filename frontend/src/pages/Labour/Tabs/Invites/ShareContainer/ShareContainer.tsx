@@ -39,10 +39,9 @@ export function ShareContainer() {
   }
 
   const title = 'Share with your circle';
-  const description =
-    'Share your labour updates with friends and family who want to be part of your journey.';
+  const description = 'Share invites to your labour with your chosen circle of family and friends.';
   const shareUrl = `${window.location.origin}/subscribe/${labourId}`;
-  const shareText = `Hey! I'd love for you to be part of my labour circle.\nUse the link below to sign up and get updates as things happen:\n\n${shareUrl}\n\nYou'll need this code for access: ${data}`;
+  const shareMessage = `Hey! I'd love for you to be part of my labour circle.\n\nUse the link below to sign up and get updates as things happen.\n\nYou'll also need this code for access: ${data}`;
 
   return (
     <div className={baseClasses.inner}>
@@ -55,7 +54,7 @@ export function ShareContainer() {
         <Group mt={30}>
           <div className={classes.flexRow}>
             <CopyButton
-              text={shareText}
+              text={shareMessage}
               shareData={{
                 title: 'Join My Labour Circle',
                 url: shareUrl,
