@@ -1,73 +1,92 @@
-import { IconCheck, IconCopy } from '@tabler/icons-react';
+import React from 'react';
+import { IconCheck, IconCopy, IconShare } from '@tabler/icons-react';
 import { Button, Tooltip } from '@mantine/core';
 import { useClipboard, useMediaQuery } from '@mantine/hooks';
 
-export function CopyButton({ text }: { text: string }) {
+interface CopyButtonProps {
+  text: string;
+  shareData?: {
+    title: string;
+    url: string;
+  };
+}
+
+export function CopyButton({ text, shareData }: CopyButtonProps) {
   const clipboard = useClipboard();
   const isMobile = useMediaQuery('(min-width: 48em)');
+  const canShare = typeof navigator !== 'undefined' && !!navigator.share && !!shareData;
+
+  const handleAction = async () => {
+    if (canShare) {
+      try {
+        await navigator.share({
+          title: shareData.title,
+          text,
+          url: shareData.url,
+        });
+      } catch (err) {
+        console.error('Error sharing:', err);
+        clipboard.copy(text);
+      }
+    } else {
+      clipboard.copy(text);
+    }
+  };
+
+  const buttonText = canShare ? 'Share with Loved Ones' : 'Copy link to clipboard';
+  const tooltipLabel = canShare ? 'Shared!' : 'Link copied!';
+  const icon = canShare ? IconShare : clipboard.copied ? IconCheck : IconCopy;
 
   return (
     <>
       <Tooltip
-        label="Link copied!"
+        label={tooltipLabel}
         offset={5}
         position="bottom"
         radius="xl"
         transitionProps={{ duration: 100, transition: 'slide-down' }}
-        opened={clipboard.copied}
+        opened={clipboard.copied && !canShare}
         disabled={!isMobile}
         events={{ hover: true, focus: false, touch: true }}
       >
         <Button
           color="var(--mantine-primary-color-4)"
           variant="filled"
-          rightSection={
-            clipboard.copied ? (
-              <IconCheck size={20} stroke={1.5} />
-            ) : (
-              <IconCopy size={20} stroke={1.5} />
-            )
-          }
+          rightSection={React.createElement(icon, { size: 20, stroke: 1.5 })}
           radius="xl"
           size="lg"
           pr={14}
           mt="var(--mantine-spacing-lg)"
           styles={{ section: { marginLeft: 22 } }}
-          onClick={() => clipboard.copy(text)}
+          onClick={handleAction}
           visibleFrom="sm"
         >
-          Copy to clipboard
+          {buttonText}
         </Button>
       </Tooltip>
       <Tooltip
-        label="Link copied!"
+        label={tooltipLabel}
         offset={5}
         position="bottom"
         radius="xl"
         transitionProps={{ duration: 100, transition: 'slide-down' }}
-        opened={clipboard.copied}
+        opened={clipboard.copied && !canShare}
         disabled={isMobile}
         events={{ hover: true, focus: false, touch: true }}
       >
         <Button
           color="var(--mantine-primary-color-4)"
           variant="filled"
-          rightSection={
-            clipboard.copied ? (
-              <IconCheck size={18} stroke={1.5} />
-            ) : (
-              <IconCopy size={18} stroke={1.5} />
-            )
-          }
+          rightSection={React.createElement(icon, { size: 18, stroke: 1.5 })}
           radius="xl"
           size="md"
           h={48}
           mt="var(--mantine-spacing-sm)"
           styles={{ section: { marginLeft: 18 } }}
-          onClick={() => clipboard.copy(text)}
+          onClick={handleAction}
           hiddenFrom="sm"
         >
-          Copy to clipboard
+          {buttonText}
         </Button>
       </Tooltip>
     </>

@@ -38,11 +38,12 @@ export function ShareContainer() {
     );
   }
 
-  const title = 'Or share this link';
+  const title = 'Share with your circle';
   const description =
-    'Share this link with your friends and family, make sure to include the code at the bottom of the message.';
+    'Share your labour updates with friends and family who want to be part of your journey.';
   const shareUrl = `${window.location.origin}/subscribe/${labourId}`;
-  const shareText = `Hey! I’d love for you to be part of my labour circle.\nUse the link below to sign up and get updates as things happen:\n\n${shareUrl}\n\nYou'll need this code for access: ${data}`;
+  const shareText = `Hey! I'd love for you to be part of my labour circle.\nUse the link below to sign up and get updates as things happen:\n\n${shareUrl}\n\nYou'll need this code for access: ${data}`;
+
   return (
     <div className={baseClasses.inner}>
       <div className={classes.content}>
@@ -52,27 +53,14 @@ export function ShareContainer() {
           <Image src={image} className={classes.smallImage} />
         </div>
         <Group mt={30}>
-          <div className={classes.share}>
-            <Text fw={500} fz="sm" mb={20}>
-              Hey! I’d love for you to be part of my labour circle.
-              <br />
-              <br />
-              Use the link below to sign up and get updates as things happen:
-            </Text>
-            <Text
-              fw={500}
-              fz="sm"
-              mb={25}
-              style={{ overflowWrap: 'break-word', wordBreak: 'break-all' }}
-            >
-              {shareUrl}
-            </Text>
-            <Text fz="sm">
-              You'll also need this code: <strong>{data}</strong>
-            </Text>
-          </div>
           <div className={classes.flexRow}>
-            <CopyButton text={shareText} />
+            <CopyButton
+              text={shareText}
+              shareData={{
+                title: 'Join My Labour Circle',
+                url: shareUrl,
+              }}
+            />
             <Space w="sm" />
             <QRButton url={`${shareUrl}?token=${data}`} />
           </div>
