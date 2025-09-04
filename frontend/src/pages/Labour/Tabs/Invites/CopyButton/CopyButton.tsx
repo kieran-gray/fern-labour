@@ -26,10 +26,10 @@ export function CopyButton({ text, shareData }: CopyButtonProps) {
         });
       } catch (err) {
         console.error('Error sharing:', err);
-        clipboard.copy(`${text}${shareData.url}`);
+        clipboard.copy(`${text}\n\n${shareData.url}`);
       }
     } else {
-      clipboard.copy(`${text}${shareData.url}`);
+      clipboard.copy(`${text}\n\n${shareData.url}`);
     }
   };
 
