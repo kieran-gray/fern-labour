@@ -35,6 +35,14 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
   const completedDescription =
     "Here's a record of your contractions during labour. All contraction data is preserved for your reference.";
 
+  const alerts = !completed ? (
+    <>
+      {labour.recommendations.call_midwife && <CallMidwifeAlert />}
+      {labour.recommendations.go_to_hospital && <GoToHospitalAlert />}
+      {labour.recommendations.prepare_for_hospital && <PrepareForHospitalAlert />}
+    </>
+  ) : null;
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
@@ -68,10 +76,7 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
             </Stack>
             <div className={baseClasses.flexColumnEnd}>
               <Stack align="stretch" justify="flex-end">
-                {labour.recommendations.call_midwife && <CallMidwifeAlert />}
-                {labour.recommendations.go_to_hospital && <GoToHospitalAlert />}
-                {labour.recommendations.prepare_for_hospital && <PrepareForHospitalAlert />}
-
+                {alerts}
                 {/* Desktop controls - only show on larger screens */}
                 <div className={classes.desktopControls}>
                   <ContractionControls labour={labour} />
