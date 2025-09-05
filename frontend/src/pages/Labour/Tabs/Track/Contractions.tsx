@@ -11,7 +11,7 @@ import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert.tsx';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert.tsx';
 import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital.tsx';
 import { ContractionControls } from './ContractionControls.tsx';
-import ContractionTimeline from './ContractionTimeline.tsx';
+import ContractionTimelineCustom from './ContractionTimelineCustom.tsx';
 import { ContractionsHelpModal } from './HelpModal.tsx';
 import image from './Track.svg';
 import classes from './Contractions.module.css';
@@ -63,7 +63,10 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
             />
             <Stack align="stretch" justify="flex-end" mt="20px" style={{ alignItems: 'center' }}>
               {sortedContractions.length > 0 && (
-                <ContractionTimeline contractions={sortedContractions} completed={completed} />
+                <ContractionTimelineCustom
+                  contractions={sortedContractions}
+                  completed={completed}
+                />
               )}
               {sortedContractions.length === 0 && !completed && (
                 <div style={{ width: '100%' }}>

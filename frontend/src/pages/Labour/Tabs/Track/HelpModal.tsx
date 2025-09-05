@@ -4,7 +4,7 @@ import { Anchor, Button, Modal, Slider, Text, Title } from '@mantine/core';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert';
 import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital';
-import ContractionTimeline from './ContractionTimeline';
+import ContractionTimelineCustom from './ContractionTimelineCustom';
 import contractionClasses from './Contractions.module.css';
 import modalClasses from '@shared/Modal.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -165,7 +165,7 @@ export const ContractionsHelpModal = ({
           <br />
           The contraction intensity is shown as a number inside each contraction.
           <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
-            <ContractionTimeline contractions={mockContractions} completed />
+            <ContractionTimelineCustom contractions={mockContractions} completed />
           </div>
         </Text>
         <Title order={3} mt="sm" visibleFrom="md">
