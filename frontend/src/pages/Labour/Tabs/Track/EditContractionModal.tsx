@@ -6,7 +6,7 @@ import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { ContractionData } from './ContractionTimeline';
+import { ContractionData } from './ContractionTimelineCustom';
 import { updateTime } from './UpdateTime';
 import classes from './Contractions.module.css';
 import modalClasses from '@shared/Modal.module.css';
@@ -185,10 +185,12 @@ export const EditContractionModal = ({
               radius="xl"
               size="md"
               h={48}
-              styles={{ section: { marginLeft: 20 } }}
-              style={{ flexShrink: 1, marginRight: '5px' }}
+              w={48}
+              px={0}
+              styles={{ section: { marginLeft: 10 } }}
               onClick={() => setIsModalOpen(true)}
               loading={deleteContractionMutation.isPending}
+              aria-label="Delete contraction"
             />
             <Button
               color="var(--mantine-primary-color-4)"
@@ -197,12 +199,12 @@ export const EditContractionModal = ({
               radius="xl"
               size="md"
               h={48}
-              styles={{ section: { marginRight: 22 } }}
-              style={{ width: '100%' }}
+              flex={1}
+              ml="sm"
               type="submit"
               loading={updateContractionMutation.isPending}
             >
-              Update Contraction
+              Update
             </Button>
           </div>
         </form>
