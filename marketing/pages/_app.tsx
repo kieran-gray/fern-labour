@@ -2,13 +2,10 @@ import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 
 import type { AppProps } from 'next/app';
-import { Quicksand } from 'next/font/google';
 import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
 import ResponsiveParticles from '@/components/ResponsiveParticles/ResponsiveParticles';
 import { theme } from '../theme';
-
-const quicksand = Quicksand({ subsets: ['latin'] });
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -31,11 +28,15 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="Fern Labour" />
         <link rel="manifest" href="/favicon/site.webmanifest" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins&family=Quicksand:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
       </Head>
       <ResponsiveParticles />
-      <main className={quicksand.className}>
-        <Component {...pageProps} />
-      </main>
+      <Component {...pageProps} />
     </MantineProvider>
   );
 }
