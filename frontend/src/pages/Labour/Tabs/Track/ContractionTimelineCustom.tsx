@@ -160,7 +160,7 @@ export default function ContractionTimelineCustom({
       {sections.length > 0 && (
         <div className={classes.headerRow}>
           <div className={classes.headerLeft}>
-            <Text size="sm" fw={600} c="dimmed">
+            <Text size="sm" fw={600}>
               Duration
             </Text>
           </div>
@@ -168,7 +168,7 @@ export default function ContractionTimelineCustom({
             {/* Timeline column - no header text needed */}
           </div>
           <div className={classes.headerRight}>
-            <Text size="sm" fw={600} c="dimmed">
+            <Text size="sm" fw={600}>
               Frequency
             </Text>
           </div>

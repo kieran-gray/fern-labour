@@ -5,7 +5,7 @@ import image from '@labour/Tabs/Statistics/statistics.svg';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import { formatTimeSeconds } from '@shared/utils';
+import { formatDurationHuman, formatTimeSeconds } from '@shared/utils';
 import { Image, Space, Text } from '@mantine/core';
 import classes from '@labour/Tabs/Statistics/LabourStatistics.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -44,7 +44,7 @@ export const LabourStatistics = ({
         {labour.start_time && (
           <Text className={classes.labourStatsText}>
             <strong>Elapsed Time: </strong>
-            {formatTimeSeconds(
+            {formatDurationHuman(
               (new Date().getTime() - new Date(labour.start_time).getTime()) / 1000
             )}
           </Text>

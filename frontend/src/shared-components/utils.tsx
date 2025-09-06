@@ -41,6 +41,42 @@ export const formatTimeSeconds = (seconds: number): string => {
   return timeString.startsWith('00') ? timeString.substring(3) : timeString;
 };
 
+export const formatDurationHuman = (totalSeconds: number): string => {
+  if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) {
+    return '0 seconds';
+  }
+
+  const seconds = Math.floor(totalSeconds);
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  const parts: string[] = [];
+
+  if (days > 0) {
+    parts.push(`${days} day${days === 1 ? '' : 's'}`);
+    if (hours > 0) {
+      parts.push(`${hours} hour${hours === 1 ? '' : 's'}`);
+    }
+    return parts.join(' ');
+  }
+
+  if (hours > 0) {
+    parts.push(`${hours} hour${hours === 1 ? '' : 's'}`);
+    if (minutes > 0) {
+      parts.push(`${minutes} minute${minutes === 1 ? '' : 's'}`);
+    }
+    return parts.join(' ');
+  }
+
+  if (minutes > 0) {
+    return `${minutes} minute${minutes === 1 ? '' : 's'}`;
+  }
+
+  return `${secs} second${secs === 1 ? '' : 's'}`;
+};
+
 export const sortContractions = (contractions: ContractionDTO[]): ContractionDTO[] => {
   return contractions.sort((a, b) =>
     a.start_time < b.start_time ? -1 : a.start_time > b.start_time ? 1 : 0
