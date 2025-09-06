@@ -14,7 +14,7 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
-import { Center, Space } from '@mantine/core';
+import { Space } from '@mantine/core';
 import { CompletedLabourContainer } from '../CompletedLabour/Page.tsx';
 import { useLabour } from './LabourContext.tsx';
 import { Share } from './Tabs/Invites/Share.tsx';
@@ -170,9 +170,16 @@ export const LabourPage = () => {
           className={baseClasses.flexPageColumn}
           style={{ paddingBottom: getFloatingControlsPadding() }}
         >
-          <Center style={{ flexDirection: 'column' }}>
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
             {renderTabPanel(activeTab || 'track')}
-          </Center>
+          </div>
         </div>
 
         {/* Floating Contraction Controls */}

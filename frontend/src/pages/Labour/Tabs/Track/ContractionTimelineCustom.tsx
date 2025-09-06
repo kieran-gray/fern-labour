@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ContractionDTO } from '@clients/labour_service';
 import { formatTimeMilliseconds, formatTimeSeconds, getTimeSinceLastStarted } from '@shared/utils';
 import { IconActivityHeartbeat, IconNotes } from '@tabler/icons-react';
-import { Badge, Group, ScrollArea, Text } from '@mantine/core';
+import { Group, ScrollArea, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { EditContractionModal } from './EditContractionModal';
 import classes from './ContractionTimelineCustom.module.css';
@@ -80,75 +80,53 @@ export default function ContractionTimelineCustom({
   const renderItem = (c: ContractionDTO, idx: number, arr: ContractionDTO[]) => {
     const finished = isFinished(c);
     const nextGap = gaps[c.id]?.next ?? 0;
-    const prevGap = gaps[c.id]?.previous ?? 0;
     const clickable = finished && !completed;
 
     const node = (
       <div key={`${c.id}-node`} className={classes.gridRow}>
-        <div
-          className={`${classes.railCell} ${
-            nextGap > DOTTED_LINE_FREQUENCY_GAP ? classes.longGap : ''
-          }`}
-          aria-hidden
-        >
-          <div
-            className={finished ? classes.bullet : `${classes.bullet} ${classes.bulletActive}`}
-            style={{ background: 'var(--mantine-primary-color-4)' }}
-            onClick={() => handleClick(c)}
-            role={clickable ? 'button' : undefined}
-            aria-label={
-              finished
-                ? `Contraction at ${formatClock(c.start_time)}, intensity ${c.intensity ?? 0}`
-                : `Ongoing contraction started at ${formatClock(c.start_time)}`
-            }
-          >
-            {finished ? (c.intensity ?? 0) : <IconActivityHeartbeat size={28} color="white" />}
+        <div className={classes.leftColumn}>
+          <div className={classes.durationDisplay}>
+            {finished ? (
+              <Text size="lg" fw={600} className={classes.durationText}>
+                {formatTimeSeconds(c.duration)}
+              </Text>
+            ) : (
+              <Text size="lg" fw={600} className={classes.ongoingText}>
+                Ongoing
+              </Text>
+            )}
+          </div>
+          <div className={classes.timeDisplay}>
+            <Text size="sm" className={classes.timeText}>
+              {formatClock(c.start_time)}
+            </Text>
           </div>
         </div>
-        <div
-          className={`${classes.contentCard} ${clickable ? classes.clickable : classes.nonClickable}`}
-          onClick={() => handleClick(c)}
-        >
-          <div className={classes.header}>
-            {finished ? (
-              <div className={classes.durationSection}>
-                <Text size="xl" className={classes.durationText} fw={700}>
-                  {formatTimeSeconds(c.duration)}
-                </Text>
-                <Text size="sm" className={classes.durationLabel} c="dimmed">
-                  duration
-                </Text>
-              </div>
-            ) : (
-              <div className={classes.durationSection}>
-                <Text size="xl" className={classes.ongoingText} fw={700}>
-                  Ongoing
-                </Text>
-                <Text size="sm" className={classes.durationLabel} c="dimmed">
-                  contraction
-                </Text>
-              </div>
-            )}
-            <div className={classes.timeSection}>
-              <Text size="sm" className={classes.timeText}>
-                {formatClock(c.start_time)}
-              </Text>
+        <div className={classes.centerColumn}>
+          <div
+            className={`${classes.railCell} ${
+              nextGap > DOTTED_LINE_FREQUENCY_GAP ? classes.longGap : ''
+            }`}
+            aria-hidden
+          >
+            <div
+              className={finished ? classes.bullet : `${classes.bullet} ${classes.bulletActive}`}
+              style={{ background: 'var(--mantine-primary-color-4)' }}
+              onClick={() => handleClick(c)}
+              role={clickable ? 'button' : undefined}
+              aria-label={
+                finished
+                  ? `Contraction at ${formatClock(c.start_time)}, intensity ${c.intensity ?? 0}`
+                  : `Ongoing contraction started at ${formatClock(c.start_time)}`
+              }
+            >
+              {finished ? (c.intensity ?? 0) : <IconActivityHeartbeat size={28} color="white" />}
             </div>
           </div>
-          <div className={classes.metaRow}>
-            {prevGap !== 0 && (
-              <Badge color="var(--mantine-primary-color-6)" variant="light" radius="sm" size="sm">
-                Frequency: {formatTimeMilliseconds(prevGap)}
-              </Badge>
-            )}
-            {c.intensity != null && finished && (
-              <Badge color="gray" variant="light" radius="sm" size="sm" visibleFrom="xs">
-                Intensity: {c.intensity}/10
-              </Badge>
-            )}
-          </div>
+        </div>
+        <div className={classes.rightColumn}>
           {c.notes && (
-            <Group gap={6} mt={6} wrap="nowrap" className={classes.noteRow}>
+            <Group gap={6} wrap="nowrap" className={classes.noteRow}>
               <IconNotes size={16} color="var(--mantine-color-gray-6)" />
               <Text size="sm">{c.notes}</Text>
             </Group>
@@ -159,10 +137,15 @@ export default function ContractionTimelineCustom({
 
     const connector = idx < arr.length - 1 && nextGap > 0 && (
       <div key={`${c.id}-connector`} className={classes.connectorRow}>
-        <div className={classes.connectorRail}>
-          <div className={classes.gapLabel}>{formatTimeMilliseconds(nextGap)}</div>
+        <div className={classes.connectorLeft}>{/* Empty space for left column */}</div>
+        <div className={classes.connectorCenter}>{/* Timeline continues through center */}</div>
+        <div className={classes.connectorRight}>
+          <div className={classes.frequencyDisplay}>
+            <Text size="sm" fw={500} className={classes.frequencyText}>
+              {formatTimeMilliseconds(nextGap)}
+            </Text>
+          </div>
         </div>
-        <div />
       </div>
     );
 
@@ -170,17 +153,33 @@ export default function ContractionTimelineCustom({
   };
 
   return (
-    <>
+    <div className={classes.timelineContainer}>
       {modalData && !completed && (
         <EditContractionModal contractionData={modalData} opened={opened} close={close} />
       )}
-      <ScrollArea.Autosize mah="calc(100dvh - 400px)" viewportRef={viewport}>
+      {sections.length > 0 && (
+        <div className={classes.headerRow}>
+          <div className={classes.headerLeft}>
+            <Text size="sm" fw={600} c="dimmed">
+              Duration
+            </Text>
+          </div>
+          <div className={classes.headerCenter}>
+            {/* Timeline column - no header text needed */}
+          </div>
+          <div className={classes.headerRight}>
+            <Text size="sm" fw={600} c="dimmed">
+              Frequency
+            </Text>
+          </div>
+        </div>
+      )}
+      <ScrollArea.Autosize mah="calc(100dvh - 400px)" viewportRef={viewport} w="100%">
         <div className={classes.root}>
           {sections.length === 0 && <Text ta="center">No contractions recorded yet</Text>}
           {sections.map((section) => (
             <div key={section.key} className={classes.daySection}>
               <div className={classes.dayHeader}>
-                <div />
                 <div>
                   <Text size="sm" className={classes.dayTitle}>
                     {section.label}
@@ -193,6 +192,6 @@ export default function ContractionTimelineCustom({
           ))}
         </div>
       </ScrollArea.Autosize>
-    </>
+    </div>
   );
 }
