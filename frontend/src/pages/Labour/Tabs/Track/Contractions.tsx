@@ -58,7 +58,13 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
         <div className={baseClasses.inner} style={{ paddingBottom: 0, paddingTop: 0 }}>
           <div className={classes.content}>
             <ResponsiveDescription
-              description={completed ? completedDescription : activeDescription}
+              description={
+                completed
+                  ? completedDescription
+                  : sortedContractions.length === 0
+                    ? activeDescription
+                    : ''
+              }
               marginTop={0}
             />
             <Stack align="stretch" justify="flex-end" mt="20px" style={{ alignItems: 'center' }}>

@@ -28,6 +28,10 @@
   padding: 20px;
   border-radius: var(--mantine-radius-lg);
   background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-4));
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    padding: 10px;
+  }
 }
 
 .labourBadge{
@@ -51,7 +55,7 @@
   }
 
   @media (max-width: $mantine-breakpoint-xs) {
-    width: 260px;
+    width: 220px;
     height: 180px;
   }
 }

@@ -38,7 +38,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
     const title = data.labour_name ? data.labour_name : 'Your Labour';
     const completed = data.end_time !== null;
     const activeDescription =
-      'Take a deep breath, you’ve got this! Here, you can check your labour details. Use the tabs above or swipe to explore the app.';
+      'Take a deep breath, you’ve got this! Here, you can check your labour details.';
     const completedDescription =
       'Welcome back! You’re viewing your completed labour journey. All details are preserved for your reference, though editing is no longer available. Browse through the tabs above to revisit each part of your experience.';
     const currentPhase = completed
