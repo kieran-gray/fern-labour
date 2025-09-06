@@ -24,6 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
           name="keywords"
           content="Contraction, Tracker, Labour, Labor, Baby, Timer, Birth, Pregnancy, Pregnant"
         />
+        <link rel="preload" href="/logo/logo.svg" as="image" type="image/svg+xml" />
         <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
         <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
