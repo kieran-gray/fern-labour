@@ -1,46 +1,63 @@
 export const HeroText = {
   title: 'Your Labour Journey, Shared Simply',
+  subtitle: 'For expecting mothers in the UK',
   description:
-    'Stop worrying about keeping everyone updated. Focus on your labour while we bring your family closer to every milestone and every precious moment.',
+    'Track contractions and share labour progress automatically with your chosen family members via SMS, email, or WhatsApp.',
+  cta: 'Start my labour journey',
 };
 
-export const Story01Text = {
-  title: "Your Mum Doesn't Have to Miss This",
-  body: "Whether she's across town or across the world, she'll feel like she's right there with you. No more tearful phone calls from the waiting room or missing the moment your baby arrives.",
-  imageSrc: 'images/Celebrate.svg',
-  imageAlt: 'clock and calendar',
+export const ProblemSolutionText = {
+  features: [
+    {
+      title: 'Keep Everyone Close',
+      description:
+        'Whether family is across town or across the world, they can share in your special moments. Send instant updates to everyone you love, so no one misses out on welcoming your little one.',
+      screenshotAlt: 'Family notification dashboard showing real-time labour updates',
+      imageBaseName: 'updates',
+    },
+    {
+      title: 'Focus on What Matters',
+      description:
+        'Track your contractions and share updates effortlessly. One simple action keeps everyone informed, so you can focus on your birth experience instead of managing messages.',
+      screenshotAlt: 'Contraction tracking interface with automatic family notifications',
+      imageBaseName: 'track',
+    },
+    {
+      title: "Everyone's Preferred Way",
+      description:
+        'Send the same beautiful updates through SMS, email, or WhatsApp. Everyone receives your news in the format they prefer, making it easy for family to stay connected.',
+      screenshotAlt: 'Multi-channel notification settings showing SMS, email and WhatsApp options',
+      imageBaseName: 'share',
+    },
+    {
+      title: 'Your Circle, Your Choice',
+      description:
+        'Decide exactly who receives updates and when. Easily manage your family circle and maintain the privacy you want during this intimate time.',
+      screenshotAlt: 'Family circle management interface with privacy controls',
+      imageBaseName: 'invite',
+    },
+  ],
 };
 
-export const Story02Text = {
-  title: 'Labour Without the Logistics',
-  body: 'No more panicked texts between contractions or forgetting to call someone important. Track everything once, and everyone stays informed automatically.',
-  imageSrc: 'images/Meditate.svg',
-  imageAlt: 'woman meditating',
-};
-
-export const Story03Text = {
-  title: 'They Get the News Their Way',
-  body: "Your sister prefers texts. Your partner's mum only checks email. Dad wants WhatsApp updates. Everyone gets the same beautiful updates in their preferred format, instantly.",
-  imageSrc: 'images/AutomaticUpdates.svg',
-  imageAlt: 'people talking',
-};
-
-export const Story04Text = {
-  title: 'Your Labour, Your Guest List',
-  body: 'Worried about nosy relatives or oversharing? You decide exactly who gets updates and when. Remove anyone with one tap if they overstep.',
-  imageSrc: 'images/Protected.svg',
-  imageAlt: 'person on laptop, triumphantly defending',
+export const SocialProofTrustText = {
+  trustTitle: 'Trusted by Families Across the UK',
+  testimonial: {
+    quote:
+      'I could relax and focus on my birth knowing that I could update all my friends and family in one place.',
+    author: 'Jess G., Leeds',
+  },
+  signals: ['NHS-friendly tracking methods', 'GDPR compliant', 'Secure end-to-end communications'],
 };
 
 export const CallToActionText = {
   title: 'Focus on Your Birth, Not the Updates',
   description:
-    "Your family has been waiting months for this moment. Don't let distance steal their joy or add stress to yours. Start tracking today.",
+    'Simplify your labour experience. Let our app handle the updates, so you can focus on what truly matters: welcoming your baby.',
   cta: 'Start my labour journey',
+  subtitle: 'Free for mothers forever • No credit card required',
 };
 
 export const PricingText = {
-  title: 'Free for Mums. Fair for Family.',
-  description:
-    'You track for free. Family pays only if they want premium updates. No subscriptions, no surprise bills.',
+  title: 'Simple, Fair Pricing',
+  description: 'You track completely free. Family members pay only if they want premium features.',
 };

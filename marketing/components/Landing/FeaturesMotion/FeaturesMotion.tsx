@@ -2,21 +2,15 @@
 
 import { ReactNode, useMemo, useState } from 'react';
 import {
-  IconCalendar,
   IconCurrencyPound,
-  IconHourglass,
-  IconLink,
   IconLock,
   IconMail,
   IconMessage,
-  IconSend,
   IconStopwatch,
-  IconUserPlus,
   IconUsers,
 } from '@tabler/icons-react';
 import { motion } from 'motion/react';
 import { Box, Card, Container, Flex, Grid, SegmentedControl, Stack, Text } from '@mantine/core';
-import { FeaturesDemo } from '../FeaturesCarousel/FeaturesCarousel';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
 import classes from './FeaturesMotion.module.css';
 
@@ -28,24 +22,14 @@ type Feature = {
 
 const MUM_FEATURES: Feature[] = [
   {
-    icon: <IconUserPlus color="var(--mantine-color-pink-6)" />,
-    title: 'Sign Up',
-    description: 'Create your free Fern Labour account and get ready to share your journey.',
-  },
-  {
-    icon: <IconCalendar color="var(--mantine-color-pink-6)" />,
-    title: 'Plan Your Labour',
-    description: 'Set your due date and share a few preferences for a personalised experience.',
-  },
-  {
-    icon: <IconSend color="var(--mantine-color-pink-6)" />,
-    title: 'Invite Loved Ones',
-    description: 'Send invites via email, link, or QR code so they can follow your progress.',
-  },
-  {
     icon: <IconUsers color="var(--mantine-color-pink-6)" />,
-    title: 'Accept Subscribers',
-    description: 'Approve or remove people at any time, you’re in control of who’s included.',
+    title: 'Create Your Circle',
+    description: 'Send secure invites to family members who matter most to you.',
+  },
+  {
+    icon: <IconStopwatch color="var(--mantine-color-pink-6)" />,
+    title: 'Track Contractions',
+    description: 'Simple one-tap tracking with automatic timing and intensity logging.',
   },
   {
     icon: <IconMessage color="var(--mantine-color-pink-6)" />,
@@ -54,41 +38,31 @@ const MUM_FEATURES: Feature[] = [
       'Keep your loved ones informed before and during your labour with one-tap status updates.',
   },
   {
-    icon: <IconStopwatch color="var(--mantine-color-pink-6)" />,
-    title: 'Track Contractions',
-    description: 'Monitor your contractions and get alerts when it’s time to go to the hospital.',
+    icon: <IconLock color="var(--mantine-color-pink-6)" />,
+    title: 'Full Control',
+    description: 'Add or remove people anytime. Your labour, your guest list.',
   },
 ] as const;
 
 const SUBSCRIBER_FEATURES: Feature[] = [
   {
     icon: <IconMail color="var(--mantine-color-pink-6)" />,
-    title: 'Receive an Invite',
-    description: 'A loved one shares a private link with you via email, text, or QR code.',
+    title: 'Receive Invitation',
+    description: 'Get a secure invite via email, text, or QR code from your loved one.',
   },
   {
-    icon: <IconLink color="var(--mantine-color-pink-6)" />,
-    title: 'Follow the Invite Link',
-    description: 'Open the invite to begin. The link contains your subscription token.',
+    icon: <IconUsers color="var(--mantine-color-pink-6)" />,
+    title: 'Join Their Circle',
+    description: 'Quick signup and approval process to connect to their labour journey.',
   },
   {
-    icon: <IconUserPlus color="var(--mantine-color-pink-6)" />,
-    title: 'Sign Up',
-    description: 'Create your free Fern Labour account to stay connected.',
-  },
-  {
-    icon: <IconLock color="var(--mantine-color-pink-6)" />,
-    title: 'Request Access',
-    description: 'Your token is used to request access from the expectant mother.',
-  },
-  {
-    icon: <IconHourglass color="var(--mantine-color-pink-6)" />,
-    title: 'Wait for Approval',
-    description: 'Once approved, you’ll be able to follow their labour journey.',
+    icon: <IconMessage color="var(--mantine-color-pink-6)" />,
+    title: 'Real-time Updates',
+    description: 'Stay informed with automatic notifications as labour progresses.',
   },
   {
     icon: <IconCurrencyPound color="var(--mantine-color-pink-6)" />,
-    title: 'Upgrade for Notifications',
+    title: 'Premium Features',
     description: 'Pay £2.50 to receive real-time updates by SMS or WhatsApp.',
   },
 ] as const;
@@ -125,7 +99,7 @@ const FeatureCell = ({
           </Flex>
           <Box>
             <Text fz="xl" className={classes.cellTitle}>
-              Step {index + 1}: {title}
+              {title}
             </Text>
             <Text fz="md" c="var(--mantine-color-gray-8)">
               {description}
@@ -165,12 +139,11 @@ export const Feature02 = ({
   };
 
   return (
-    <Container py="calc(var(--mantine-spacing-lg) * 3)" px="15px" fluid>
+    <Container py={80} px="15px" fluid>
       <Container size="lg" px={0} style={{ position: 'relative' }} id="#features">
-        <JumboTitle order={2} fz="md" ta="center" style={{ textWrap: 'balance' }}>
+        <JumboTitle order={2} fz="xs" ta="center" style={{ textWrap: 'balance' }} mb={60}>
           {title}
         </JumboTitle>
-        <FeaturesDemo />
         <SegmentedControl
           size="xl"
           visibleFrom="sm"
@@ -197,7 +170,7 @@ export const Feature02 = ({
       <Container size="lg" p={0} mt="xl">
         <Grid gutter="lg">
           {featuresToRender.map((feature, index) => (
-            <Grid.Col key={`${feature.title}-${mode}`} span={{ base: 12, xs: 6, md: 4 }} mih="100%">
+            <Grid.Col key={`${feature.title}-${mode}`} span={{ base: 12, sm: 6 }} mih="100%">
               <FeatureCell
                 key={feature.title}
                 icon={feature.icon}
