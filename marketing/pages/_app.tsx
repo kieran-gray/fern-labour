@@ -1,14 +1,21 @@
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
+import '../styles/globals.css';
 
 import type { AppProps } from 'next/app';
-import { Quicksand } from 'next/font/google';
+import { Poppins, Quicksand } from 'next/font/google';
 import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
-import ResponsiveParticles from '@/components/ResponsiveParticles/ResponsiveParticles';
 import { theme } from '../theme';
 
-const quicksand = Quicksand({ subsets: ['latin'] });
+const poppins = Poppins({
+  weight: ['400'],
+  subsets: ['latin'],
+});
+
+const quicksand = Quicksand({
+  subsets: ['latin'],
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -24,6 +31,7 @@ export default function App({ Component, pageProps }: AppProps) {
           name="keywords"
           content="Contraction, Tracker, Labour, Labor, Baby, Timer, Birth, Pregnancy, Pregnant"
         />
+        <link rel="preload" href="/logo/logo.svg" as="image" type="image/svg+xml" />
         <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
         <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
@@ -31,8 +39,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="apple-mobile-web-app-title" content="Fern Labour" />
         <link rel="manifest" href="/favicon/site.webmanifest" />
       </Head>
-      <ResponsiveParticles />
-      <main className={quicksand.className}>
+      <main className={`${poppins}, ${quicksand}`}>
         <Component {...pageProps} />
       </main>
     </MantineProvider>

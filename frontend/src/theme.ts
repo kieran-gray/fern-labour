@@ -45,7 +45,7 @@ const darkTheme: MantineColorsTuple = [
 
 export const theme = createTheme({
   fontFamily: 'Quicksand, sans-serif',
-  headings: { fontFamily: 'Quicksand' },
+  headings: { fontFamily: 'Poppins, sans-serif' },
   primaryColor: 'pink',
   autoContrast: true,
   colors: {

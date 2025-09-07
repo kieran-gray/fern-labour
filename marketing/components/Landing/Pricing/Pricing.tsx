@@ -129,15 +129,10 @@ type Pricing01Props = {
 
 export const Pricing01 = ({ title, description, callToActionUrl = '#' }: Pricing01Props) => {
   return (
-    <Container
-      bg="var(--mantine-color-body)"
-      py="calc(var(--mantine-spacing-lg) * 3)"
-      px="15px"
-      fluid
-    >
+    <Container py={120} px="15px" fluid>
       <Container size="md" id="#pricing" style={{ position: 'relative' }}>
         <Stack align="center" gap="xs">
-          <JumboTitle order={2} fz="md" ta="center" style={{ textWrap: 'balance' }}>
+          <JumboTitle order={2} fz="xs" ta="center" style={{ textWrap: 'balance' }}>
             {title}
           </JumboTitle>
           <Text c="var(--mantine-color-gray-7)" ta="center" fz="xl" style={{ textWrap: 'balance' }}>

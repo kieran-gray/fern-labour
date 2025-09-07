@@ -3,7 +3,7 @@ import classes from './FaqWithImage.module.css';
 
 export function FaqWithImage() {
   return (
-    <Container py="calc(var(--mantine-spacing-lg) * 3)" px="15px" fluid>
+    <Container pt={40} pb={120} px="15px" fluid>
       <Container size="lg" className={classes.container} id="#faqs">
         <Grid id="faq-grid" gutter={50}>
           <Grid.Col span={{ base: 12, sm: 6 }}>
@@ -14,7 +14,11 @@ export function FaqWithImage() {
               Frequently Asked Questions
             </Title>
 
-            <Accordion chevronPosition="right" variant="separated">
+            <Accordion
+              chevronPosition="right"
+              variant="separated"
+              classNames={{ control: classes.control, panel: classes.panel, item: classes.item }}
+            >
               <Accordion.Item className={classes.item} value="hospital">
                 <Accordion.Control>How will I know when to go to hospital?</Accordion.Control>
                 <Accordion.Panel>

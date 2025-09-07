@@ -11,7 +11,7 @@ export default defineConfig({
     react(),
     eslint(),
     ViteWebfontDownload([
-      'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;1000&display=swap',
+      'https://fonts.googleapis.com/css2?family=Poppins&family=Quicksand:wght@400;500;600;700;1000&display=swap',
     ]),
     VitePWA({
       registerType: 'prompt',

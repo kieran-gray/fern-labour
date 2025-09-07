@@ -2,7 +2,7 @@ import { ContractionDTO, LabourDTO } from '@clients/labour_service';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import { formatTimeSeconds } from '@shared/utils';
+import { formatDurationHuman, formatTimeSeconds } from '@shared/utils';
 import { Image, Space, Text } from '@mantine/core';
 import { LabourStatisticsTabs } from './LabourStatisticsTabs';
 import image from './statistics.svg';
@@ -141,7 +141,9 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
       {labour.start_time && labour.end_time == null && (
         <Text className={classes.labourStatsText}>
           <strong>Elapsed Time: </strong>
-          {formatTimeSeconds((new Date().getTime() - new Date(labour.start_time).getTime()) / 1000)}
+          {formatDurationHuman(
+            (new Date().getTime() - new Date(labour.start_time).getTime()) / 1000
+          )}
         </Text>
       )}
     </div>
