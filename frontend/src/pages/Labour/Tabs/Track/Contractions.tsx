@@ -23,10 +23,10 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
   const sortedContractions = sortContractions(labour.contractions);
 
   useEffect(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
+    const main = document.getElementById('app-main');
+    if (main) {
+      main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+    }
   }, [labour]);
 
   const completed = labour.end_time !== null;

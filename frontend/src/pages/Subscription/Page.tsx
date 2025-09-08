@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useSubscriptionById } from '@base/shared-components/hooks/useSubscriptionData.ts';
 import { AppShell } from '@shared/AppShell';
-import { BottomNavigation } from '@shared/BottomNavigation';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
 import { pluraliseName } from '@shared/utils.tsx';
@@ -137,14 +136,11 @@ export const SubscriptionPage = () => {
     <div {...swipeHandlers}>
       <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
         {/* Content Area */}
-        <div className={baseClasses.flexPageColumn} style={{ paddingBottom: '100px' }}>
+        <div className={baseClasses.flexPageColumn}>
           <Center style={{ flexDirection: 'column' }}>
             {renderTabPanel(activeTab || 'details')}
           </Center>
         </div>
-
-        {/* Mobile Bottom Navigation */}
-        <BottomNavigation items={TABS} activeItem={activeTab} onItemChange={setActiveTab} />
       </AppShell>
     </div>
   );

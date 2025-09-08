@@ -87,21 +87,40 @@ export const LabourUpdatesHelpModal = ({
             occasional app messages just for you:
           </Text>
 
-          <Text fw={500} size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+          <Text
+            fw={500}
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
             Status updates
           </Text>
-          <List size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))" withPadding>
-            <List.Item>Visible to subscribers inside the app (no push/SMS/WhatsApp/email)</List.Item>
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
+            <List.Item>
+              Visible to subscribers inside the app (no push/SMS/WhatsApp/email)
+            </List.Item>
             <List.Item>
               Use the message menu (bottom-right) to edit, share as an announcement, or delete
             </List.Item>
           </List>
           <LabourUpdate data={mockStatusUpdate} />
 
-          <Text fw={500} size="sm" mt="xs" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+          <Text
+            fw={500}
+            size="sm"
+            mt="xs"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
             Announcements
           </Text>
-          <List size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))" withPadding>
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
             <List.Item>
               Broadcast to subscribers via SMS/WhatsApp/email who have live notifications enabled
             </List.Item>
@@ -109,10 +128,19 @@ export const LabourUpdatesHelpModal = ({
           </List>
           <LabourUpdate data={mockAnnouncement} />
 
-          <Text fw={500} size="sm" mt="xs" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+          <Text
+            fw={500}
+            size="sm"
+            mt="xs"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
             Application‑generated messages
           </Text>
-          <List size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))" withPadding>
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
             <List.Item>Private to you (not visible to subscribers)</List.Item>
             <List.Item>
               Created automatically at key moments, e.g., when you start tracking contractions

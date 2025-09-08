@@ -30,16 +30,16 @@ export function FaqWithImage() {
                   <div className={classes.adviceCard}>
                     <Text className={classes.adviceTitle}>First-time mothers</Text>
                     <Text>
-                      We recommend going to hospital when your contractions follow a
-                      <b> 3-1-1</b> pattern: every 3 minutes, lasting 1 minute, for 1 hour.
+                      We recommend going to hospital when your contractions follow a<b> 3-1-1</b>{' '}
+                      pattern: every 3 minutes, lasting 1 minute, for 1 hour.
                     </Text>
                   </div>
 
                   <div className={classes.adviceCard}>
                     <Text className={classes.adviceTitle}>Have given birth before</Text>
                     <Text>
-                      We recommend going to hospital when your contractions follow a
-                      <b> 5-1-1</b> pattern: every 5 minutes, lasting 1 minute, for 1 hour.
+                      We recommend going to hospital when your contractions follow a<b> 5-1-1</b>{' '}
+                      pattern: every 5 minutes, lasting 1 minute, for 1 hour.
                     </Text>
                   </div>
 

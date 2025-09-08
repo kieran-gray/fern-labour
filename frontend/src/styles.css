@@ -1,3 +1,8 @@
+:root {
+    --bottom-bar-height: 70px;
+    --header-overlay-height: 64px;
+}
+
 body {
     background-color: light-dark(#ffeae6, #121212);
 }

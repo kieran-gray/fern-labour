@@ -1,7 +1,7 @@
 /* Floating Labour Update Controls */
 .floatingControls {
   position: fixed;
-  bottom: 0;
+  bottom: var(--bottom-bar-height);
   left: 0;
   right: 0;
   z-index: 99;
@@ -12,7 +12,6 @@
     0 -4px 20px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.15)),
     inset 0 1px 0 light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.05));
   padding: 1rem;
-  padding-bottom: calc(1rem + 70px + env(safe-area-inset-bottom)); /* Account for bottom nav height */
   margin: 0 auto;
   border-radius: 1rem 1rem 0 0; /* Rounded top corners */
   transition: all 0.3s ease;
@@ -23,7 +22,6 @@
 /* Collapsed state */
 .collapsed {
   padding: 0.5rem;
-  padding-bottom: calc(0.5rem + 70px + env(safe-area-inset-bottom));
 }
 
 /* Header with toggle button */

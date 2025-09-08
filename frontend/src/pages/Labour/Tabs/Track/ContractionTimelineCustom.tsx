@@ -174,7 +174,7 @@ export default function ContractionTimelineCustom({
           </div>
         </div>
       )}
-      <ScrollArea.Autosize mah="calc(100dvh - 400px)" viewportRef={viewport} w="100%">
+      <ScrollArea.Autosize mah="calc(100dvh - 360px)" viewportRef={viewport} w="100%">
         <div className={classes.root}>
           {sections.length === 0 && <Text ta="center">No contractions recorded yet</Text>}
           {sections.map((section) => (
