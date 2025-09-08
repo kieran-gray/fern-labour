@@ -20,12 +20,24 @@
   }
   
   .link {
-    color: var(--mantine-color-white);
-    font-weight: 600;
+    display: inline-block;
     white-space: nowrap;
-  
+    text-decoration: none;
+    font-weight: 700;
+    color: var(--mantine-color-white);
+    border-radius: 100px;
+    padding: 8px var(--mantine-spacing-sm);
+    transition: background-color 200ms ease, color 200ms ease;
+
     &:hover {
-      color: var(--mantine-color-gray-8);
+      background-color: var(--mantine-color-pink-2);
+      color: var(--mantine-color-gray-9);
+    }
+
+    @media (max-width: $mantine-breakpoint-sm) {
+      background-color: var(--mantine-color-pink-1);
+      color: var(--mantine-color-gray-9);
+      text-align: center;
     }
   }
   
@@ -56,20 +68,26 @@
 }
 
 .drawer {
-  background-color: var(--mantine-color-pink-3);
+  background-color: var(--mantine-color-pink-0);
+}
+
+.drawerBody {
+  display: flex;
+  height: 85svh;
+  background-color: var(--mantine-color-pink-0);
 }
 
 .linksDrawer {
   padding-top: var(--mantine-spacing-lg);
-  height: 84px;
   display: flex;
-  margin-top: 15px;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: start;
+  flex-grow: 1;
+  background-color: var(--mantine-color-pink-0);
 }
 
-.linksDrawer > *{
-  margin-top: 15px;
+.linksDrawer > * {
+  margin-top: 20px;
 }
 
 .title {

@@ -99,7 +99,7 @@ export const Header01 = ({
         if (link.href.startsWith('#')) {
           event.preventDefault();
           const element = document.getElementById(link.href);
-          const headerOffset = 100;
+          const headerOffset = 120;
           const elementPos = element!.getBoundingClientRect().top;
           const offsetPos = elementPos + window.scrollY - headerOffset;
           window.scrollTo({ top: offsetPos, behavior: 'smooth' });
@@ -186,7 +186,11 @@ export const Header01 = ({
         </Group>
         <Drawer
           size="xs"
-          classNames={{ content: classes.drawer, header: classes.drawer }}
+          classNames={{
+            content: classes.drawer,
+            header: classes.drawer,
+            body: classes.drawerBody,
+          }}
           overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
           position="left"
           opened={opened}
