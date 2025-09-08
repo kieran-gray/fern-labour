@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { Anchor, Container, Grid, Group, Stack, Text, Title } from '@mantine/core';
 import classes from './Footer.module.css';
 
@@ -25,6 +26,7 @@ const footerSections = [
 
 export function FooterSimple() {
   const currentYear = new Date().getFullYear();
+  const router = useRouter();
 
   return (
     <footer className={classes.footer}>
@@ -57,11 +59,23 @@ export function FooterSimple() {
                       onClick={(event) => {
                         if (link.href.startsWith('#')) {
                           event.preventDefault();
-                          const element = document.getElementById(link.href);
-                          const headerOffset = 100;
-                          const elementPos = element!.getBoundingClientRect().top;
-                          const offsetPos = elementPos + window.scrollY - headerOffset;
-                          window.scrollTo({ top: offsetPos, behavior: 'smooth' });
+
+                          const doScroll = () => {
+                            const element = document.getElementById(link.href);
+                            if (!element) return;
+                            const headerOffset = 100;
+                            const elementPos = element.getBoundingClientRect().top;
+                            const offsetPos = elementPos + window.scrollY - headerOffset;
+                            window.scrollTo({ top: offsetPos, behavior: 'smooth' });
+                          };
+
+                          if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+                            router.push('/').then(() => {
+                              setTimeout(doScroll, 0);
+                            });
+                          } else {
+                            doScroll();
+                          }
                         }
                       }}
                     >
