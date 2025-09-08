@@ -62,7 +62,9 @@ export function FooterSimple() {
 
                           const doScroll = () => {
                             const element = document.getElementById(link.href);
-                            if (!element) {return;}
+                            if (!element) {
+                              return;
+                            }
                             const headerOffset = 100;
                             const elementPos = element.getBoundingClientRect().top;
                             const offsetPos = elementPos + window.scrollY - headerOffset;
