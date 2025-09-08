@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { NotFoundError, PermissionDenied } from '@base/Errors';
 import { AppShell } from '@shared/AppShell';
-import { BottomNavigation } from '@shared/BottomNavigation';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
 import { useCurrentLabour } from '@shared/hooks';
 import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
@@ -45,6 +44,13 @@ export const LabourPage = () => {
   const [activeTab, setActiveTab] = useState<string | null>('track');
   const [isUpdateControlsExpanded, setIsUpdateControlsExpanded] = useState(true);
   const [isContractionControlsExpanded, setIsContractionControlsExpanded] = useState(true);
+
+  const scrollMainToBottom = (smooth: boolean = true) => {
+    const main = document.getElementById('app-main');
+    if (main) {
+      main.scrollTo({ top: main.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+    }
+  };
 
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
@@ -121,22 +127,16 @@ export const LabourPage = () => {
       return '30px';
     }
 
-    if (completed) {
-      return '100px';
-    }
-
     if (activeTab === 'track') {
       if (!isContractionControlsExpanded) {
-        return '120px';
+        return '50px';
       }
-      return activeContraction ? '400px' : '200px';
+      return activeContraction ? '350px' : '140px';
     }
 
     if (activeTab === 'updates') {
-      return isUpdateControlsExpanded ? '320px' : '120px';
+      return isUpdateControlsExpanded ? '265px' : '50px';
     }
-
-    return '100px';
   };
 
   const renderTabPanel = (tabId: string) => {
@@ -186,18 +186,25 @@ export const LabourPage = () => {
         <FloatingContractionControls
           labour={labour}
           activeTab={activeTab}
-          onToggle={setIsContractionControlsExpanded}
+          onToggle={(expanded) => {
+            setIsContractionControlsExpanded(expanded);
+            if (expanded) {
+              setTimeout(() => scrollMainToBottom(true), 50);
+            }
+          }}
         />
 
         {/* Floating Labour Update Controls */}
         <FloatingLabourUpdateControls
           labour={labour}
           activeTab={activeTab}
-          onToggle={setIsUpdateControlsExpanded}
+          onToggle={(expanded) => {
+            setIsUpdateControlsExpanded(expanded);
+            if (expanded) {
+              setTimeout(() => scrollMainToBottom(true), 50);
+            }
+          }}
         />
-
-        {/* Mobile Bottom Navigation */}
-        <BottomNavigation items={TABS} activeItem={activeTab} onItemChange={setActiveTab} />
       </AppShell>
     </div>
   );

@@ -34,7 +34,7 @@ export const FinalCTA = ({ title, description, cta, subtitle }: FinalCTAProps) =
               c="white"
               style={{
                 textWrap: 'balance',
-                textShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
               }}
             >
               {title}

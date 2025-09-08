@@ -110,17 +110,14 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
       if (viewport.current) {
         viewport.current.scrollTo({
           top: viewport.current.scrollHeight,
-          behavior: 'auto',
+          behavior: smooth ? 'smooth' : 'auto',
         });
       }
 
-      const isMobile = window.innerWidth < 768;
-      const bottomNavHeight = isMobile ? 80 : 0;
-
-      window.scrollTo({
-        top: document.documentElement.scrollHeight - window.innerHeight + bottomNavHeight,
-        behavior: smooth ? 'smooth' : 'auto',
-      });
+      const main = document.getElementById('app-main');
+      if (main) {
+        main.scrollTo({ top: main.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+      }
     }, 50);
   }, []);
 
@@ -179,7 +176,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
           <div className={classes.content}>
             <ResponsiveDescription description={description} marginTop={0} />
             {hasUpdates && (
-              <ScrollArea.Autosize mt={20} mah="calc(100dvh - 400px)" viewportRef={viewport}>
+              <ScrollArea.Autosize mt={20} mah="calc(100dvh - 370px)" viewportRef={viewport}>
                 <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
               </ScrollArea.Autosize>
             )}

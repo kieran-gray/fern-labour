@@ -1,4 +1,4 @@
-import { Accordion, Container, Grid, Image, Title } from '@mantine/core';
+import { Accordion, Container, Grid, Image, List, Text, Title } from '@mantine/core';
 import classes from './FaqWithImage.module.css';
 
 export function FaqWithImage() {
@@ -22,67 +22,74 @@ export function FaqWithImage() {
               <Accordion.Item className={classes.item} value="hospital">
                 <Accordion.Control>How will I know when to go to hospital?</Accordion.Control>
                 <Accordion.Panel>
-                  The app will monitor your contraction patterns and send you a recommendation based
-                  on your labour history.
-                  <br />
-                  For first-time mothers, you'll receive a notification when your contractions
-                  follow a 3-1-1 pattern (contractions every 3 minutes, lasting 1 minute, for 1
-                  hour).
-                  <br />
-                  For those who have given birth before, you'll be notified at a 5-1-1 pattern
-                  (contractions every 5 minutes, lasting 1 minute, for 1 hour).
-                  <br />
-                  However, always follow your healthcare provider's specific guidance, as they may
-                  give you different instructions based on your individual situation.
+                  <Text>
+                    The app monitors your contraction patterns and recommends next steps based on
+                    your labour history. Here are the general guidelines:
+                  </Text>
+
+                  <div className={classes.adviceCard}>
+                    <Text className={classes.adviceTitle}>First-time mothers</Text>
+                    <Text>
+                      We recommend going to hospital when your contractions follow a<b> 3-1-1</b>{' '}
+                      pattern: every 3 minutes, lasting 1 minute, for 1 hour.
+                    </Text>
+                  </div>
+
+                  <div className={classes.adviceCard}>
+                    <Text className={classes.adviceTitle}>Have given birth before</Text>
+                    <Text>
+                      We recommend going to hospital when your contractions follow a<b> 5-1-1</b>{' '}
+                      pattern: every 5 minutes, lasting 1 minute, for 1 hour.
+                    </Text>
+                  </div>
+
+                  <Text className={classes.note}>
+                    Always follow the specific guidance of your healthcare provider, as your
+                    individual situation may differ.
+                  </Text>
                 </Accordion.Panel>
               </Accordion.Item>
 
               <Accordion.Item className={classes.item} value="subscribe">
                 <Accordion.Control>Can I control who subscribes to my labour?</Accordion.Control>
                 <Accordion.Panel>
-                  Yes, absolutely. You have complete control over who receives updates. You need to
-                  approve anyone who requests to join your labour circle.
-                  <br />
-                  Additionally, you can remove or block any subscriber at any time through the
-                  "Manage Subscribers" controls in the app, and they'll immediately be removed.
+                  <List spacing="xs" className={classes.panelText}>
+                    <List.Item>
+                      You approve each person who requests to join your labour circle.
+                    </List.Item>
+                    <List.Item>
+                      You can remove or block subscribers at any time in
+                      <b> Manage Subscribers</b>, changes apply immediately.
+                    </List.Item>
+                  </List>
                 </Accordion.Panel>
               </Accordion.Item>
 
               <Accordion.Item className={classes.item} value="data">
                 <Accordion.Control>How will my data be stored?</Accordion.Control>
                 <Accordion.Panel>
-                  Your privacy and data security are our top priority. All your personal information
-                  is encrypted and stored on secure servers located in the United Kingdom.
-                  <br />
-                  We use industry-standard SSL encryption for all data transmission, and your
-                  identifying information is encrypted when stored.
-                  <br />
-                  You can request to delete your data at any time through the app.
+                  <List spacing="xs" className={classes.panelText}>
+                    <List.Item>
+                      Your personal information is encrypted and stored on secure servers in the
+                      United Kingdom.
+                    </List.Item>
+                    <List.Item>
+                      We use industry‑standard SSL encryption for all data transmission and encrypt
+                      identifying information at rest.
+                    </List.Item>
+                    <List.Item>You can request to delete your data at any time.</List.Item>
+                  </List>
                 </Accordion.Panel>
               </Accordion.Item>
-
-              {/* <Accordion.Item className={classes.item} value="birth-partner">
-                <Accordion.Control>
-                  Can my birth partner help manage updates during labour?
-                </Accordion.Control>
-                <Accordion.Panel>
-                  Yes! With an Advanced plan (see above), you can designate a trusted support person
-                  to manage updates through the app while you focus on your labour.
-                  <br />
-                  They can track contractions and send updates to your subscribers using their own
-                  device.
-                  <br />
-                  You maintain full control and can revoke access at any time.
-                </Accordion.Panel>
-              </Accordion.Item> */}
 
               <Accordion.Item className={classes.item} value="subscribers">
                 <Accordion.Control>
                   Is there a limit to how many people can subscribe to my labour?
                 </Accordion.Control>
                 <Accordion.Panel>
-                  There are no limits, you can invite as many loved ones as you want to join in your
-                  labour journey.
+                  <Text className={classes.panelText}>
+                    There’s no limit, invite as many loved ones as you like.
+                  </Text>
                 </Accordion.Panel>
               </Accordion.Item>
             </Accordion>

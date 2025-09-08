@@ -1,6 +1,6 @@
 import { ContractionDTO } from '@clients/labour_service';
 import { IconHourglassHigh, IconHourglassLow } from '@tabler/icons-react';
-import { Anchor, Button, Modal, Slider, Text, Title } from '@mantine/core';
+import { Anchor, Button, List, Modal, Slider, Stack, Text, Title } from '@mantine/core';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert';
 import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital';
@@ -72,19 +72,16 @@ export const ContractionsHelpModal = ({
         <Title order={4} mt="xs" hiddenFrom="md">
           Tracking your contractions
         </Title>
-        <Text
-          mt={10}
-          size="sm"
-          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-        >
-          At the beginning of your contraction tap:
+        <Stack gap="xs" mt={10}>
+          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+            Track contractions with two quick taps:
+          </Text>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               width: '100%',
               flexDirection: 'column',
-              padding: '20px 0',
             }}
           >
             <Button
@@ -93,18 +90,17 @@ export const ContractionsHelpModal = ({
               size="lg"
               variant="filled"
               color="var(--mantine-primary-color-4)"
+              mt="xs"
             >
               Start Contraction
             </Button>
           </div>
-          At the end tap:
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               width: '100%',
               flexDirection: 'column',
-              padding: '20px 0',
             }}
           >
             <Button
@@ -112,19 +108,20 @@ export const ContractionsHelpModal = ({
               radius="xl"
               size="lg"
               variant="outline"
+              mt="xs"
             >
               End Contraction
             </Button>
           </div>
-          While your contraction is being timed you will have access to a slider to set the
-          intensity:
+          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+            While timing, you can also set the intensity:
+          </Text>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               width: '100%',
               flexDirection: 'column',
-              padding: '20px 0',
             }}
           >
             <Text ta="center" className={baseClasses.minorText}>
@@ -151,136 +148,196 @@ export const ContractionsHelpModal = ({
               ]}
             />
           </div>
-          Don't worry if you don't set it, you can always set it later by editing the contraction.
-          <br />
-          <br />
-          On the contraction tracker screen you will see some information next to each contraction:
-          <br />
-          - The start time of the contraction
-          <br />
-          - The frequency (the time from the beginning of the previous contraction to the beginning
-          of this contraction)
-          <br />
-          - The duration of the contraction
-          <br />
-          The contraction intensity is shown as a number inside each contraction.
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+            You can always adjust intensity later by editing the contraction.
+          </Text>
+          <Text
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            mt="sm"
+          >
+            On the tracker, each contraction shows:
+          </Text>
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
+            <List.Item>The start time</List.Item>
+            <List.Item>
+              The frequency — time from the start of the previous contraction to the start of this
+              one
+            </List.Item>
+            <List.Item>The duration</List.Item>
+            <List.Item>Intensity (shown as a number inside each contraction)</List.Item>
+          </List>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
             <ContractionTimelineCustom contractions={mockContractions} completed />
           </div>
-        </Text>
+        </Stack>
         <Title order={3} mt="sm" visibleFrom="md">
           Editing a contraction
         </Title>
         <Title order={4} mt="sm" hiddenFrom="md">
           Editing a contraction
         </Title>
-        <Text
-          mt={10}
-          size="sm"
-          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-        >
-          To edit a contraction, simply tap on it and a popup will open. You can edit the start
-          time, end time, and intensity of the contraction.
-          <br />
-          You can also delete a contraction through the same popup.
-        </Text>
+        <Stack gap={4} mt={10}>
+          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+            To edit a contraction, tap it to open the editor.
+          </Text>
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
+            <List.Item>Edit start time, end time, and intensity</List.Item>
+            <List.Item>Delete the contraction if needed</List.Item>
+          </List>
+        </Stack>
         <Title order={3} mt="xl" visibleFrom="md">
           When to go to the hospital
         </Title>
         <Title order={4} mt="xl" hiddenFrom="md">
           When to go to the hospital
         </Title>
-        <Text
-          mt={10}
-          size="sm"
-          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-        >
-          <Text fw={500} size="sm" mb={5}>
-            The app will monitor your contraction pattern and alert you when:
+        <Stack gap="xs" mt={10}>
+          <Text
+            fw={500}
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
+            The app monitors your contractions and alerts you when:
           </Text>
-          - It's time to start preparing to go to the hospital
-          <br />
-          <PrepareForHospitalAlert />
-          <br />
-          - It is time to go to the hospital
-          <br />
-          <GoToHospitalAlert />
-          <br />
-          <Text fw={500} size="sm" mb={5}>
-            For first-time mothers:
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
+            <List.Item>
+              It’s time to start preparing to go to the hospital
+              <div style={{ marginTop: 6 }}>
+                <PrepareForHospitalAlert />
+              </div>
+            </List.Item>
+            <List.Item>
+              It’s time to go to the hospital
+              <div style={{ marginTop: 6 }}>
+                <GoToHospitalAlert />
+              </div>
+            </List.Item>
+          </List>
+
+          <Text
+            fw={500}
+            size="sm"
+            mt="xs"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
+            First-time mothers
           </Text>
-          - You'll receive the first alert when your last 4 contractions have been 3 minutes apart
-          and lasting for 1 minute.
-          <br />
-          - You'll receive the second alert when your contractions have matched this pattern for 1
-          hour (Also known as a 3-1-1 pattern).
-          <br />
-          <br />
-          <Text fw={500} size="sm" mb={5}>
-            For those who have given birth before:
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
+            <List.Item>
+              First alert: last 4 contractions are 3 minutes apart and last 1 minute each
+            </List.Item>
+            <List.Item>Second alert: pattern holds for 1 hour (3‑1‑1)</List.Item>
+          </List>
+
+          <Text
+            fw={500}
+            size="sm"
+            mt="xs"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
+            Have given birth before
           </Text>
-          - You'll receive the first alert when your last 4 contractions have been 5 minutes apart
-          and lasting for 1 minute.
-          <br />
-          - You'll receive the second alert when your contractions have matched this pattern for 1
-          hour (Also known as a 5-1-1 pattern).
-          <br />
-          <br />
-          Keep in mind that you may not want to track continuously for over an hour, in which case
-          you should consider going to the hospital when you receive the first alert.
-          <br />
-          <br />
-          <Text fw={500}>
-            Please always follow your healthcare provider's specific guidance, as they may give you
-            different instructions based on your individual situation.
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
+            <List.Item>
+              First alert: last 4 contractions are 5 minutes apart and last 1 minute each
+            </List.Item>
+            <List.Item>Second alert: pattern holds for 1 hour (5‑1‑1)</List.Item>
+          </List>
+
+          <Text
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            mt="xs"
+          >
+            You may not want to track continuously for an hour — consider going to hospital after
+            the first alert if advised.
           </Text>
-        </Text>
+
+          <Text
+            fw={500}
+            size="sm"
+            mt="xs"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
+            Please always follow your healthcare provider’s specific guidance.
+          </Text>
+        </Stack>
         <Title order={3} mt="xl" visibleFrom="md">
           When to contact a midwife
         </Title>
         <Title order={4} mt="xl" hiddenFrom="md">
           When to contact a midwife
         </Title>
-        <Text
-          mt={10}
-          size="sm"
-          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-        >
-          <Text fw={500} size="sm" mb={5}>
+        <Stack gap="xs" mt={10}>
+          <Text
+            fw={500}
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
             Call your midwife or maternity unit for guidance if:
           </Text>
-          - You think you’re in labour
-          <br />
-          - You’re having regular contractions coming every 5 minutes or more often
-          <br />
-          - You're worried about anything
-          <br />
-          <br />
-          <Text fw={500} size="sm" mb={5}>
-            Call your midwife or maternity unit urgently if:
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
+            <List.Item>You think you’re in labour</List.Item>
+            <List.Item>You’re having regular contractions every 5 minutes or more often</List.Item>
+            <List.Item>You're worried about anything</List.Item>
+          </List>
+
+          <Text
+            fw={500}
+            size="sm"
+            mt="xs"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+          >
+            Call urgently if:
           </Text>
-          - Your waters break
-          <br />
-          - You have vaginal bleeding
-          <br />
-          - Your baby is moving less than usual
-          <br />
-          - You're less than 37 weeks pregnant and think you might be in labour
-          <br />
-          - Any of your contractions last longer than 2 minutes
-          <br />
-          - You're having 6 or more contractions every 10 minutes
-          <br />
-          The app will alert you if you should call based on the final two points above.
+          <List
+            size="sm"
+            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
+            withPadding
+          >
+            <List.Item>Your waters break</List.Item>
+            <List.Item>You have vaginal bleeding</List.Item>
+            <List.Item>Your baby is moving less than usual</List.Item>
+            <List.Item>You're under 37 weeks and think you might be in labour</List.Item>
+            <List.Item>Any contraction lasts longer than 2 minutes</List.Item>
+            <List.Item>You're having 6 or more contractions every 10 minutes</List.Item>
+          </List>
+          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+            The app will alert you if you should call based on the final two points above.
+          </Text>
           <CallMidwifeAlert />
-          <br />
           <Anchor
             href="https://www.nhs.uk/pregnancy/labour-and-birth/what-happens/the-stages-of-labour-and-birth/"
             target="_blank"
           >
             For additional information see this NHS page.
           </Anchor>
-        </Text>
+        </Stack>
         <Text
           mt={10}
           size="sm"
