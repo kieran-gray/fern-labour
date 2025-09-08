@@ -48,6 +48,28 @@
   border-bottom-right-radius: var(--mantine-radius-lg);
 }
 
+.panelText {
+  line-height: 1.6;
+}
+
+.adviceCard {
+  margin-top: var(--mantine-spacing-sm);
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+  background-color: var(--mantine-color-pink-0);
+  border: 1px solid var(--mantine-color-pink-2);
+  border-radius: var(--mantine-radius-md);
+}
+
+.adviceTitle {
+  font-weight: 700;
+  color: var(--mantine-color-pink-6);
+  margin-bottom: 6px;
+}
+
+.note {
+  margin-top: var(--mantine-spacing-md);
+}
+
   .bigImage {
     width: 400px;
     height: 370px;
