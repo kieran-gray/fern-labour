@@ -1,4 +1,4 @@
-import { Modal, Space, Text, Title } from '@mantine/core';
+import { List, Modal, Stack, Text, Title } from '@mantine/core';
 import { LabourUpdate, LabourUpdateProps } from '../LabourUpdate';
 import labourUpdateClasses from '../LabourUpdates.module.css';
 import modalClasses from '@shared/Modal.module.css';
@@ -81,44 +81,46 @@ export const LabourUpdatesHelpModal = ({
         <Title order={4} mt="xs" hiddenFrom="md">
           Sharing updates
         </Title>
-        <Text
-          mt={10}
-          size="sm"
-          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-        >
-          You can share two different types of updates here to keep your loved ones updated.
-          <br />
-          <br />
-          <Text fw={500} size="sm">
+        <Stack gap="sm" mt={10}>
+          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+            Share updates to keep loved ones in the loop. There are two types you can send, plus
+            occasional app messages just for you:
+          </Text>
+
+          <Text fw={500} size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
             Status updates
           </Text>
-          Your subscribers can see status updates in the app but are not notified.
-          <br />
-          The menu on the lower right hand side of the message allows you to do some basic actions,
-          such as sharing the message as an announcement or deleting it.
-          <Space h="sm" />
+          <List size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))" withPadding>
+            <List.Item>Visible to subscribers inside the app (no push/SMS/WhatsApp/email)</List.Item>
+            <List.Item>
+              Use the message menu (bottom-right) to edit, share as an announcement, or delete
+            </List.Item>
+          </List>
           <LabourUpdate data={mockStatusUpdate} />
-          <br />
-          <br />
-          <Text fw={500} size="sm">
+
+          <Text fw={500} size="sm" mt="xs" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
             Announcements
           </Text>
-          Announcements are broadcast by SMS/WhatsApp/email to any subscribers that have upgraded
-          their subscription for live notifications.
-          <Space h="sm" />
+          <List size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))" withPadding>
+            <List.Item>
+              Broadcast to subscribers via SMS/WhatsApp/email who have live notifications enabled
+            </List.Item>
+            <List.Item>Best for important updates</List.Item>
+          </List>
           <LabourUpdate data={mockAnnouncement} />
-          <br />
-          <br />
-          <Text fw={500} size="sm">
-            Application generated messages
+
+          <Text fw={500} size="sm" mt="xs" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
+            Application‑generated messages
           </Text>
-          Sometimes we will generate messages that only you can see, we'll do this when you start
-          tracking your contractions. Then you can choose if you want to share the message that your
-          labour is beginning with your subscribers.
-          <Space h="sm" />
+          <List size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))" withPadding>
+            <List.Item>Private to you (not visible to subscribers)</List.Item>
+            <List.Item>
+              Created automatically at key moments, e.g., when you start tracking contractions
+            </List.Item>
+            <List.Item>You can choose to share as an announcement</List.Item>
+          </List>
           <LabourUpdate data={mockLabourBegun} />
-          <br />
-        </Text>
+        </Stack>
       </div>
     </Modal>
   );
