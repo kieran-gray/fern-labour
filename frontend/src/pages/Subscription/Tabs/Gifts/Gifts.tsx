@@ -3,7 +3,7 @@ import { PageContainerContentBottom } from '@shared/PageContainer/PageContainer'
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '@shared/utils';
-import { Box, Button, Flex, Image, Text } from '@mantine/core';
+import { Badge, Box, Button, Flex, Image, Text } from '@mantine/core';
 import dbhf_main from './ads/dbhf/main.jpg';
 import my1styears_desktop from './ads/my1styears/desktop.jpg';
 import my1styears_main from './ads/my1styears/main.webp';
@@ -41,6 +41,8 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
         />
       ),
       url: 'https://tidd.ly/3EL2r6X',
+      cta: 'Shop My 1st Years',
+      featured: true,
     },
     {
       title: 'Etta Loves',
@@ -54,6 +56,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={etta_loves_main}
           alt="Etta Loves"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
@@ -62,9 +65,11 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={etta_loves_main}
           alt="Etta Loves"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
       url: 'https://tidd.ly/4pfGfUR',
+      cta: 'Explore Etta Loves',
     },
     {
       title: 'Don’t Buy Her Flowers',
@@ -79,6 +84,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={dbhf_main}
           alt="Don’t Buy Her Flowers"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
@@ -87,9 +93,11 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={dbhf_main}
           alt="Don’t Buy Her Flowers"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
       url: 'https://tidd.ly/3FHKzKi',
+      cta: 'Build a Gift Box',
     },
     {
       title: 'Zello Sleep',
@@ -102,6 +110,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={zello_main}
           alt="Zello Sleep"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
@@ -110,9 +119,11 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={zello_main}
           alt="Zello Sleep"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
       url: 'https://tidd.ly/4kCWecK',
+      cta: 'Shop Zello Sleep',
     },
     {
       title: 'Pure Earth Collection',
@@ -126,6 +137,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={pure_earth_collection_main}
           alt="Pure Earth Collection"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
@@ -134,9 +146,11 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={pure_earth_collection_main}
           alt="Pure Earth Collection"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
       url: 'https://tidd.ly/436fwA0',
+      cta: 'Shop Pure Earth',
     },
     {
       title: 'Thortful',
@@ -150,6 +164,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={thortful_main}
           alt="Thortful"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
@@ -158,9 +173,11 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={thortful_main}
           alt="Thortful"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
       url: 'https://thortful.pxf.io/GKJXqV',
+      cta: 'Browse Thortful Cards',
     },
   ];
 
@@ -177,20 +194,36 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
         <ImportantText message="Some of our links are affiliate links, which help support the app at no extra cost to you." />
       </PageContainerContentBottom>
       {gifts.map((gift, index) => (
-        <div className={baseClasses.root} style={{ marginTop: '20px' }}>
+        <div key={gift.title} className={baseClasses.root} style={{ marginTop: '20px' }}>
           <div className={baseClasses.body}>
             <div className={baseClasses.inner}>
               <div className={baseClasses.content}>
-                <ResponsiveTitle title={gift.title} />
+                <div className={baseClasses.flexRowNoBP}>
+                  <ResponsiveTitle title={gift.title} />
+                {gift.featured && (
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                    <Badge color="pink" variant="light">Featured</Badge>
+                  </div>
+                )}
+                </div>
                 <ResponsiveDescription description={gift.subtitle} marginTop={6} />
                 <Flex
-                  key={gift.title}
                   direction={{ base: 'column', md: index % 2 === 0 ? 'row' : 'row-reverse' }}
                   gap="xl"
                   align="center"
                   mt="md"
                 >
-                  <Box style={{ flexGrow: 1, width: '100%' }}>{gift.desktopImage}</Box>
+                  <Box style={{ flexGrow: 1, width: '100%' }}>
+                    <a
+                      href={gift.url}
+                      target="_blank"
+                      rel="sponsored noopener noreferrer"
+                      aria-label={`Visit ${gift.title}`}
+                      style={{ display: 'block' }}
+                    >
+                    {gift.desktopImage}
+                    </a>
+                  </Box>
                   <Box>
                     {gift.mobileImage}
                     <Text mb="sm" mt="md" size="sm" hiddenFrom="sm">
@@ -218,26 +251,28 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
                         href={gift.url}
                         target="_blank"
                         visibleFrom="md"
-                        rel="noopener noreferrer"
+                        rel="sponsored noopener noreferrer"
                         variant="light"
                         size="md"
                         radius="xl"
                         style={{ width: '50%' }}
+                        aria-label={`Visit ${gift.title}`}
                       >
-                        View Gift
+                        {gift.cta ?? 'View Gift'}
                       </Button>
                       <Button
                         component="a"
                         href={gift.url}
                         target="_blank"
                         hiddenFrom="md"
-                        rel="noopener noreferrer"
-                        variant="light"
+                        rel="sponsored noopener noreferrer"
+                        variant="filled"
                         size="md"
                         radius="xl"
                         style={{ width: '100%' }}
+                        aria-label={`Visit ${gift.title}`}
                       >
-                        View Gift
+                        {gift.cta ?? 'View Gift'}
                       </Button>
                     </div>
                   </Box>
