@@ -7,9 +7,9 @@ import { Box, Button, Flex, Image, Text } from '@mantine/core';
 import dbhf_main from './ads/dbhf/main.jpg';
 import my1styears_desktop from './ads/my1styears/desktop.jpg';
 import my1styears_main from './ads/my1styears/main.webp';
-import powfood_main from './ads/powfood/main.jpg';
+import etta_loves_main from './ads/etta-loves/img6-1699887317359.png'
+import thortful_main from './ads/thortful/Thortful_cover_photo.webp'
 import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
-import wildly_tasty_main from './ads/wildlytasty/main.webp';
 import zello_main from './ads/zello/main.jpg';
 import image from './Gifts.svg';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -41,6 +41,55 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
         />
       ),
       url: 'https://tidd.ly/3EL2r6X',
+    },
+    {
+      title: 'Etta Loves',
+      subtitle: 'Science-Backed Baby Essentials for Visual Development',
+      text: `Support ${birthingPersonName} with beautifully designed muslins, playmats and comforters that do more than look good. 
+  Etta Loves’ patterns are developed with an expert in infant vision, carefully crafted to stimulate little eyes and support cognitive development from day one. It’s a gift that combines practicality, comfort, and science-led care.`,
+      note: '👉 A thoughtful way to say: “Growing minds deserve beauty and science.”',
+      mobileImage: (
+        <Image
+          hiddenFrom="md"
+          src={etta_loves_main}
+          alt="Etta Loves"
+          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+        />
+      ),
+      desktopImage: (
+        <Image
+          visibleFrom="md"
+          src={etta_loves_main}
+          alt="Etta Loves"
+          style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+        />
+      ),
+      url: 'https://tidd.ly/4pfGfUR',
+    },
+    {
+      title: 'Don’t Buy Her Flowers',
+      subtitle: 'Thoughtful Hampers for New Mums',
+      text: `Because what most new mums really need isn’t flowers, it’s rest, care, and a little extra support.
+  
+  These beautifully curated gift boxes are packed with practical treats and calming comforts, from snacks and teas to cosy loungewear and skincare. Whether it’s for your partner, daughter, friend or colleague, this is the kind of TLC that truly helps.`,
+      note: '👉 A perfect way to say: “You’ve got this, and I’ve got you.”',
+      mobileImage: (
+        <Image
+          hiddenFrom="md"
+          src={dbhf_main}
+          alt="Don’t Buy Her Flowers"
+          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+        />
+      ),
+      desktopImage: (
+        <Image
+          visibleFrom="md"
+          src={dbhf_main}
+          alt="Don’t Buy Her Flowers"
+          style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+        />
+      ),
+      url: 'https://tidd.ly/3FHKzKi',
     },
     {
       title: 'Zello Sleep',
@@ -90,77 +139,28 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
       url: 'https://tidd.ly/436fwA0',
     },
     {
-      title: 'Don’t Buy Her Flowers',
-      subtitle: 'Thoughtful Hampers for New Mums',
-      text: `Because what most new mums really need isn’t flowers, it’s rest, care, and a little extra support.
-  
-  These beautifully curated gift boxes are packed with practical treats and calming comforts, from snacks and teas to cosy loungewear and skincare. Whether it’s for your partner, daughter, friend or colleague, this is the kind of TLC that truly helps.`,
-      note: '👉 A perfect way to say: “You’ve got this, and I’ve got you.”',
+      title: 'Thortful',
+      subtitle: 'Unique Cards & Thoughtful Touches for Every Occasion',
+      text: `Sometimes, the simplest gesture means the most. Thortful offers a huge collection of beautifully designed cards from independent creators, perfect for celebrating ${pluralisedBirthingPersonName} new journey into parenthood. 
+  Add a handwritten message, or include a little extra gift like chocolates or flowers, to make it even more personal.`,
+      note: '👉 A heartfelt way to say: “I’m thinking of you.”',
       mobileImage: (
         <Image
           hiddenFrom="md"
-          src={dbhf_main}
-          alt="Don’t Buy Her Flowers"
+          src={thortful_main}
+          alt="Thortful"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
         />
       ),
       desktopImage: (
         <Image
           visibleFrom="md"
-          src={dbhf_main}
-          alt="Don’t Buy Her Flowers"
+          src={thortful_main}
+          alt="Thortful"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
         />
       ),
-      url: 'https://tidd.ly/3FHKzKi',
-    },
-    {
-      title: 'PowFood',
-      subtitle: 'Nourishing Ready Meals for New Parents',
-      text: `Make life easier for ${birthingPersonName} with a week of balanced, chef-prepared meals and snacks. 
-  Frozen for freshness and designed for one-handed eating, these meals are faster and healthier than a takeaway and ready in just 30 minutes. Includes a helpful guide to postpartum nutrition to support recovery and energy.`,
-      note: '👉 A perfect way to say: “Take care of yourself.”',
-      mobileImage: (
-        <Image
-          hiddenFrom="md"
-          src={powfood_main}
-          alt="PowFood"
-          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
-        />
-      ),
-      desktopImage: (
-        <Image
-          visibleFrom="md"
-          src={powfood_main}
-          alt="PowFood"
-          style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
-        />
-      ),
-      url: 'https://tidd.ly/4lPGCDU',
-    },
-    {
-      title: 'Wildly Tasty',
-      subtitle: 'Delicious Family Meals, Ready in Minutes',
-      text: `Support the whole household with a bundle of family-friendly meals that take the pressure off cooking.
-  Packed with goodness and ready in minutes, these frozen meals help make those first few days easier for ${birthingPersonName} and their loved ones.`,
-      note: '👉 A great gift for keeping everyone fed and happy.',
-      mobileImage: (
-        <Image
-          hiddenFrom="md"
-          src={wildly_tasty_main}
-          alt="Wildly Tasty"
-          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
-        />
-      ),
-      desktopImage: (
-        <Image
-          visibleFrom="md"
-          src={wildly_tasty_main}
-          alt="Wildly Tasty"
-          style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
-        />
-      ),
-      url: 'https://tidd.ly/4jApK2H',
+      url: 'https://thortful.pxf.io/GKJXqV',
     },
   ];
 
