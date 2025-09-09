@@ -16,6 +16,9 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.4.3",
     "@hey-api/openapi-ts": "^0.60.1",
     "@mantine/carousel": "^7.17.1",
     "@mantine/charts": "^7.17.0",
@@ -48,6 +51,7 @@
     "workbox-window": "^7.3.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.4.3",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
