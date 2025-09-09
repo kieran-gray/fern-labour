@@ -36,7 +36,7 @@ export function FooterSimple() {
             <Link href="/">
               <img src="/logo/logo.svg" className={classes.icon} alt="Fern Logo" />
             </Link>
-            <Title order={3} className={classes.logoText}>
+            <Title order={2} className={classes.logoText}>
               Fern Labour
             </Title>
           </Group>
@@ -46,7 +46,7 @@ export function FooterSimple() {
           {footerSections.map((section, index) => (
             <Grid.Col key={index} span={{ base: 6, sm: 6 }}>
               <Stack gap="sm">
-                <Title order={4} className={classes.sectionTitle}>
+                <Title order={3} className={classes.sectionTitle}>
                   {section.title}
                 </Title>
                 <Stack gap="xs">

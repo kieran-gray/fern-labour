@@ -32,7 +32,7 @@
 .sectionTitle {
   color: var(--mantine-color-gray-9);
   font-size: var(--mantine-font-size-md);
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: var(--mantine-spacing-xs);
 }
 

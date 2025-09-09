@@ -1,4 +1,4 @@
-import Image from 'next/image';
+// Using a standard <img> with srcSet for responsive images
 import { motion } from 'motion/react';
 import { Box, Container, Stack, Text, Title } from '@mantine/core';
 import { JumboTitle } from '../JumboTitle/JumboTitle';
@@ -43,14 +43,20 @@ export const ProblemSolution = ({ features }: FeaturesProps) => {
                 <Container size="lg" className={classes.container}>
                   <div className={classes.inner}>
                     <Box className={classes.phoneContainer}>
-                      <Image
-                        src={`/images/features/desktop/${feature.imageBaseName}.webp`}
+                      <img
+                        src={`/images/features/563x1218/${feature.imageBaseName}.webp`}
+                        srcSet={`
+                          /images/features/281x609/${feature.imageBaseName}.webp 281w,
+                          /images/features/563x1218/${feature.imageBaseName}.webp 563w,
+                          /images/features/1125x2436/${feature.imageBaseName}.webp 1125w
+                        `}
+                        sizes="(max-width: 480px) 160px, (max-width: 768px) 200px, (max-width: 1200px) 240px, 280px"
                         alt={feature.screenshotAlt}
+                        className={classes.phoneImage}
+                        loading={index < 2 ? 'eager' : 'lazy'}
+                        decoding="async"
                         width={563}
                         height={1218}
-                        sizes="(max-width: 480px) 160px, (max-width: 768px) 200px, (max-width: 1200px) 240px, 280px"
-                        className={classes.phoneImage}
-                        priority={index < 2}
                       />
                     </Box>
 

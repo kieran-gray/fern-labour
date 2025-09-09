@@ -83,7 +83,7 @@ export function StatusUpdates({
   const completedDescription = `Here's where ${birthingPerson.first_name} kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`;
   const description = completed ? completedDescription : activeDescription;
   return (
-    <div className={baseClasses.root} style={{ maxHeight: 'calc(85% - 120px)' }}>
+    <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={baseClasses.inner}>
           <div className={classes.content}>
@@ -92,7 +92,7 @@ export function StatusUpdates({
             <Space h="lg" />
             {(renderedUpdates.length > 0 && (
               <>
-                <ScrollArea.Autosize mah="60svh" viewportRef={viewport}>
+                <ScrollArea.Autosize mah="calc(100dvh - 390px)" viewportRef={viewport}>
                   <div className={classes.statusUpdateContainer}>{renderedUpdates}</div>
                 </ScrollArea.Autosize>
                 <Space h="lg" />

@@ -3,13 +3,13 @@ import { PageContainerContentBottom } from '@shared/PageContainer/PageContainer'
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '@shared/utils';
-import { Box, Button, Flex, Image, Text } from '@mantine/core';
+import { Badge, Box, Button, Flex, Image, Text } from '@mantine/core';
 import dbhf_main from './ads/dbhf/main.jpg';
+import etta_loves_main from './ads/etta-loves/img6-1699887317359.png';
 import my1styears_desktop from './ads/my1styears/desktop.jpg';
 import my1styears_main from './ads/my1styears/main.webp';
-import powfood_main from './ads/powfood/main.jpg';
 import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
-import wildly_tasty_main from './ads/wildlytasty/main.webp';
+import thortful_main from './ads/thortful/Thortful_cover_photo.webp';
 import zello_main from './ads/zello/main.jpg';
 import image from './Gifts.svg';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -41,53 +41,35 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
         />
       ),
       url: 'https://tidd.ly/3EL2r6X',
+      cta: 'Shop My 1st Years',
+      featured: true,
     },
     {
-      title: 'Zello Sleep',
-      subtitle: 'White Noise Machines for Peaceful Nights',
-      text: `Zello’s beautifully designed white noise machines help babies fall asleep faster and stay asleep longer by mimicking the soothing sounds of the womb. Trusted by thousands of parents, they create a calm, consistent sleep environment that supports healthy bedtime routines for baby and the whole household.`,
-      note: '👉 A perfect way to say: “Rest easy, little one.”',
+      title: 'Etta Loves',
+      subtitle: 'Science-Backed Baby Essentials for Visual Development',
+      text: `Support ${birthingPersonName} with beautifully designed muslins, playmats and comforters that do more than look good. 
+  Etta Loves’ patterns are developed with an expert in infant vision, carefully crafted to stimulate little eyes and support cognitive development from day one. It’s a gift that combines practicality, comfort, and science-led care.`,
+      note: '👉 A thoughtful way to say: “Growing minds deserve beauty and science.”',
       mobileImage: (
         <Image
           hiddenFrom="md"
-          src={zello_main}
-          alt="Zello Sleep"
+          src={etta_loves_main}
+          alt="Etta Loves"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
         <Image
           visibleFrom="md"
-          src={zello_main}
-          alt="Zello Sleep"
+          src={etta_loves_main}
+          alt="Etta Loves"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
-      url: 'https://tidd.ly/4kCWecK',
-    },
-    {
-      title: 'Pure Earth Collection',
-      subtitle: 'Natural, Non-Toxic Products for Growing Families',
-      text: `From baby sleepwear to eco-friendly lunchboxes, Pure Earth Collection offers beautifully designed products made with your child’s health and the planet in mind.
-  Created by parents, for parents, their award-winning range uses only natural, biodegradable materials, completely free from harmful chemicals. It’s a thoughtful choice for anyone wanting safer, more sustainable essentials as little ones grow.`,
-      note: '👉 A meaningful way to say: “Healthy kids, healthy planet.”',
-      mobileImage: (
-        <Image
-          hiddenFrom="md"
-          src={pure_earth_collection_main}
-          alt="Pure Earth Collection"
-          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
-        />
-      ),
-      desktopImage: (
-        <Image
-          visibleFrom="md"
-          src={pure_earth_collection_main}
-          alt="Pure Earth Collection"
-          style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
-        />
-      ),
-      url: 'https://tidd.ly/436fwA0',
+      url: 'https://tidd.ly/4pfGfUR',
+      cta: 'Explore Etta Loves',
     },
     {
       title: 'Don’t Buy Her Flowers',
@@ -102,6 +84,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={dbhf_main}
           alt="Don’t Buy Her Flowers"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
@@ -110,57 +93,91 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
           src={dbhf_main}
           alt="Don’t Buy Her Flowers"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
       url: 'https://tidd.ly/3FHKzKi',
+      cta: 'Build a Gift Box',
     },
     {
-      title: 'PowFood',
-      subtitle: 'Nourishing Ready Meals for New Parents',
-      text: `Make life easier for ${birthingPersonName} with a week of balanced, chef-prepared meals and snacks. 
-  Frozen for freshness and designed for one-handed eating, these meals are faster and healthier than a takeaway and ready in just 30 minutes. Includes a helpful guide to postpartum nutrition to support recovery and energy.`,
-      note: '👉 A perfect way to say: “Take care of yourself.”',
+      title: 'Zello Sleep',
+      subtitle: 'White Noise Machines for Peaceful Nights',
+      text: `Zello’s beautifully designed white noise machines help babies fall asleep faster and stay asleep longer by mimicking the soothing sounds of the womb. Trusted by thousands of parents, they create a calm, consistent sleep environment that supports healthy bedtime routines for baby and the whole household.`,
+      note: '👉 A perfect way to say: “Rest easy, little one.”',
       mobileImage: (
         <Image
           hiddenFrom="md"
-          src={powfood_main}
-          alt="PowFood"
+          src={zello_main}
+          alt="Zello Sleep"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
         <Image
           visibleFrom="md"
-          src={powfood_main}
-          alt="PowFood"
+          src={zello_main}
+          alt="Zello Sleep"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
-      url: 'https://tidd.ly/4lPGCDU',
+      url: 'https://tidd.ly/4kCWecK',
+      cta: 'Shop Zello Sleep',
     },
     {
-      title: 'Wildly Tasty',
-      subtitle: 'Delicious Family Meals, Ready in Minutes',
-      text: `Support the whole household with a bundle of family-friendly meals that take the pressure off cooking.
-  Packed with goodness and ready in minutes, these frozen meals help make those first few days easier for ${birthingPersonName} and their loved ones.`,
-      note: '👉 A great gift for keeping everyone fed and happy.',
+      title: 'Pure Earth Collection',
+      subtitle: 'Natural, Non-Toxic Products for Growing Families',
+      text: `From baby sleepwear to eco-friendly lunchboxes, Pure Earth Collection offers beautifully designed products made with your child’s health and the planet in mind.
+  Created by parents, for parents, their award-winning range uses only natural, biodegradable materials, completely free from harmful chemicals. It’s a thoughtful choice for anyone wanting safer, more sustainable essentials as little ones grow.`,
+      note: '👉 A meaningful way to say: “Healthy kids, healthy planet.”',
       mobileImage: (
         <Image
           hiddenFrom="md"
-          src={wildly_tasty_main}
-          alt="Wildly Tasty"
+          src={pure_earth_collection_main}
+          alt="Pure Earth Collection"
           style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
         />
       ),
       desktopImage: (
         <Image
           visibleFrom="md"
-          src={wildly_tasty_main}
-          alt="Wildly Tasty"
+          src={pure_earth_collection_main}
+          alt="Pure Earth Collection"
           style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
         />
       ),
-      url: 'https://tidd.ly/4jApK2H',
+      url: 'https://tidd.ly/436fwA0',
+      cta: 'Shop Pure Earth',
+    },
+    {
+      title: 'Thortful',
+      subtitle: 'Unique Cards & Thoughtful Touches for Every Occasion',
+      text: `Sometimes, the simplest gesture means the most. Thortful offers a huge collection of beautifully designed cards from independent creators, perfect for celebrating ${pluralisedBirthingPersonName} new journey into parenthood. 
+  Add a handwritten message, or include a little extra gift like chocolates or flowers, to make it even more personal.`,
+      note: '👉 A heartfelt way to say: “I’m thinking of you.”',
+      mobileImage: (
+        <Image
+          hiddenFrom="md"
+          src={thortful_main}
+          alt="Thortful"
+          style={{ maxHeight: '250px', maxWidth: '320px', width: '100%', margin: 'auto' }}
+          loading="lazy"
+        />
+      ),
+      desktopImage: (
+        <Image
+          visibleFrom="md"
+          src={thortful_main}
+          alt="Thortful"
+          style={{ maxHeight: '400px', maxWidth: '450px', width: '100%' }}
+          loading="lazy"
+        />
+      ),
+      url: 'https://thortful.pxf.io/GKJXqV',
+      cta: 'Browse Thortful Cards',
     },
   ];
 
@@ -177,20 +194,38 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
         <ImportantText message="Some of our links are affiliate links, which help support the app at no extra cost to you." />
       </PageContainerContentBottom>
       {gifts.map((gift, index) => (
-        <div className={baseClasses.root} style={{ marginTop: '20px' }}>
+        <div key={gift.title} className={baseClasses.root} style={{ marginTop: '20px' }}>
           <div className={baseClasses.body}>
             <div className={baseClasses.inner}>
               <div className={baseClasses.content}>
-                <ResponsiveTitle title={gift.title} />
+                <div className={baseClasses.flexRowNoBP}>
+                  <ResponsiveTitle title={gift.title} />
+                  {gift.featured && (
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                      <Badge color="pink" variant="light">
+                        Featured
+                      </Badge>
+                    </div>
+                  )}
+                </div>
                 <ResponsiveDescription description={gift.subtitle} marginTop={6} />
                 <Flex
-                  key={gift.title}
                   direction={{ base: 'column', md: index % 2 === 0 ? 'row' : 'row-reverse' }}
                   gap="xl"
                   align="center"
                   mt="md"
                 >
-                  <Box style={{ flexGrow: 1, width: '100%' }}>{gift.desktopImage}</Box>
+                  <Box style={{ flexGrow: 1, width: '100%' }}>
+                    <a
+                      href={gift.url}
+                      target="_blank"
+                      rel="sponsored noopener noreferrer"
+                      aria-label={`Visit ${gift.title}`}
+                      style={{ display: 'block' }}
+                    >
+                      {gift.desktopImage}
+                    </a>
+                  </Box>
                   <Box>
                     {gift.mobileImage}
                     <Text mb="sm" mt="md" size="sm" hiddenFrom="sm">
@@ -218,26 +253,28 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
                         href={gift.url}
                         target="_blank"
                         visibleFrom="md"
-                        rel="noopener noreferrer"
+                        rel="sponsored noopener noreferrer"
                         variant="light"
                         size="md"
                         radius="xl"
                         style={{ width: '50%' }}
+                        aria-label={`Visit ${gift.title}`}
                       >
-                        View Gift
+                        {gift.cta ?? 'View Gift'}
                       </Button>
                       <Button
                         component="a"
                         href={gift.url}
                         target="_blank"
                         hiddenFrom="md"
-                        rel="noopener noreferrer"
-                        variant="light"
+                        rel="sponsored noopener noreferrer"
+                        variant="filled"
                         size="md"
                         radius="xl"
                         style={{ width: '100%' }}
+                        aria-label={`Visit ${gift.title}`}
                       >
-                        View Gift
+                        {gift.cta ?? 'View Gift'}
                       </Button>
                     </div>
                   </Box>

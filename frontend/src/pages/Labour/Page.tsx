@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NotFoundError, PermissionDenied } from '@base/Errors';
+import { useNetworkState } from '@base/offline/sync/networkDetector.ts';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
 import { useCurrentLabour } from '@shared/hooks';
@@ -38,6 +39,7 @@ const tabOrder = TABS.map((tab) => tab.id);
 
 export const LabourPage = () => {
   const navigate = useNavigate();
+  const { isOnline } = useNetworkState();
   const { labourId, setLabourId } = useLabour();
   const [searchParams, setSearchParams] = useSearchParams();
   const labourIdParam = searchParams.get('labourId');
@@ -121,12 +123,9 @@ export const LabourPage = () => {
   const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
 
   const getFloatingControlsPadding = () => {
-    // No padding needed on desktop since controls are inline and there's no bottom navigation
-    if (window.innerWidth >= 768) {
-      // Mantine breakpoint-sm
+    if (window.innerWidth >= 768 || completed) {
       return '30px';
     }
-
     if (activeTab === 'track') {
       if (!isContractionControlsExpanded) {
         return '50px';
@@ -135,7 +134,10 @@ export const LabourPage = () => {
     }
 
     if (activeTab === 'updates') {
-      return isUpdateControlsExpanded ? '265px' : '50px';
+      if (isUpdateControlsExpanded) {
+        return isOnline ? '265px' : '120px';
+      }
+      return '55px';
     }
   };
 
