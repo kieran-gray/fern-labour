@@ -1,5 +1,4 @@
 import '@mantine/core/styles.css';
-import '@mantine/carousel/styles.css';
 import '../styles/globals.css';
 
 import type { AppProps } from 'next/app';

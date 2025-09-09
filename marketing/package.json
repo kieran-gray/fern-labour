@@ -20,7 +20,6 @@
     "test": "npm run prettier:check && npm run lint && npm run typecheck"
   },
   "dependencies": {
-    "@mantine/carousel": "^7.17.2",
     "@mantine/core": "^7.17.2",
     "@mantine/form": "^7.17.2",
     "@mantine/hooks": "^7.17.2",
@@ -29,7 +28,6 @@
     "@tsparticles/engine": "^3.8.1",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
-    "embla-carousel-react": "^7.1.0",
     "motion": "^12.4.7",
     "next": "^15.2.4",
     "react": "^18.3.1",

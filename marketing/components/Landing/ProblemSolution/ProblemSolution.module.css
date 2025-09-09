@@ -129,16 +129,6 @@
   }
 }
 
-.smallImage {
-  display: none;
-}
-
-.flexRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-
 .description {
   font-size: 18px;
   line-height: 1.6;
