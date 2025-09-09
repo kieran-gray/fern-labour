@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NotFoundError, PermissionDenied } from '@base/Errors';
+import { useNetworkState } from '@base/offline/sync/networkDetector.ts';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
 import { useCurrentLabour } from '@shared/hooks';
@@ -25,7 +26,6 @@ import { FloatingContractionControls } from './Tabs/Track/FloatingContractionCon
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls.tsx';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
 import baseClasses from '@shared/shared-styles.module.css';
-import { useNetworkState } from '@base/offline/sync/networkDetector.ts';
 
 const TABS = [
   { id: 'details', label: 'Manage', icon: IconSettings },

@@ -5,11 +5,11 @@ import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '@shared/utils';
 import { Badge, Box, Button, Flex, Image, Text } from '@mantine/core';
 import dbhf_main from './ads/dbhf/main.jpg';
+import etta_loves_main from './ads/etta-loves/img6-1699887317359.png';
 import my1styears_desktop from './ads/my1styears/desktop.jpg';
 import my1styears_main from './ads/my1styears/main.webp';
-import etta_loves_main from './ads/etta-loves/img6-1699887317359.png'
-import thortful_main from './ads/thortful/Thortful_cover_photo.webp'
 import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
+import thortful_main from './ads/thortful/Thortful_cover_photo.webp';
 import zello_main from './ads/zello/main.jpg';
 import image from './Gifts.svg';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -200,11 +200,13 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
               <div className={baseClasses.content}>
                 <div className={baseClasses.flexRowNoBP}>
                   <ResponsiveTitle title={gift.title} />
-                {gift.featured && (
-                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
-                    <Badge color="pink" variant="light">Featured</Badge>
-                  </div>
-                )}
+                  {gift.featured && (
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                      <Badge color="pink" variant="light">
+                        Featured
+                      </Badge>
+                    </div>
+                  )}
                 </div>
                 <ResponsiveDescription description={gift.subtitle} marginTop={6} />
                 <Flex
@@ -221,7 +223,7 @@ export default function Gifts({ birthingPersonName }: { birthingPersonName: stri
                       aria-label={`Visit ${gift.title}`}
                       style={{ display: 'block' }}
                     >
-                    {gift.desktopImage}
+                      {gift.desktopImage}
                     </a>
                   </Box>
                   <Box>
