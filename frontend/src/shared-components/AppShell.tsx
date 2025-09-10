@@ -55,7 +55,6 @@ export const AppShell = ({ children, navItems, activeNav, onNavChange }: AppShel
           overflowY: 'auto',
           overflowX: 'hidden',
           WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorY: 'contain',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'stretch',

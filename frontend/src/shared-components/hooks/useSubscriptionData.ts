@@ -29,6 +29,7 @@ export function useSubscriberSubscriptions() {
       }
     },
     enabled: !!user?.profile.sub,
+    refetchOnMount: 'always',
   });
 }
 
@@ -50,6 +51,7 @@ export function useLabourSubscriptions(labourId: string) {
       }
     },
     enabled: !!user?.profile.sub,
+    refetchOnMount: 'always',
   });
 }
 
@@ -74,6 +76,7 @@ export function useSubscriptionById(subscriptionId: string) {
       }
     },
     enabled: !!subscriptionId && !!user?.profile.sub,
+    refetchOnMount: 'always',
   });
 }
 
