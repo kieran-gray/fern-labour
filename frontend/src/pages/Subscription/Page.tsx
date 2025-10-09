@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useSubscriptionById } from '@base/shared-components/hooks/useSubscriptionData.ts';
+import { useSubscription } from '@base/contexts/SubscriptionContext';
+import { useSubscriptionById } from '@base/shared-components/hooks/useSubscriptionData';
 import { AppShell } from '@shared/AppShell';
-import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
-import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
-import { pluraliseName } from '@shared/utils.tsx';
+import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
+import { PageLoading } from '@shared/PageLoading/PageLoading';
+import { pluraliseName } from '@shared/utils';
 import {
   IconChartHistogram,
   IconMessage,
@@ -14,15 +15,14 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Center, Space } from '@mantine/core';
-import { InviteContainer } from '../Subscriptions/Components/InviteContainer/InviteContainer.tsx';
-import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions.tsx';
-import { PayWall } from './Paywall/PayWall.tsx';
-import { useSubscription } from './SubscriptionContext.tsx';
-import Gifts from './Tabs/Gifts/Gifts.tsx';
-import ContactMethods from './Tabs/LabourDetails/ContactMethods.tsx';
-import LabourDetails from './Tabs/LabourDetails/LabourDetails.tsx';
-import { StatusUpdates } from './Tabs/LabourUpdates/LabourUpdates.tsx';
-import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
+import { InviteContainer } from '../Subscriptions/Components/InviteContainer/InviteContainer';
+import { SubscriptionsContainer } from '../Subscriptions/Components/ManageSubscriptions/ManageSubscriptions';
+import { PayWall } from './Paywall/PayWall';
+import Gifts from './Tabs/Gifts/Gifts';
+import ContactMethods from './Tabs/LabourDetails/ContactMethods';
+import LabourDetails from './Tabs/LabourDetails/LabourDetails';
+import { StatusUpdates } from './Tabs/LabourUpdates/LabourUpdates';
+import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [

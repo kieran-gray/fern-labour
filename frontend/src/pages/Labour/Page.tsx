@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { NotFoundError, PermissionDenied } from '@base/Errors';
-import { useNetworkState } from '@base/offline/sync/networkDetector.ts';
+import { useLabour } from '@base/contexts/LabourContext';
+import { NotFoundError, PermissionDenied } from '@base/lib/errors';
+import { useNetworkState } from '@base/offline/sync/networkDetector';
 import { AppShell } from '@shared/AppShell';
-import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
+import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
 import { useCurrentLabour } from '@shared/hooks';
-import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
+import { PageLoading } from '@shared/PageLoading/PageLoading';
 import {
   IconChartHistogram,
   IconMessage,
@@ -15,16 +16,15 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space } from '@mantine/core';
-import { CompletedLabourContainer } from '../CompletedLabour/Page.tsx';
-import { useLabour } from './LabourContext.tsx';
-import { Share } from './Tabs/Invites/Share.tsx';
-import { LabourControls } from './Tabs/Manage/LabourControls.tsx';
-import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubscribers.tsx';
-import { LabourStatistics } from './Tabs/Statistics/LabourStatistics.tsx';
-import { Contractions } from './Tabs/Track/Contractions.tsx';
-import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls.tsx';
-import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls.tsx';
-import { LabourUpdates } from './Tabs/Updates/LabourUpdates.tsx';
+import { CompletedLabourContainer } from '../CompletedLabour/Page';
+import { Share } from './Tabs/Invites/Share';
+import { LabourControls } from './Tabs/Manage/LabourControls';
+import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubscribers';
+import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
+import { Contractions } from './Tabs/Track/Contractions';
+import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls';
+import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
+import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [

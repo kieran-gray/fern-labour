@@ -1,10 +1,10 @@
-import { NotFoundError } from '@base/Errors.tsx';
-import { ApiError } from '@clients/labour_service/index.ts';
+import { NotFoundError } from '@base/lib/errors';
+import { ApiError } from '@clients/labour_service/index';
 import { AppShell } from '@shared/AppShell';
-import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer.tsx';
-import { useActiveLabour } from '@shared/hooks/index.ts';
-import { PageLoading } from '@shared/PageLoading/PageLoading.tsx';
-import Plan from './Components/Plan/Plan.tsx';
+import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
+import { useActiveLabour } from '@shared/hooks/index';
+import { PageLoading } from '@shared/PageLoading/PageLoading';
+import Plan from './Components/Plan/Plan';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export const OnboardingPage = () => {

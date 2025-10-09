@@ -1,46 +1,10 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
+import { AppMode, useMode } from '@base/contexts/AppModeContext';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { IconBabyCarriage, IconBulb, IconHeart } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Text, ThemeIcon, Title } from '@mantine/core';
 import classes from './SelectAppMode.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-
-export enum AppMode {
-  Subscriber = 'Subscriber',
-  Birth = 'Birth',
-}
-
-interface ModeContextType {
-  mode: AppMode | null;
-  setMode: (mode: AppMode) => void;
-}
-
-const ModeContext = createContext<ModeContextType | undefined>(undefined);
-
-export const ModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useApiAuth();
-  const userId = user?.profile.sub;
-  const [mode, setMode] = useState<AppMode | null>(() => {
-    const stored = localStorage.getItem(`${userId}:appMode`);
-    return stored === AppMode.Birth || stored === AppMode.Subscriber ? stored : null;
-  });
-
-  useEffect(() => {
-    localStorage.setItem(`${userId}:appMode`, mode || '');
-  }, [mode]);
-
-  return <ModeContext.Provider value={{ mode, setMode }}>{children}</ModeContext.Provider>;
-};
-
-export const useMode = () => {
-  const context = useContext(ModeContext);
-  if (context === undefined) {
-    throw new Error('useMode must be used within a ModeProvider');
-  }
-  return context;
-};
 
 export function SelectAppMode() {
   const navigate = useNavigate();
@@ -65,7 +29,7 @@ export function SelectAppMode() {
                   description={
                     <>
                       Whether you're tracking your own labour journey or following and supporting
-                      someone special, you’re in the right place.
+                      someone special, you're in the right place.
                     </>
                   }
                   marginTop={10}
@@ -102,7 +66,7 @@ export function SelectAppMode() {
                     </Badge>
                   </div>
                   <Title order={3} className={classes.tileTitle}>
-                    I’m expecting
+                    I'm expecting
                   </Title>
                   <Text size="sm" className={classes.tileSub} id="expecting-sub">
                     Track contractions, invite family & friends, share updates.
@@ -138,7 +102,7 @@ export function SelectAppMode() {
                     </Badge>
                   </div>
                   <Title order={3} className={classes.tileTitle}>
-                    I’m supporting
+                    I'm supporting
                   </Title>
                   <Text size="sm" className={classes.tileSub} id="supporting-sub">
                     Get timely updates and know how to help.

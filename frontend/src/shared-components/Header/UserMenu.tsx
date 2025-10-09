@@ -1,4 +1,5 @@
 import { forwardRef, useState } from 'react';
+import { AppMode, useMode } from '@base/contexts/AppModeContext';
 import {
   IconArrowLeft,
   IconHistory,
@@ -24,7 +25,6 @@ import {
   UnstyledButton,
   useMantineColorScheme,
 } from '@mantine/core';
-import { AppMode, useMode } from '../../pages/Home/SelectAppMode';
 import classes from './Header.module.css';
 
 interface UserButtonProps extends React.ComponentPropsWithoutRef<'button'> {

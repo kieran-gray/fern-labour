@@ -2,7 +2,7 @@ import {
   CONTACT_MESSAGE_MAX_LENGTH,
   EMAIL_MAX_LENGTH,
   LABOUR_NAME_MAX_LENGTH,
-} from '@base/constants';
+} from '@base/lib/constants';
 import { validateEmail, validateLabourName, validateMessage } from './utils';
 
 describe('validateEmail', () => {

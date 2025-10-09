@@ -1,8 +1,9 @@
-import { LabourPage } from '@labour/Page.tsx';
+import { AppMode, useMode } from '@base/contexts/AppModeContext';
+import { SubscriptionProvider } from '@base/contexts/SubscriptionContext';
+import { LabourPage } from '@labour/Page';
 import { AppShell } from '@shared/AppShell';
-import { AppMode, SelectAppMode, useMode } from '../Home/SelectAppMode.tsx';
-import { SubscriptionProvider } from '../Subscription/SubscriptionContext.tsx';
-import { SubscriptionsPage } from '../Subscriptions/Page.tsx';
+import { SubscriptionsPage } from '../Subscriptions/Page';
+import { SelectAppMode } from './SelectAppMode';
 
 export const HomePage = () => {
   const { mode } = useMode();

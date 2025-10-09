@@ -1,6 +1,6 @@
 import { RefObject } from 'react';
+import { useLabour } from '@base/contexts/LabourContext';
 import { ContractionDTO } from '@clients/labour_service';
-import { useLabour } from '@labour/LabourContext';
 import { useStartContraction } from '@shared/hooks';
 import { IconHourglassLow } from '@tabler/icons-react';
 import { Button } from '@mantine/core';

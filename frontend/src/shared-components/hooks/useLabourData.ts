@@ -1,4 +1,4 @@
-import { NotFoundError, PermissionDenied } from '@base/Errors';
+import { NotFoundError, PermissionDenied } from '@base/lib/errors';
 import {
   ApiError,
   CompleteLabourRequest,

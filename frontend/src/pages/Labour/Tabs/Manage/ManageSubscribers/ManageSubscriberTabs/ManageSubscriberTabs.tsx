@@ -1,4 +1,4 @@
-import { useLabour } from '@base/pages/Labour/LabourContext';
+import { useLabour } from '@base/contexts/LabourContext';
 import { SubscriptionDTO } from '@clients/labour_service';
 import { useLabourSubscriptions } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';

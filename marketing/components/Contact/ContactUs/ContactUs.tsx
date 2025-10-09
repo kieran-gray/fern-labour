@@ -17,12 +17,8 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import {
-  validateEmail,
-  validateMessage,
-  validateName,
-} from '../../FormValidation/FormValidation.tsx';
-import { ContactIconsList } from './ContactIcons.tsx';
+import { validateEmail, validateMessage, validateName } from '../../FormValidation/FormValidation';
+import { ContactIconsList } from './ContactIcons';
 import classes from './ContactUs.module.css';
 
 const categories = [

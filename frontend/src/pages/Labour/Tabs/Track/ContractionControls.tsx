@@ -1,8 +1,8 @@
 import { useRef } from 'react';
-import { ContractionDTO, LabourDTO } from '@clients/labour_service/index.ts';
-import { ActiveContractionControls } from './ActiveContractionControls.tsx';
-import StartContractionButton from './StartContractionButton.tsx';
-import { StopwatchHandle } from './Stopwatch/Stopwatch.tsx';
+import { ContractionDTO, LabourDTO } from '@clients/labour_service/index';
+import { ActiveContractionControls } from './ActiveContractionControls';
+import StartContractionButton from './StartContractionButton';
+import { StopwatchHandle } from './Stopwatch/Stopwatch';
 
 interface ContractionControlsProps {
   labour: LabourDTO;

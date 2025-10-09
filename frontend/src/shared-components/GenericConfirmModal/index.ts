@@ -1,0 +1,1 @@
+export { GenericConfirmModal } from './GenericConfirmModal';

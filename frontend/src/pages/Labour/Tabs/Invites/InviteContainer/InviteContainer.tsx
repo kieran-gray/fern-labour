@@ -1,4 +1,4 @@
-import { useLabour } from '@labour/LabourContext';
+import { useLabour } from '@base/contexts/LabourContext';
 import { useApiAuth, useSendLabourInvite } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
