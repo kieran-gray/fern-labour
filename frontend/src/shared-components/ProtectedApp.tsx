@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { useNetworkState } from '@base/offline/sync/networkDetector.ts';
+import { useNetworkState } from '@base/offline/sync/networkDetector';
 import { hasAuthParams, useAuth } from 'react-oidc-context';
-import { ErrorContainer } from './ErrorContainer/ErrorContainer.tsx';
-import { PageLoading } from './PageLoading/PageLoading.tsx';
+import { ErrorContainer } from './ErrorContainer/ErrorContainer';
+import { PageLoading } from './PageLoading/PageLoading';
 
 interface ProtectedAppProps {
   children: ReactNode;

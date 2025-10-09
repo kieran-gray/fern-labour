@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { UserManager, WebStorageStateStore } from 'oidc-client-ts';
-import { appRoutes } from './constants';
+import { appRoutes } from '../lib/constants';
 
 export const userManager = new UserManager({
   authority: import.meta.env.VITE_KEYCLOAK_AUTHORITY,

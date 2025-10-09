@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { userManager } from '../config';
+import { userManager } from '../config/index';
 
 export function SilentRedirect() {
   useEffect(() => {

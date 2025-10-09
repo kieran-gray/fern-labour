@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { LABOUR_UPDATE_MAX_LENGTH } from '@base/constants';
+import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
 import { Button, Modal, Space, Textarea } from '@mantine/core';
 import classes from '@shared/Modal.module.css';
 import baseClasses from '@shared/shared-styles.module.css';

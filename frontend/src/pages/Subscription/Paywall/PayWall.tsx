@@ -1,9 +1,9 @@
+import { useSubscription } from '@base/contexts/SubscriptionContext';
 import { useApiAuth, useCreateCheckoutSession } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowUp } from '@tabler/icons-react';
 import { Button, Image, Text } from '@mantine/core';
-import { useSubscription } from '../SubscriptionContext';
 import image from './ShareMore.svg';
 import classes from './PayWall.module.css';
 import baseClasses from '@shared/shared-styles.module.css';

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { LabourDTO } from '@clients/labour_service/index.ts';
+import { LabourDTO } from '@clients/labour_service/index';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { ActionIcon } from '@mantine/core';
-import { LabourUpdateControls } from './LabourUpdateControls.tsx';
+import { LabourUpdateControls } from './LabourUpdateControls';
 import classes from './FloatingLabourUpdateControls.module.css';
 
 interface FloatingLabourUpdateControlsProps {

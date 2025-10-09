@@ -1,0 +1,1 @@
+export { ResponsiveTitle } from './ResponsiveTitle';

@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useApiAuth } from '@base/shared-components/hooks/useApiAuth.ts';
-import { useSubmitContactForm } from '@base/shared-components/hooks/useContactData.ts';
-import { validateMessage } from '@base/shared-components/utils.tsx';
-import { ContactUsRequest } from '@clients/contact_service/types.gen.ts';
-import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription.tsx';
-import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle.tsx';
+import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
+import { useSubmitContactForm } from '@base/shared-components/hooks/useContactData';
+import { validateMessage } from '@base/shared-components/utils';
+import { ContactUsRequest } from '@clients/contact_service/types.gen';
+import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconInfoCircle } from '@tabler/icons-react';
 import Turnstile from 'react-turnstile';
 import {
@@ -21,7 +21,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { ContactIconsList } from './ContactIcons.tsx';
+import { ContactIconsList } from './ContactIcons';
 import classes from './ContactUs.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 

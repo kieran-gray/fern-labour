@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLabour } from '@base/pages/Labour/LabourContext';
+import { useLabour } from '@base/contexts/LabourContext';
 import { GenericConfirmModal } from '@base/shared-components/GenericConfirmModal/GenericConfirmModal';
 import { useCompleteLabour } from '@shared/hooks';
 import { IconConfetti } from '@tabler/icons-react';

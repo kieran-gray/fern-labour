@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
+import { useSubscription } from '@base/contexts/SubscriptionContext';
 import { useSubscriberSubscriptions } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
-import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconArrowRight, IconX } from '@tabler/icons-react';
 import { Avatar, Button, Group, Table, Text } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';

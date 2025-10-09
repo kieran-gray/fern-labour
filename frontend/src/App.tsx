@@ -7,8 +7,8 @@ import './styles.css';
 
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
-import { ModeProvider } from './pages/Home/SelectAppMode';
-import { LabourProvider } from './pages/Labour/LabourContext';
+import { ModeProvider } from './contexts/AppModeContext';
+import { LabourProvider } from './contexts/LabourContext';
 import { Router } from './Router';
 import { theme } from './theme';
 

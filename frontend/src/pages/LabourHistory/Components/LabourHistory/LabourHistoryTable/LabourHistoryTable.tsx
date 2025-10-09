@@ -1,4 +1,4 @@
-import { useLabour } from '@labour/LabourContext';
+import { useLabour } from '@base/contexts/LabourContext';
 import { useLabourHistory, useRefreshLabourData } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';

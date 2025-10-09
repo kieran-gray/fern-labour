@@ -1,9 +1,9 @@
+import { AppMode, useMode } from '@base/contexts/AppModeContext';
 import { SubscribeToRequest } from '@clients/labour_service';
 import { useSubscribeTo } from '@shared/hooks';
 import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { AppMode, useMode } from '../../Home/SelectAppMode';
 import image from './protected.svg';
 import classes from './Form.module.css';
 import baseClasses from '@shared/shared-styles.module.css';

@@ -1,4 +1,4 @@
-import { useLabour } from '@labour/LabourContext';
+import { useLabour } from '@base/contexts/LabourContext';
 import { useSubscriptionToken } from '@shared/hooks';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';

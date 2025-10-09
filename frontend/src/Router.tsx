@@ -1,13 +1,13 @@
 import { Route, Routes } from 'react-router-dom';
 import { SilentRedirect } from './auth/SilentRedirect';
-import { appRoutes } from './constants.ts';
-import { CompletedLabourPage } from './pages/CompletedLabour/Page.tsx';
-import { ContactPage } from './pages/Contact/Page.tsx';
-import { HomePage } from './pages/Home/Page.tsx';
-import { LabourHistoryPage } from './pages/LabourHistory/Page.tsx';
-import { NotFoundPage } from './pages/NotFound/Page.tsx';
-import { OnboardingPage } from './pages/Onboarding/Onboarding.tsx';
-import { SubscribePage } from './pages/Subscribe/Page.tsx';
+import { appRoutes } from './lib/constants';
+import { CompletedLabourPage } from './pages/CompletedLabour/Page';
+import { ContactPage } from './pages/Contact/Page';
+import { HomePage } from './pages/Home/Page';
+import { LabourHistoryPage } from './pages/LabourHistory/Page';
+import { NotFoundPage } from './pages/NotFound/Page';
+import { OnboardingPage } from './pages/Onboarding/Onboarding';
+import { SubscribePage } from './pages/Subscribe/Page';
 
 export function Router() {
   return (

@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { useSubscription } from '@base/contexts/SubscriptionContext';
 import { useUnsubscribeFrom } from '@base/shared-components/hooks/useSubscriptionData';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { useSubscription } from '@subscription/SubscriptionContext';
 import { IconDots, IconUserMinus } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
 import baseClasses from '@shared/shared-styles.module.css';

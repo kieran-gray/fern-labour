@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { LABOUR_UPDATE_MAX_LENGTH } from '@base/constants';
+import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
 import { useNetworkState } from '@base/offline/hooks';
 import { LabourUpdateType } from '@clients/labour_service';
 import { useCreateLabourUpdate } from '@shared/hooks';
