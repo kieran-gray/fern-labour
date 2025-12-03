@@ -1,0 +1,55 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "fern-labour-admin",
+  "main": "worker/index.ts",
+  "compatibility_date": "2025-11-25",
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "workers_dev": true,
+  "placement": {
+    "mode": "smart"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true
+    },
+    "traces": {
+      "enabled": true
+    }
+  },
+  "services": [
+    {
+      "binding": "CONTACT_US_API",
+      "service": "fern-labour-contact-us"
+    },
+    {
+      "binding": "NOTIFICATIONS_API",
+      "service": "fern-labour-notifications-worker"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "CONTACT_US_API_URL": "https://contact.fernlabour.com",
+    "NOTIFICATIONS_API_URL": "https://notifications.fernlabour.com"
+  },
+  "env": {
+    "dev": {
+      "services": [
+        {
+          "binding": "CONTACT_US_API",
+          "service": "fern-labour-contact-us-dev"
+        },
+        {
+          "binding": "NOTIFICATIONS_API",
+          "service": "fern-labour-notifications-worker-dev"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "production",
+        "CONTACT_US_API_URL": "https://contact.fernlabour.com",
+        "NOTIFICATIONS_API_URL": "https://notifications.fernlabour.com"
+      },
+    }
+  }
+}

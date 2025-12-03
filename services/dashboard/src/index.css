@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+@source "../../../../packages/ui/src";
+
+@theme {
+  /* Cassette Futurism Color Palette (Light Mode) */
+  --color-cp-beige: rgb(235 235 211);
+  --color-cp-paper: rgb(253 246 227);
+  --color-cp-black: rgb(16 16 16);
+  --color-cp-charcoal: rgb(43 43 43);
+  --color-cp-gray: rgb(107 114 128);
+  --color-cp-orange: rgb(255 95 0);
+  --color-cp-green: rgb(0 143 17);
+  --color-cp-blue: rgb(0 95 153);
+
+  /* Shadcn UI compatibility - map to cassette colors */
+  --color-background: rgb(235 235 211);
+  --color-foreground: rgb(43 43 43);
+  --color-card: rgb(253 246 227);
+  --color-card-foreground: rgb(43 43 43);
+  --color-popover: rgb(253 246 227);
+  --color-popover-foreground: rgb(43 43 43);
+  --color-primary: rgb(16 16 16);
+  --color-primary-foreground: rgb(253 246 227);
+  --color-secondary: rgb(235 235 211);
+  --color-secondary-foreground: rgb(43 43 43);
+  --color-muted: rgb(235 235 211);
+  --color-muted-foreground: rgb(107 114 128);
+  --color-accent: rgb(255 95 0);
+  --color-accent-foreground: rgb(253 246 227);
+  --color-destructive: rgb(220 38 38);
+  --color-destructive-foreground: rgb(253 246 227);
+  --color-border: rgb(16 16 16);
+  --color-input: rgb(253 246 227);
+  --color-ring: rgb(255 95 0);
+
+  /* Status colors */
+  --color-success: rgb(0 143 17);
+  --color-info: rgb(0 95 153);
+  --color-warning: rgb(255 95 0);
+
+  /* Fonts - Monospace for terminal aesthetic */
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+  --font-retro: "VT323", monospace;
+
+  /* Border radius - None for cassette aesthetic */
+  --radius: 0;
+  --radius-lg: 0;
+  --radius-md: 0;
+  --radius-sm: 0;
+
+  /* Line Height */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --default-line-height: 1.5;
+
+  /* Box Shadows - Hard shadows for brutalist look */
+  --shadow-hard: 4px 4px 0px 0px rgb(16 16 16);
+  --shadow-hard-sm: 2px 2px 0px 0px rgb(16 16 16);
+}
+
+/* Dark Mode - "Bunker Protocol" Theme */
+.dark {
+  /* Cassette Futurism Dark Mode - CRT Monitors & Dark Industrial Casings */
+  --color-cp-beige: rgb(24, 24, 24);
+  --color-cp-paper: rgb(28 28 28);
+  --color-cp-black: rgb(110, 110, 110);
+  --color-cp-black-border: rgb(50, 50, 50);
+  --color-cp-charcoal: rgb(218, 218, 218);
+  --color-cp-gray: rgb(140 140 140);
+  --color-cp-orange: rgb(255 176 0);
+  --color-cp-green: rgb(70 255 70);
+  --color-cp-blue: rgb(0 200 255);
+
+  /* Shadcn UI compatibility - map to dark cassette colors */
+  --color-background: rgb(15 15 15);
+  --color-foreground: rgb(245 245 245);
+  --color-card: rgb(28 28 28);
+  --color-card-foreground: rgb(245 245 245);
+  --color-popover: rgb(28 28 28);
+  --color-popover-foreground: rgb(245 245 245);
+  --color-primary: rgb(245 245 245);
+  --color-primary-foreground: rgb(28 28 28);
+  --color-secondary: rgb(80 80 80);
+  --color-secondary-foreground: rgb(245 245 245);
+  --color-muted: rgb(28 28 28);
+  --color-muted-foreground: rgb(140 140 140);
+  --color-accent: rgb(255 176 0);
+  --color-accent-foreground: rgb(28 28 28);
+  --color-destructive: rgb(255 70 70);
+  --color-destructive-foreground: rgb(245 245 245);
+  --color-border: rgb(80 80 80);
+  --color-input: rgb(28 28 28);
+  --color-ring: rgb(255 176 0);
+
+  /* Status colors - Dark Mode */
+  --color-success: rgb(70 255 70);
+  --color-info: rgb(0 200 255);
+  --color-warning: rgb(255 176 0);
+
+  /* Box Shadows - Dark Mode with subtle glow */
+  --shadow-hard: 4px 4px 0px 0px rgb(80 80 80);
+  --shadow-hard-sm: 2px 2px 0px 0px rgb(80 80 80);
+  --shadow-glow: 0px 0px 10px 0px rgba(255 176 0 / 0.4);
+}
+
+/* Global body styles */
+body {
+  background-color: rgb(235 235 211);
+  background-image: radial-gradient(rgb(107 114 128) 1px, transparent 1px);
+  background-size: 20px 20px;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  min-height: 100vh;
+}
+
+/* Dark Mode body styles */
+.dark body {
+  background-color: rgb(15 15 15);
+  background-image: radial-gradient(rgb(80 80 80) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* CRT Scanline Overlay - Light Mode */
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.05) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* CRT Scanline Overlay - Dark Mode */
+.dark .scanlines::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.02) 50%
+  );
+  background-size: 100% 3px;
+}
+
+/* Utility classes */
+@utility shadow-hard {
+  box-shadow: 4px 4px 0px 0px rgb(16 16 16);
+}
+
+@utility shadow-hard-sm {
+  box-shadow: 2px 2px 0px 0px rgb(16 16 16);
+}
+
+@utility shadow-glow {
+  box-shadow: 0px 0px 10px 0px rgba(255 176 0 / 0.3);
+}
+
+@utility border-3 {
+  border-width: 3px;
+}
+
+/* Text Glow Effect for Dark Mode */
+@utility text-glow {
+  text-shadow: 0 0 5px rgba(255, 176, 0, 0.5), 0 0 10px rgba(255, 176, 0, 0.3);
+}
+
+/* Dark Mode shadow overrides */
+.dark {
+  & .shadow-hard {
+    box-shadow: 4px 4px 0px 0px rgb(80 80 80);
+  }
+
+  & .shadow-hard-sm {
+    box-shadow: 2px 2px 0px 0px rgb(80 80 80);
+  }
+
+  & .border-cp-black {
+    border-color: rgb(50, 50, 50);
+  }
+}
+
+/* Dark Mode accent color glow effects */
+.dark .text-cp-orange {
+  text-shadow: 0 0 3px rgba(255, 176, 0, 0.5), 0 0 7px rgba(255, 176, 0, 0.3);
+}
+
+.dark .text-cp-blue {
+  text-shadow: 0 0 3px rgba(0, 200, 255, 0.4), 0 0 7px rgba(0, 200, 255, 0.2);
+}
+
+.dark .text-cp-green {
+  text-shadow: 0 0 3px rgba(70, 255, 70, 0.4), 0 0 7px rgba(70, 255, 70, 0.2);
+}
+
+.dark .text-red-600 {
+  text-shadow: 0 0 3px rgba(255, 70, 70, 0.5), 0 0 7px rgba(255, 70, 70, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.2s ease-in;
+}

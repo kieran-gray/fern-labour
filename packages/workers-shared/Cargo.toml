@@ -1,0 +1,22 @@
+[package]
+name = "fern-labour-shared"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+worker.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+time.workspace = true
+
+async-trait = "0.1.89"
+base64 = { version = "0.22.1" }
+jwt-compact = { version = "0.8", features = ["rsa"] }
+num-bigint-dig = "0.8"
+http-body-util = "0.1"
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+uuid = { version = "1.11", features = ["v7", "serde"] }

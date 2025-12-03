@@ -1,0 +1,26 @@
+{
+  "name": "fern-labour-admin",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "CLOUDFLARE_ENV=dev vite --mode dev",
+    "build": "tsc -b && vite build",
+    "preview": "npm run build && vite preview --port 5173",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "lint": "eslint src --max-warnings=0 --fix",
+    "lint:check": "eslint src --max-warnings=0",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "eslint": "^9.38.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^16.4.0",
+    "typescript-eslint": "^8.46.2"
+  }
+}

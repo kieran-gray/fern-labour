@@ -1,4 +1,16 @@
 {
     "css.validate": false,
-    "postman.settings.dotenv-detection-notification-visibility": false
+    "postman.settings.dotenv-detection-notification-visibility": false,
+    "rust-analyzer.linkedProjects": [
+        "Cargo.toml",
+        "services/notification-service/Cargo.toml"
+    ],
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/apps/labour/api/packages/fern-labour-core/src",
+        "${workspaceFolder}/apps/labour/api/packages/fern-labour-notifications-shared/src",
+        "${workspaceFolder}/apps/labour/api/packages/fern-labour-pub-sub/src",
+        "${workspaceFolder}/apps/contact/api/packages/fern-labour-core/src",
+        "${workspaceFolder}/apps/contact/api/packages/fern-labour-notifications-shared/src",
+        "${workspaceFolder}/apps/contact/api/packages/fern-labour-pub-sub/src"
+    ]
 }

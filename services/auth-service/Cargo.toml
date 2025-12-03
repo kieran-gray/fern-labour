@@ -1,0 +1,40 @@
+[package]
+name = "fern_labour_auth_service"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+tracing.workspace = true
+tracing-web.workspace = true
+tracing-subscriber.workspace = true
+time.workspace = true
+worker.workspace = true
+worker-macros.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
+uuid.workspace = true
+async-trait.workspace = true
+chrono.workspace = true
+regex.workspace = true
+
+fern-labour-shared.workspace = true
+
+# JWT and Auth dependencies
+base64 = "0.22.1"
+jwt-compact = { version = "0.8", features = ["rsa"] }
+num-bigint-dig = "0.8"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+getrandom = { version = "0.2" }
+
+[dev-dependencies]
+tokio = "1.47.1"
+wiremock = "0.6.5"

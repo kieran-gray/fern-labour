@@ -186,3 +186,14 @@ deployment/
 coverage
 
 .claude
+
+node_modules/
+key.json
+backup.sql
+
+deployment/
+
+tarpaulin-report.html
+.wrangler
+docs/internal
+.dev.vars

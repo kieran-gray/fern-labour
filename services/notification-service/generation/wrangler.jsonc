@@ -1,0 +1,59 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "fern-labour-notification-generation-worker",
+  "main": "build/worker/shim.mjs",
+  "compatibility_date": "2025-11-25",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "build": {
+    "command": "cargo install -q worker-build && worker-build --release"
+  },
+  "dev": {
+    "port": 8007
+  },
+  "workers_dev": false,
+  "placement": {
+    "mode": "smart"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true
+    },
+    "traces": {
+      "enabled": true
+    }
+  },
+  "queues": {
+    "producers": [
+      {
+        "binding": "NOTIFICATION_COMMAND_BUS",
+        "queue": "command-bus"
+      }
+    ]
+  },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "ALLOWED_ORIGINS": ""
+  },
+  "env": {
+    "dev": {
+      "build": {
+        "command": "pwd && cargo install -q worker-build && worker-build --release",
+        "cwd": "../generation"
+      },
+      "queues": {
+        "producers": [
+          {
+            "binding": "NOTIFICATION_COMMAND_BUS",
+            "queue": "command-bus"
+          }
+        ]
+      },
+      "vars": {
+        "ENVIRONMENT": "dev",
+        "ALLOWED_ORIGINS": ""
+      }
+    }
+  }
+}

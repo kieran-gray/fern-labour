@@ -1,0 +1,39 @@
+{
+  "name": "fern-labour-notifications-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fern Labour Notifications Service",
+  "author": {
+    "name": "Kieran Gray",
+    "email": "gray.kieran@protonmail.com",
+    "url": "https://github.com/kieran-gray"
+  },
+  "workspaces": [
+    "notification",
+    "generation",
+    "dispatch"
+  ],
+  "scripts": {
+    "dev": "npm run dev:all --workspace=notification",
+    "build": "npm run build --workspaces --if-present",
+    "build:dev": "npm run build:dev --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:check": "npm run lint:check --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present",
+    "format:check": "npm run format:check --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present && cargo clean"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.5.24",
+    "@vitest/ui": "^2.1.8",
+    "concurrently": "^8.2.2",
+    "vitest": "^2.1.8",
+    "wrangler": "^4.45.1"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

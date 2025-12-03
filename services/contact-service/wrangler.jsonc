@@ -1,0 +1,77 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "fern-labour-contact-us",
+  "main": "build/worker/shim.mjs",
+  "compatibility_date": "2025-11-25",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "build": {
+    "command": "cargo install -q worker-build && worker-build --release"
+  },
+  "workers_dev": false,
+  "route": {
+    "pattern": "contact.fernlabour.com",
+    "custom_domain": true
+  },
+  "dev": {
+    "port": 8002
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true
+    },
+    "traces": {
+      "enabled": true
+    }
+  },
+  "services": [
+    {
+      "binding": "AUTH",
+      "service": "fern-labour-auth-service-worker"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "fern-labour-contact-us",
+      "database_id": ""
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "CLOUDFLARE_SITEVERIFY_URL": "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    "ALLOWED_ORIGINS": "https://fernlabour.com,https://track.fernlabour.com",
+    "SLACK_CHANNEL": "C08TY0QDY30",
+    "SLACK_MESSAGE_URL": "https://slack.com/api/chat.postMessage",
+    "AUTH_ENABLED": "true"
+  },
+  "env": {
+    "dev": {
+      "services": [
+        {
+          "binding": "AUTH",
+          "service": "fern-labour-auth-service-worker-dev"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "fern-labour-contact-us",
+          "database_id": ""
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "dev",
+        "CLOUDFLARE_SITEVERIFY_URL": "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        "ALLOWED_ORIGINS": "",
+        "SLACK_CHANNEL": "C08TY0QDY30",
+        "SLACK_MESSAGE_URL": "https://slack.com/api/chat.postMessage",
+        "AUTH_ENABLED": "true"
+      }
+    }
+  }
+}

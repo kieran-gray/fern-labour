@@ -1,0 +1,23 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.worker.json"
+    }
+  ],
+  "compilerOptions": {
+    "baseUrl": "src",
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": false,
+    "types": ["./worker-configuration.d.ts"],
+    "paths": {
+      "@/*": ["*"]
+    }
+  }
+}

@@ -3,13 +3,10 @@ services:
   labour-service:
     image: '${DOCKER_IMAGE_LABOUR_SERVICE?unset}:latest'
     build:
-      context: ./labour_service
+      context: ./apps/labour/api
       target: http
-      secrets:
-        - artifact_registry_token
     restart: "no"
     networks:
-      - traefik-public
       - default
     depends_on:
       db:
@@ -19,11 +16,13 @@ services:
         condition: service_completed_successfully
         restart: false
     env_file:
-      - ./labour_service/.env
+      - ./apps/labour/api/.env
     environment:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
     ports:
       - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
       interval: 30s
@@ -33,107 +32,15 @@ services:
   labour-service-pre-start:
     image: '${DOCKER_IMAGE_LABOUR_SERVICE?unset}-alembic:latest'
     build:
-      context: ./labour_service
+      context: ./apps/labour/api
       target: migrations
-      secrets:
-        - artifact_registry_token
     restart: "no"
     depends_on:
       db:
         condition: service_healthy
         restart: true
     env_file:
-      - ./labour_service/.env
-
-  notification-service:
-    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?unset}:latest'
-    build:
-      context: ./notification_service
-      target: http
-      secrets:
-        - artifact_registry_token
-    restart: "no"
-    networks:
-      - traefik-public
-      - default
-    depends_on:
-      db:
-        condition: service_healthy
-        restart: true
-      notification-service-pre-start:
-        condition: service_completed_successfully
-        restart: false
-    env_file:
-      - ./notification_service/.env
-    environment:
-      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
-    ports:
-      - "8001:8001"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8001/api/v1/health" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-
-  notification-service-pre-start:
-    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?unset}-alembic:latest'
-    build:
-      context: ./notification_service
-      target: migrations
-      secrets:
-        - artifact_registry_token
-    restart: "no"
-    depends_on:
-      db:
-        condition: service_healthy
-        restart: true
-    env_file:
-      - ./notification_service/.env
-
-  contact-service:
-    image: '${DOCKER_IMAGE_CONTACT_SERVICE?unset}:latest'
-    build:
-      context: ./contact_service
-      target: http
-      secrets:
-        - artifact_registry_token
-    restart: "no"
-    networks:
-      - traefik-public
-      - default
-    depends_on:
-      db:
-        condition: service_healthy
-        restart: true
-      contact-service-pre-start:
-        condition: service_completed_successfully
-        restart: false
-    env_file:
-      - ./contact_service/.env
-    environment:
-      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
-    ports:
-      - "8002:8002"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8002/api/v1/health" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-
-  contact-service-pre-start:
-    image: '${DOCKER_IMAGE_CONTACT_SERVICE?unset}-alembic:latest'
-    build:
-      context: ./contact_service
-      target: migrations
-      secrets:
-        - artifact_registry_token
-    restart: "no"
-    depends_on:
-      db:
-        condition: service_healthy
-        restart: true
-    env_file:
-      - ./contact_service/.env
+      - ./apps/labour/api/.env
 
   db:
     image: postgres:16.2
@@ -171,7 +78,7 @@ services:
     image: '${DOCKER_IMAGE_LABOUR_SERVICE?unset}:latest'
     restart: "no"
     env_file:
-      - ./labour_service/.env
+      - ./apps/labour/api/.env
     environment:
       - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
     depends_on:
@@ -179,53 +86,8 @@ services:
         condition: service_healthy
         restart: true
     command: [ "python", "-m", "src.run_consumer" ]
-    networks:
-      - default
-
-  notification-consumer:
-    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?unset}:latest'
-    restart: "no"
-    env_file:
-      - ./notification_service/.env
-    environment:
-      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
-    depends_on:
-      pub-sub-emulator:
-        condition: service_healthy
-        restart: true
-    command: [ "python", "-m", "src.run_consumer" ]
-    networks:
-      - default
-
-  notification-delivery-status-script:
-    image: '${DOCKER_IMAGE_NOTIFICATION_SERVICE?unset}:latest'
-    restart: "no"
-    env_file:
-      - ./notification_service/.env
-    environment:
-      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
-    depends_on:
-      pub-sub-emulator:
-        condition: service_healthy
-        restart: true
-    command: [ "python", "src/cli.py", "fetch-status" ]
-    networks:
-      - default
-
-  contact-consumer:
-    image: '${DOCKER_IMAGE_CONTACT_SERVICE?unset}:latest'
-    restart: "no"
-    env_file:
-      - ./contact_service/.env
-    environment:
-      - PUBSUB_EMULATOR_HOST=pub-sub-emulator:8085
-    ports:
-      - "5678:5678"
-    depends_on:
-      pub-sub-emulator:
-        condition: service_healthy
-        restart: true
-    command: [ "python", "-m", "src.run_consumer" ]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - default
 
@@ -257,7 +119,6 @@ services:
       - start-dev
       - --import-realm
     networks:
-      - traefik-public
       - default
     volumes:
       - ./keycloak/labour_tracker_theme:/opt/keycloak/themes/labour_tracker_theme
@@ -290,7 +151,7 @@ services:
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND?unset}:latest'
     build:
-      context: ./frontend
+      context: ./apps/labour/web
       args:
         - VITE_LABOUR_SERVICE_URL=${LABOUR_SERVICE_URL?unset}
         - VITE_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
@@ -303,17 +164,16 @@ services:
         - VITE_OFFLINE_SYNC_DELAY_MS=${OFFLINE_SYNC_DELAY_MS}
     restart: "no"
     networks:
-      - traefik-public
       - default
     ports:
-      - "5173:80"
+      - "5174:80"
     volumes:
-      - ./frontend:/app
+      - ./apps/labour/web:/app
 
   marketing:
     image: '${DOCKER_IMAGE_MARKETING?unset}:latest'
     build:
-      context: ./marketing
+      context: ./apps/marketing/web
       args:
         - NODE_ENV=development
         - NEXT_PUBLIC_CONTACT_SERVICE_URL=${CONTACT_SERVICE_URL?unset}
@@ -322,7 +182,6 @@ services:
         - NEXT_PUBLIC_CLOUDFLARE_SITEKEY=${CLOUDFLARE_SITEKEY?unset}
     restart: "no"
     networks:
-      - traefik-public
       - default
     ports:
       - "3000:81"
@@ -332,21 +191,7 @@ services:
       - NEXT_PUBLIC_INSTAGRAM_URL=${INSTAGRAM_URL?unset}
       - NEXT_PUBLIC_CLOUDFLARE_SITEKEY=${CLOUDFLARE_SITEKEY?unset}
     volumes:
-      - ./marketing:/app
-
-  mailcatcher:
-    image: schickling/mailcatcher
-    ports:
-      - "1080:1080"
-      - "1025:1025"
+      - ./apps/marketing/web:/app
 
 volumes:
   app-db-data:
-
-networks:
-  traefik-public:
-    external: false
-
-secrets:
-  artifact_registry_token:
-    file: .artifact-registry-token

@@ -1,0 +1,76 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "fern-labour-auth-service-worker",
+  "main": "build/worker/shim.mjs",
+  "compatibility_date": "2025-11-25",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "build": {
+    "command": "cargo install -q worker-build && worker-build --release"
+  },
+  "workers_dev": false,
+  "placement": {
+    "mode": "smart"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true
+    },
+    "traces": {
+      "enabled": true
+    }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "AUTH_JWKS_CACHE",
+      "id": "4ac568adc5fb4c99929159d6155cbcae"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "ALLOWED_ORIGINS": "https://fernlabour.com,https://track.fernlabour.com",
+    "AUTH_ISSUERS": {
+      "auth0": {
+        "issuer_url": "https://fernlabour.uk.auth0.com/",
+        "jwks_path": ".well-known/jwks.json",
+        "audience": "https://api.fernlabour.com",
+        "name": "Auth0"
+      },
+      "cloudflare": {
+        "issuer_url": "https://kieran-gray.cloudflareaccess.com/",
+        "jwks_path": "cdn-cgi/access/certs",
+        "audience": "2479075b8cec955a824027301a8c611e914863c26996fbf2522769a1e236e4a1",
+        "name": "Cloudflare"
+      }
+    }
+  },
+  "env": {
+    "dev": {
+      "kv_namespaces": [
+        {
+          "binding": "AUTH_JWKS_CACHE",
+          "id": "49b377d07f094ca38191d5e67cc1b9e9"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "dev",
+        "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:5174,http://localhost:5175",
+        "AUTH_ISSUERS": {
+          "auth0": {
+            "issuer_url": "https://fernlabour.uk.auth0.com/",
+            "jwks_path": ".well-known/jwks.json",
+            "audience": "https://api.fernlabour.com",
+            "name": "Auth0"
+          },
+          "cloudflare": {
+            "issuer_url": "https://kieran-gray.cloudflareaccess.com/",
+            "jwks_path": "cdn-cgi/access/certs",
+            "audience": "6e2f6299ee749058bc5745580f2e14ed0b38aa30f7c7551436687fd89f265aff",
+            "name": "Cloudflare"
+          }
+        }
+      }
+    }
+  }
+}
