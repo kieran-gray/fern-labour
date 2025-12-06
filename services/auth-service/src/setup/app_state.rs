@@ -17,7 +17,7 @@ use crate::{
     setup::config::Config,
 };
 
-use fern_labour_shared::{cache::KVCache, SetupError};
+use fern_labour_workers_shared::{SetupError, cache::KVCache};
 
 pub struct AppState {
     pub config: Config,

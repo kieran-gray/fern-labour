@@ -3,7 +3,7 @@ use worker::{Request, Response, Result, RouteContext};
 
 use crate::{application::exceptions::AppError, setup::app_state::AppState};
 
-use fern_labour_shared::cors::CorsContext;
+use fern_labour_workers_shared::cors::CorsContext;
 
 pub async fn authenticated<F, Fut>(
     handler: F,

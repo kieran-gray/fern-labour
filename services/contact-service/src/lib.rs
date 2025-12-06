@@ -4,7 +4,7 @@ pub mod domain;
 pub mod infrastructure;
 pub mod setup;
 
-use fern_labour_shared::ConfigTrait;
+use fern_labour_workers_shared::ConfigTrait;
 use tracing::{Instrument, error, info, info_span};
 use uuid::Uuid;
 

@@ -27,7 +27,7 @@ export function useActiveLabour() {
   return useQuery({
     queryKey: isGuestMode
       ? ['labour', 'guest', guestProfile?.guestId, 'active']
-      : queryKeys.labour.active(user?.profile.sub || ''),
+      : queryKeys.labour.active(user?.sub || ''),
     queryFn: async () => {
       if (isGuestMode && guestProfile) {
         const labours = await GuestProfileManager.getGuestLabours(guestProfile.guestId);
@@ -37,7 +37,7 @@ export function useActiveLabour() {
       const response = await LabourQueriesService.getActiveLabour();
       return response.labour;
     },
-    enabled: !!user?.profile.sub || (isGuestMode && !!guestProfile),
+    enabled: !!user?.sub || (isGuestMode && !!guestProfile),
     retry: 0,
   });
 }
@@ -82,7 +82,7 @@ export function useLabourById(labourId: string | null) {
         throw new Error('Failed to load labour. Please try again later.');
       }
     },
-    enabled: !!labourId && (!!user?.profile.sub || (isGuestMode && !!guestProfile)),
+    enabled: !!labourId && (!!user?.sub || (isGuestMode && !!guestProfile)),
     retry: 0,
   });
 }
@@ -95,7 +95,7 @@ export function useCurrentLabour(labourId?: string | null) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeys.labour.user(user?.profile.sub || ''),
+    queryKey: queryKeys.labour.user(user?.sub || ''),
     queryFn: async () => {
       try {
         let response;
@@ -116,7 +116,7 @@ export function useCurrentLabour(labourId?: string | null) {
         throw new Error('Failed to load labour. Please try again later.');
       }
     },
-    enabled: !!user?.profile.sub,
+    enabled: !!user?.sub,
     retry: 0,
   });
 }
@@ -128,7 +128,7 @@ export function useLabourHistory() {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeys.labour.history(user?.profile.sub || ''),
+    queryKey: queryKeys.labour.history(user?.sub || ''),
     queryFn: async () => {
       try {
         const response = await LabourQueriesService.getAllLabours();
@@ -137,7 +137,7 @@ export function useLabourHistory() {
         throw new Error('Failed to load labour history. Please try again later.');
       }
     },
-    enabled: !!user?.profile.sub,
+    enabled: !!user?.sub,
   });
 }
 
@@ -198,8 +198,8 @@ export function usePlanLabour() {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {
         queryClient.invalidateQueries();
-        queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
-        queryClient.setQueryData(queryKeys.labour.active(user?.profile.sub || ''), labour);
+        queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), labour);
+        queryClient.setQueryData(queryKeys.labour.active(user?.sub || ''), labour);
       }
 
       const message = variables.existing ? 'Labour Plan Updated' : 'Labour Planned';
@@ -249,13 +249,13 @@ export function useCompleteLabour() {
       if (isGuestMode && guestProfile) {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {
-        queryClient.removeQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
-        queryClient.removeQueries({ queryKey: queryKeys.labour.active(user?.profile.sub || '') });
+        queryClient.removeQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
+        queryClient.removeQueries({ queryKey: queryKeys.labour.active(user?.sub || '') });
         queryClient.invalidateQueries({
-          queryKey: queryKeys.labour.history(user?.profile.sub || ''),
+          queryKey: queryKeys.labour.history(user?.sub || ''),
         });
         queryClient.invalidateQueries({
-          queryKey: queryKeys.birthingPerson.user(user?.profile.sub || ''),
+          queryKey: queryKeys.birthingPerson.user(user?.sub || ''),
         });
       }
 
@@ -297,9 +297,9 @@ export function useDeleteLabour() {
       if (isGuestMode && guestProfile) {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {
-        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
         queryClient.invalidateQueries({
-          queryKey: queryKeys.labour.history(user?.profile.sub || ''),
+          queryKey: queryKeys.labour.history(user?.sub || ''),
         });
       }
     },
@@ -366,12 +366,12 @@ export function useRefreshLabourData() {
   return async () => {
     // Invalidate all labour-related queries for the current user
     await Promise.all([
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') }),
       queryClient.invalidateQueries({
-        queryKey: queryKeys.labour.history(user?.profile.sub || ''),
+        queryKey: queryKeys.labour.history(user?.sub || ''),
       }),
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.labour(user?.sub || ''),
       }),
     ]);
   };

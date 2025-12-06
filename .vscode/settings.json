@@ -3,7 +3,6 @@
     "postman.settings.dotenv-detection-notification-visibility": false,
     "rust-analyzer.linkedProjects": [
         "Cargo.toml",
-        "services/notification-service/Cargo.toml"
     ],
     "python.analysis.extraPaths": [
         "${workspaceFolder}/apps/labour/api/packages/fern-labour-core/src",

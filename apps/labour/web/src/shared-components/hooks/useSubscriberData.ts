@@ -17,7 +17,7 @@ export function useSubscriber() {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeys.subscriber.user(user?.profile.sub || ''),
+    queryKey: queryKeys.subscriber.user(user?.sub || ''),
     queryFn: async () => {
       try {
         const response = await UserService.getUser();
@@ -26,7 +26,7 @@ export function useSubscriber() {
         throw new Error('Failed to load subscriber data. Please try again later.');
       }
     },
-    enabled: !!user?.profile.sub,
+    enabled: !!user?.sub,
   });
 }
 
@@ -45,7 +45,7 @@ export function useUpdateSubscriber() {
     onSuccess: () => {
       // Invalidate subscriber query to fetch updated data
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriber.user(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriber.user(user?.sub || ''),
       });
 
       notifications.show({

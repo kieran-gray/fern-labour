@@ -3,6 +3,8 @@
 ENVIRONMENT = ""
 SUPPORT_EMAIL = "support@fernlabour.com"
 
+[notifications]
+NOTIFICATION_SERVICE_URL = "http://host.docker.internal:8001/api/v1/notification"
 
 [security.keycloak]
 KEYCLOAK_SERVER_URL = "http://localhost:8080"

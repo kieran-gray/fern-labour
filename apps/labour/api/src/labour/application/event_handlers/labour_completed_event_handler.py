@@ -2,7 +2,6 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-import httpx
 from fern_labour_core.events.event import DomainEvent
 from fern_labour_core.events.event_handler import EventHandler
 from fern_labour_notifications_shared.enums import NotificationPriority
@@ -12,6 +11,7 @@ from fern_labour_notifications_shared.notification_data import (
     LabourCompletedWithNoteData,
 )
 
+from src.core.application.notification_service_client import NotificationServiceClient
 from src.subscription.application.services.subscription_query_service import (
     SubscriptionQueryService,
 )
@@ -21,8 +21,6 @@ from src.user.application.services.user_query_service import UserQueryService
 from src.user.domain.exceptions import UserNotFoundById
 
 log = logging.getLogger(__name__)
-
-NOTIFICATION_SERVICE_URL = "http://host.docker.internal:8001/api/v1/notification"
 
 
 @dataclass
@@ -44,10 +42,12 @@ class LabourCompletedEventHandler(EventHandler):
         self,
         user_service: UserQueryService,
         subscription_query_service: SubscriptionQueryService,
+        notification_service_client: NotificationServiceClient,
         tracking_link: str,
     ):
         self._user_service = user_service
         self._subscription_query_service = subscription_query_service
+        self._notification_service_client = notification_service_client
         self._tracking_link = tracking_link
 
     def _generate_notification_data(
@@ -74,7 +74,7 @@ class LabourCompletedEventHandler(EventHandler):
 
     async def _send_notifications(
         self, event: DomainEvent
-    ) -> list[NotificationRequestedData]:
+    ) -> None:
         birthing_person_id = event.data["birthing_person_id"]
         labour_id = event.data["labour_id"]
 
@@ -85,77 +85,41 @@ class LabourCompletedEventHandler(EventHandler):
             access_level=SubscriptionAccessLevel.SUPPORTER.value,
         )
 
-        notifications = []
+        for subscription in subscriptions:
+            try:
+                subscriber = await self._user_service.get(user_id=subscription.subscriber_id)
+            except UserNotFoundById as err:
+                log.error(err)
+                continue
 
-        async with httpx.AsyncClient() as client:
-            for subscription in subscriptions:
-                try:
-                    subscriber = await self._user_service.get(user_id=subscription.subscriber_id)
-                except UserNotFoundById as err:
-                    log.error(err)
+            for method in subscription.contact_methods:
+                destination = subscriber.destination(method)
+                if not destination:
                     continue
 
-                for method in subscription.contact_methods:
-                    destination = subscriber.destination(method)
-                    if not destination:
-                        continue
+                notes = event.data["notes"]
+                notification_data = self._generate_notification_data(
+                    birthing_person=birthing_person,
+                    subscriber=subscriber,
+                    notes=notes,
+                )
+                notification_metadata = LabourCompletedNotificationMetadata(
+                    labour_id=subscription.labour_id,
+                    from_user_id=subscription.birthing_person_id,
+                    to_user_id=subscriber.id,
+                )
 
-                    notes = event.data["notes"]
-                    notification_data = self._generate_notification_data(
-                        birthing_person=birthing_person,
-                        subscriber=subscriber,
-                        notes=notes,
-                    )
-                    notification_metadata = LabourCompletedNotificationMetadata(
-                        labour_id=subscription.labour_id,
-                        from_user_id=subscription.birthing_person_id,
-                        to_user_id=subscriber.id,
-                    )
+                notification_request = NotificationRequestedData(
+                    channel=method,
+                    destination=destination,
+                    template_data=notification_data,
+                    metadata=notification_metadata.to_dict(),
+                    priority=NotificationPriority.HIGH,
+                )
 
-                    notification_request = NotificationRequestedData(
-                        channel=method,
-                        destination=destination,
-                        template_data=notification_data,
-                        metadata=notification_metadata.to_dict(),
-                        priority=NotificationPriority.HIGH,
-                    )
-
-                    try:
-                        log.info(
-                            f"Attempting to send notification to {NOTIFICATION_SERVICE_URL} "
-                            f"for {destination} via {method}"
-                        )
-                        response = await client.post(
-                            NOTIFICATION_SERVICE_URL,
-                            json=notification_request.to_dict(),
-                            timeout=10.0,
-                        )
-                        response.raise_for_status()
-                        log.info(
-                            f"Notification sent successfully to {destination} via {method}"
-                        )
-                        notifications.append(notification_request)
-                    except httpx.ConnectError as err:
-                        log.error(
-                            f"Connection error sending notification to {destination} via {method}: {err}. "
-                            f"Is the notification service running at {NOTIFICATION_SERVICE_URL}?"
-                        )
-                    except httpx.HTTPStatusError as err:
-                        log.error(
-                            f"HTTP error {err.response.status_code} sending notification to {destination} "
-                            f"via {method}: {err.response.text}"
-                        )
-                    except httpx.HTTPError as err:
-                        log.error(
-                            f"Failed to send notification to {destination} via {method}: {err}"
-                        )
-
-        return notifications
+                await self._notification_service_client.request_notification(notification_request)
 
     async def handle(self, event: dict[str, Any]) -> None:
         domain_event = DomainEvent.from_dict(event=event)
 
-        try:
-            await self._send_notifications(event=domain_event)
-        except Exception as err:
-            log.error(f"Error sending notifications: {err}")
+        await self._send_notifications(event=domain_event)

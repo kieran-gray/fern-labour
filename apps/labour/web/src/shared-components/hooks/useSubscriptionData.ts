@@ -19,7 +19,7 @@ export function useSubscriberSubscriptions() {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeys.subscriptions.subscriber(user?.profile.sub || ''),
+    queryKey: queryKeys.subscriptions.subscriber(user?.sub || ''),
     queryFn: async () => {
       try {
         const response = await SubscriptionService.getSubscriberSubscriptions();
@@ -28,7 +28,7 @@ export function useSubscriberSubscriptions() {
         throw new Error('Failed to load subscriptions. Please try again later.');
       }
     },
-    enabled: !!user?.profile.sub,
+    enabled: !!user?.sub,
     refetchOnMount: 'always',
   });
 }
@@ -41,7 +41,7 @@ export function useLabourSubscriptions(labourId: string) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
+    queryKey: queryKeys.subscriptions.labour(user?.sub || ''),
     queryFn: async () => {
       try {
         const response = await SubscriptionService.getLabourSubscriptions({ labourId });
@@ -50,7 +50,7 @@ export function useLabourSubscriptions(labourId: string) {
         throw new Error('Failed to load labour subscriptions. Please try again later.');
       }
     },
-    enabled: !!user?.profile.sub,
+    enabled: !!user?.sub,
     refetchOnMount: 'always',
   });
 }
@@ -63,7 +63,7 @@ export function useSubscriptionById(subscriptionId: string) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeys.subscriptions.byId(subscriptionId, user?.profile.sub || ''),
+    queryKey: queryKeys.subscriptions.byId(subscriptionId, user?.sub || ''),
     queryFn: async () => {
       try {
         const response = await SubscriptionService.getSubscriptionById({ subscriptionId });
@@ -75,7 +75,7 @@ export function useSubscriptionById(subscriptionId: string) {
         throw new Error('Failed to load subscription data. Please try again later.');
       }
     },
-    enabled: !!subscriptionId && !!user?.profile.sub,
+    enabled: !!subscriptionId && !!user?.sub,
     refetchOnMount: 'always',
   });
 }
@@ -98,9 +98,9 @@ export function useSubscribeTo() {
     onSuccess: (subscription) => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.subscriber(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.subscriber(user?.sub || ''),
       });
-      queryClient.setQueryData(['subscription', subscription.id, user?.profile.sub], subscription);
+      queryClient.setQueryData(['subscription', subscription.id, user?.sub], subscription);
     },
     onError: () => {
       // Generic error
@@ -128,13 +128,13 @@ export function useUpdateContactMethods() {
     onSuccess: (subscription) => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.byId(subscription.id, user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.byId(subscription.id, user?.sub || ''),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.subscriber(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.subscriber(user?.sub || ''),
       });
       queryClient.setQueryData(
-        queryKeys.subscriptions.byId(subscription.id, user?.profile.sub || ''),
+        queryKeys.subscriptions.byId(subscription.id, user?.sub || ''),
         subscription
       );
     },
@@ -164,10 +164,10 @@ export function useUnsubscribeFrom() {
     onSuccess: () => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.subscriber(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.subscriber(user?.sub || ''),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.labour(user?.sub || ''),
       });
     },
     onError: (error: Error) => {
@@ -195,7 +195,7 @@ export function useApproveSubscriber() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.labour(user?.sub || ''),
       });
     },
     onError: (error: Error) => {
@@ -223,7 +223,7 @@ export function useRemoveSubscriber() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.labour(user?.sub || ''),
       });
     },
     onError: (error: Error) => {
@@ -251,7 +251,7 @@ export function useBlockSubscriber() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.labour(user?.sub || ''),
       });
     },
     onError: (error: Error) => {
@@ -279,7 +279,7 @@ export function useUnblockSubscriber() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.subscriptions.labour(user?.profile.sub || ''),
+        queryKey: queryKeys.subscriptions.labour(user?.sub || ''),
       });
     },
     onError: (error: Error) => {

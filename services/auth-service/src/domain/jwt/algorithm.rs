@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumString;
+use strum::EnumString;
 
 #[derive(Debug, Clone, Deserialize, Serialize, EnumString, PartialEq)]
 pub enum JwtAlgorithm {

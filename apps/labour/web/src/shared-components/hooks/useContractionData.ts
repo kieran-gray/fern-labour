@@ -32,7 +32,7 @@ export function useStartContraction() {
     getAggregateId: () => {
       return isGuestMode
         ? `guest-labour-${guestProfile?.guestId || 'unknown'}`
-        : `labour-${user?.profile.sub || 'unknown'}`;
+        : `labour-${user?.sub || 'unknown'}`;
     },
     mutationFn: async (requestBody: StartContractionRequest) => {
       if (isGuestMode && guestProfile) {
@@ -64,7 +64,7 @@ export function useStartContraction() {
       if (isGuestMode) {
         return;
       }
-      const sub = user?.profile.sub || '';
+      const sub = user?.sub || '';
       const labourKey = queryKeys.labour.user(sub);
       const previous = queryClient.getQueryData(labourKey) as any;
       if (!previous) {
@@ -101,8 +101,8 @@ export function useStartContraction() {
       if (isGuestMode && guestProfile) {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {
-        queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
-        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+        queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), labour);
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
       }
     },
     onError: (error: Error) => {
@@ -129,7 +129,7 @@ export function useEndContraction() {
     getAggregateId: () => {
       return isGuestMode
         ? `guest-labour-${guestProfile?.guestId || 'unknown'}`
-        : `labour-${user?.profile.sub || 'unknown'}`;
+        : `labour-${user?.sub || 'unknown'}`;
     },
     mutationFn: async ({ intensity, endTime }: { intensity: number; endTime: string }) => {
       if (isGuestMode && guestProfile) {
@@ -163,7 +163,7 @@ export function useEndContraction() {
       if (isGuestMode) {
         return;
       }
-      const sub = user?.profile.sub || '';
+      const sub = user?.sub || '';
       const labourKey = queryKeys.labour.user(sub);
       const previous = queryClient.getQueryData(labourKey) as any;
       if (!previous) {
@@ -190,8 +190,8 @@ export function useEndContraction() {
       if (isGuestMode && guestProfile) {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {
-        queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
-        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+        queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), labour);
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
       }
     },
     onError: (error: Error) => {
@@ -218,13 +218,13 @@ export function useUpdateContraction() {
     getAggregateId: (request: UpdateContractionRequest) => {
       const aggregateId = isGuestMode
         ? `guest-labour-${guestProfile?.guestId || 'unknown'}`
-        : `labour-${user?.profile.sub || 'unknown'}`;
+        : `labour-${user?.sub || 'unknown'}`;
 
       if (isGuestMode && guestProfile) {
         return aggregateId;
       }
 
-      const sub = user?.profile.sub || '';
+      const sub = user?.sub || '';
       const labourKey = queryKeys.labour.user(sub);
       const current = queryClient.getQueryData(labourKey) as LabourDTO | undefined;
       if (current) {
@@ -278,7 +278,7 @@ export function useUpdateContraction() {
       if (isGuestMode) {
         return;
       }
-      const sub = user?.profile.sub || '';
+      const sub = user?.sub || '';
       const labourKey = queryKeys.labour.user(sub);
       const previous = queryClient.getQueryData(labourKey) as any;
       if (!previous) {
@@ -307,8 +307,8 @@ export function useUpdateContraction() {
       if (isGuestMode && guestProfile) {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {
-        queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
-        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+        queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), labour);
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
       }
 
       notifications.show({
@@ -341,12 +341,12 @@ export function useDeleteContraction() {
     getAggregateId: (contractionId: string) => {
       const aggregateId = isGuestMode
         ? `guest-labour-${guestProfile?.guestId || 'unknown'}`
-        : `labour-${user?.profile.sub || 'unknown'}`;
+        : `labour-${user?.sub || 'unknown'}`;
 
       if (isGuestMode && guestProfile) {
         return aggregateId;
       }
-      const sub = user?.profile.sub || '';
+      const sub = user?.sub || '';
       const labourKey = queryKeys.labour.user(sub);
       const current = queryClient.getQueryData(labourKey) as LabourDTO | undefined;
       if (current) {
@@ -386,7 +386,7 @@ export function useDeleteContraction() {
       if (isGuestMode) {
         return;
       }
-      const sub = user?.profile.sub || '';
+      const sub = user?.sub || '';
       const labourKey = queryKeys.labour.user(sub);
       const previous = queryClient.getQueryData(labourKey) as any;
       if (!previous) {
@@ -405,8 +405,8 @@ export function useDeleteContraction() {
       if (isGuestMode && guestProfile) {
         queryClient.invalidateQueries({ queryKey: ['labour', 'guest', guestProfile.guestId] });
       } else {
-        queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
-        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+        queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), labour);
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
       }
 
       notifications.show({

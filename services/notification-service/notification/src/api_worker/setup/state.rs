@@ -1,8 +1,11 @@
 use anyhow::{Context, Result};
 use fern_labour_notifications_shared::service_clients::{DispatchClient, GenerationClient};
 use fern_labour_workers_shared::{
-    AuthServiceClient, ConfigTrait, DurableObjectCQRSClient, FetcherAuthServiceClient,
-    clients::{dispatch::FetcherDispatchClient, generation::FetcherGenerationClient},
+    ConfigTrait,
+    clients::{
+        AuthServiceClient, DurableObjectCQRSClient, FetcherAuthServiceClient,
+        FetcherDispatchClient, FetcherGenerationClient,
+    },
 };
 use worker::Env;
 

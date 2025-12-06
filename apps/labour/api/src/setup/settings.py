@@ -135,6 +135,10 @@ class PaymentSettings(BaseModel):
     stripe: StripeSettings
 
 
+class NotificationSettings(BaseModel):
+    service_url: str = Field(alias="NOTIFICATION_SERVICE_URL")
+
+
 class Settings(BaseModel):
     base: BaseSettings
     security: SecuritySettings
@@ -143,6 +147,7 @@ class Settings(BaseModel):
     events: EventSettings
     db: DbSettings
     payments: PaymentSettings
+    notifications: NotificationSettings
 
     _cfg_toml_path: Path = BASE_DIR / "config.toml"
 

@@ -7,10 +7,12 @@ from fern_labour_core.events.producer import EventProducer
 from fern_labour_core.unit_of_work import UnitOfWork
 
 from src.core.application.domain_event_publisher import DomainEventPublisher
+from src.core.application.notification_service_client import NotificationServiceClient
 from src.core.application.task_manager import TaskManager
 from src.core.domain.domain_event.repository import DomainEventRepository
 from src.core.infrastructure.asyncio_task_manager import AsyncioTaskManager
 from src.setup.ioc.di_component_enum import ComponentEnum
+from src.setup.settings import Settings
 
 log = logging.getLogger(__name__)
 
@@ -47,4 +49,13 @@ class CommonApplicationProvider(Provider):
             unit_of_work=unit_of_work,
             event_producer=event_producer,
             task_manager=task_manager,
+        )
+
+    @provide(scope=Scope.APP)
+    def provide_notification_service_client(
+        self,
+        settings: Annotated[Settings, FromComponent(ComponentEnum.DEFAULT)],
+    ) -> NotificationServiceClient:
+        return NotificationServiceClient(
+            notification_service_url=settings.notifications.service_url
         )

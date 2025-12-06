@@ -1,5 +1,5 @@
 use crate::setup::app_state::AppState;
-use fern_labour_shared::CorsContext;
+use fern_labour_workers_shared::CorsContext;
 use tracing::{debug, error};
 use worker::{Request, Response, RouteContext};
 

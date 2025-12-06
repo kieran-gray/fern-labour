@@ -1,5 +1,5 @@
 [package]
-name = "fern-labour-shared"
+name = "fern-labour-workers-shared"
 version.workspace = true
 edition.workspace = true
 
@@ -12,6 +12,10 @@ serde.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
 time.workspace = true
+anyhow.workspace = true
+
+fern-labour-notifications-shared.workspace = true
+fern-labour-event-sourcing-rs.workspace = true
 
 async-trait = "0.1.89"
 base64 = { version = "0.22.1" }

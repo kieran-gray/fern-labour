@@ -18,7 +18,7 @@ export const useLabour = () => {
 
 export const LabourProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useApiAuth();
-  const userId = user?.profile.sub;
+  const userId = user?.sub;
   const [labourId, setLabourId] = useState<string | null>(() => {
     return localStorage.getItem(`${userId}:labourId`);
   });

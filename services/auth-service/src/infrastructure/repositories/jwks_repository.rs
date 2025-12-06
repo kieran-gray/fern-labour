@@ -3,7 +3,7 @@ use std::sync::Arc;
 use tracing::{debug, error, info, warn};
 use worker::{Fetch, Method, Request, RequestInit};
 
-use fern_labour_shared::cache::CacheTrait;
+use fern_labour_workers_shared::cache::CacheTrait;
 
 use crate::domain::{JWKS, Jwk, JwksRepositoryTrait, RepositoryError};
 

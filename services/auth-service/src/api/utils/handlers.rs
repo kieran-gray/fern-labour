@@ -2,7 +2,7 @@ use worker::{Request, Response, RouteContext};
 
 use crate::setup::app_state::AppState;
 
-use fern_labour_shared::cors::CorsContext;
+use fern_labour_workers_shared::cors::CorsContext;
 
 pub fn create_options_handler(
     req: Request,

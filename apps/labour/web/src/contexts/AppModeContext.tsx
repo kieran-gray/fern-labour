@@ -15,7 +15,9 @@ const ModeContext = createContext<ModeContextType | undefined>(undefined);
 
 export const ModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useApiAuth();
-  const userId = user?.profile.sub;
+
+  const userId = user?.sub || 'anonymous';
+
   const [mode, setMode] = useState<AppMode | null>(() => {
     const stored = localStorage.getItem(`${userId}:appMode`);
     return stored === AppMode.Birth || stored === AppMode.Subscriber ? stored : null;
@@ -23,8 +25,7 @@ export const ModeProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     localStorage.setItem(`${userId}:appMode`, mode || '');
-  }, [mode]);
-
+  }, [mode, userId]);
   return <ModeContext.Provider value={{ mode, setMode }}>{children}</ModeContext.Provider>;
 };
 

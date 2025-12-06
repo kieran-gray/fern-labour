@@ -4,12 +4,11 @@ from typing import Any
 
 from fern_labour_core.events.event import DomainEvent
 from fern_labour_core.events.event_handler import EventHandler
-from fern_labour_notifications_shared.enums import NotificationTemplate
-from fern_labour_notifications_shared.events import NotificationRequested
+from fern_labour_notifications_shared.enums import NotificationPriority
+from fern_labour_notifications_shared.event_data import NotificationRequestedData
 from fern_labour_notifications_shared.notification_data import SubscriberRequestedData
 
-from src.core.application.domain_event_publisher import DomainEventPublisher
-from src.core.domain.domain_event.repository import DomainEventRepository
+from src.core.application.notification_service_client import NotificationServiceClient
 from src.subscription.domain.enums import ContactMethod
 from src.user.application.dtos.user import UserDTO
 from src.user.application.services.user_query_service import UserQueryService
@@ -37,15 +36,12 @@ class SubscriberRequestedEventHandler(EventHandler):
     def __init__(
         self,
         user_service: UserQueryService,
-        domain_event_repository: DomainEventRepository,
-        domain_event_publisher: DomainEventPublisher,
+        notification_service_client: NotificationServiceClient,
         tracking_link: str,
     ):
         self._user_service = user_service
-        self._domain_event_repository = domain_event_repository
-        self._domain_event_publisher = domain_event_publisher
+        self._notification_service_client = notification_service_client
         self._tracking_link = tracking_link
-        self._template = NotificationTemplate.SUBSCRIBER_REQUESTED
 
     def _generate_notification_data(
         self, birthing_person: UserDTO, subscriber: UserDTO
@@ -71,22 +67,13 @@ class SubscriberRequestedEventHandler(EventHandler):
             from_user_id=subscriber.id,
             to_user_id=birthing_person.id,
         )
-        notification_event = NotificationRequested.create(
-            aggregate_type="subscription",
-            aggregate_id=domain_event.data["subscription_id"],
-            data={
-                "channel": ContactMethod.EMAIL.value,
-                "destination": birthing_person.destination(ContactMethod.EMAIL),
-                "template": self._template.value,
-                "data": notification_data.to_dict(),
-                "metadata": notification_metadata.to_dict(),
-            },
+
+        notification_request = NotificationRequestedData(
+            channel=ContactMethod.EMAIL,
+            destination=birthing_person.destination(ContactMethod.EMAIL),
+            template_data=notification_data,
+            metadata=notification_metadata.to_dict(),
+            priority=NotificationPriority.NORMAL,
         )
-        await self._domain_event_repository.save(domain_event=notification_event)
 
-        await self._domain_event_repository.commit()
-
-        try:
-            await self._domain_event_publisher.publish_batch()
-        except Exception as err:
-            log.error(f"Error creating background publishing job: {err}")
+        await self._notification_service_client.request_notification(notification_request)

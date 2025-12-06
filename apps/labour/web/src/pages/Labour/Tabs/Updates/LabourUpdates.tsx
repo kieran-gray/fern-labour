@@ -94,7 +94,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
   const { user } = useApiAuth();
-  const firstName = user?.profile.given_name || '';
+  const firstName = user?.given_name || '';
   const completed = labour.end_time != null;
   const labourUpdates = labour.labour_updates;
 

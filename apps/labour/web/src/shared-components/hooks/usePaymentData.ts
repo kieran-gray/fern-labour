@@ -32,7 +32,7 @@ export function useCreateCheckoutSession() {
     },
     onSuccess: async (data) => {
       window.location.href = data.url!;
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
     },
     onError: async (error) => {
       let message = 'Unknown error occurred';

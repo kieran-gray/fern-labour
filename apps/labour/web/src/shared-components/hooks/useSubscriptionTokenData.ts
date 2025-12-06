@@ -10,7 +10,7 @@ export function useSubscriptionToken() {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeys.token.user(user?.profile.sub || ''),
+    queryKey: queryKeys.token.user(user?.sub || ''),
     queryFn: async () => {
       try {
         const response = await LabourService.getSubscriptionToken();
@@ -19,6 +19,6 @@ export function useSubscriptionToken() {
         throw new Error('Failed to load subscription token. Please try again later.');
       }
     },
-    enabled: !!user?.profile.sub,
+    enabled: !!user?.sub,
   });
 }

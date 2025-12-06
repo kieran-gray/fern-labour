@@ -57,11 +57,11 @@ export function ContactUs() {
     }
 
     const requestBody: ContactUsRequest = {
-      email: `${user?.profile.email}`,
-      name: `${user?.profile.given_name} ${user?.profile.family_name}`,
+      email: `${user?.email}`,
+      name: `${user?.given_name} ${user?.family_name}`,
       message: values.message,
       token: turnstileToken!,
-      user_id: user?.profile.sub,
+      user_id: user?.sub,
       category: values.category,
       data,
     };

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use fern_labour_shared::clients::HttpClientTrait;
+use fern_labour_workers_shared::clients::HttpClientTrait;
 use serde::Deserialize;
 use tracing::{error, info};
 

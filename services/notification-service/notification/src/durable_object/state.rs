@@ -6,7 +6,7 @@ use fern_labour_notifications_shared::{
     QueueMessage, QueueProducerTrait,
 };
 use fern_labour_workers_shared::{
-    clients::{dispatch::FetcherDispatchClient, generation::FetcherGenerationClient},
+    clients::{FetcherDispatchClient, FetcherGenerationClient},
     NotificationQueueProducer,
 };
 use worker::{Env, State};

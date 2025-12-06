@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use fern_labour_shared::{ConfigTrait, SetupError};
+use fern_labour_workers_shared::{ConfigTrait, SetupError};
 use serde::Deserialize;
 use worker::Env;
 

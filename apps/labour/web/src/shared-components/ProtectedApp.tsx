@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
-import { hasAuthParams, useAuth } from 'react-oidc-context';
+import { useAuth0 } from '@auth0/auth0-react';
 import { ErrorContainer } from './ErrorContainer/ErrorContainer';
 import { PageLoading } from './PageLoading/PageLoading';
 
@@ -12,39 +12,11 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
   const { children } = props;
 
   const { isOnline } = useNetworkState();
-  const auth = useAuth();
-  const [hasTriedSignin, setHasTriedSignin] = useState(false);
+  const { isAuthenticated, isLoading, error, user, loginWithRedirect, getAccessTokenSilently } = useAuth0();
   const wasOnlineRef = useRef<boolean | null>(null);
-  const isSilentRedirectRoute = useMemo(() => window.location.pathname === '/silent-redirect', []);
 
-  /**
-   * Do auto sign in.
-   *
-   * See {@link https://github.com/authts/react-oidc-context?tab=readme-ov-file#automatic-sign-in}
-   */
+  // Handle reconnection - refresh token when coming back online
   useEffect(() => {
-    if (isSilentRedirectRoute) {
-      return;
-    }
-
-    if (
-      !(
-        hasAuthParams() ||
-        auth.isAuthenticated ||
-        auth.activeNavigator ||
-        auth.isLoading ||
-        hasTriedSignin
-      )
-    ) {
-      void auth.signinRedirect();
-      setHasTriedSignin(true);
-    }
-  }, [auth, hasTriedSignin, isSilentRedirectRoute]);
-
-  useEffect(() => {
-    if (isSilentRedirectRoute) {
-      return;
-    }
     if (wasOnlineRef.current === null) {
       wasOnlineRef.current = isOnline;
       return;
@@ -57,39 +29,42 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
       return;
     }
 
-    if (auth.user || auth.isAuthenticated) {
-      auth.signinSilent().catch(() => {
-        void auth.signinRedirect();
+    if (user || isAuthenticated) {
+      getAccessTokenSilently({ cacheMode: 'off' }).catch(() => {
+        void loginWithRedirect();
       });
       return;
     }
 
-    if (!auth.activeNavigator && !auth.isLoading) {
-      void auth.signinRedirect();
+    if (!isLoading) {
+      void loginWithRedirect();
     }
-  }, [isOnline, auth, isSilentRedirectRoute]);
+  }, [isOnline, user, isAuthenticated, isLoading, getAccessTokenSilently, loginWithRedirect]);
 
-  if (!isSilentRedirectRoute && auth.error) {
-    if (auth.error?.message.includes('No matching state')) {
+  if (error) {
+    if (error?.message.includes('No matching state') || error?.message.includes('state mismatch')) {
       window.location.href = '/';
       return <PageLoading />;
     }
 
-    if (!isOnline && auth.user) {
-      // User exists in storage, allow access in offline mode
+    if (!isOnline && user) {
       return children;
     }
 
-    return <ErrorContainer message={auth.error?.message} />;
+    return <ErrorContainer message={error?.message} />;
   }
 
-  if (!isSilentRedirectRoute && auth.isLoading) {
+  if (isLoading) {
     return <PageLoading />;
   }
 
-  if (isSilentRedirectRoute || auth.isAuthenticated) {
+  if (isAuthenticated) {
     return children;
   }
 
-  return <ErrorContainer message="Unable to sign in" />;
+  if (!isLoading) {
+    void loginWithRedirect();
+  }
+
+  return <PageLoading />;
 };

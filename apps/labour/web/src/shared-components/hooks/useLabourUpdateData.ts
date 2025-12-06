@@ -28,11 +28,11 @@ export function useCreateLabourUpdate() {
     },
     onMutate: async (request: LabourUpdateRequest) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+      await queryClient.cancelQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
 
       // Snapshot the previous value
       const previousLabourState: LabourDTO | undefined = queryClient.getQueryData(
-        queryKeys.labour.user(user?.profile.sub || '')
+        queryKeys.labour.user(user?.sub || '')
       );
 
       // Optimistically update with new labour update
@@ -49,13 +49,13 @@ export function useCreateLabourUpdate() {
 
         const newLabourState = cloneDeep(previousLabourState);
         newLabourState.labour_updates.unshift(newLabourUpdate); // Add to beginning
-        queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), newLabourState);
+        queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), newLabourState);
       }
 
       return { previousLabourState };
     },
     onSuccess: (labour) => {
-      queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
+      queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), labour);
       notifications.show({
         ...Success,
         title: 'Success',
@@ -66,7 +66,7 @@ export function useCreateLabourUpdate() {
       // Rollback optimistic update
       if (context?.previousLabourState) {
         queryClient.setQueryData(
-          queryKeys.labour.user(user?.profile.sub || ''),
+          queryKeys.labour.user(user?.sub || ''),
           context.previousLabourState
         );
       }
@@ -77,7 +77,7 @@ export function useCreateLabourUpdate() {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
     },
   });
 }
@@ -95,7 +95,7 @@ export function useEditLabourUpdate() {
       return response.labour;
     },
     onSuccess: (labour) => {
-      queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
+      queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), labour);
       notifications.show({
         ...Success,
         title: 'Success',
@@ -110,7 +110,7 @@ export function useEditLabourUpdate() {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
     },
   });
 }
@@ -129,7 +129,7 @@ export function useDeleteLabourUpdate() {
       return response.labour;
     },
     onSuccess: (labour) => {
-      queryClient.setQueryData(queryKeys.labour.user(user?.profile.sub || ''), labour);
+      queryClient.setQueryData(queryKeys.labour.user(user?.sub || ''), labour);
       notifications.show({
         ...Success,
         title: 'Success',
@@ -144,7 +144,7 @@ export function useDeleteLabourUpdate() {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.profile.sub || '') });
+      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
     },
   });
 }

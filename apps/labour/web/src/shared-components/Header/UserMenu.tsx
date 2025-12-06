@@ -13,7 +13,7 @@ import {
   IconSwitchHorizontal,
   IconTrash,
 } from '@tabler/icons-react';
-import { useAuth } from 'react-oidc-context';
+import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
@@ -57,7 +57,7 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
 
 export function MobileUserMenu() {
   const [section, setSection] = useState<'app' | 'account'>('app');
-  const auth = useAuth();
+  const { user, loginWithRedirect, logout } = useAuth0();
   const navigate = useNavigate();
   const pathname = window.location.pathname;
   const { mode, setMode } = useMode();
@@ -156,7 +156,9 @@ export function MobileUserMenu() {
           className={classes.mainLink}
           onClick={(event) => {
             event.preventDefault();
-            auth.signinRedirect({ extraQueryParams: { kc_action: 'UPDATE_PROFILE' } });
+            void loginWithRedirect({
+              authorizationParams: { kc_action: 'UPDATE_PROFILE' },
+            });
           }}
           leftSection={<IconSettings size={16} stroke={1.5} />}
           size="md"
@@ -170,7 +172,9 @@ export function MobileUserMenu() {
           className={classes.mainLink}
           onClick={(event) => {
             event.preventDefault();
-            auth.signinRedirect({ extraQueryParams: { kc_action: 'UPDATE_PASSWORD' } });
+            void loginWithRedirect({
+              authorizationParams: { kc_action: 'UPDATE_PASSWORD' },
+            });
           }}
           leftSection={<IconPassword size={16} stroke={1.5} />}
           size="md"
@@ -184,7 +188,9 @@ export function MobileUserMenu() {
           className={classes.mainLink}
           onClick={(event) => {
             event.preventDefault();
-            auth.signinRedirect({ extraQueryParams: { kc_action: 'delete_account' } });
+            void loginWithRedirect({
+              authorizationParams: { kc_action: 'delete_account' },
+            });
           }}
           leftSection={<IconTrash size={16} stroke={1.5} />}
           size="md"
@@ -225,13 +231,13 @@ export function MobileUserMenu() {
 
       <div style={{ flexGrow: 1 }} />
       <div className={classes.footer}>
-        <UserButton name={auth.user?.profile.name ?? ''} />
+        <UserButton name={user?.name ?? ''} />
         <Button
           key="logout"
           className={classes.mainLink}
           onClick={(event) => {
             event.preventDefault();
-            void auth.signoutRedirect();
+            void logout({ logoutParams: { returnTo: window.location.origin } });
           }}
           size="md"
           w="100%"

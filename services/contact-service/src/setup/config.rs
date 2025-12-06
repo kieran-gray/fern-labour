@@ -1,4 +1,4 @@
-use fern_labour_shared::{ConfigTrait, SetupError};
+use fern_labour_workers_shared::{ConfigTrait, SetupError};
 use worker::Env;
 
 #[derive(Clone)]

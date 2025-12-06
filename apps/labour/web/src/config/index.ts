@@ -1,27 +1,15 @@
 import { QueryClient } from '@tanstack/react-query';
-import { UserManager, WebStorageStateStore } from 'oidc-client-ts';
-import { appRoutes } from '../lib/constants';
 
-export const userManager = new UserManager({
-  authority: import.meta.env.VITE_KEYCLOAK_AUTHORITY,
-  metadataUrl: import.meta.env.VITE_KEYCLOAK_METADATA_URL,
-  // biome-ignore lint/style/useNamingConvention: Expected
-  client_id: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
-  // biome-ignore lint/style/useNamingConvention: Expected
-  redirect_uri: `${window.location.origin}${window.location.pathname}${window.location.search}`,
-  // biome-ignore lint/style/useNamingConvention: Expected
-  post_logout_redirect_uri: import.meta.env.VITE_POST_LOGOUT_REDIRECT,
-  userStore: new WebStorageStateStore({ store: window.localStorage }),
-  monitorSession: window.isSecureContext && location.protocol === 'https:',
-  automaticSilentRenew: true,
-  // Used by iframe-based silent renew and as a fallback when refresh_token cannot be used
-  // biome-ignore lint/style/useNamingConvention: library option
-  silent_redirect_uri: `${window.location.origin}${appRoutes.SilentRedirect}`,
-  scope: 'openid profile offline_access',
-});
+const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
+const auth0Audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
 
-export const onSigninCallback = () => {
-  window.history.replaceState({}, document.title, window.location.pathname);
+export const auth0Config = {
+  domain: auth0Domain,
+  clientId: auth0ClientId,
+  audience: auth0Audience,
+  redirectUri: window.location.origin,
+  logoutRedirectUri: import.meta.env.VITE_POST_LOGOUT_REDIRECT || `${window.location.origin}/`,
 };
 
 export const queryClient = new QueryClient({

@@ -19,8 +19,8 @@ use crate::{
     setup::config::Config,
 };
 
-use fern_labour_shared::clients::{AuthServiceClient, FetcherAuthServiceClient};
-use fern_labour_shared::{SetupError, clients::WorkerHttpClient};
+use fern_labour_workers_shared::clients::{AuthServiceClient, FetcherAuthServiceClient};
+use fern_labour_workers_shared::{SetupError, clients::WorkerHttpClient};
 
 pub struct AppState {
     pub config: Config,

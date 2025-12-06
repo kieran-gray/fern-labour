@@ -2,7 +2,7 @@ use crate::{
     api::schemas::requests::CreateContactMessageRequest, application::exceptions::AppError,
     setup::app_state::AppState,
 };
-use fern_labour_shared::CorsContext;
+use fern_labour_workers_shared::CorsContext;
 use tracing::{error, info};
 use worker::{Request, Response, RouteContext};
 
