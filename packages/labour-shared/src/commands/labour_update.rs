@@ -3,8 +3,6 @@ use uuid::Uuid;
 
 use crate::value_objects::LabourUpdateType;
 
-
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "payload")]
 pub enum LabourUpdateCommand {
@@ -15,12 +13,18 @@ pub enum LabourUpdateCommand {
         message: String,
     },
 
-    #[serde(rename = "UpdateLabourUpdate")]
-    UpdateLabourUpdate {
+    #[serde(rename = "UpdateLabourUpdateMessage")]
+    UpdateLabourUpdateMessage {
         labour_id: Uuid,
         labour_update_id: Uuid,
-        message: Option<String>,
-        labour_update_type: Option<LabourUpdateType>
+        message: String,
+    },
+
+    #[serde(rename = "UpdateLabourUpdateType")]
+    UpdateLabourUpdateType {
+        labour_id: Uuid,
+        labour_update_id: Uuid,
+        labour_update_type: LabourUpdateType,
     },
 
     #[serde(rename = "DeleteLabourUpdate")]
@@ -34,7 +38,8 @@ impl LabourUpdateCommand {
     pub fn labour_id(&self) -> Option<Uuid> {
         match self {
             LabourUpdateCommand::PostLabourUpdate { labour_id, .. } => Some(*labour_id),
-            LabourUpdateCommand::UpdateLabourUpdate { labour_id, .. } => Some(*labour_id),
+            LabourUpdateCommand::UpdateLabourUpdateMessage { labour_id, .. } => Some(*labour_id),
+            LabourUpdateCommand::UpdateLabourUpdateType { labour_id, .. } => Some(*labour_id),
             LabourUpdateCommand::DeleteLabourUpdate { labour_id, .. } => Some(*labour_id),
         }
     }

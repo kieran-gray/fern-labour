@@ -1,8 +1,8 @@
-use crate::durable_object::write_side::domain::NotificationError;
+use crate::durable_object::write_side::domain::LabourError;
 
 #[derive(Debug)]
 pub enum AppError {
-    Domain(NotificationError),
+    Domain(LabourError),
     Unauthorised(String),
 }
 

@@ -1,16 +1,24 @@
 use fern_labour_event_sourcing_rs::CommandEnvelope;
-use fern_labour_notifications_shared::{AdminCommand, InternalCommand};
+use fern_labour_labour_shared::{
+    AdminCommand, ContractionCommand, LabourCommand, LabourUpdateCommand,
+};
 use tracing::info;
 use worker::{Request, Response, Result};
 
-use crate::durable_object::write_side::domain::NotificationCommand;
+use crate::durable_object::write_side::domain::LabourCommand as LabourDomainCommand;
 
 pub enum RequestDto {
     DomainCommand {
-        envelope: CommandEnvelope<NotificationCommand>,
+        envelope: CommandEnvelope<LabourDomainCommand>,
     },
-    InternalCommand {
-        envelope: CommandEnvelope<InternalCommand>,
+    LabourCommand {
+        envelope: CommandEnvelope<LabourCommand>,
+    },
+    ContractionCommand {
+        envelope: CommandEnvelope<ContractionCommand>,
+    },
+    LabourUpdateCommand {
+        envelope: CommandEnvelope<LabourUpdateCommand>,
     },
     AdminCommand {
         envelope: CommandEnvelope<AdminCommand>,
@@ -25,8 +33,8 @@ impl RequestDto {
         let method = req.method();
 
         match (method, path) {
-            (worker::Method::Post, "/notification/domain") => {
-                let envelope: CommandEnvelope<NotificationCommand> = req.json().await?;
+            (worker::Method::Post, "/labour/domain") => {
+                let envelope: CommandEnvelope<LabourDomainCommand> = req.json().await?;
 
                 info!(
                     aggregate_id = %envelope.metadata.aggregate_id,
@@ -38,18 +46,44 @@ impl RequestDto {
 
                 Ok(Self::DomainCommand { envelope })
             }
-            (worker::Method::Post, "/notification/command") => {
-                let envelope: CommandEnvelope<InternalCommand> = req.json().await?;
+            (worker::Method::Post, "/labour/command") => {
+                let envelope: CommandEnvelope<LabourCommand> = req.json().await?;
 
                 info!(
                     aggregate_id = %envelope.metadata.aggregate_id,
                     correlation_id = %envelope.metadata.correlation_id,
                     user_id = %envelope.metadata.user_id,
                     idempotency_key = %envelope.metadata.idempotency_key,
-                    "Deserialized internal command"
+                    "Deserialized labour command"
                 );
 
-                Ok(Self::InternalCommand { envelope })
+                Ok(Self::LabourCommand { envelope })
+            }
+            (worker::Method::Post, "/contraction/command") => {
+                let envelope: CommandEnvelope<ContractionCommand> = req.json().await?;
+
+                info!(
+                    aggregate_id = %envelope.metadata.aggregate_id,
+                    correlation_id = %envelope.metadata.correlation_id,
+                    user_id = %envelope.metadata.user_id,
+                    idempotency_key = %envelope.metadata.idempotency_key,
+                    "Deserialized contraction command"
+                );
+
+                Ok(Self::ContractionCommand { envelope })
+            }
+            (worker::Method::Post, "/labour_update/command") => {
+                let envelope: CommandEnvelope<LabourUpdateCommand> = req.json().await?;
+
+                info!(
+                    aggregate_id = %envelope.metadata.aggregate_id,
+                    correlation_id = %envelope.metadata.correlation_id,
+                    user_id = %envelope.metadata.user_id,
+                    idempotency_key = %envelope.metadata.idempotency_key,
+                    "Deserialized labour update command"
+                );
+
+                Ok(Self::LabourUpdateCommand { envelope })
             }
             (worker::Method::Post, "/admin/command") => {
                 let envelope: CommandEnvelope<AdminCommand> = req.json().await?;
@@ -63,7 +97,7 @@ impl RequestDto {
 
                 Ok(Self::AdminCommand { envelope })
             }
-            (worker::Method::Get, "/notification/events") => Ok(Self::EventsQuery),
+            (worker::Method::Get, "/labour/events") => Ok(Self::EventsQuery),
             _ => Response::error("Not Found", 404).map(|_| unreachable!()),
         }
     }

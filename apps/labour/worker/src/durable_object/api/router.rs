@@ -3,7 +3,7 @@ use worker::Response;
 
 use crate::durable_object::{
     NotificationAggregate, api::RequestDto, exceptions::IntoWorkerResponse,
-    write_side::domain::NotificationCommand,
+    write_side::domain::LabourCommand,
 };
 
 pub enum CommandResult {
@@ -51,7 +51,7 @@ pub fn route_and_handle(aggregate: &NotificationAggregate, request: RequestDto) 
             let result = aggregate
                 .services
                 .write_model()
-                .notification_command_processor
+                .labour_command_processor
                 .handle_command(envelope.command, envelope.metadata.user_id.clone());
 
             if let Err(ref err) = result {
@@ -62,21 +62,71 @@ pub fn route_and_handle(aggregate: &NotificationAggregate, request: RequestDto) 
 
             CommandResult::from_unit_result(result)
         }
-        RequestDto::InternalCommand { envelope } => {
+        RequestDto::LabourCommand { envelope } => {
             info!(
                 aggregate_id = %envelope.metadata.aggregate_id,
                 correlation_id = %envelope.metadata.correlation_id,
                 user_id = %envelope.metadata.user_id,
                 idempotency_key = %envelope.metadata.idempotency_key,
-                "Processing internal command"
+                "Processing labour command"
             );
 
-            let domain_command = NotificationCommand::from(envelope.command.clone());
+            let domain_command = LabourCommand::from(envelope.command.clone());
 
             let result = aggregate
                 .services
                 .write_model()
-                .notification_command_processor
+                .labour_command_processor
+                .handle_command(domain_command, envelope.metadata.user_id.clone());
+
+            if let Err(ref err) = result {
+                error!("Command execution failed: {}", err);
+            } else {
+                info!("Command executed successfully");
+            }
+
+            CommandResult::from_unit_result(result)
+        }
+        RequestDto::LabourUpdateCommand { envelope } => {
+            info!(
+                aggregate_id = %envelope.metadata.aggregate_id,
+                correlation_id = %envelope.metadata.correlation_id,
+                user_id = %envelope.metadata.user_id,
+                idempotency_key = %envelope.metadata.idempotency_key,
+                "Processing labour update command"
+            );
+
+            let domain_command = LabourCommand::from(envelope.command.clone());
+
+            let result = aggregate
+                .services
+                .write_model()
+                .labour_command_processor
+                .handle_command(domain_command, envelope.metadata.user_id.clone());
+
+            if let Err(ref err) = result {
+                error!("Command execution failed: {}", err);
+            } else {
+                info!("Command executed successfully");
+            }
+
+            CommandResult::from_unit_result(result)
+        }
+        RequestDto::ContractionCommand { envelope } => {
+            info!(
+                aggregate_id = %envelope.metadata.aggregate_id,
+                correlation_id = %envelope.metadata.correlation_id,
+                user_id = %envelope.metadata.user_id,
+                idempotency_key = %envelope.metadata.idempotency_key,
+                "Processing contraction command"
+            );
+
+            let domain_command = LabourCommand::from(envelope.command.clone());
+
+            let result = aggregate
+                .services
+                .write_model()
+                .labour_command_processor
                 .handle_command(domain_command, envelope.metadata.user_id.clone());
 
             if let Err(ref err) = result {

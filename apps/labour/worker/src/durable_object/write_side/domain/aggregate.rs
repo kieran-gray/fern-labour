@@ -1,78 +1,80 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::fmt::Debug;
 
+use chrono::{DateTime, Duration, Utc};
+use fern_labour_labour_shared::value_objects::{LabourPhase, LabourUpdateType};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use fern_labour_event_sourcing_rs::Aggregate;
 
 use crate::durable_object::write_side::domain::{
-    NotificationCommand, NotificationError, NotificationEvent,
+    LabourCommand, LabourError, LabourEvent,
+    entities::{contraction::Contraction, labour_update::LabourUpdate},
 };
+
+// TODO move somewhere else
+const ANNOUNCEMENT_COOLDOWN_SECONDS: i64 = 10;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Labour {
     id: Uuid,
-    status: NotificationStatus,
-    channel: NotificationChannel,
-    destination: NotificationDestination,
-    template_data: NotificationTemplateData,
-    metadata: Option<HashMap<String, String>>,
-    priority: NotificationPriority,
-    external_id: Option<String>,
-    rendered_content: Option<RenderedContent>,
-    failure_reason: Option<String>,
+    birthing_person_id: String,
+    phase: LabourPhase,
+    contractions: Vec<Contraction>,
+    labour_updates: Vec<LabourUpdate>,
+    start_time: Option<DateTime<Utc>>,
+    end_time: Option<DateTime<Utc>>,
 }
 
 impl Labour {
+    // TODO which need to be public
     pub fn id(&self) -> Uuid {
         self.id
     }
 
-    pub fn status(&self) -> &NotificationStatus {
-        &self.status
+    pub fn birthing_person_id(&self) -> &String {
+        &self.birthing_person_id
     }
 
-    pub fn channel(&self) -> &NotificationChannel {
-        &self.channel
+    pub fn phase(&self) -> &LabourPhase {
+        &self.phase
     }
 
-    pub fn destination(&self) -> &NotificationDestination {
-        &self.destination
+    pub fn has_active_contraction(&self) -> bool {
+        self.contractions.iter().any(|c| c.is_active())
     }
 
-    pub fn template_data(&self) -> &NotificationTemplateData {
-        &self.template_data
+    pub fn find_contraction(&self, contraction_id: Uuid) -> Option<&Contraction> {
+        self.contractions.iter().find(|c| c.id() == contraction_id)
     }
 
-    pub fn metadata(&self) -> Option<&HashMap<String, String>> {
-        self.metadata.as_ref()
+    pub fn find_labour_update(&self, labour_update_id: Uuid) -> Option<&LabourUpdate> {
+        self.labour_updates
+            .iter()
+            .find(|lu| lu.id() == labour_update_id)
     }
 
-    pub fn external_id(&self) -> Option<&String> {
-        self.external_id.as_ref()
+    pub fn find_last_announcement(&self) -> Option<&LabourUpdate> {
+        self.labour_updates
+            .iter()
+            .filter(|lu| lu.labour_update_type() == &LabourUpdateType::ANNOUNCEMENT)
+            .max_by_key(|lu| lu.sent_time())
     }
 
-    pub fn rendered_content(&self) -> Option<&RenderedContent> {
-        self.rendered_content.as_ref()
-    }
-
-    pub fn failure_reason(&self) -> Option<&String> {
-        self.failure_reason.as_ref()
-    }
-
-    pub fn priority(&self) -> &NotificationPriority {
-        &self.priority
-    }
-
-    pub fn is_priority(&self) -> bool {
-        self.priority.is_high()
+    pub fn can_send_announcement(&self) -> bool {
+        match self.find_last_announcement() {
+            None => true,
+            Some(last) => {
+                Utc::now() - last.sent_time() > Duration::seconds(ANNOUNCEMENT_COOLDOWN_SECONDS)
+            }
+        }
     }
 }
 
 impl Aggregate for Labour {
-    type Command = NotificationCommand;
-    type Error = NotificationError;
-    type Event = NotificationEvent;
+    type Command = LabourCommand;
+    type Error = LabourError;
+    type Event = LabourEvent;
 
     fn aggregate_id(&self) -> String {
         self.id.to_string()
@@ -80,39 +82,69 @@ impl Aggregate for Labour {
 
     fn apply(&mut self, event: &Self::Event) {
         match event {
-            NotificationEvent::NotificationRequested {
-                notification_id,
-                channel,
-                destination,
-                template_data,
-                metadata,
-                priority,
+            LabourEvent::LabourPlanned {
+                labour_id,
+                birthing_person_id,
+                ..
             } => {
-                self.id = *notification_id;
-                self.channel = channel.clone();
-                self.destination = destination.clone();
-                self.template_data = template_data.clone();
-                self.metadata = metadata.clone();
-                self.priority = *priority;
-                self.status = NotificationStatus::REQUESTED;
+                self.id = *labour_id;
+                self.birthing_person_id = birthing_person_id.clone();
+                self.phase = LabourPhase::PLANNED;
             }
-            NotificationEvent::RenderedContentStored {
-                rendered_content, ..
+            LabourEvent::LabourBegun { start_time, .. } => {
+                self.start_time = Some(*start_time);
+                self.phase = LabourPhase::EARLY;
+            }
+            LabourEvent::LabourCompleted { end_time, .. } => {
+                self.end_time = Some(*end_time);
+                self.phase = LabourPhase::COMPLETE;
+            }
+            LabourEvent::ContractionStarted {
+                labour_id,
+                start_time,
             } => {
-                self.rendered_content = Some(rendered_content.clone());
-                self.status = NotificationStatus::RENDERED;
+                let contraction = Contraction::start(labour_id.clone(), *start_time);
+                self.contractions.push(contraction);
             }
-            NotificationEvent::NotificationDispatched { external_id, .. } => {
-                self.external_id = external_id.clone();
-                self.status = NotificationStatus::SENT;
+            LabourEvent::ContractionEnded {
+                end_time,
+                intensity,
+                ..
+            } => {
+                let contraction = self.contractions.last_mut().expect("No contractions found");
+                contraction.end(end_time.clone(), *intensity);
             }
-            NotificationEvent::NotificationDelivered { .. } => {
-                self.status = NotificationStatus::DELIVERED;
+            LabourEvent::ContractionUpdated { .. } => {
+                // TODO: skip CBA for now
             }
-            NotificationEvent::NotificationDeliveryFailed { reason, .. } => {
-                self.status = NotificationStatus::FAILED;
-                self.failure_reason = reason.clone();
+            LabourEvent::ContractionDeleted { .. } => {
+                // TODO
             }
+            LabourEvent::LabourUpdatePosted {
+                labour_id,
+                labour_update_type,
+                message,
+                sent_time,
+            } => {
+                let labour_update = LabourUpdate::create(
+                    *labour_id,
+                    labour_update_type.clone(),
+                    message.clone(),
+                    *sent_time,
+                    false,
+                );
+                self.labour_updates.push(labour_update);
+            }
+            LabourEvent::LabourUpdateMessageUpdated { .. } => {
+                // TODO
+            }
+            LabourEvent::LabourUpdateTypeUpdated { .. } => {
+                // TODO
+            }
+            LabourEvent::LabourUpdateDeleted { .. } => {}
+            LabourEvent::LabourPlanUpdated { .. }
+            | LabourEvent::LabourInviteSent { .. }
+            | LabourEvent::LabourDeleted { .. } => {}
         }
     }
 
@@ -121,126 +153,354 @@ impl Aggregate for Labour {
         command: Self::Command,
     ) -> std::result::Result<Vec<Self::Event>, Self::Error> {
         let events = match command {
-            NotificationCommand::RequestNotification {
-                notification_id,
-                channel,
-                destination,
-                template_data,
-                metadata,
-                priority,
+            LabourCommand::PlanLabour {
+                labour_id,
+                birthing_person_id,
+                first_labour,
+                due_date,
+                labour_name,
             } => {
-                if state.is_some() {
-                    return Err(NotificationError::AlreadyExists);
+                if let Some(labour) = state {
+                    return Err(LabourError::InvalidStateTransition(
+                        labour.phase.to_string(),
+                        LabourPhase::PLANNED.to_string(),
+                    ));
                 }
-                if !destination.matches_channel(&channel) {
-                    return Err(NotificationError::ValidationError(format!(
-                        "Destination channel {} does not match notification channel {}",
-                        destination.channel(),
-                        channel
+
+                vec![LabourEvent::LabourPlanned {
+                    labour_id,
+                    birthing_person_id,
+                    first_labour,
+                    due_date,
+                    labour_name,
+                }]
+            }
+            LabourCommand::UpdateLabourPlan {
+                labour_id,
+                first_labour,
+                due_date,
+                labour_name,
+            } => {
+                if state.is_none() {
+                    return Err(LabourError::NotFound);
+                };
+
+                vec![LabourEvent::LabourPlanUpdated {
+                    labour_id,
+                    first_labour,
+                    due_date,
+                    labour_name,
+                }]
+            }
+            LabourCommand::BeginLabour { labour_id } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if labour.phase != LabourPhase::PLANNED {
+                    return Err(LabourError::InvalidStateTransition(
+                        labour.phase.to_string(),
+                        LabourPhase::EARLY.to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::LabourBegun {
+                    labour_id,
+                    start_time: Utc::now(),
+                }]
+            }
+            LabourCommand::CompleteLabour { labour_id } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if labour.phase == LabourPhase::COMPLETE {
+                    return Err(LabourError::InvalidStateTransition(
+                        labour.phase.to_string(),
+                        LabourPhase::COMPLETE.to_string(),
+                    ));
+                }
+
+                if labour.has_active_contraction() {
+                    return Err(LabourError::ValidationError(format!(
+                        "Cannot complete labour with active contraction"
                     )));
                 }
 
-                vec![NotificationEvent::NotificationRequested {
-                    notification_id,
-                    channel: channel.clone(),
-                    destination,
-                    template_data: template_data.clone(),
-                    metadata,
-                    priority,
+                vec![LabourEvent::LabourCompleted {
+                    labour_id,
+                    end_time: Utc::now(),
                 }]
             }
-            NotificationCommand::StoreRenderedContent {
-                notification_id,
-                rendered_content,
+            LabourCommand::SendLabourInvite {
+                labour_id,
+                invite_email,
             } => {
-                let Some(notification) = &state else {
-                    return Err(NotificationError::NotFound);
+                // TODO rate limiting checks per invite_email
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
                 };
 
-                if notification.status != NotificationStatus::REQUESTED {
-                    return Err(NotificationError::InvalidStateTransition(
-                        "Cannot store template for notification not in REQUESTED state".to_string(),
+                if labour.phase == LabourPhase::COMPLETE {
+                    return Err(LabourError::InvalidCommand(format!(
+                        "Cannot invite to completed labour"
+                    )));
+                }
+
+                vec![LabourEvent::LabourInviteSent {
+                    labour_id,
+                    invite_email,
+                }]
+            }
+            LabourCommand::DeleteLabour { labour_id } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if labour.phase != LabourPhase::COMPLETE {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot delete active labour".to_string(),
                     ));
                 }
 
-                if rendered_content.channel() != notification.channel.to_string() {
-                    return Err(NotificationError::ValidationError(
-                        "Rendered content channel doesn't match notification channel".to_string(),
+                vec![LabourEvent::LabourDeleted { labour_id }]
+            }
+            LabourCommand::StartContraction {
+                labour_id,
+                start_time,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if labour.phase == LabourPhase::COMPLETE {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot start contraction in completed labour".to_string(),
                     ));
                 }
 
-                vec![NotificationEvent::RenderedContentStored {
-                    notification_id,
-                    rendered_content: rendered_content.clone(),
-                }]
+                if labour.has_active_contraction() {
+                    return Err(LabourError::InvalidCommand(
+                        "Labour already has a contraction in progress".to_string(),
+                    ));
+                }
+
+                let mut events = vec![];
+
+                if labour.phase == LabourPhase::PLANNED {
+                    events.push(LabourEvent::LabourBegun {
+                        labour_id,
+                        start_time: Utc::now(),
+                    })
+                }
+
+                events.push(LabourEvent::ContractionStarted {
+                    labour_id,
+                    start_time,
+                });
+
+                events
             }
-            NotificationCommand::MarkAsDispatched {
-                notification_id,
-                external_id,
+            LabourCommand::EndContraction {
+                labour_id,
+                end_time,
+                intensity,
             } => {
-                let Some(notification) = &state else {
-                    return Err(NotificationError::NotFound);
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
                 };
 
-                if ![NotificationStatus::RENDERED, NotificationStatus::FAILED]
-                    .contains(&notification.status)
+                if labour.phase == LabourPhase::COMPLETE {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot start contraction in completed labour".to_string(),
+                    ));
+                }
+
+                if !labour.has_active_contraction() {
+                    return Err(LabourError::InvalidCommand(
+                        "Labour does not have an active contraction".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::ContractionEnded {
+                    labour_id,
+                    end_time,
+                    intensity,
+                }]
+            }
+            LabourCommand::UpdateContraction {
+                labour_id,
+                contraction_id,
+                start_time,
+                end_time,
+                intensity,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if labour.phase == LabourPhase::COMPLETE {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot update contraction in completed labour".to_string(),
+                    ));
+                }
+
+                let Some(contraction) = labour.find_contraction(contraction_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Contraction not found".to_string(),
+                    ));
+                };
+
+                if contraction.is_active() {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot update active contraction".to_string(),
+                    ));
+                }
+
+                // TODO actual update validation logic to check for overlapping contractions etc.
+
+                vec![LabourEvent::ContractionUpdated {
+                    labour_id,
+                    contraction_id,
+                    start_time,
+                    end_time,
+                    intensity,
+                }]
+            }
+            LabourCommand::DeleteContraction {
+                labour_id,
+                contraction_id,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if labour.phase == LabourPhase::COMPLETE {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot delete contraction in completed labour".to_string(),
+                    ));
+                }
+
+                let Some(contraction) = labour.find_contraction(contraction_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Contraction not found".to_string(),
+                    ));
+                };
+
+                if contraction.is_active() {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot delete active contraction".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::ContractionDeleted {
+                    labour_id,
+                    contraction_id,
+                }]
+            }
+            LabourCommand::PostLabourUpdate {
+                labour_id,
+                labour_update_type,
+                message,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if labour_update_type == LabourUpdateType::ANNOUNCEMENT
+                    && !labour.can_send_announcement()
                 {
-                    return Err(NotificationError::InvalidStateTransition(
-                        "Cannot dispatch notification in current state".to_string(),
+                    return Err(LabourError::InvalidCommand(
+                        "Too soon since last announcement".to_string(),
                     ));
                 }
 
-                vec![NotificationEvent::NotificationDispatched {
-                    notification_id,
-                    external_id,
+                vec![LabourEvent::LabourUpdatePosted {
+                    labour_id,
+                    labour_update_type,
+                    message,
+                    sent_time: Utc::now(),
                 }]
             }
-            NotificationCommand::MarkAsDelivered { notification_id } => {
-                let Some(notification) = &state else {
-                    return Err(NotificationError::NotFound);
-                };
-
-                if notification.status != NotificationStatus::SENT {
-                    return Err(NotificationError::InvalidStateTransition(
-                        "Cannot mark as delivered if not in SENT state".to_string(),
-                    ));
-                }
-
-                let Some(external_id) = notification.external_id.clone() else {
-                    return Err(NotificationError::InvalidStateTransition(
-                        "Cannot mark as delivered, no external ID".to_string(),
-                    ));
-                };
-
-                vec![NotificationEvent::NotificationDelivered {
-                    notification_id,
-                    external_id,
-                }]
-            }
-            NotificationCommand::MarkAsFailed {
-                notification_id,
-                reason,
+            LabourCommand::UpdateLabourUpdateType {
+                labour_id,
+                labour_update_id,
+                labour_update_type,
             } => {
-                let Some(notification) = &state else {
-                    return Err(NotificationError::NotFound);
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
                 };
 
-                let Some(external_id) = notification.external_id.clone() else {
-                    return Err(NotificationError::InvalidStateTransition(
-                        "Cannot mark as failed, no external ID".to_string(),
+                let Some(labour_update) = labour.find_labour_update(labour_update_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Labour update not found".to_string(),
                     ));
                 };
 
-                if NotificationStatus::SENT != notification.status {
-                    return Err(NotificationError::InvalidStateTransition(
-                        "Can only mark as failed from SENT state".to_string(),
+                if labour_update.labour_update_type() == &LabourUpdateType::ANNOUNCEMENT {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot update an announcement".to_string(),
                     ));
                 }
 
-                vec![NotificationEvent::NotificationDeliveryFailed {
-                    notification_id,
-                    external_id,
-                    reason,
+                if labour_update_type == LabourUpdateType::ANNOUNCEMENT
+                    && !labour.can_send_announcement()
+                {
+                    return Err(LabourError::InvalidCommand(
+                        "Too soon since last announcement".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::LabourUpdateTypeUpdated {
+                    labour_id,
+                    labour_update_id,
+                    labour_update_type,
+                }]
+            }
+            LabourCommand::UpdateLabourUpdateMessage {
+                labour_id,
+                labour_update_id,
+                message,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(labour_update) = labour.find_labour_update(labour_update_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Labour update not found".to_string(),
+                    ));
+                };
+
+                if labour_update.labour_update_type() == &LabourUpdateType::ANNOUNCEMENT {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot update an announcement".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::LabourUpdateMessageUpdated {
+                    labour_id,
+                    labour_update_id,
+                    message,
+                }]
+            }
+            LabourCommand::DeleteLabourUpdate {
+                labour_id,
+                labour_update_id,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(_) = labour.find_labour_update(labour_update_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Labour update not found".to_string(),
+                    ));
+                };
+
+                vec![LabourEvent::LabourUpdateDeleted {
+                    labour_id,
+                    labour_update_id,
                 }]
             }
         };
@@ -249,24 +509,18 @@ impl Aggregate for Labour {
 
     fn from_events(events: &[Self::Event]) -> Option<Self> {
         let mut notification = match events.first() {
-            Some(NotificationEvent::NotificationRequested {
-                notification_id,
-                channel,
-                destination,
-                template_data,
-                metadata,
-                priority,
+            Some(LabourEvent::LabourPlanned {
+                labour_id,
+                birthing_person_id,
+                ..
             }) => Labour {
-                id: *notification_id,
-                status: NotificationStatus::REQUESTED,
-                channel: channel.clone(),
-                destination: destination.clone(),
-                template_data: template_data.clone(),
-                metadata: metadata.clone(),
-                priority: *priority,
-                external_id: None,
-                rendered_content: None,
-                failure_reason: None,
+                id: *labour_id,
+                birthing_person_id: birthing_person_id.clone(),
+                phase: LabourPhase::PLANNED,
+                contractions: vec![],
+                labour_updates: vec![],
+                start_time: None,
+                end_time: None,
             },
             _ => return None,
         };

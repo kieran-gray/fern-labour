@@ -1,6 +1,6 @@
 use anyhow::Result;
 use fern_labour_event_sourcing_rs::CommandEnvelope;
-use fern_labour_notifications_shared::AdminCommand;
+use fern_labour_labour_shared::AdminCommand;
 use tracing::info;
 
 pub struct AdminCommandProcessor;

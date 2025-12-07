@@ -8,19 +8,19 @@ use fern_labour_event_sourcing_rs::{
     EventEnvelope, EventEnvelopeAdapter, EventStoreTrait, Projector,
 };
 
-use crate::durable_object::write_side::domain::NotificationEvent;
+use crate::durable_object::write_side::domain::LabourEvent;
 
 pub struct ProjectionProcessor {
     event_store: Rc<dyn EventStoreTrait>,
-    projectors: HashMap<String, Box<dyn Projector<NotificationEvent>>>,
+    projectors: HashMap<String, Box<dyn Projector<LabourEvent>>>,
 }
 
 impl ProjectionProcessor {
     pub fn create(
         event_store: Rc<dyn EventStoreTrait>,
-        projectors: Vec<Box<dyn Projector<NotificationEvent>>>,
+        projectors: Vec<Box<dyn Projector<LabourEvent>>>,
     ) -> Self {
-        let projector_map: HashMap<String, Box<dyn Projector<NotificationEvent>>> = projectors
+        let projector_map: HashMap<String, Box<dyn Projector<LabourEvent>>> = projectors
             .into_iter()
             .map(|proj| (proj.name().to_string(), proj))
             .collect();
@@ -43,7 +43,7 @@ impl ProjectionProcessor {
             return Ok(());
         }
 
-        let envelopes: Vec<EventEnvelope<NotificationEvent>> = stored_events
+        let envelopes: Vec<EventEnvelope<LabourEvent>> = stored_events
             .into_iter()
             .map(|stored| stored.to_envelope())
             .collect::<Result<Vec<_>>>()?;

@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use chrono::NaiveDateTime;
 use fern_labour_event_sourcing_rs::{Event, EventEnvelope, EventMetadata, EventStoreTrait};
 
-use crate::durable_object::write_side::domain::NotificationEvent;
+use crate::durable_object::write_side::domain::LabourEvent;
 
 pub struct QueryService {
     event_store: Rc<dyn EventStoreTrait>,
@@ -15,7 +15,7 @@ impl QueryService {
         Self { event_store }
     }
 
-    pub fn get_event_stream(&self) -> Result<Vec<EventEnvelope<NotificationEvent>>> {
+    pub fn get_event_stream(&self) -> Result<Vec<EventEnvelope<LabourEvent>>> {
         let stored_events = self
             .event_store
             .load()
@@ -25,10 +25,10 @@ impl QueryService {
             return Ok(vec![]);
         }
 
-        let envelopes: Vec<EventEnvelope<NotificationEvent>> = stored_events
+        let envelopes: Vec<EventEnvelope<LabourEvent>> = stored_events
             .into_iter()
             .map(|stored| {
-                let event: NotificationEvent = serde_json::from_str(&stored.event_data)
+                let event: LabourEvent = serde_json::from_str(&stored.event_data)
                     .context("Failed to deserialize notification event")?;
 
                 let timestamp =

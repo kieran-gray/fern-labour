@@ -1,110 +1,216 @@
-use std::{collections::HashMap, str::FromStr};
-
-use anyhow::{Context, Result};
+use anyhow::Result;
+use chrono::{DateTime, Utc};
+use fern_labour_labour_shared::{
+    ContractionCommand, LabourUpdateCommand,
+    commands::labour::{LabourCommand as LabourApiCommand, PublicCommand},
+    value_objects::LabourUpdateType,
+};
 use serde::{Deserialize, Serialize};
-use strum::VariantNames;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum NotificationCommand {
-    RequestNotification {
-        notification_id: Uuid,
-        channel: NotificationChannel,
-        destination: NotificationDestination,
-        template_data: NotificationTemplateData,
-        metadata: Option<HashMap<String, String>>,
-        priority: NotificationPriority,
+pub enum LabourCommand {
+    PlanLabour {
+        labour_id: Uuid,
+        birthing_person_id: String,
+        first_labour: bool,
+        due_date: DateTime<Utc>,
+        labour_name: Option<String>,
     },
-    StoreRenderedContent {
-        notification_id: Uuid,
-        rendered_content: RenderedContent,
+    UpdateLabourPlan {
+        labour_id: Uuid,
+        first_labour: bool,
+        due_date: DateTime<Utc>,
+        labour_name: Option<String>,
     },
-    MarkAsDispatched {
-        notification_id: Uuid,
-        external_id: Option<String>,
+    BeginLabour {
+        labour_id: Uuid,
     },
-    MarkAsDelivered {
-        notification_id: Uuid,
+    CompleteLabour {
+        labour_id: Uuid,
     },
-    MarkAsFailed {
-        notification_id: Uuid,
-        reason: Option<String>,
+    SendLabourInvite {
+        labour_id: Uuid,
+        invite_email: String,
+    },
+    DeleteLabour {
+        labour_id: Uuid,
+    },
+    // Contraction Commands
+    StartContraction {
+        labour_id: Uuid,
+        start_time: DateTime<Utc>,
+    },
+    EndContraction {
+        labour_id: Uuid,
+        end_time: DateTime<Utc>,
+        intensity: u8,
+    },
+    UpdateContraction {
+        labour_id: Uuid,
+        contraction_id: Uuid,
+        start_time: Option<DateTime<Utc>>,
+        end_time: Option<DateTime<Utc>>,
+        intensity: Option<u8>,
+    },
+    DeleteContraction {
+        labour_id: Uuid,
+        contraction_id: Uuid,
+    },
+    // Labour Update Commands
+    PostLabourUpdate {
+        labour_id: Uuid,
+        labour_update_type: LabourUpdateType,
+        message: String,
+    },
+    UpdateLabourUpdateMessage {
+        labour_id: Uuid,
+        labour_update_id: Uuid,
+        message: String,
+    },
+    UpdateLabourUpdateType {
+        labour_id: Uuid,
+        labour_update_id: Uuid,
+        labour_update_type: LabourUpdateType,
+    },
+    DeleteLabourUpdate {
+        labour_id: Uuid,
+        labour_update_id: Uuid,
     },
 }
 
-impl TryFrom<(PublicCommand, Uuid)> for NotificationCommand {
+impl TryFrom<(PublicCommand, Uuid, String)> for LabourCommand {
     type Error = anyhow::Error;
-    fn try_from((command, notification_id): (PublicCommand, Uuid)) -> Result<Self> {
+    fn try_from(
+        (command, labour_id, birthing_person_id): (PublicCommand, Uuid, String),
+    ) -> Result<Self> {
         match command {
-            PublicCommand::RequestNotification {
-                channel,
-                destination,
-                template_data,
-                metadata,
-                priority,
-            } => {
-                let channel = NotificationChannel::from_str(&channel).with_context(|| {
-                    format!(
-                        "Invalid notification channel: '{}'. Valid channels are: {}",
-                        channel,
-                        NotificationChannel::VARIANTS.join(", ")
-                    )
-                })?;
+            PublicCommand::PlanLabour {
+                first_labour,
+                due_date,
+                labour_name,
+            } => Ok(LabourCommand::PlanLabour {
+                labour_id,
+                birthing_person_id,
+                first_labour,
+                due_date,
+                labour_name,
+            }),
+        }
+    }
+}
 
-                let destination =
-                    NotificationDestination::from_string_and_channel(destination.clone(), &channel)
-                        .with_context(|| {
-                            format!(
-                                "Invalid destination '{}' for channel '{}'. Expected format: {}",
-                                destination,
-                                channel,
-                                match channel {
-                                    NotificationChannel::EMAIL => "valid email address",
-                                    NotificationChannel::SMS => "valid phone number (E.164 format)",
-                                    NotificationChannel::WHATSAPP =>
-                                        "valid phone number (E.164 format)",
-                                }
-                            )
-                        })?;
-                Ok(NotificationCommand::RequestNotification {
-                    notification_id,
-                    channel,
-                    destination,
-                    template_data,
-                    metadata,
-                    priority,
-                })
+impl From<LabourApiCommand> for LabourCommand {
+    fn from(cmd: LabourApiCommand) -> Self {
+        match cmd {
+            LabourApiCommand::UpdateLabourPlan {
+                labour_id,
+                first_labour,
+                due_date,
+                labour_name,
+            } => LabourCommand::UpdateLabourPlan {
+                labour_id,
+                first_labour,
+                due_date,
+                labour_name,
+            },
+            LabourApiCommand::BeginLabour { labour_id } => LabourCommand::BeginLabour { labour_id },
+            LabourApiCommand::CompleteLabour { labour_id } => {
+                LabourCommand::CompleteLabour { labour_id }
+            }
+            LabourApiCommand::SendLabourInvite {
+                labour_id,
+                invite_email,
+            } => LabourCommand::SendLabourInvite {
+                labour_id,
+                invite_email,
+            },
+            LabourApiCommand::DeleteLabour { labour_id } => {
+                LabourCommand::DeleteLabour { labour_id }
             }
         }
     }
 }
 
-impl From<InternalCommand> for NotificationCommand {
-    fn from(cmd: InternalCommand) -> Self {
+impl From<ContractionCommand> for LabourCommand {
+    fn from(cmd: ContractionCommand) -> Self {
         match cmd {
-            InternalCommand::StoreRenderedContent {
-                notification_id,
-                rendered_content,
-            } => NotificationCommand::StoreRenderedContent {
-                notification_id,
-                rendered_content,
+            ContractionCommand::StartContraction {
+                labour_id,
+                start_time,
+            } => LabourCommand::StartContraction {
+                labour_id,
+                start_time,
             },
-            InternalCommand::MarkAsDispatched {
-                notification_id,
-                external_id,
-            } => NotificationCommand::MarkAsDispatched {
-                notification_id,
-                external_id,
+            ContractionCommand::EndContraction {
+                labour_id,
+                end_time,
+                intensity,
+            } => LabourCommand::EndContraction {
+                labour_id,
+                end_time,
+                intensity,
             },
-            InternalCommand::MarkAsDelivered { notification_id } => {
-                NotificationCommand::MarkAsDelivered { notification_id }
-            }
-            InternalCommand::MarkAsFailed {
-                notification_id,
-                reason,
-            } => NotificationCommand::MarkAsFailed {
-                notification_id,
-                reason,
+            ContractionCommand::UpdateContraction {
+                labour_id,
+                contraction_id,
+                start_time,
+                end_time,
+                intensity,
+            } => LabourCommand::UpdateContraction {
+                labour_id,
+                contraction_id,
+                start_time,
+                end_time,
+                intensity,
+            },
+            ContractionCommand::DeleteContraction {
+                labour_id,
+                contraction_id,
+            } => LabourCommand::DeleteContraction {
+                labour_id,
+                contraction_id,
+            },
+        }
+    }
+}
+
+impl From<LabourUpdateCommand> for LabourCommand {
+    fn from(cmd: LabourUpdateCommand) -> Self {
+        match cmd {
+            LabourUpdateCommand::PostLabourUpdate {
+                labour_id,
+                labour_update_type,
+                message,
+            } => LabourCommand::PostLabourUpdate {
+                labour_id,
+                labour_update_type,
+                message,
+            },
+            LabourUpdateCommand::UpdateLabourUpdateMessage {
+                labour_id,
+                labour_update_id,
+                message,
+            } => LabourCommand::UpdateLabourUpdateMessage {
+                labour_id,
+                labour_update_id,
+                message,
+            },
+            LabourUpdateCommand::UpdateLabourUpdateType {
+                labour_id,
+                labour_update_id,
+                labour_update_type,
+            } => LabourCommand::UpdateLabourUpdateType {
+                labour_id,
+                labour_update_id,
+                labour_update_type,
+            },
+            LabourUpdateCommand::DeleteLabourUpdate {
+                labour_id,
+                labour_update_id,
+            } => LabourCommand::DeleteLabourUpdate {
+                labour_id,
+                labour_update_id,
             },
         }
     }

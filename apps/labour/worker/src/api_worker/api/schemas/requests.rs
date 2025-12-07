@@ -1,15 +1,9 @@
-use std::{collections::HashMap, str::FromStr};
-
-use anyhow::{Context, Result};
+use anyhow::Result;
 use chrono::{DateTime, Utc};
-use fern_labour_notifications_shared::value_objects::{
-    NotificationChannel, NotificationDestination, NotificationPriority, NotificationTemplateData,
-};
 use serde::{Deserialize, Serialize};
-use strum::VariantNames;
 use uuid::Uuid;
 
-use crate::durable_object::write_side::domain::NotificationCommand;
+use crate::durable_object::write_side::domain::LabourCommand;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PlanLabourDTO {
@@ -19,37 +13,13 @@ pub struct PlanLabourDTO {
 }
 
 impl PlanLabourDTO {
-    pub fn into_domain(self, labour_id: Uuid) -> Result<NotificationCommand> {
-        let channel = NotificationChannel::from_str(&self.channel).with_context(|| {
-            format!(
-                "Invalid notification channel: '{}'. Valid channels are: {}",
-                self.channel,
-                NotificationChannel::VARIANTS.join(", ")
-            )
-        })?;
-
-        let destination =
-            NotificationDestination::from_string_and_channel(self.destination.clone(), &channel)
-                .with_context(|| {
-                    format!(
-                        "Invalid destination '{}' for channel '{}'. Expected format: {}",
-                        self.destination,
-                        channel,
-                        match channel {
-                            NotificationChannel::EMAIL => "valid email address",
-                            NotificationChannel::SMS => "valid phone number (E.164 format)",
-                            NotificationChannel::WHATSAPP => "valid phone number (E.164 format)",
-                        }
-                    )
-                })?;
-
-        Ok(NotificationCommand::RequestNotification {
-            notification_id,
-            channel,
-            destination,
-            template_data: self.template_data,
-            metadata: self.metadata,
-            priority: self.priority,
+    pub fn into_domain(self, labour_id: Uuid, user_id: String) -> Result<LabourCommand> {
+        Ok(LabourCommand::PlanLabour {
+            labour_id,
+            birthing_person_id: user_id,
+            first_labour: self.first_labour,
+            due_date: self.due_date,
+            labour_name: self.labour_name,
         })
     }
 }

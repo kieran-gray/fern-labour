@@ -4,11 +4,11 @@ pub mod read_side;
 pub mod state;
 pub mod write_side;
 
-use tracing::{error, info};
+use tracing::info;
 use worker::{DurableObject, Env, Request, Response, Result, State, durable_object};
 
 use crate::durable_object::{
-    api::RequestDto, exceptions::IntoWorkerResponse, state::AggregateServices,
+    api::RequestDto, state::AggregateServices,
     write_side::infrastructure::alarm_manager::AlarmManager,
 };
 
@@ -96,29 +96,6 @@ impl DurableObject for NotificationAggregate {
      */
     async fn alarm(&self) -> Result<Response> {
         info!("Alarm triggered - processing async operations");
-
-        if let Err(err) = self.services.async_processors(&self.state, &self.env) {
-            error!(error = %err, "Failed to initialize async processors");
-            return Response::error(format!("Service initialization failed: {}", err), 500);
-        }
-
-        let services = self.services.get_async_processors();
-
-        // These futures could be processed concurrently. However, if the notification is high priority
-        // we want to wait until all event processing is completed before projecting.
-        // This ensures that the read models show the most up-to-date changes after processing is over.
-        let event_result = services.event_processor.process_events().await;
-        let proj_result = services.projection_processor.process_projections().await;
-
-        match (proj_result, event_result) {
-            (Ok(_), Ok(_)) => {
-                info!("All async operations completed successfully");
-                Response::empty()
-            }
-            (Err(e), _) | (_, Err(e)) => {
-                error!(error = %e, "Error in async processing");
-                Ok(e.into_response())
-            }
-        }
+        Ok(Response::empty()?)
     }
 }

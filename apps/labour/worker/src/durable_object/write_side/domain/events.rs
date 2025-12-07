@@ -1,43 +1,84 @@
-use fern_labour_notifications_shared::value_objects::{
-    NotificationChannel, NotificationDestination, NotificationPriority, NotificationTemplateData,
-    RenderedContent,
-};
+use chrono::{DateTime, Utc};
+use fern_labour_labour_shared::value_objects::LabourUpdateType;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fmt::Debug};
+use std::fmt::Debug;
 use uuid::Uuid;
 
 use fern_labour_event_sourcing_rs::{Event, StoredEvent};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum NotificationEvent {
-    NotificationRequested {
-        notification_id: Uuid,
-        channel: NotificationChannel,
-        destination: NotificationDestination,
-        template_data: NotificationTemplateData,
-        metadata: Option<HashMap<String, String>>,
-        priority: NotificationPriority,
+pub enum LabourEvent {
+    LabourPlanned {
+        labour_id: Uuid,
+        birthing_person_id: String,
+        first_labour: bool,
+        due_date: DateTime<Utc>,
+        labour_name: Option<String>,
     },
-    RenderedContentStored {
-        notification_id: Uuid,
-        rendered_content: RenderedContent,
+    LabourPlanUpdated {
+        labour_id: Uuid,
+        first_labour: bool,
+        due_date: DateTime<Utc>,
+        labour_name: Option<String>,
     },
-    NotificationDispatched {
-        notification_id: Uuid,
-        external_id: Option<String>,
+    LabourBegun {
+        labour_id: Uuid,
+        start_time: DateTime<Utc>,
     },
-    NotificationDelivered {
-        notification_id: Uuid,
-        external_id: String,
+    LabourCompleted {
+        labour_id: Uuid,
+        end_time: DateTime<Utc>,
     },
-    NotificationDeliveryFailed {
-        notification_id: Uuid,
-        external_id: String,
-        reason: Option<String>,
+    LabourInviteSent {
+        labour_id: Uuid,
+        invite_email: String,
+    },
+    LabourDeleted {
+        labour_id: Uuid,
+    },
+    ContractionStarted {
+        labour_id: Uuid,
+        start_time: DateTime<Utc>,
+    },
+    ContractionEnded {
+        labour_id: Uuid,
+        end_time: DateTime<Utc>,
+        intensity: u8,
+    },
+    ContractionUpdated {
+        labour_id: Uuid,
+        contraction_id: Uuid,
+        start_time: Option<DateTime<Utc>>,
+        end_time: Option<DateTime<Utc>>,
+        intensity: Option<u8>,
+    },
+    ContractionDeleted {
+        labour_id: Uuid,
+        contraction_id: Uuid,
+    },
+    LabourUpdatePosted {
+        labour_id: Uuid,
+        labour_update_type: LabourUpdateType,
+        message: String,
+        sent_time: DateTime<Utc>,
+    },
+    LabourUpdateMessageUpdated {
+        labour_id: Uuid,
+        labour_update_id: Uuid,
+        message: String,
+    },
+    LabourUpdateTypeUpdated {
+        labour_id: Uuid,
+        labour_update_id: Uuid,
+        labour_update_type: LabourUpdateType,
+    },
+    LabourUpdateDeleted {
+        labour_id: Uuid,
+        labour_update_id: Uuid,
     },
 }
 
-impl NotificationEvent {
+impl LabourEvent {
     pub fn into_stored_event(self) -> StoredEvent {
         let event_str = serde_json::to_string(&self).unwrap();
 
@@ -54,14 +95,23 @@ impl NotificationEvent {
     }
 }
 
-impl Event for NotificationEvent {
+impl Event for LabourEvent {
     fn event_type(&self) -> &str {
         match self {
-            NotificationEvent::NotificationRequested { .. } => "NotificationRequested",
-            NotificationEvent::RenderedContentStored { .. } => "RenderedContentStored",
-            NotificationEvent::NotificationDispatched { .. } => "NotificationDispatched",
-            NotificationEvent::NotificationDelivered { .. } => "NotificationDelivered",
-            NotificationEvent::NotificationDeliveryFailed { .. } => "NotificationDeliveryFailed",
+            LabourEvent::LabourPlanned { .. } => "LabourPlanned",
+            LabourEvent::LabourPlanUpdated { .. } => "LabourPlanUpdated",
+            LabourEvent::LabourBegun { .. } => "LabourBegun",
+            LabourEvent::LabourCompleted { .. } => "LabourCompleted",
+            LabourEvent::LabourInviteSent { .. } => "LabourInviteSent",
+            LabourEvent::LabourDeleted { .. } => "LabourDeleted",
+            LabourEvent::ContractionStarted { .. } => "ContractionStarted",
+            LabourEvent::ContractionEnded { .. } => "ContractionEnded",
+            LabourEvent::ContractionUpdated { .. } => "ContractionUpdated",
+            LabourEvent::ContractionDeleted { .. } => "ContractionDeleted",
+            LabourEvent::LabourUpdatePosted { .. } => "LabourUpdatePosted",
+            LabourEvent::LabourUpdateMessageUpdated { .. } => "LabourUpdateMessageUpdated",
+            LabourEvent::LabourUpdateTypeUpdated { .. } => "LabourUpdateTypeUpdated",
+            LabourEvent::LabourUpdateDeleted { .. } => "LabourUpdateDeleted",
         }
     }
 
@@ -71,21 +121,20 @@ impl Event for NotificationEvent {
 
     fn aggregate_id(&self) -> Uuid {
         match self {
-            NotificationEvent::NotificationRequested {
-                notification_id, ..
-            } => *notification_id,
-            NotificationEvent::RenderedContentStored {
-                notification_id, ..
-            } => *notification_id,
-            NotificationEvent::NotificationDispatched {
-                notification_id, ..
-            } => *notification_id,
-            NotificationEvent::NotificationDelivered {
-                notification_id, ..
-            } => *notification_id,
-            NotificationEvent::NotificationDeliveryFailed {
-                notification_id, ..
-            } => *notification_id,
+            LabourEvent::LabourPlanned { labour_id, .. } => *labour_id,
+            LabourEvent::LabourPlanUpdated { labour_id, .. } => *labour_id,
+            LabourEvent::LabourBegun { labour_id, .. } => *labour_id,
+            LabourEvent::LabourCompleted { labour_id, .. } => *labour_id,
+            LabourEvent::LabourInviteSent { labour_id, .. } => *labour_id,
+            LabourEvent::LabourDeleted { labour_id, .. } => *labour_id,
+            LabourEvent::ContractionStarted { labour_id, .. } => *labour_id,
+            LabourEvent::ContractionEnded { labour_id, .. } => *labour_id,
+            LabourEvent::ContractionUpdated { labour_id, .. } => *labour_id,
+            LabourEvent::ContractionDeleted { labour_id, .. } => *labour_id,
+            LabourEvent::LabourUpdatePosted { labour_id, .. } => *labour_id,
+            LabourEvent::LabourUpdateMessageUpdated { labour_id, .. } => *labour_id,
+            LabourEvent::LabourUpdateTypeUpdated { labour_id, .. } => *labour_id,
+            LabourEvent::LabourUpdateDeleted { labour_id, .. } => *labour_id,
         }
     }
 }

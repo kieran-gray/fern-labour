@@ -44,7 +44,7 @@ pub async fn handle_admin_command(
             .do_client
             .command(notification_id, command, service_id, "/admin/command")
             .await
-            .map_err(|e| format!("Failed to send admin command to DO: {e}"))?
+            .map_err(|e| format!("Failed to send admin command to DO: {e}"))?,
     };
 
     info!(

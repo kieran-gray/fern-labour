@@ -9,9 +9,7 @@ use serde_json::json;
 
 use worker::{Context, Env, Request, Response, Result, event};
 
-use crate::{
-    api_worker::{AppState, api::router::create_router, setup_observability},
-};
+use crate::api_worker::{AppState, api::router::create_router, setup_observability};
 
 #[event(start)]
 fn start() {
