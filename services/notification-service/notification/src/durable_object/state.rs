@@ -2,12 +2,12 @@ use std::{cell::RefCell, rc::Rc};
 
 use anyhow::{Context, Result};
 use fern_labour_notifications_shared::{
-    service_clients::{DispatchClient, GenerationClient},
     QueueMessage, QueueProducerTrait,
+    service_clients::{DispatchClient, GenerationClient},
 };
 use fern_labour_workers_shared::{
-    clients::{FetcherDispatchClient, FetcherGenerationClient},
     NotificationQueueProducer,
+    clients::{FetcherDispatchClient, FetcherGenerationClient},
 };
 use worker::{Env, State};
 
@@ -16,22 +16,22 @@ use fern_labour_event_sourcing_rs::{AggregateRepository, CommandEnvelope, Projec
 use crate::{
     durable_object::{
         read_side::{
+            QueryService,
             projection_processor::ProjectionProcessor,
             projectors::{
                 notification_detail::NotificationDetailProjector,
                 notification_status::NotificationStatusProjector,
             },
-            QueryService,
         },
         write_side::{
             application::{
-                command_processors::{NotificationCommandProcessor, ServiceCommandProcessor},
                 AdminCommandProcessor, PolicyEngine,
+                command_processors::{NotificationCommandProcessor, ServiceCommandProcessor},
             },
             domain::NotificationEvent,
             infrastructure::{
-                event_reaction_processor::EventReactionProcessor, PolicyApplicationTracker,
-                SqlEventStore,
+                PolicyApplicationTracker, SqlEventStore,
+                event_reaction_processor::EventReactionProcessor,
             },
         },
     },

@@ -35,12 +35,12 @@ pub enum ContractionCommand {
 }
 
 impl ContractionCommand {
-    pub fn labour_id(&self) -> Option<Uuid> {
+    pub fn labour_id(&self) -> Uuid {
         match self {
-            ContractionCommand::StartContraction { labour_id, .. } => Some(*labour_id),
-            ContractionCommand::EndContraction { labour_id, .. } => Some(*labour_id),
-            ContractionCommand::UpdateContraction { labour_id, .. } => Some(*labour_id),
-            ContractionCommand::DeleteContraction { labour_id, .. } => Some(*labour_id),
+            ContractionCommand::StartContraction { labour_id, .. } => *labour_id,
+            ContractionCommand::EndContraction { labour_id, .. } => *labour_id,
+            ContractionCommand::UpdateContraction { labour_id, .. } => *labour_id,
+            ContractionCommand::DeleteContraction { labour_id, .. } => *labour_id,
         }
     }
 }

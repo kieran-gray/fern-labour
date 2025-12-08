@@ -91,22 +91,21 @@ impl AuthServiceClient for FetcherAuthServiceClient {
 
         match response.status_code() {
             200 => {
-                let verify_response: VerifyTokenResponse = response.json().await
-                    .map_err(|e| {
-                        error!(error = ?e, "Failed to parse verify response");
-                        AuthClientError::ParseError(format!("Failed to parse verify response: {e}"))
-                    })?;
+                let verify_response: VerifyTokenResponse = response.json().await.map_err(|e| {
+                    error!(error = ?e, "Failed to parse verify response");
+                    AuthClientError::ParseError(format!("Failed to parse verify response: {e}"))
+                })?;
 
                 debug!(user_id = %verify_response.user_id, "Token verified via auth service");
                 Ok(verify_response.user_id)
-            },
+            }
             401 => {
                 let error_response: ErrorResponse =
                     response.json().await.unwrap_or_else(|_| ErrorResponse {
                         message: "Unauthorised".to_string(),
                     });
                 Err(AuthClientError::Unauthorised(error_response.message))
-            },
+            }
             status => {
                 let error_response: ErrorResponse =
                     response.json().await.unwrap_or_else(|_| ErrorResponse {

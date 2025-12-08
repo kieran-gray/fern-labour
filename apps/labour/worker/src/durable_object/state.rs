@@ -2,12 +2,17 @@ use anyhow::{Context, Result};
 
 use worker::State;
 
-use fern_labour_event_sourcing_rs::AggregateRepository;
+use fern_labour_event_sourcing_rs::{AggregateRepository, Projector};
 
 use crate::durable_object::{
-    read_side::QueryService,
+    read_side::{
+        QueryService,
+        projection_processor::ProjectionProcessor,
+        read_models::labour::{LabourReadModelProjector, SqlLabourRepository},
+    },
     write_side::{
         application::{AdminCommandProcessor, command_processors::LabourCommandProcessor},
+        domain::LabourEvent,
         infrastructure::SqlEventStore,
     },
 };
@@ -21,9 +26,14 @@ pub struct ReadModel {
     pub query_service: QueryService,
 }
 
+pub struct AsyncProcessors {
+    pub projection_processor: ProjectionProcessor,
+}
+
 pub struct AggregateServices {
     write_model: WriteModel,
     read_model: ReadModel,
+    async_processors: AsyncProcessors,
 }
 
 impl AggregateServices {
@@ -51,13 +61,31 @@ impl AggregateServices {
         Ok(ReadModel { query_service })
     }
 
+    fn build_async_processors(state: &State) -> Result<AsyncProcessors> {
+        let sql = state.storage().sql();
+        let event_store = SqlEventStore::create(sql.clone());
+        let labour_repository = Box::new(SqlLabourRepository::create(sql));
+        labour_repository
+            .init_schema()
+            .context("Labour repository initialization failed")?;
+
+        let labour_projector = Box::new(LabourReadModelProjector::create(labour_repository));
+        let projectors: Vec<Box<dyn Projector<LabourEvent>>> = vec![labour_projector];
+        let projection_processor = ProjectionProcessor::create(event_store, projectors);
+        Ok(AsyncProcessors {
+            projection_processor,
+        })
+    }
+
     pub fn from_worker_state(state: &State) -> Result<Self> {
         let write_model = Self::build_write_model(state)?;
         let read_model = Self::build_read_model(state)?;
+        let async_processors = Self::build_async_processors(state)?;
 
         Ok(Self {
             write_model,
             read_model,
+            async_processors,
         })
     }
 
@@ -67,5 +95,9 @@ impl AggregateServices {
 
     pub fn read_model(&self) -> &ReadModel {
         &self.read_model
+    }
+
+    pub fn async_processors(&self) -> &AsyncProcessors {
+        &self.async_processors
     }
 }

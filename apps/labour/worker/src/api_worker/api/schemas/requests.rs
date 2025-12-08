@@ -1,4 +1,3 @@
-use anyhow::Result;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -13,13 +12,13 @@ pub struct PlanLabourDTO {
 }
 
 impl PlanLabourDTO {
-    pub fn into_domain(self, labour_id: Uuid, user_id: String) -> Result<LabourCommand> {
-        Ok(LabourCommand::PlanLabour {
+    pub fn into_domain(self, labour_id: Uuid, user_id: String) -> LabourCommand {
+        LabourCommand::PlanLabour {
             labour_id,
             birthing_person_id: user_id,
             first_labour: self.first_labour,
             due_date: self.due_date,
             labour_name: self.labour_name,
-        })
+        }
     }
 }

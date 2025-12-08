@@ -16,8 +16,8 @@ pub struct AppState {
 impl AppState {
     fn create_do_client(env: &Env) -> Result<DurableObjectCQRSClient> {
         let aggregate_namespace = env
-            .durable_object("NOTIFICATION_AGGREGATE")
-            .context("Missing binding NOTIFICATION_AGGREGATE")?;
+            .durable_object("LABOUR_AGGREGATE")
+            .context("Missing binding LABOUR_AGGREGATE")?;
 
         Ok(DurableObjectCQRSClient::create(aggregate_namespace))
     }

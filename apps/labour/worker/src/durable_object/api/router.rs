@@ -2,7 +2,7 @@ use tracing::{error, info};
 use worker::Response;
 
 use crate::durable_object::{
-    NotificationAggregate, api::RequestDto, exceptions::IntoWorkerResponse,
+    LabourAggregate, api::RequestDto, exceptions::IntoWorkerResponse,
     write_side::domain::LabourCommand,
 };
 
@@ -37,7 +37,7 @@ impl CommandResult {
     }
 }
 
-pub fn route_and_handle(aggregate: &NotificationAggregate, request: RequestDto) -> CommandResult {
+pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> CommandResult {
     match request {
         RequestDto::DomainCommand { envelope } => {
             info!(

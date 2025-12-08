@@ -41,13 +41,13 @@ pub enum LabourCommand {
 }
 
 impl LabourCommand {
-    pub fn labour_id(&self) -> Option<Uuid> {
+    pub fn labour_id(&self) -> Uuid {
         match self {
-            LabourCommand::UpdateLabourPlan { labour_id, .. } => Some(*labour_id),
-            LabourCommand::BeginLabour { labour_id, .. } => Some(*labour_id),
-            LabourCommand::CompleteLabour { labour_id } => Some(*labour_id),
-            LabourCommand::SendLabourInvite { labour_id, .. } => Some(*labour_id),
-            LabourCommand::DeleteLabour { labour_id, .. } => Some(*labour_id),
+            LabourCommand::UpdateLabourPlan { labour_id, .. } => *labour_id,
+            LabourCommand::BeginLabour { labour_id, .. } => *labour_id,
+            LabourCommand::CompleteLabour { labour_id } => *labour_id,
+            LabourCommand::SendLabourInvite { labour_id, .. } => *labour_id,
+            LabourCommand::DeleteLabour { labour_id, .. } => *labour_id,
         }
     }
 }

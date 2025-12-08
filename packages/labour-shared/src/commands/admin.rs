@@ -8,27 +8,16 @@ pub enum AdminCommand {
     RebuildReadModels { aggregate_id: Uuid },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type", content = "payload")]
-pub enum AdminApiCommand {
-    #[serde(rename = "Admin")]
-    Admin(AdminCommand),
-}
-
-impl AdminApiCommand {
-    pub fn notification_id(&self) -> Uuid {
+impl AdminCommand {
+    pub fn labour_id(&self) -> Uuid {
         match self {
-            AdminApiCommand::Admin(cmd) => match cmd {
-                AdminCommand::RebuildReadModels { aggregate_id } => *aggregate_id,
-            },
+            AdminCommand::RebuildReadModels { aggregate_id } => *aggregate_id,
         }
     }
 
     pub fn command_name(&self) -> &'static str {
         match self {
-            AdminApiCommand::Admin(AdminCommand::RebuildReadModels { .. }) => {
-                "AdminCommand::RebuildReadModels"
-            }
+            AdminCommand::RebuildReadModels { .. } => "AdminCommand::RebuildReadModels",
         }
     }
 }

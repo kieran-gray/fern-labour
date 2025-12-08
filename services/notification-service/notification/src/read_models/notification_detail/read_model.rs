@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use chrono::{DateTime, Utc};
 use fern_labour_event_sourcing_rs::Cursor;
 use fern_labour_notifications_shared::value_objects::RenderedContent;

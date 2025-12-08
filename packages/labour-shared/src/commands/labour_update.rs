@@ -35,12 +35,12 @@ pub enum LabourUpdateCommand {
 }
 
 impl LabourUpdateCommand {
-    pub fn labour_id(&self) -> Option<Uuid> {
+    pub fn labour_id(&self) -> Uuid {
         match self {
-            LabourUpdateCommand::PostLabourUpdate { labour_id, .. } => Some(*labour_id),
-            LabourUpdateCommand::UpdateLabourUpdateMessage { labour_id, .. } => Some(*labour_id),
-            LabourUpdateCommand::UpdateLabourUpdateType { labour_id, .. } => Some(*labour_id),
-            LabourUpdateCommand::DeleteLabourUpdate { labour_id, .. } => Some(*labour_id),
+            LabourUpdateCommand::PostLabourUpdate { labour_id, .. } => *labour_id,
+            LabourUpdateCommand::UpdateLabourUpdateMessage { labour_id, .. } => *labour_id,
+            LabourUpdateCommand::UpdateLabourUpdateType { labour_id, .. } => *labour_id,
+            LabourUpdateCommand::DeleteLabourUpdate { labour_id, .. } => *labour_id,
         }
     }
 }

@@ -1,0 +1,46 @@
+use fern_labour_workers_shared::CorsContext;
+use tracing::{error, info};
+use uuid::Uuid;
+use worker::{Request, Response, RouteContext};
+
+use crate::api_worker::{
+    AppState,
+    api::{exceptions::ApiError, schemas::requests::PlanLabourDTO},
+};
+
+pub async fn handle_plan_labour(
+    mut req: Request,
+    ctx: RouteContext<AppState>,
+    cors_context: CorsContext,
+    user_id: String,
+) -> worker::Result<Response> {
+    let request_dto: PlanLabourDTO = match req.json().await {
+        Ok(dto) => dto,
+        Err(e) => {
+            error!(user_id = %user_id, error = ?e, "Failed to parse request body");
+            let response = Response::from(ApiError::ValidationError(
+                "Failed to parse request body".into(),
+            ));
+            return Ok(cors_context.add_to_response(response));
+        }
+    };
+
+    // TODO: Store in a user labour table
+    let labour_id = Uuid::now_v7();
+
+    let domain_command = request_dto.into_domain(labour_id, user_id.clone());
+
+    let res = ctx
+        .data
+        .do_client
+        .command(labour_id, domain_command, user_id, "/labour/domain")
+        .await
+        .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?;
+
+    info!(
+        labour_id = %labour_id,
+        "Labour planned successfully"
+    );
+
+    Ok(cors_context.add_to_response(res))
+}

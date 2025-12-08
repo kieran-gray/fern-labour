@@ -57,7 +57,7 @@ pub enum NotificationTemplateData {
         subscriber_first_name: String,
         birthing_person_name: String,
         link: String,
-    }
+    },
 }
 
 impl NotificationTemplateData {
@@ -68,7 +68,9 @@ impl NotificationTemplateData {
             NotificationTemplateData::LabourAnnouncementData { .. } => "LabourAnnouncementData",
             NotificationTemplateData::LabourBegunData { .. } => "LabourBegunData",
             NotificationTemplateData::LabourCompletedData { .. } => "LabourCompletedData",
-            NotificationTemplateData::LabourCompletedWithNoteData { .. } => "LabourCompletedWithNoteData",
+            NotificationTemplateData::LabourCompletedWithNoteData { .. } => {
+                "LabourCompletedWithNoteData"
+            }
             NotificationTemplateData::LabourInviteData { .. } => "LabourInviteData",
             NotificationTemplateData::SubscriberInviteData { .. } => "SubscriberInviteData",
             NotificationTemplateData::SubscriberRequestedData { .. } => "SubscriberRequestedData",

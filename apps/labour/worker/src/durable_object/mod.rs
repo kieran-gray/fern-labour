@@ -4,23 +4,23 @@ pub mod read_side;
 pub mod state;
 pub mod write_side;
 
-use tracing::info;
+use tracing::{error, info};
 use worker::{DurableObject, Env, Request, Response, Result, State, durable_object};
 
 use crate::durable_object::{
-    api::RequestDto, state::AggregateServices,
+    api::RequestDto, exceptions::IntoWorkerResponse, state::AggregateServices,
     write_side::infrastructure::alarm_manager::AlarmManager,
 };
 
 #[durable_object]
-pub struct NotificationAggregate {
-    state: State,
-    env: Env,
+pub struct LabourAggregate {
+    _state: State,
+    _env: Env,
     pub(crate) services: AggregateServices,
     alarm_manager: AlarmManager,
 }
 
-impl DurableObject for NotificationAggregate {
+impl DurableObject for LabourAggregate {
     fn new(state: State, env: Env) -> Self {
         let services = match AggregateServices::from_worker_state(&state) {
             Ok(s) => s,
@@ -30,8 +30,8 @@ impl DurableObject for NotificationAggregate {
         let alarm_manager = AlarmManager::create(state.storage());
 
         Self {
-            state,
-            env,
+            _state: state,
+            _env: env,
             services,
             alarm_manager,
         }
@@ -96,6 +96,23 @@ impl DurableObject for NotificationAggregate {
      */
     async fn alarm(&self) -> Result<Response> {
         info!("Alarm triggered - processing async operations");
-        Ok(Response::empty()?)
+
+        let proj_result = self
+            .services
+            .async_processors()
+            .projection_processor
+            .process_projections()
+            .await;
+
+        match proj_result {
+            Ok(_) => {
+                info!("All async operations completed successfully");
+                Response::empty()
+            }
+            Err(e) => {
+                error!(error = %e, "Error in async processing");
+                Ok(e.into_response())
+            }
+        }
     }
 }

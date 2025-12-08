@@ -9,12 +9,13 @@
     "url": "https://github.com/kieran-gray"
   },
   "workspaces": [
+    "apps/labour/worker",
     "services/dashboard",
     "services/auth-service",
     "services/contact-service"
   ],
   "scripts": {
-    "dev:admin": "concurrently -n admin,services,notifications \"npm run dev --workspace=services/dashboard\" \"npm run dev:services\" \"npm run dev --prefix services/notification-service\"",
+    "dev": "concurrently -n labour,admin,services,notifications \"npm run dev --workspace=apps/labour/worker\" \"npm run dev --workspace=services/dashboard\" \"npm run dev:services\" \"npm run dev --prefix services/notification-service\"",
     "dev:services": "concurrently -n auth-service,contact-service \"npm run dev --workspace=services/auth-service\" \"npm run dev --workspace=services/contact-service\"",
     "build": "npm run build --workspaces --if-present",
     "build:dev": "npm run build:dev --workspaces --if-present",

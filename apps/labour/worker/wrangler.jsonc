@@ -64,7 +64,8 @@
   ],
   "vars": {
     "ENVIRONMENT": "production",
-    "ALLOWED_ORIGINS": ""
+    "ALLOWED_ORIGINS": "",
+    "AUTH_ENABLED": "true"
   },
   "env": {
     "dev": {
@@ -103,7 +104,8 @@
       ],
       "vars": {
         "ENVIRONMENT": "dev",
-        "ALLOWED_ORIGINS": ""
+        "ALLOWED_ORIGINS": "",
+        "AUTH_ENABLED": "false"
       }
     }
   }

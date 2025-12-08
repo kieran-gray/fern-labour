@@ -2,11 +2,11 @@ use fern_labour_notifications_shared::ServiceCommand;
 use tracing::debug;
 
 use crate::durable_object::write_side::domain::{
-    policies::{
-        notification_dispatch_policy::NotificationDispatchPolicy,
-        notification_rendering_policy::NotificationRenderingPolicy, EventPolicy,
-    },
     Notification, NotificationEvent,
+    policies::{
+        EventPolicy, notification_dispatch_policy::NotificationDispatchPolicy,
+        notification_rendering_policy::NotificationRenderingPolicy,
+    },
 };
 
 pub struct PolicyEngine {
