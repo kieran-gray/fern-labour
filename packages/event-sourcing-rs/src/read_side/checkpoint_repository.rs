@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -29,13 +31,17 @@ impl CheckpointStatus {
             CheckpointStatus::Stale => "stale",
         }
     }
+}
 
-    pub fn from_str(s: &str) -> Self {
-        match s {
+impl FromStr for CheckpointStatus {
+    type Err = anyhow::Error;
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        let val = match s {
             "error" => CheckpointStatus::Error,
             "stale" => CheckpointStatus::Stale,
             _ => CheckpointStatus::Healthy,
-        }
+        };
+        Ok(val)
     }
 }
 

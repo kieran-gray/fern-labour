@@ -3,9 +3,7 @@ use async_trait::async_trait;
 use fern_labour_event_sourcing_rs::{DecodedCursor, SyncRepositoryTrait};
 use uuid::Uuid;
 
-use crate::durable_object::read_side::read_models::{
-    contractions::ContractionReadModel
-};
+use crate::durable_object::read_side::read_models::contractions::ContractionReadModel;
 
 #[async_trait(?Send)]
 pub trait ContractionReadModelQueryHandler {
@@ -33,8 +31,8 @@ impl ContractionReadModelQueryHandler for ContractionReadModelQuery {
         let contractions = self.repository.get(limit, cursor)?;
         Ok(contractions)
     }
-    
-    fn get_by_id(&self, id:Uuid) -> Result<ContractionReadModel> {
+
+    fn get_by_id(&self, id: Uuid) -> Result<ContractionReadModel> {
         let contraction = self.repository.get_by_id(id)?;
         Ok(contraction)
     }

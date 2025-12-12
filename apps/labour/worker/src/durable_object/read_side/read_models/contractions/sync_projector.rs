@@ -1,4 +1,4 @@
-use anyhow::{Result};
+use anyhow::Result;
 use async_trait::async_trait;
 use fern_labour_labour_shared::value_objects::contraction::duration::Duration;
 
@@ -50,7 +50,7 @@ impl ContractionReadModelProjector {
                 let mut contraction = self
                     .repository
                     .get_by_id(*contraction_id)
-                    .expect(&format!("No contraction found with id: {contraction_id}"));
+                    .unwrap_or_else(|_| panic!("No contraction found with id: {contraction_id}"));
                 contraction.duration =
                     Duration::create(*contraction.duration.start_time(), *end_time)
                         .expect("Failed to create duration");
@@ -79,7 +79,6 @@ impl SyncProjector<LabourEvent> for ContractionReadModelProjector {
 
         events
             .iter()
-            .map(|envelope| self.project_event(envelope))
-            .collect()
+            .try_for_each(|envelope| self.project_event(envelope))
     }
 }

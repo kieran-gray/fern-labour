@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use anyhow::{Context, Result};
 use chrono::NaiveDateTime;
 use serde::Deserialize;
@@ -17,7 +19,7 @@ struct CheckpointRow {
 }
 
 impl CheckpointRow {
-    fn to_checkpoint(self) -> Result<ProjectionCheckpoint> {
+    fn take_as_checkpoint(self) -> Result<ProjectionCheckpoint> {
         let last_processed_at =
             NaiveDateTime::parse_from_str(&self.last_processed_at, "%Y-%m-%d %H:%M:%S")
                 .context("Failed to parse last_processed_at timestamp")?
@@ -32,7 +34,7 @@ impl CheckpointRow {
             last_processed_sequence: self.last_processed_sequence,
             last_processed_at,
             updated_at,
-            status: CheckpointStatus::from_str(&self.status),
+            status: CheckpointStatus::from_str(&self.status)?,
             error_message: self.error_message,
             error_count: self.error_count,
         })
@@ -88,7 +90,7 @@ impl CheckpointRepository for SqlCheckpointRepository {
             .context("Failed to get checkpoints")?;
 
         match rows.into_iter().next() {
-            Some(row) => Ok(Some(row.to_checkpoint()?)),
+            Some(row) => Ok(Some(row.take_as_checkpoint()?)),
             _ => Ok(None),
         }
     }
@@ -145,6 +147,8 @@ impl CheckpointRepository for SqlCheckpointRepository {
             .to_array()
             .context("Failed to deserialize checkpoint rows")?;
 
-        rows.into_iter().map(|row| row.to_checkpoint()).collect()
+        rows.into_iter()
+            .map(|row| row.take_as_checkpoint())
+            .collect()
     }
 }

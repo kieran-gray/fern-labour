@@ -113,7 +113,7 @@ impl Aggregate for Labour {
                 ..
             } => {
                 let contraction = self.contractions.last_mut().expect("No contractions found");
-                contraction.end(end_time.clone(), *intensity);
+                contraction.end(*end_time, *intensity);
             }
             LabourEvent::ContractionUpdated { .. } => {
                 // TODO: skip CBA for now
@@ -236,9 +236,9 @@ impl Aggregate for Labour {
                 }
 
                 if labour.find_active_contraction().is_some() {
-                    return Err(LabourError::ValidationError(format!(
-                        "Cannot complete labour with active contraction"
-                    )));
+                    return Err(LabourError::ValidationError(
+                        "Cannot complete labour with active contraction".to_string(),
+                    ));
                 }
 
                 vec![LabourEvent::LabourCompleted {
@@ -256,9 +256,9 @@ impl Aggregate for Labour {
                 };
 
                 if labour.phase == LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidCommand(format!(
-                        "Cannot invite to completed labour"
-                    )));
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot invite to completed labour".to_string(),
+                    ));
                 }
 
                 vec![LabourEvent::LabourInviteSent {

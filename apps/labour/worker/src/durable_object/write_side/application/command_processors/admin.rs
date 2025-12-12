@@ -32,7 +32,7 @@ impl AdminCommandProcessor {
                             .reset_checkpoint(&c.projector_name)
                     })
                     .all(|r| r.is_ok());
-                
+
                 match result {
                     true => Ok(()),
                     false => Err(anyhow!("Failed to reset checkpoints")),

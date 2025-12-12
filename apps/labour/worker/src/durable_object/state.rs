@@ -2,7 +2,9 @@ use anyhow::{Context, Result};
 
 use worker::State;
 
-use fern_labour_event_sourcing_rs::{AggregateRepository, AsyncProjector, CheckpointRepository, SyncProjector};
+use fern_labour_event_sourcing_rs::{
+    AggregateRepository, AsyncProjector, CheckpointRepository, SyncProjector,
+};
 
 use crate::durable_object::{
     read_side::{
@@ -11,7 +13,8 @@ use crate::durable_object::{
         checkpoint_repository::SqlCheckpointRepository,
         read_models::{
             contractions::{ContractionReadModelProjector, SqlContractionRepository},
-            labour::{LabourReadModelProjector, SqlLabourRepository}, labour_updates::{LabourUpdateReadModelProjector, SqlLabourUpdateRepository},
+            labour::{LabourReadModelProjector, SqlLabourRepository},
+            labour_updates::{LabourUpdateReadModelProjector, SqlLabourUpdateRepository},
         },
         sync_projection_processor::SyncProjectionProcessor,
     },
@@ -96,8 +99,11 @@ impl AggregateServices {
             labour_update_repository,
         ));
 
-        let projectors: Vec<Box<dyn SyncProjector<LabourEvent>>> =
-            vec![labour_projector, contraction_projector, labour_update_projector];
+        let projectors: Vec<Box<dyn SyncProjector<LabourEvent>>> = vec![
+            labour_projector,
+            contraction_projector,
+            labour_update_projector,
+        ];
 
         Ok(SyncProjectionProcessor::create(
             event_store,

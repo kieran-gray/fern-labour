@@ -15,15 +15,15 @@ impl Contraction {
     pub fn start(contraction_id: Uuid, labour_id: Uuid, start_time: DateTime<Utc>) -> Self {
         Self {
             id: contraction_id,
-            labour_id: labour_id,
+            labour_id,
             duration: Duration::create(start_time, start_time).expect("Failed to create duration"),
             intensity: None,
         }
     }
 
-    pub fn end(&mut self, end_time: DateTime<Utc>, intensity: u8) -> () {
-        let duration = Duration::create(self.start_time().clone(), end_time)
-            .expect("Failed to create duration");
+    pub fn end(&mut self, end_time: DateTime<Utc>, intensity: u8) {
+        let duration =
+            Duration::create(*self.start_time(), end_time).expect("Failed to create duration");
         self.duration = duration;
         self.intensity = Some(intensity);
     }

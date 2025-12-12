@@ -101,12 +101,10 @@ impl SyncProjectionProcessor {
         );
 
         // Process batch - if this fails, checkpoint is NOT updated
-        projector
-            .project_batch(&envelopes)
-            .context(format!(
-                "Projector {} failed to process batch",
-                projector_name
-            ))?;
+        projector.project_batch(&envelopes).context(format!(
+            "Projector {} failed to process batch",
+            projector_name
+        ))?;
 
         // Only update checkpoint on success
         let last_envelope = envelopes.last().unwrap();

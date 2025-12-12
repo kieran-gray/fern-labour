@@ -49,12 +49,12 @@ impl LabourUpdateReadModelProjector {
                 message,
                 ..
             } => {
-                let mut labour_update =
-                    self.repository
-                        .get_by_id(*labour_update_id)
-                        .expect(&format!(
-                            "No labour_update found with id: {labour_update_id}"
-                        ));
+                let mut labour_update = self
+                    .repository
+                    .get_by_id(*labour_update_id)
+                    .unwrap_or_else(|_| {
+                        panic!("No labour_update found with id: {labour_update_id}")
+                    });
                 labour_update.message = message.clone();
                 labour_update.edited = true;
                 labour_update.updated_at = timestamp;
@@ -65,12 +65,12 @@ impl LabourUpdateReadModelProjector {
                 labour_update_type,
                 ..
             } => {
-                let mut labour_update =
-                    self.repository
-                        .get_by_id(*labour_update_id)
-                        .expect(&format!(
-                            "No labour_update found with id: {labour_update_id}"
-                        ));
+                let mut labour_update = self
+                    .repository
+                    .get_by_id(*labour_update_id)
+                    .unwrap_or_else(|_| {
+                        panic!("No labour_update found with id: {labour_update_id}")
+                    });
                 labour_update.labour_update_type = labour_update_type.clone();
                 labour_update.updated_at = timestamp;
                 self.repository.upsert(&labour_update)
@@ -96,7 +96,6 @@ impl SyncProjector<LabourEvent> for LabourUpdateReadModelProjector {
 
         events
             .iter()
-            .map(|envelope| self.project_event(envelope))
-            .collect()
+            .try_for_each(|envelope| self.project_event(envelope))
     }
 }

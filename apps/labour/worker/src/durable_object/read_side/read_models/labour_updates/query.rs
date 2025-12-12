@@ -3,14 +3,15 @@ use async_trait::async_trait;
 use fern_labour_event_sourcing_rs::{DecodedCursor, SyncRepositoryTrait};
 use uuid::Uuid;
 
-use crate::durable_object::read_side::read_models::{
-    labour_updates::LabourUpdateReadModel
-};
+use crate::durable_object::read_side::read_models::labour_updates::LabourUpdateReadModel;
 
 #[async_trait(?Send)]
 pub trait LabourUpdateReadModelQueryHandler {
-    fn get(&self, limit: usize, cursor: Option<DecodedCursor>)
-    -> Result<Vec<LabourUpdateReadModel>>;
+    fn get(
+        &self,
+        limit: usize,
+        cursor: Option<DecodedCursor>,
+    ) -> Result<Vec<LabourUpdateReadModel>>;
     fn get_by_id(&self, id: Uuid) -> Result<LabourUpdateReadModel>;
 }
 
@@ -33,8 +34,8 @@ impl LabourUpdateReadModelQueryHandler for LabourUpdateReadModelQuery {
         let labour_updates = self.repository.get(limit, cursor)?;
         Ok(labour_updates)
     }
-    
-    fn get_by_id(&self, id:Uuid) -> Result<LabourUpdateReadModel> {
+
+    fn get_by_id(&self, id: Uuid) -> Result<LabourUpdateReadModel> {
         let labour_update = self.repository.get_by_id(id)?;
         Ok(labour_update)
     }

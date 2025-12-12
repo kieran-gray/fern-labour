@@ -48,7 +48,7 @@ impl LabourReadModelProjector {
                 *labour_id,
                 birthing_person_id.clone(),
                 *first_labour,
-                due_date.clone(),
+                *due_date,
                 labour_name.clone(),
                 timestamp,
             )),
@@ -79,7 +79,7 @@ impl LabourReadModelProjector {
                     None => self.fetch_labour(*labour_id),
                 };
 
-                labour.start_time = Some(start_time.clone());
+                labour.start_time = Some(*start_time);
                 labour.current_phase = LabourPhase::EARLY;
                 Some(labour)
             }
@@ -93,7 +93,7 @@ impl LabourReadModelProjector {
                     None => self.fetch_labour(*labour_id),
                 };
 
-                labour.end_time = Some(end_time.clone());
+                labour.end_time = Some(*end_time);
                 labour.current_phase = LabourPhase::COMPLETE;
                 Some(labour)
             }
