@@ -1,29 +1,41 @@
 use anyhow::Result;
 use async_trait::async_trait;
-use fern_labour_event_sourcing_rs::SingleItemRepositoryTrait;
+use fern_labour_event_sourcing_rs::{DecodedCursor, SyncRepositoryTrait};
+use uuid::Uuid;
 
-use crate::durable_object::read_side::read_models::labour::read_model::LabourReadModel;
+use crate::durable_object::read_side::read_models::{
+    contractions::ContractionReadModel
+};
 
 #[async_trait(?Send)]
-pub trait LabourReadModelQueryHandler {
-    async fn get(&self) -> Result<LabourReadModel>;
+pub trait ContractionReadModelQueryHandler {
+    fn get(&self, limit: usize, cursor: Option<DecodedCursor>)
+    -> Result<Vec<ContractionReadModel>>;
+    fn get_by_id(&self, id: Uuid) -> Result<ContractionReadModel>;
 }
 
-pub struct LabourReadModelQuery {
-    repository: Box<dyn SingleItemRepositoryTrait<LabourReadModel>>,
+pub struct ContractionReadModelQuery {
+    repository: Box<dyn SyncRepositoryTrait<ContractionReadModel>>,
 }
 
-impl LabourReadModelQuery {
-    pub fn create(repository: Box<dyn SingleItemRepositoryTrait<LabourReadModel>>) -> Self {
+impl ContractionReadModelQuery {
+    pub fn create(repository: Box<dyn SyncRepositoryTrait<ContractionReadModel>>) -> Self {
         Self { repository }
     }
 }
 
-#[async_trait(?Send)]
-impl LabourReadModelQueryHandler for LabourReadModelQuery {
-    async fn get(&self) -> Result<LabourReadModel> {
-        let labour = self.repository.get().await?;
-
-        Ok(labour)
+impl ContractionReadModelQueryHandler for ContractionReadModelQuery {
+    fn get(
+        &self,
+        limit: usize,
+        cursor: Option<DecodedCursor>,
+    ) -> Result<Vec<ContractionReadModel>> {
+        let contractions = self.repository.get(limit, cursor)?;
+        Ok(contractions)
+    }
+    
+    fn get_by_id(&self, id:Uuid) -> Result<ContractionReadModel> {
+        let contraction = self.repository.get_by_id(id)?;
+        Ok(contraction)
     }
 }

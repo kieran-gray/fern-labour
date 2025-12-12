@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use async_trait::async_trait;
 use tracing::info;
 
-use fern_labour_event_sourcing_rs::{EventEnvelope, Projector, RepositoryTrait};
+use fern_labour_event_sourcing_rs::{EventEnvelope, AsyncProjector, AsyncRepositoryTrait};
 
 use crate::{
     durable_object::write_side::domain::NotificationEvent,
@@ -11,11 +11,11 @@ use crate::{
 
 pub struct NotificationDetailProjector {
     name: String,
-    repository: Box<dyn RepositoryTrait<NotificationDetail>>,
+    repository: Box<dyn AsyncRepositoryTrait<NotificationDetail>>,
 }
 
 impl NotificationDetailProjector {
-    pub fn create(repository: Box<dyn RepositoryTrait<NotificationDetail>>) -> Self {
+    pub fn create(repository: Box<dyn AsyncRepositoryTrait<NotificationDetail>>) -> Self {
         Self {
             name: "NotificationDetailProjector".to_string(),
             repository,
@@ -87,7 +87,7 @@ impl NotificationDetailProjector {
 }
 
 #[async_trait(?Send)]
-impl Projector<NotificationEvent> for NotificationDetailProjector {
+impl AsyncProjector<NotificationEvent> for NotificationDetailProjector {
     fn name(&self) -> &str {
         &self.name
     }

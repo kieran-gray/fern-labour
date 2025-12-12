@@ -12,9 +12,9 @@ pub struct Contraction {
 }
 
 impl Contraction {
-    pub fn start(labour_id: Uuid, start_time: DateTime<Utc>) -> Self {
+    pub fn start(contraction_id: Uuid, labour_id: Uuid, start_time: DateTime<Utc>) -> Self {
         Self {
-            id: Uuid::now_v7(),
+            id: contraction_id,
             labour_id: labour_id,
             duration: Duration::create(start_time, start_time).expect("Failed to create duration"),
             intensity: None,

@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, anyhow};
 use async_trait::async_trait;
-use fern_labour_event_sourcing_rs::{DecodedCursor, RepositoryTrait};
+use fern_labour_event_sourcing_rs::{DecodedCursor, AsyncRepositoryTrait};
 use uuid::Uuid;
 use worker::{D1Database, wasm_bindgen::JsValue};
 
@@ -19,7 +19,7 @@ impl D1NotificationDetailRepository {
 }
 
 #[async_trait(?Send)]
-impl RepositoryTrait<NotificationDetail> for D1NotificationDetailRepository {
+impl AsyncRepositoryTrait<NotificationDetail> for D1NotificationDetailRepository {
     async fn get_by_id(&self, notification_id: Uuid) -> Result<NotificationDetail> {
         let result: Option<NotificationDetailRow> = self
             .db

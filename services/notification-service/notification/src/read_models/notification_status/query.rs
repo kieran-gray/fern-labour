@@ -1,6 +1,6 @@
 use anyhow::Result;
 use async_trait::async_trait;
-use fern_labour_event_sourcing_rs::{DecodedCursor, RepositoryTrait};
+use fern_labour_event_sourcing_rs::{DecodedCursor, AsyncRepositoryTrait};
 
 use crate::read_models::notification_status::read_model::NotificationStatus;
 
@@ -14,11 +14,11 @@ pub trait NotificationStatusQueryHandler {
 }
 
 pub struct NotificationStatusQuery {
-    repository: Box<dyn RepositoryTrait<NotificationStatus>>,
+    repository: Box<dyn AsyncRepositoryTrait<NotificationStatus>>,
 }
 
 impl NotificationStatusQuery {
-    pub fn create(repository: Box<dyn RepositoryTrait<NotificationStatus>>) -> Self {
+    pub fn create(repository: Box<dyn AsyncRepositoryTrait<NotificationStatus>>) -> Self {
         Self { repository }
     }
 }

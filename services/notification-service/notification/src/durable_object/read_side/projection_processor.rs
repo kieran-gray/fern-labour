@@ -5,22 +5,22 @@ use futures::future::try_join_all;
 use tracing::info;
 
 use fern_labour_event_sourcing_rs::{
-    EventEnvelope, EventEnvelopeAdapter, EventStoreTrait, Projector,
+    EventEnvelope, EventEnvelopeAdapter, EventStoreTrait, AsyncProjector,
 };
 
 use crate::durable_object::write_side::domain::NotificationEvent;
 
 pub struct ProjectionProcessor {
     event_store: Rc<dyn EventStoreTrait>,
-    projectors: HashMap<String, Box<dyn Projector<NotificationEvent>>>,
+    projectors: HashMap<String, Box<dyn AsyncProjector<NotificationEvent>>>,
 }
 
 impl ProjectionProcessor {
     pub fn create(
         event_store: Rc<dyn EventStoreTrait>,
-        projectors: Vec<Box<dyn Projector<NotificationEvent>>>,
+        projectors: Vec<Box<dyn AsyncProjector<NotificationEvent>>>,
     ) -> Self {
-        let projector_map: HashMap<String, Box<dyn Projector<NotificationEvent>>> = projectors
+        let projector_map: HashMap<String, Box<dyn AsyncProjector<NotificationEvent>>> = projectors
             .into_iter()
             .map(|proj| (proj.name().to_string(), proj))
             .collect();

@@ -23,6 +23,7 @@ impl LabourCommandProcessor {
         }
 
         self.repository.save(&events, user_id)?;
+
         Ok(())
     }
 }

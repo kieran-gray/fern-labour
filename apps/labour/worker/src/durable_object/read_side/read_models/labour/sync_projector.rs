@@ -1,9 +1,9 @@
 use anyhow::{Result, anyhow};
-use async_trait::async_trait;
 use fern_labour_labour_shared::value_objects::LabourPhase;
 use tracing::info;
 
-use fern_labour_event_sourcing_rs::{EventEnvelope, Projector, SingleItemRepositoryTrait};
+use fern_labour_event_sourcing_rs::{EventEnvelope, SyncProjector, SyncRepositoryTrait};
+use uuid::Uuid;
 
 use crate::durable_object::{
     read_side::read_models::labour::read_model::LabourReadModel, write_side::domain::LabourEvent,
@@ -11,15 +11,21 @@ use crate::durable_object::{
 
 pub struct LabourReadModelProjector {
     name: String,
-    repository: Box<dyn SingleItemRepositoryTrait<LabourReadModel>>,
+    repository: Box<dyn SyncRepositoryTrait<LabourReadModel>>,
 }
 
 impl LabourReadModelProjector {
-    pub fn create(repository: Box<dyn SingleItemRepositoryTrait<LabourReadModel>>) -> Self {
+    pub fn create(repository: Box<dyn SyncRepositoryTrait<LabourReadModel>>) -> Self {
         Self {
             name: "LabourReadModelProjector".to_string(),
             repository,
         }
+    }
+
+    fn fetch_labour(&self, labour_id: Uuid) -> LabourReadModel {
+        self.repository
+            .get_by_id(labour_id)
+            .expect("Labour must exist here")
     }
 
     fn project_event(
@@ -48,27 +54,45 @@ impl LabourReadModelProjector {
             )),
 
             LabourEvent::LabourPlanUpdated {
+                labour_id,
                 first_labour,
                 due_date,
                 labour_name,
-                ..
             } => {
-                let mut labour = model?;
+                let mut labour = match model {
+                    Some(model) => model,
+                    None => self.fetch_labour(*labour_id),
+                };
+
                 labour.first_labour = *first_labour;
                 labour.due_date = *due_date;
                 labour.labour_name = labour_name.clone();
                 Some(labour)
             }
 
-            LabourEvent::LabourBegun { start_time, .. } => {
-                let mut labour = model?;
+            LabourEvent::LabourBegun {
+                labour_id,
+                start_time,
+            } => {
+                let mut labour = match model {
+                    Some(model) => model,
+                    None => self.fetch_labour(*labour_id),
+                };
+
                 labour.start_time = Some(start_time.clone());
                 labour.current_phase = LabourPhase::EARLY;
                 Some(labour)
             }
 
-            LabourEvent::LabourCompleted { end_time, .. } => {
-                let mut labour = model?;
+            LabourEvent::LabourCompleted {
+                labour_id,
+                end_time,
+            } => {
+                let mut labour = match model {
+                    Some(model) => model,
+                    None => self.fetch_labour(*labour_id),
+                };
+
                 labour.end_time = Some(end_time.clone());
                 labour.current_phase = LabourPhase::COMPLETE;
                 Some(labour)
@@ -79,13 +103,12 @@ impl LabourReadModelProjector {
     }
 }
 
-#[async_trait(?Send)]
-impl Projector<LabourEvent> for LabourReadModelProjector {
+impl SyncProjector<LabourEvent> for LabourReadModelProjector {
     fn name(&self) -> &str {
         &self.name
     }
 
-    async fn project_batch(&self, events: &[EventEnvelope<LabourEvent>]) -> Result<()> {
+    fn project_batch(&self, events: &[EventEnvelope<LabourEvent>]) -> Result<()> {
         if events.is_empty() {
             return Ok(());
         }
@@ -97,7 +120,6 @@ impl Projector<LabourEvent> for LabourReadModelProjector {
         if let Some(model) = final_model {
             self.repository
                 .overwrite(&model)
-                .await
                 .map_err(|err| anyhow!("Failed to persist LabourReadModel: {err}"))?;
 
             info!(

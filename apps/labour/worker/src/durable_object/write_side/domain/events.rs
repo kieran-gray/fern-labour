@@ -38,10 +38,12 @@ pub enum LabourEvent {
     },
     ContractionStarted {
         labour_id: Uuid,
+        contraction_id: Uuid,
         start_time: DateTime<Utc>,
     },
     ContractionEnded {
         labour_id: Uuid,
+        contraction_id: Uuid,
         end_time: DateTime<Utc>,
         intensity: u8,
     },
@@ -58,8 +60,10 @@ pub enum LabourEvent {
     },
     LabourUpdatePosted {
         labour_id: Uuid,
+        labour_update_id: Uuid,
         labour_update_type: LabourUpdateType,
         message: String,
+        application_generated: bool,
         sent_time: DateTime<Utc>,
     },
     LabourUpdateMessageUpdated {
@@ -92,6 +96,34 @@ impl LabourEvent {
 
     pub fn from_stored_event(event: StoredEvent) -> Self {
         serde_json::from_str(&event.event_data).unwrap()
+    }
+
+    pub fn contraction_id(self) -> Option<Uuid> {
+        match self {
+            LabourEvent::ContractionStarted { contraction_id, .. } => Some(contraction_id),
+            LabourEvent::ContractionEnded { contraction_id, .. } => Some(contraction_id),
+            LabourEvent::ContractionUpdated { contraction_id, .. } => Some(contraction_id),
+            LabourEvent::ContractionDeleted { contraction_id, .. } => Some(contraction_id),
+            _ => None,
+        }
+    }
+
+    pub fn labour_update_id(self) -> Option<Uuid> {
+        match self {
+            LabourEvent::LabourUpdatePosted {
+                labour_update_id, ..
+            } => Some(labour_update_id),
+            LabourEvent::LabourUpdateMessageUpdated {
+                labour_update_id, ..
+            } => Some(labour_update_id),
+            LabourEvent::LabourUpdateTypeUpdated {
+                labour_update_id, ..
+            } => Some(labour_update_id),
+            LabourEvent::LabourUpdateDeleted {
+                labour_update_id, ..
+            } => Some(labour_update_id),
+            _ => None,
+        }
     }
 }
 

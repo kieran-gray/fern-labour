@@ -72,7 +72,7 @@ impl RequestDto {
 
                 Ok(Self::ContractionCommand { envelope })
             }
-            (worker::Method::Post, "/labour_update/command") => {
+            (worker::Method::Post, "/labour-update/command") => {
                 let envelope: CommandEnvelope<LabourUpdateCommand> = req.json().await?;
 
                 info!(

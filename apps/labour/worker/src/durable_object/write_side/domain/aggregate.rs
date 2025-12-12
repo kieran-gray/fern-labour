@@ -40,8 +40,8 @@ impl Labour {
         &self.phase
     }
 
-    pub fn has_active_contraction(&self) -> bool {
-        self.contractions.iter().any(|c| c.is_active())
+    pub fn find_active_contraction(&self) -> Option<&Contraction> {
+        self.contractions.iter().find(|c| c.is_active())
     }
 
     pub fn find_contraction(&self, contraction_id: Uuid) -> Option<&Contraction> {
@@ -101,9 +101,10 @@ impl Aggregate for Labour {
             }
             LabourEvent::ContractionStarted {
                 labour_id,
+                contraction_id,
                 start_time,
             } => {
-                let contraction = Contraction::start(labour_id.clone(), *start_time);
+                let contraction = Contraction::start(*contraction_id, *labour_id, *start_time);
                 self.contractions.push(contraction);
             }
             LabourEvent::ContractionEnded {
@@ -122,16 +123,19 @@ impl Aggregate for Labour {
             }
             LabourEvent::LabourUpdatePosted {
                 labour_id,
+                labour_update_id,
                 labour_update_type,
                 message,
+                application_generated,
                 sent_time,
             } => {
                 let labour_update = LabourUpdate::create(
                     *labour_id,
+                    *labour_update_id,
                     labour_update_type.clone(),
                     message.clone(),
                     *sent_time,
-                    false,
+                    *application_generated,
                 );
                 self.labour_updates.push(labour_update);
             }
@@ -203,11 +207,21 @@ impl Aggregate for Labour {
                         LabourPhase::EARLY.to_string(),
                     ));
                 }
-
-                vec![LabourEvent::LabourBegun {
-                    labour_id,
-                    start_time: Utc::now(),
-                }]
+                // TODO: labour update would be better as a policy?
+                vec![
+                    LabourEvent::LabourBegun {
+                        labour_id,
+                        start_time: Utc::now(),
+                    },
+                    LabourEvent::LabourUpdatePosted {
+                        labour_id,
+                        labour_update_id: Uuid::now_v7(),
+                        labour_update_type: LabourUpdateType::PRIVATE_NOTE,
+                        message: "labour_begun".to_string(),
+                        application_generated: true,
+                        sent_time: Utc::now(),
+                    },
+                ]
             }
             LabourCommand::CompleteLabour { labour_id } => {
                 let Some(labour) = state else {
@@ -221,7 +235,7 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                if labour.has_active_contraction() {
+                if labour.find_active_contraction().is_some() {
                     return Err(LabourError::ValidationError(format!(
                         "Cannot complete labour with active contraction"
                     )));
@@ -279,7 +293,7 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                if labour.has_active_contraction() {
+                if labour.find_active_contraction().is_some() {
                     return Err(LabourError::InvalidCommand(
                         "Labour already has a contraction in progress".to_string(),
                     ));
@@ -291,11 +305,20 @@ impl Aggregate for Labour {
                     events.push(LabourEvent::LabourBegun {
                         labour_id,
                         start_time: Utc::now(),
+                    });
+                    events.push(LabourEvent::LabourUpdatePosted {
+                        labour_id,
+                        labour_update_id: Uuid::now_v7(),
+                        labour_update_type: LabourUpdateType::PRIVATE_NOTE,
+                        message: "labour_begun".to_string(),
+                        application_generated: true,
+                        sent_time: Utc::now(),
                     })
                 }
 
                 events.push(LabourEvent::ContractionStarted {
                     labour_id,
+                    contraction_id: Uuid::now_v7(),
                     start_time,
                 });
 
@@ -316,17 +339,19 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                if !labour.has_active_contraction() {
-                    return Err(LabourError::InvalidCommand(
-                        "Labour does not have an active contraction".to_string(),
-                    ));
+                match labour.find_active_contraction() {
+                    Some(contraction) => vec![LabourEvent::ContractionEnded {
+                        labour_id,
+                        contraction_id: contraction.id(),
+                        end_time,
+                        intensity,
+                    }],
+                    None => {
+                        return Err(LabourError::InvalidCommand(
+                            "Labour does not have an active contraction".to_string(),
+                        ));
+                    }
                 }
-
-                vec![LabourEvent::ContractionEnded {
-                    labour_id,
-                    end_time,
-                    intensity,
-                }]
             }
             LabourCommand::UpdateContraction {
                 labour_id,
@@ -417,8 +442,10 @@ impl Aggregate for Labour {
 
                 vec![LabourEvent::LabourUpdatePosted {
                     labour_id,
+                    labour_update_id: Uuid::now_v7(),
                     labour_update_type,
                     message,
+                    application_generated: false,
                     sent_time: Utc::now(),
                 }]
             }

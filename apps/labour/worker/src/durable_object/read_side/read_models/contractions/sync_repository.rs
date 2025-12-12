@@ -1,6 +1,5 @@
-use anyhow::{Context, Result};
-use async_trait::async_trait;
-use fern_labour_event_sourcing_rs::{DecodedCursor, RepositoryTrait};
+use anyhow::{Context, Result, anyhow};
+use fern_labour_event_sourcing_rs::{DecodedCursor, SyncRepositoryTrait};
 use uuid::Uuid;
 use worker::SqlStorage;
 
@@ -28,7 +27,7 @@ impl SqlContractionRepository {
                 )",
                 None,
             )
-            .context("Failed to create contractions table")?;
+            .map_err(|err| anyhow!("Failed to create contractions table: {err}"))?;
 
         self.sql
             .exec(
@@ -41,7 +40,7 @@ impl SqlContractionRepository {
         Ok(())
     }
 
-    pub async fn get_all(&self) -> Result<Vec<ContractionReadModel>> {
+    pub fn get_all(&self) -> Result<Vec<ContractionReadModel>> {
         let rows: Vec<ContractionRow> = self
             .sql
             .exec("SELECT * FROM contractions ORDER BY created_at ASC", None)
@@ -52,7 +51,7 @@ impl SqlContractionRepository {
         rows.into_iter().map(|row| row.into_read_model()).collect()
     }
 
-    pub async fn get_by_labour_id(&self, labour_id: Uuid) -> Result<Vec<ContractionReadModel>> {
+    pub fn get_by_labour_id(&self, labour_id: Uuid) -> Result<Vec<ContractionReadModel>> {
         let rows: Vec<ContractionRow> = self
             .sql
             .exec(
@@ -67,9 +66,8 @@ impl SqlContractionRepository {
     }
 }
 
-#[async_trait(?Send)]
-impl RepositoryTrait<ContractionReadModel> for SqlContractionRepository {
-    async fn get_by_id(&self, contraction_id: Uuid) -> Result<ContractionReadModel> {
+impl SyncRepositoryTrait<ContractionReadModel> for SqlContractionRepository {
+    fn get_by_id(&self, contraction_id: Uuid) -> Result<ContractionReadModel> {
         let rows: Vec<ContractionRow> = self
             .sql
             .exec(
@@ -86,7 +84,7 @@ impl RepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         }
     }
 
-    async fn get(
+    fn get(
         &self,
         limit: usize,
         cursor: Option<DecodedCursor>,
@@ -119,7 +117,7 @@ impl RepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         rows.into_iter().map(|row| row.into_read_model()).collect()
     }
 
-    async fn upsert(&self, contraction: &ContractionReadModel) -> Result<()> {
+    fn upsert(&self, contraction: &ContractionReadModel) -> Result<()> {
         let row = ContractionRow::from_read_model(contraction)
             .context("Failed to convert contraction to row")?;
 
@@ -156,7 +154,7 @@ impl RepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         Ok(())
     }
 
-    async fn delete(&self, contraction_id: Uuid) -> Result<()> {
+    fn delete(&self, contraction_id: Uuid) -> Result<()> {
         self.sql
             .exec(
                 "DELETE FROM contractions WHERE contraction_id = ?1",
@@ -167,7 +165,7 @@ impl RepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         Ok(())
     }
 
-    async fn overwrite(&self, contraction: &ContractionReadModel) -> Result<()> {
+    fn overwrite(&self, contraction: &ContractionReadModel) -> Result<()> {
         let row = ContractionRow::from_read_model(contraction)
             .context("Failed to convert contraction to row")?;
 

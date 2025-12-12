@@ -3,7 +3,7 @@ include .env
 run:
 	@echo "Starting all services..."
 # 	docker compose up --build -d;
-	npm run dev:admin;
+	npm run dev;
 	@echo "Services started."
 
 stop:

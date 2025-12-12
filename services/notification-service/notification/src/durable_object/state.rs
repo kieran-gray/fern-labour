@@ -11,7 +11,7 @@ use fern_labour_workers_shared::{
 };
 use worker::{Env, State};
 
-use fern_labour_event_sourcing_rs::{AggregateRepository, CommandEnvelope, Projector};
+use fern_labour_event_sourcing_rs::{AggregateRepository, AsyncProjector, CommandEnvelope};
 
 use crate::{
     durable_object::{
@@ -139,7 +139,7 @@ impl AggregateServices {
 
         let notification_status_projector = Self::create_notification_status_projector(env)?;
         let notification_detail_projector = Self::create_notification_detail_projector(env)?;
-        let projectors: Vec<Box<dyn Projector<NotificationEvent>>> =
+        let projectors: Vec<Box<dyn AsyncProjector<NotificationEvent>>> =
             vec![notification_detail_projector, notification_status_projector];
         let projection_processor = ProjectionProcessor::create(event_store.clone(), projectors);
 

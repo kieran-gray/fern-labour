@@ -36,7 +36,7 @@ impl ContractionReadModel {
 
 impl Cursor for ContractionReadModel {
     fn id(&self) -> Uuid {
-        self.labour_id
+        self.contraction_id
     }
 
     fn updated_at(&self) -> DateTime<Utc> {

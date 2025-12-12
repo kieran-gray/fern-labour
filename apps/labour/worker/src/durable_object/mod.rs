@@ -97,14 +97,24 @@ impl DurableObject for LabourAggregate {
     async fn alarm(&self) -> Result<Response> {
         info!("Alarm triggered - processing async operations");
 
-        let proj_result = self
+        let sync_result = self
             .services
             .async_processors()
-            .projection_processor
+            .sync_projection_processor
+            .process_projections();
+
+        if let Err(e) = sync_result {
+            error!(error = %e, "Error in sync projection processing");
+        }
+
+        let async_result = self
+            .services
+            .async_processors()
+            .async_projection_processor
             .process_projections()
             .await;
 
-        match proj_result {
+        match async_result {
             Ok(_) => {
                 info!("All async operations completed successfully");
                 Response::empty()

@@ -5,7 +5,7 @@ use uuid::Uuid;
 use crate::DecodedCursor;
 
 #[async_trait(?Send)]
-pub trait RepositoryTrait<T> {
+pub trait AsyncRepositoryTrait<T> {
     async fn get_by_id(&self, id: Uuid) -> Result<T>;
     async fn get(&self, limit: usize, cursor: Option<DecodedCursor>) -> Result<Vec<T>>;
     async fn upsert(&self, value: &T) -> Result<()>;

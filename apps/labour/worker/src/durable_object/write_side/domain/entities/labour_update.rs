@@ -17,13 +17,14 @@ pub struct LabourUpdate {
 impl LabourUpdate {
     pub fn create(
         labour_id: Uuid,
+        labour_update_id: Uuid,
         labour_update_type: LabourUpdateType,
         message: String,
         sent_time: DateTime<Utc>,
         application_generated: bool,
     ) -> Self {
         Self {
-            id: Uuid::now_v7(),
+            id: labour_update_id,
             labour_id,
             labour_update_type,
             message,
