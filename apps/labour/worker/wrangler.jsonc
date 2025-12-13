@@ -15,7 +15,7 @@
   },
   "workers_dev": false,
   "route": {
-    "pattern": "track.fern-labour.com",
+    "pattern": "track.fernlabour.com",
     "custom_domain": true
   },
   "placement": {
@@ -105,7 +105,7 @@
       "vars": {
         "ENVIRONMENT": "dev",
         "ALLOWED_ORIGINS": "",
-        "AUTH_ENABLED": "false"
+        "AUTH_ENABLED": "true"
       }
     }
   }
