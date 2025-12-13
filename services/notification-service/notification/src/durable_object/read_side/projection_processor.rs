@@ -5,7 +5,7 @@ use futures::future::try_join_all;
 use tracing::info;
 
 use fern_labour_event_sourcing_rs::{
-    EventEnvelope, EventEnvelopeAdapter, EventStoreTrait, AsyncProjector,
+    AsyncProjector, EventEnvelope, EventEnvelopeAdapter, EventStoreTrait,
 };
 
 use crate::durable_object::write_side::domain::NotificationEvent;

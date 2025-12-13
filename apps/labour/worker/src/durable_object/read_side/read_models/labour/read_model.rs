@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use anyhow::{Result, anyhow};
 use chrono::{DateTime, Utc};
 use fern_labour_event_sourcing_rs::Cursor;
@@ -100,8 +102,8 @@ impl LabourRow {
     }
 
     fn parse_labour_phase(phase: &str) -> Result<LabourPhase> {
-        let phase = serde_json::from_str::<LabourPhase>(phase)
-            .map_err(|e| anyhow!("Invalid labour_phase: {}", e))?;
+        let phase =
+            LabourPhase::from_str(phase).map_err(|e| anyhow!("Invalid labour_phase: {}", e))?;
         Ok(phase)
     }
 

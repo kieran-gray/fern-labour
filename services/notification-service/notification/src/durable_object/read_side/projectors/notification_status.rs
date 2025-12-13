@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use async_trait::async_trait;
 use tracing::info;
 
-use fern_labour_event_sourcing_rs::{EventEnvelope, AsyncProjector, AsyncRepositoryTrait};
+use fern_labour_event_sourcing_rs::{AsyncProjector, AsyncRepositoryTrait, EventEnvelope};
 
 use crate::{
     durable_object::write_side::domain::NotificationEvent,

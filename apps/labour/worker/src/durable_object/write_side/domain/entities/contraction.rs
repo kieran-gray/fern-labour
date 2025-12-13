@@ -1,3 +1,4 @@
+use anyhow::Result;
 use chrono::{DateTime, Utc};
 use fern_labour_labour_shared::value_objects::contraction::duration::Duration;
 use serde::{Deserialize, Serialize};
@@ -12,20 +13,21 @@ pub struct Contraction {
 }
 
 impl Contraction {
-    pub fn start(contraction_id: Uuid, labour_id: Uuid, start_time: DateTime<Utc>) -> Self {
-        Self {
+    pub fn start(contraction_id: Uuid, labour_id: Uuid, start_time: DateTime<Utc>) -> Result<Self> {
+        let duration = Duration::create(start_time, start_time)?;
+        Ok(Self {
             id: contraction_id,
             labour_id,
-            duration: Duration::create(start_time, start_time).expect("Failed to create duration"),
+            duration,
             intensity: None,
-        }
+        })
     }
 
-    pub fn end(&mut self, end_time: DateTime<Utc>, intensity: u8) {
-        let duration =
-            Duration::create(*self.start_time(), end_time).expect("Failed to create duration");
+    pub fn end(&mut self, end_time: DateTime<Utc>, intensity: u8) -> Result<()> {
+        let duration = Duration::create(*self.start_time(), end_time)?;
         self.duration = duration;
         self.intensity = Some(intensity);
+        Ok(())
     }
 
     pub fn id(&self) -> Uuid {

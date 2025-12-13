@@ -1,6 +1,6 @@
 use anyhow::Result;
 use async_trait::async_trait;
-use fern_labour_event_sourcing_rs::{DecodedCursor, AsyncRepositoryTrait};
+use fern_labour_event_sourcing_rs::{AsyncRepositoryTrait, DecodedCursor};
 
 use crate::read_models::notification_status::read_model::NotificationStatus;
 

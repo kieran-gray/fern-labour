@@ -5,6 +5,7 @@ use crate::api_worker::api::middleware::authenticated;
 use crate::api_worker::api::middleware::create_options_handler;
 use crate::api_worker::api::routes::commands::handle_command;
 use crate::api_worker::api::routes::labour::handle_plan_labour;
+use crate::api_worker::api::routes::queries::handle_query;
 
 pub fn create_router(app_state: AppState) -> Router<'static, AppState> {
     Router::with_data(app_state)
@@ -16,4 +17,8 @@ pub fn create_router(app_state: AppState) -> Router<'static, AppState> {
             authenticated(handle_command, req, ctx)
         })
         .options("/api/v1/command", create_options_handler)
+        .post_async("/api/v1/query", |req, ctx| {
+            authenticated(handle_query, req, ctx)
+        })
+        .options("/api/v1/query", create_options_handler)
 }

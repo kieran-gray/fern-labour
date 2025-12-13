@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, anyhow};
 use async_trait::async_trait;
-use fern_labour_event_sourcing_rs::{DecodedCursor, AsyncRepositoryTrait};
+use fern_labour_event_sourcing_rs::{AsyncRepositoryTrait, DecodedCursor};
 use uuid::Uuid;
 use worker::D1Database;
 

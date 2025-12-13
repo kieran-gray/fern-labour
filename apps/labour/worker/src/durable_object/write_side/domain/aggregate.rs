@@ -104,7 +104,8 @@ impl Aggregate for Labour {
                 contraction_id,
                 start_time,
             } => {
-                let contraction = Contraction::start(*contraction_id, *labour_id, *start_time);
+                let contraction =
+                    Contraction::start(*contraction_id, *labour_id, *start_time).unwrap();
                 self.contractions.push(contraction);
             }
             LabourEvent::ContractionEnded {
@@ -113,13 +114,13 @@ impl Aggregate for Labour {
                 ..
             } => {
                 let contraction = self.contractions.last_mut().expect("No contractions found");
-                contraction.end(*end_time, *intensity);
+                contraction.end(*end_time, *intensity).unwrap();
             }
             LabourEvent::ContractionUpdated { .. } => {
                 // TODO: skip CBA for now
             }
-            LabourEvent::ContractionDeleted { .. } => {
-                // TODO
+            LabourEvent::ContractionDeleted { contraction_id, .. } => {
+                self.contractions.pop_if(|c| c.id() == *contraction_id);
             }
             LabourEvent::LabourUpdatePosted {
                 labour_id,
@@ -145,7 +146,11 @@ impl Aggregate for Labour {
             LabourEvent::LabourUpdateTypeUpdated { .. } => {
                 // TODO
             }
-            LabourEvent::LabourUpdateDeleted { .. } => {}
+            LabourEvent::LabourUpdateDeleted {
+                labour_update_id, ..
+            } => {
+                self.labour_updates.pop_if(|c| c.id() == *labour_update_id);
+            }
             LabourEvent::LabourPlanUpdated { .. }
             | LabourEvent::LabourInviteSent { .. }
             | LabourEvent::LabourDeleted { .. } => {}

@@ -12,9 +12,14 @@ use crate::durable_object::{
         async_projection_processor::AsyncProjectionProcessor,
         checkpoint_repository::SqlCheckpointRepository,
         read_models::{
-            contractions::{ContractionReadModelProjector, SqlContractionRepository},
-            labour::{LabourReadModelProjector, SqlLabourRepository},
-            labour_updates::{LabourUpdateReadModelProjector, SqlLabourUpdateRepository},
+            contractions::{
+                ContractionReadModelProjector, ContractionReadModelQuery, SqlContractionRepository,
+            },
+            labour::{LabourReadModelProjector, LabourReadModelQuery, SqlLabourRepository},
+            labour_updates::{
+                LabourUpdateReadModelProjector, LabourUpdateReadModelQuery,
+                SqlLabourUpdateRepository,
+            },
         },
         sync_projection_processor::SyncProjectionProcessor,
     },
@@ -32,6 +37,9 @@ pub struct WriteModel {
 
 pub struct ReadModel {
     pub query_service: QueryService,
+    pub labour_query: LabourReadModelQuery,
+    pub contraction_query: ContractionReadModelQuery,
+    pub labour_update_query: LabourUpdateReadModelQuery,
 }
 
 pub struct AsyncProcessors {
@@ -68,9 +76,24 @@ impl AggregateServices {
     }
 
     fn build_read_model(state: &State) -> Result<ReadModel> {
-        let query_service = QueryService::new(SqlEventStore::create(state.storage().sql()));
+        let sql = state.storage().sql();
+        let query_service = QueryService::new(SqlEventStore::create(sql.clone()));
 
-        Ok(ReadModel { query_service })
+        let labour_repository = Box::new(SqlLabourRepository::create(sql.clone()));
+        let labour_query = LabourReadModelQuery::create(labour_repository);
+
+        let contraction_repository = Box::new(SqlContractionRepository::create(sql.clone()));
+        let contraction_query = ContractionReadModelQuery::create(contraction_repository);
+
+        let labour_update_repository = Box::new(SqlLabourUpdateRepository::create(sql.clone()));
+        let labour_update_query = LabourUpdateReadModelQuery::create(labour_update_repository);
+
+        Ok(ReadModel {
+            query_service,
+            labour_query,
+            contraction_query,
+            labour_update_query,
+        })
     }
 
     fn build_sync_projection_processor(state: &State) -> Result<SyncProjectionProcessor> {

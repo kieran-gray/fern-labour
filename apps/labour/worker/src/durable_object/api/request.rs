@@ -1,6 +1,7 @@
 use fern_labour_event_sourcing_rs::CommandEnvelope;
 use fern_labour_labour_shared::{
-    AdminCommand, ContractionCommand, LabourCommand, LabourUpdateCommand,
+    AdminCommand, ContractionCommand, ContractionQuery, LabourCommand, LabourQuery,
+    LabourUpdateCommand, LabourUpdateQuery,
 };
 use tracing::info;
 use worker::{Request, Response, Result};
@@ -24,6 +25,15 @@ pub enum RequestDto {
         envelope: CommandEnvelope<AdminCommand>,
     },
     EventsQuery,
+    LabourQuery {
+        query: LabourQuery,
+    },
+    ContractionQuery {
+        query: ContractionQuery,
+    },
+    LabourUpdateQuery {
+        query: LabourUpdateQuery,
+    },
 }
 
 impl RequestDto {
@@ -98,6 +108,36 @@ impl RequestDto {
                 Ok(Self::AdminCommand { envelope })
             }
             (worker::Method::Get, "/labour/events") => Ok(Self::EventsQuery),
+            (worker::Method::Post, "/labour/query") => {
+                let query: LabourQuery = req.json().await?;
+
+                info!(
+                    query = ?query,
+                    "Deserialized labour query"
+                );
+
+                Ok(Self::LabourQuery { query })
+            }
+            (worker::Method::Post, "/contraction/query") => {
+                let query: ContractionQuery = req.json().await?;
+
+                info!(
+                    query = ?query,
+                    "Deserialized contraction query"
+                );
+
+                Ok(Self::ContractionQuery { query })
+            }
+            (worker::Method::Post, "/labour-update/query") => {
+                let query: LabourUpdateQuery = req.json().await?;
+
+                info!(
+                    query = ?query,
+                    "Deserialized labour update query"
+                );
+
+                Ok(Self::LabourUpdateQuery { query })
+            }
             _ => Response::error("Not Found", 404).map(|_| unreachable!()),
         }
     }
