@@ -1,21 +1,24 @@
 import { useCallback, useState } from 'react';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
 import { useNetworkState } from '@base/offline/hooks';
-import { LabourUpdateType } from '@clients/labour_service';
-import { useCreateLabourUpdate } from '@shared/hooks';
+import { useLabourV2Client, usePostLabourUpdateV2 } from '@shared/hooks';
 import { IconPencil, IconSend, IconSpeakerphone, IconWifiOff } from '@tabler/icons-react';
 import { Button, SegmentedControl, Text, Textarea } from '@mantine/core';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
+import { useLabour } from '@base/contexts/LabourContext';
+import { LabourUpdateType } from '@base/clients/labour_service_v2';
 
 export function LabourUpdateControls() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [labourUpdateType, setLabourUpdateType] = useState<LabourUpdateType>('status_update');
+  const [labourUpdateType, setLabourUpdateType] = useState<LabourUpdateType>(LabourUpdateType.STATUS_UPDATE);
+  const { labourId } = useLabour();
   const { isOnline } = useNetworkState();
 
-  const createLabourUpdateMutation = useCreateLabourUpdate();
+  const client = useLabourV2Client();
+  const mutation = usePostLabourUpdateV2(client);
 
   const handleMessageChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (event.currentTarget.value.length <= LABOUR_UPDATE_MAX_LENGTH) {
@@ -23,10 +26,11 @@ export function LabourUpdateControls() {
     }
   }, []);
 
-  const handleSubmitUpdate = (labourUpdateType: LabourUpdateType, message: string) => {
-    createLabourUpdateMutation.mutate(
+  const handleSubmitUpdate = (updateType: LabourUpdateType, message: string) => {
+    mutation.mutate(
       {
-        labour_update_type: labourUpdateType,
+        labourId: labourId!,
+        updateType,
         message,
       },
       {
@@ -46,7 +50,7 @@ export function LabourUpdateControls() {
   };
 
   const handleSubmit = () => {
-    if (labourUpdateType === 'announcement') {
+    if (labourUpdateType === 'ANNOUNCEMENT') {
       setIsModalOpen(true);
     } else {
       handleSubmitUpdate(labourUpdateType, message);
@@ -67,21 +71,21 @@ export function LabourUpdateControls() {
   }
 
   const buttonIcon =
-    labourUpdateType === 'status_update' ? (
+    labourUpdateType === 'STATUS_UPDATE' ? (
       <IconSend size={18} stroke={1.5} />
     ) : (
       <IconSpeakerphone size={18} stroke={1.5} />
     );
 
   const buttonText =
-    labourUpdateType === 'status_update' ? 'Post Status Update' : 'Make Announcement';
+    labourUpdateType === 'STATUS_UPDATE' ? 'Post Status Update' : 'Make Announcement';
 
   const buttonProps = {
     variant: 'filled',
     radius: 'xl',
     type: 'submit',
     disabled: !message,
-    loading: createLabourUpdateMutation.isPending,
+    loading: mutation.isPending,
     className: classes.statusUpdateButton,
     onClick: handleSubmit,
     style: { minWidth: '200px' },
@@ -104,8 +108,8 @@ export function LabourUpdateControls() {
         transitionTimingFunction="ease"
         fullWidth
         data={[
-          { label: 'Status Update', value: 'status_update' },
-          { label: 'Announcement', value: 'announcement' },
+          { label: 'Status Update', value: 'STATUS_UPDATE' },
+          { label: 'Announcement', value: 'ANNOUNCEMENT' },
         ]}
         radius="lg"
         mt={20}

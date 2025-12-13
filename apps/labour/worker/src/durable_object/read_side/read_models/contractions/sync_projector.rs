@@ -52,14 +52,36 @@ impl ContractionReadModelProjector {
                     .get_by_id(*contraction_id)
                     .unwrap_or_else(|_| panic!("No contraction found with id: {contraction_id}"));
                 contraction.duration =
-                    Duration::create(*contraction.duration.start_time(), *end_time)
-                        .expect("Failed to create duration");
+                    Duration::create(*contraction.duration.start_time(), *end_time)?;
                 contraction.intensity = Some(*intensity);
                 contraction.updated_at = timestamp;
                 self.repository.upsert(&contraction)
             }
             LabourEvent::ContractionDeleted { contraction_id, .. } => {
                 self.repository.delete(*contraction_id)
+            }
+            LabourEvent::ContractionUpdated {
+                contraction_id,
+                start_time,
+                end_time,
+                intensity,
+                ..
+            } => {
+                let mut contraction = self
+                    .repository
+                    .get_by_id(*contraction_id)
+                    .unwrap_or_else(|_| panic!("No contraction found with id: {contraction_id}"));
+                let new_start_time = match start_time {
+                    Some(start_time) => start_time,
+                    None => contraction.duration.start_time(),
+                };
+                let new_end_time = match end_time {
+                    Some(end_time) => end_time,
+                    None => contraction.duration.end_time(),
+                };
+                contraction.duration = Duration::create(*new_start_time, *new_end_time)?;
+                contraction.intensity = intensity.clone();
+                self.repository.upsert(&contraction)
             }
             _ => Ok(()),
         }

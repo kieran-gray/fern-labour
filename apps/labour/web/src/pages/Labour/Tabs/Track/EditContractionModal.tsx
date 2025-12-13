@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { UpdateContractionRequest } from '@clients/labour_service';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { useDeleteContraction, useUpdateContraction } from '@shared/hooks';
+import { useDeleteContractionV2, useLabourV2Client, useUpdateContractionV2 } from '@shared/hooks';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';
@@ -10,6 +9,7 @@ import { ContractionData } from './ContractionTimelineCustom';
 import { updateTime } from './UpdateTime';
 import classes from './Contractions.module.css';
 import modalClasses from '@shared/Modal.module.css';
+import { useLabour } from '@base/contexts/LabourContext';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -23,6 +23,7 @@ export const EditContractionModal = ({
   close: CloseFunctionType;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { labourId } = useLabour();
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -33,11 +34,16 @@ export const EditContractionModal = ({
     },
   });
 
-  const deleteContractionMutation = useDeleteContraction();
-  const updateContractionMutation = useUpdateContraction();
+  const client = useLabourV2Client();
+  const deleteMutation = useDeleteContractionV2(client);
+  const updateMutation = useUpdateContractionV2(client);
 
   const handleDeleteContraction = (contractionId: string) => {
-    deleteContractionMutation.mutate(contractionId, {
+    const payload = {
+      labourId: labourId!,
+      contractionId
+    }
+    deleteMutation.mutate(payload, {
       onSuccess: () => {
         close();
       },
@@ -60,14 +66,16 @@ export const EditContractionModal = ({
         ? updateTime(contractionData!.endTime, values.endTime)
         : contractionData!.endTime;
 
-    const requestBody: UpdateContractionRequest = {
-      start_time: startTime,
-      end_time: endTime,
-      intensity: values.intensity != null ? values.intensity : contractionData!.intensity,
+    const requestBody = {
+      labourId: labourId!,
+      contractionId,
+      start_time: new Date(startTime),
+      end_time: new Date(endTime),
+      intensity: values.intensity != null ? values.intensity : contractionData!.intensity!,
       contraction_id: contractionId,
     };
 
-    updateContractionMutation.mutate(requestBody, {
+    updateMutation.mutate(requestBody, {
       onSuccess: () => {
         form.reset();
         close();
@@ -189,7 +197,7 @@ export const EditContractionModal = ({
               px={0}
               styles={{ section: { marginLeft: 10 } }}
               onClick={() => setIsModalOpen(true)}
-              loading={deleteContractionMutation.isPending}
+              loading={deleteMutation.isPending}
               aria-label="Delete contraction"
             />
             <Button
@@ -202,7 +210,7 @@ export const EditContractionModal = ({
               flex={1}
               ml="sm"
               type="submit"
-              loading={updateContractionMutation.isPending}
+              loading={updateMutation.isPending}
             >
               Update
             </Button>

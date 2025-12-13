@@ -1,6 +1,6 @@
 import { validateLabourName } from '@base/shared-components/utils';
-import { LabourDTO, PlanLabourRequest } from '@clients/labour_service';
-import { usePlanLabour } from '@shared/hooks';
+import { LabourDTO } from '@clients/labour_service';
+import { useLabourV2Client, usePlanLabourV2, useUpdateLabourPlanV2 } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/icons-react';
@@ -14,7 +14,11 @@ import baseClasses from '@shared/shared-styles.module.css';
 
 export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
   const navigate = useNavigate();
-  const planLabourMutation = usePlanLabour();
+  const client = useLabourV2Client();
+  const planLabourMutation = usePlanLabourV2(client);
+  const updateLabourMutation = useUpdateLabourPlanV2(client);
+
+  const mutation = labour ? updateLabourMutation : planLabourMutation;
 
   const icon =
     labour === undefined ? (
@@ -38,15 +42,30 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
   });
 
   const handlePlanLabour = (values: typeof form.values) => {
-    const requestBody: PlanLabourRequest = {
-      due_date: values.dueDate.toISOString(),
-      first_labour: values.firstLabour === 'true',
-      labour_name: values.labourName,
-    };
-    const existing = labour !== undefined;
-    planLabourMutation.mutate({ requestBody, existing });
-    if (!existing) {
-      setTimeout(() => navigate('/'), 100);
+    const firstLabour = values.firstLabour === 'true';
+    const dueDate = values.dueDate;
+    const labourName = values.labourName || undefined;
+
+    if (labour) {
+      updateLabourMutation.mutate({
+        labourId: labour.id,
+        firstLabour,
+        dueDate,
+        labourName,
+      });
+    } else {
+      planLabourMutation.mutate(
+        {
+          firstLabour,
+          dueDate,
+          labourName,
+        },
+        {
+          onSuccess: () => {
+            setTimeout(() => navigate('/'), 100);
+          },
+        }
+      );
     }
   };
 
@@ -143,7 +162,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
             className={classes.submitButton}
             styles={{ section: { marginLeft: 22 } }}
             type="submit"
-            loading={planLabourMutation.isPending}
+            loading={mutation.isPending}
           >
             Finish Planning Labour
           </Button>
@@ -160,7 +179,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
             className={classes.submitButton}
             styles={{ section: { marginRight: 22 } }}
             type="submit"
-            loading={planLabourMutation.isPending}
+            loading={mutation.isPending}
           >
             Update labour plan
           </Button>

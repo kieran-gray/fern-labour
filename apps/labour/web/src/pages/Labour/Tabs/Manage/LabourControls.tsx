@@ -1,19 +1,18 @@
 import { useState } from 'react';
-import { LabourDTO } from '@clients/labour_service';
 import { Tabs } from '@mantine/core';
 import Complete from './Complete/Complete';
 import LabourDetails from './LabourDetails/LabourDetails';
+import { ContractionReadModel } from '@base/clients/labour_service_v2';
 
-export function LabourControls({ labour }: { labour: LabourDTO | undefined }) {
+export function LabourControls({activeContraction}: {activeContraction: ContractionReadModel | undefined}) {
   const [activeTab, setActiveTab] = useState<string | null>('details');
-  const activeContraction = labour?.contractions.find((contraction) => contraction.is_active);
   return (
     <Tabs keepMounted={false} defaultValue={activeTab} value={activeTab}>
       <Tabs.Panel value="details" pb="xs">
         <LabourDetails setActiveTab={setActiveTab} />
       </Tabs.Panel>
       <Tabs.Panel value="complete" pb="xs">
-        <Complete activeContraction={!!activeContraction} setActiveTab={setActiveTab} />
+        <Complete activeContraction={activeContraction !== undefined} setActiveTab={setActiveTab} />
       </Tabs.Panel>
     </Tabs>
   );

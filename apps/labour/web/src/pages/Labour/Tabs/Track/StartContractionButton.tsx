@@ -1,10 +1,10 @@
 import { RefObject } from 'react';
 import { useLabour } from '@base/contexts/LabourContext';
-import { ContractionDTO } from '@clients/labour_service';
-import { useStartContraction } from '@shared/hooks';
+import { useLabourV2Client, useStartContractionV2 } from '@shared/hooks';
 import { IconHourglassLow } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
 import { StopwatchHandle } from './Stopwatch/Stopwatch';
+import { ContractionReadModel } from '@base/clients/labour_service_v2';
 
 export default function StartContractionButton({
   stopwatchRef,
@@ -12,25 +12,25 @@ export default function StartContractionButton({
   stopwatchRef: RefObject<StopwatchHandle>;
 }) {
   const { labourId } = useLabour();
-  const startContractionMutation = useStartContraction();
+  const client = useLabourV2Client();
+  const mutation = useStartContractionV2(client)
 
-  const createNewContraction = (): ContractionDTO => {
+  const createNewContraction = (): ContractionReadModel => {
     const startTime = new Date().toISOString();
     return {
-      id: 'placeholder',
+      contraction_id: 'placeholder',
       labour_id: labourId!,
-      start_time: startTime,
-      end_time: startTime,
-      duration: 0,
+      duration: {start_time: startTime, end_time: startTime},
       intensity: null,
-      notes: null,
-      is_active: true,
+      created_at: startTime,
+      updated_at: startTime,
     };
   };
 
-  const handleStartContraction = (contraction: ContractionDTO) => {
+  const handleStartContraction = (contraction: ContractionReadModel) => {
     stopwatchRef.current?.start();
-    startContractionMutation.mutate(contraction);
+
+    mutation.mutate({labourId: contraction.labour_id, startTime: new Date() }); // todo
   };
 
   const icon = <IconHourglassLow size={25} />;
@@ -41,7 +41,7 @@ export default function StartContractionButton({
       radius="xl"
       size="xl"
       variant="filled"
-      loading={startContractionMutation.isPending}
+      loading={mutation.isPending}
       color="var(--mantine-primary-color-4)"
       onClick={() => handleStartContraction(createNewContraction())}
     >

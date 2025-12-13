@@ -34,7 +34,7 @@ impl ApiResult {
 
     pub fn from_unit_result(result: anyhow::Result<()>) -> Self {
         match result {
-            Ok(()) => Self::Success(Response::empty().unwrap()),
+            Ok(()) => Self::Success(Response::empty().unwrap().with_status(204)),
             Err(err) => Self::Failed(err.into_response()),
         }
     }

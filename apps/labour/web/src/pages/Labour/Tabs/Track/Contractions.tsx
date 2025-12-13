@@ -1,15 +1,12 @@
 import { useEffect } from 'react';
-import { LabourDTO } from '@clients/labour_service/index';
+import { LabourReadModel } from '@clients/labour_service_v2/types';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import { sortContractions } from '@shared/utils';
 import { IconBook } from '@tabler/icons-react';
 import { ActionIcon, Image, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';
-import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert';
-import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital';
+import { useContractionsV2, useLabourV2Client } from '@shared/hooks';
 import { ContractionControls } from './ContractionControls';
 import ContractionTimelineCustom from './ContractionTimelineCustom';
 import { ContractionsHelpModal } from './HelpModal';
@@ -17,10 +14,16 @@ import image from './Track.svg';
 import classes from './Contractions.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
-export function Contractions({ labour }: { labour: LabourDTO }) {
+export function Contractions({ labour }: { labour: LabourReadModel }) {
   const [opened, { open, close }] = useDisclosure(false);
+  const client = useLabourV2Client();
+  const { data: contractionsData } = useContractionsV2(client, labour.labour_id, 20);
 
-  const sortedContractions = sortContractions(labour.contractions);
+  const contractions = contractionsData?.data || [];
+
+  const sortedContractions = [...contractions].sort((a, b) => {
+    return new Date(a.duration.start_time).getTime() - new Date(b.duration.start_time).getTime();
+  });
 
   useEffect(() => {
     const main = document.getElementById('app-main');
@@ -30,18 +33,11 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
   }, [labour]);
 
   const completed = labour.end_time !== null;
+  const activeContraction = contractions.find(contraction => contraction.duration.start_time === contraction.duration.end_time);
   const activeDescription =
     'Track your contractions here. Simply press the button below to start a new contraction. Click the book icon above for more info.';
   const completedDescription =
     "Here's a record of your contractions during labour. All contraction data is preserved for your reference.";
-
-  const alerts = !completed ? (
-    <>
-      {labour.recommendations.call_midwife && <CallMidwifeAlert />}
-      {labour.recommendations.go_to_hospital && <GoToHospitalAlert />}
-      {labour.recommendations.prepare_for_hospital && <PrepareForHospitalAlert />}
-    </>
-  ) : null;
 
   return (
     <div className={baseClasses.root}>
@@ -85,10 +81,9 @@ export function Contractions({ labour }: { labour: LabourDTO }) {
             </Stack>
             <div className={baseClasses.flexColumnEnd}>
               <Stack align="stretch" justify="flex-end">
-                {alerts}
                 {/* Desktop controls - only show on larger screens */}
                 <div className={classes.desktopControls}>
-                  <ContractionControls labour={labour} />
+                  <ContractionControls labourCompleted={completed} activeContraction={activeContraction} />
                 </div>
               </Stack>
             </div>

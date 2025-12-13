@@ -1,26 +1,18 @@
 import { useRef } from 'react';
-import { ContractionDTO, LabourDTO } from '@clients/labour_service/index';
+import { ContractionReadModel } from '@clients/labour_service_v2/types';
 import { ActiveContractionControls } from './ActiveContractionControls';
 import StartContractionButton from './StartContractionButton';
 import { StopwatchHandle } from './Stopwatch/Stopwatch';
 
 interface ContractionControlsProps {
-  labour: LabourDTO;
+  labourCompleted: boolean;
+  activeContraction: ContractionReadModel | undefined;
 }
 
-export function ContractionControls({ labour }: ContractionControlsProps) {
+export function ContractionControls({ labourCompleted, activeContraction }: ContractionControlsProps) {
   const stopwatchRef = useRef<StopwatchHandle>(null);
-
-  const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
-  const completed = labour.end_time !== null;
-
-  const anyPlaceholderContractions = (contractions: ContractionDTO[]) => {
-    return contractions.some((contraction) => contraction.id === 'placeholder');
-  };
-  const containsPlaceholderContractions = anyPlaceholderContractions(labour.contractions);
-
   // Don't show controls if labour is completed
-  if (completed) {
+  if (labourCompleted) {
     return null;
   }
 
@@ -31,7 +23,7 @@ export function ContractionControls({ labour }: ContractionControlsProps) {
           <ActiveContractionControls
             stopwatchRef={stopwatchRef}
             activeContraction={activeContraction}
-            disabled={containsPlaceholderContractions}
+            disabled={false}
           />
         ) : (
           <div style={{ display: 'flex', justifyContent: 'center' }}>

@@ -1,27 +1,27 @@
 import { useState } from 'react';
-import { LabourDTO } from '@clients/labour_service/index';
+import { ContractionReadModel } from '@clients/labour_service_v2/types';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { ActionIcon } from '@mantine/core';
 import { ContractionControls } from './ContractionControls';
 import classes from './FloatingContractionControls.module.css';
 
 interface FloatingContractionControlsProps {
-  labour: LabourDTO;
+  labourCompleted: boolean;
+  activeContraction: ContractionReadModel | undefined;
   activeTab: string | null;
   onToggle?: (isExpanded: boolean) => void;
 }
 
 export function FloatingContractionControls({
-  labour,
+  labourCompleted,
+  activeContraction,
   activeTab,
   onToggle,
 }: FloatingContractionControlsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
-  const completed = labour.end_time !== null;
 
   // Only show on track tab and when labour is not completed
-  if (activeTab !== 'track' || completed) {
+  if (activeTab !== 'track' || labourCompleted) {
     return null;
   }
 
@@ -48,7 +48,7 @@ export function FloatingContractionControls({
 
       {isExpanded && (
         <div className={classes.controlsContent}>
-          <ContractionControls labour={labour} />
+          <ContractionControls labourCompleted={labourCompleted} activeContraction={activeContraction} />
         </div>
       )}
     </div>

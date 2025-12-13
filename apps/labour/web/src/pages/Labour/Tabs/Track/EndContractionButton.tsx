@@ -1,6 +1,7 @@
-import { useEndContraction } from '@shared/hooks';
+import { useEndContractionV2, useLabourV2Client } from '@shared/hooks';
 import { IconHourglassHigh } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
+import { useLabour } from '@base/contexts/LabourContext';
 
 export default function EndContractionButton({
   intensity,
@@ -9,10 +10,12 @@ export default function EndContractionButton({
   intensity: number;
   disabled: boolean;
 }) {
-  const endContractionMutation = useEndContraction();
+  const { labourId } = useLabour();
+  const client = useLabourV2Client();
+  const mutation = useEndContractionV2(client);
 
-  const handleEndContraction = ({ intensity, endTime }: { intensity: number; endTime: string }) => {
-    endContractionMutation.mutate({ intensity, endTime });
+  const handleEndContraction = ({ intensity, endTime }: { intensity: number; endTime: Date }) => {
+    mutation.mutate({ intensity, endTime, labourId: labourId! });
   };
 
   const icon = <IconHourglassHigh size={25} />;
@@ -23,9 +26,9 @@ export default function EndContractionButton({
       radius="xl"
       size="xl"
       variant="outline"
-      loading={endContractionMutation.isPending}
+      loading={mutation.isPending}
       onClick={() => {
-        const endTime = new Date().toISOString();
+        const endTime = new Date();
         handleEndContraction({ intensity, endTime });
       }}
       disabled={disabled}

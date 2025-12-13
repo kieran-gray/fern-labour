@@ -4,7 +4,7 @@ import { NotFoundError, PermissionDenied } from '@base/lib/errors';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
-import { useCurrentLabour } from '@shared/hooks';
+import { useLabourByIdV2, useLabourV2Client, useContractionsV2 } from '@shared/hooks';
 import { PageLoading } from '@shared/PageLoading/PageLoading';
 import {
   IconChartHistogram,
@@ -20,12 +20,11 @@ import { CompletedLabourContainer } from '../CompletedLabour/Page';
 import { Share } from './Tabs/Invites/Share';
 import { LabourControls } from './Tabs/Manage/LabourControls';
 import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubscribers';
-import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import { Contractions } from './Tabs/Track/Contractions';
 import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls';
-import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
-import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import baseClasses from '@shared/shared-styles.module.css';
+import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
+import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
 
 const TABS = [
   { id: 'details', label: 'Manage', icon: IconSettings },
@@ -86,11 +85,19 @@ export const LabourPage = () => {
 
   const currentLabourId = getLabourId(labourId, labourIdParam);
 
-  const { isPending, isError, data: labour, error } = useCurrentLabour(currentLabourId);
+  // const { isPending, isError, data: labour, error } = useCurrentLabour(currentLabourId);
+  const client = useLabourV2Client();
+  const { isPending, isError, data: labour, error } = useLabourByIdV2(client, currentLabourId);
+  const { data: contractionsData } = useContractionsV2(client, currentLabourId, 20);
+  const contractions = contractionsData?.data || [];
+
+  if (labour === undefined) {
+    setLabourId("019b147c-862c-7c83-b0c7-bcd9b6969b71");
+  }
 
   // Set labour ID if we got it from active labour
-  if (labour && !currentLabourId && labour.id !== labourId) {
-    setLabourId(labour.id);
+  if (labour && !currentLabourId && labour.labour_id !== labourId) {
+    setLabourId(labour.labour_id);
   }
 
   // Handle permission errors by cleaning up URL params
@@ -120,7 +127,7 @@ export const LabourPage = () => {
   }
 
   const completed = labour.end_time !== null;
-  const activeContraction = labour.contractions.find((contraction) => contraction.is_active);
+  const activeContraction = contractions.find((contraction) => contraction.duration.start_time === contraction.duration.end_time);
 
   const getFloatingControlsPadding = () => {
     if (window.innerWidth >= 768 || completed) {
@@ -146,15 +153,15 @@ export const LabourPage = () => {
       case 'details':
         return (
           <>
-            <LabourControls labour={labour} />
+            <LabourControls activeContraction={activeContraction} />
             <Space h="xl" />
             <SubscribersContainer />
           </>
         );
       case 'track':
         return <Contractions labour={labour} />;
-      case 'stats':
-        return <LabourStatistics labour={labour} />;
+      // case 'stats':
+      //   return <LabourStatistics labour={labour} />;
       case 'updates':
         return <LabourUpdates labour={labour} />;
       case 'invite':
@@ -184,9 +191,9 @@ export const LabourPage = () => {
           </div>
         </div>
 
-        {/* Floating Contraction Controls */}
         <FloatingContractionControls
-          labour={labour}
+          labourCompleted={completed}
+          activeContraction={activeContraction}
           activeTab={activeTab}
           onToggle={(expanded) => {
             setIsContractionControlsExpanded(expanded);
@@ -196,7 +203,6 @@ export const LabourPage = () => {
           }}
         />
 
-        {/* Floating Labour Update Controls */}
         <FloatingLabourUpdateControls
           labour={labour}
           activeTab={activeTab}

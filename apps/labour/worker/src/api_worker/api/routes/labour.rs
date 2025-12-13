@@ -1,4 +1,5 @@
 use fern_labour_workers_shared::CorsContext;
+use serde::Serialize;
 use tracing::{error, info};
 use uuid::Uuid;
 use worker::{Request, Response, RouteContext};
@@ -7,6 +8,11 @@ use crate::api_worker::{
     AppState,
     api::{exceptions::ApiError, schemas::requests::PlanLabourDTO},
 };
+
+#[derive(Serialize)]
+struct PlanLabourResponse {
+    labour_id: String,
+}
 
 pub async fn handle_plan_labour(
     mut req: Request,
@@ -25,13 +31,11 @@ pub async fn handle_plan_labour(
         }
     };
 
-    // TODO: Store in a user labour table
     let labour_id = Uuid::now_v7();
 
     let domain_command = request_dto.into_domain(labour_id, user_id.clone());
 
-    let res = ctx
-        .data
+    ctx.data
         .do_client
         .command(labour_id, domain_command, user_id, "/labour/domain")
         .await
@@ -42,5 +46,12 @@ pub async fn handle_plan_labour(
         "Labour planned successfully"
     );
 
-    Ok(cors_context.add_to_response(res))
+    let response_body = PlanLabourResponse {
+        labour_id: labour_id.to_string(),
+    };
+
+    let response = Response::from_json(&response_body)
+        .map_err(|e| format!("Failed to serialize response: {e}"))?;
+
+    Ok(cors_context.add_to_response(response))
 }

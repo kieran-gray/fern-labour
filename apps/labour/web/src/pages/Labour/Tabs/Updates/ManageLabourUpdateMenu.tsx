@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { UpdateLabourUpdateRequest } from '@clients/labour_service';
-import { useDeleteLabourUpdate, useEditLabourUpdate } from '@shared/hooks';
+import { useLabourV2Client } from '@shared/hooks';
 import { Error } from '@shared/Notifications';
 import { IconDots, IconPencil, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
@@ -10,6 +9,9 @@ import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import ConfirmDeleteModal from './Modals/ConfirmDelete';
 import EditLabourUpdateModal from './Modals/EditLabourUpdate';
 import baseClasses from '@shared/shared-styles.module.css';
+import { useDeleteLabourUpdateV2, useUpdateLabourUpdateMessageV2, useUpdateLabourUpdateTypeV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useLabour } from '@base/contexts/LabourContext';
+import { LabourUpdateType } from '@base/clients/labour_service_v2';
 
 interface ManageLabourUpdateMenuProps {
   statusUpdateId: string;
@@ -24,29 +26,38 @@ export function ManageLabourUpdateMenu({
   const [announceOpened, { open: openAnnounce, close: closeAnnounce }] = useDisclosure(false);
   const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [editMessage, setEditMessage] = useState(currentMessage);
+  const { labourId } = useLabour();
 
-  const editStatusUpdateMutation = useEditLabourUpdate();
-  const deleteStatusUpdateMutation = useDeleteLabourUpdate();
+  const client = useLabourV2Client();
+  const updateTypeMutation = useUpdateLabourUpdateTypeV2(client);
+  const updateMessageMutation = useUpdateLabourUpdateMessageV2(client);
+  const deleteMutation = useDeleteLabourUpdateV2(client);
 
   const handleEditStatusUdpate = async (newMessage: string) => {
-    const requestBody: UpdateLabourUpdateRequest = {
-      labour_update_id: statusUpdateId,
+    const requestBody = {
+      labourId: labourId!,
+      labourUpdateId: statusUpdateId,
       message: newMessage,
     };
-    await editStatusUpdateMutation.mutateAsync(requestBody);
+    await updateMessageMutation.mutateAsync(requestBody);
     closeEdit();
   };
   const handleAnnounceStatusUdpate = async () => {
-    const requestBody: UpdateLabourUpdateRequest = {
-      labour_update_id: statusUpdateId,
-      labour_update_type: 'announcement',
+    const requestBody = {
+      labourId: labourId!,
+      labourUpdateId: statusUpdateId,
+      labourUpdateType: LabourUpdateType.ANNOUNCEMENT,
     };
-    await editStatusUpdateMutation.mutateAsync(requestBody);
+    await updateTypeMutation.mutateAsync(requestBody);
   };
 
   const handleConfirmDelete = () => {
     closeDelete();
-    deleteStatusUpdateMutation.mutate(statusUpdateId);
+    const requestBody = {
+      labourId: labourId!,
+      labourUpdateId: statusUpdateId,
+    }
+    deleteMutation.mutate(requestBody);
   };
 
   const handleCancelDelete = () => {

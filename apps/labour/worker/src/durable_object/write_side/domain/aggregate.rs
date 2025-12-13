@@ -228,7 +228,7 @@ impl Aggregate for Labour {
                     },
                 ]
             }
-            LabourCommand::CompleteLabour { labour_id } => {
+            LabourCommand::CompleteLabour { labour_id, notes } => {
                 let Some(labour) = state else {
                     return Err(LabourError::NotFound);
                 };
@@ -248,6 +248,7 @@ impl Aggregate for Labour {
 
                 vec![LabourEvent::LabourCompleted {
                     labour_id,
+                    notes,
                     end_time: Utc::now(),
                 }]
             }

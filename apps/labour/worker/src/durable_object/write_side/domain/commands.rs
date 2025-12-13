@@ -28,6 +28,7 @@ pub enum LabourCommand {
     },
     CompleteLabour {
         labour_id: Uuid,
+        notes: Option<String>,
     },
     SendLabourInvite {
         labour_id: Uuid,
@@ -115,8 +116,8 @@ impl From<LabourApiCommand> for LabourCommand {
                 labour_name,
             },
             LabourApiCommand::BeginLabour { labour_id } => LabourCommand::BeginLabour { labour_id },
-            LabourApiCommand::CompleteLabour { labour_id } => {
-                LabourCommand::CompleteLabour { labour_id }
+            LabourApiCommand::CompleteLabour { labour_id, notes } => {
+                LabourCommand::CompleteLabour { labour_id, notes }
             }
             LabourApiCommand::SendLabourInvite {
                 labour_id,

@@ -1,5 +1,6 @@
 use anyhow::{Context, Result, anyhow};
 use fern_labour_event_sourcing_rs::{DecodedCursor, SyncRepositoryTrait};
+use tracing::warn;
 use uuid::Uuid;
 use worker::SqlStorage;
 
@@ -32,6 +33,10 @@ impl SqlLabourRepository {
                 None,
             )
             .map_err(|err| anyhow!("Failed to create labours table: {err}"))?;
+
+        let _ = self.sql
+            .exec("ALTER TABLE labours ADD COLUMN notes TEXT", None)
+            .map_err(|err| warn!("Migration failed, it may have already run: {err}"));
 
         Ok(())
     }
@@ -103,6 +108,11 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
             None => worker::SqlStorageValue::Null,
         });
 
+        bindings.push(match row.notes {
+            Some(notes) => notes.into(),
+            None => worker::SqlStorageValue::Null,
+        });
+
         bindings.push(row.created_at.into());
         bindings.push(row.updated_at.into());
 
@@ -110,10 +120,10 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
             .exec(
                 "INSERT INTO labours (
                     labour_id, birthing_person_id, current_phase, first_labour,
-                    due_date, labour_name, start_time, end_time,
+                    due_date, labour_name, start_time, end_time, notes,
                     created_at, updated_at
                  )
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
                  ON CONFLICT(labour_id)
                  DO UPDATE SET
                     current_phase = ?3,
@@ -122,7 +132,8 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
                     labour_name = ?6,
                     start_time = ?7,
                     end_time = ?8,
-                    updated_at = ?10",
+                    notes = ?9,
+                    updated_at = ?11",
                 Some(bindings),
             )
             .context("Failed to upsert labour")?;
@@ -156,6 +167,11 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
             None => worker::SqlStorageValue::Null,
         });
 
+        bindings.push(match row.notes {
+            Some(notes) => notes.into(),
+            None => worker::SqlStorageValue::Null,
+        });
+
         bindings.push(row.created_at.into());
         bindings.push(row.updated_at.into());
 
@@ -163,10 +179,10 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
             .exec(
                 "INSERT OR REPLACE INTO labours (
                     labour_id, birthing_person_id, current_phase, first_labour,
-                    due_date, labour_name, start_time, end_time,
+                    due_date, labour_name, start_time, end_time, notes,
                     created_at, updated_at
                  )
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
                 Some(bindings),
             )
             .context("Failed to overwrite labour")?;

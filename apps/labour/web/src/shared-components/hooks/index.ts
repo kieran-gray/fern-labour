@@ -59,3 +59,9 @@ export { useSubmitContactForm } from './useContactData';
 
 // Payment hooks
 export { useCreateCheckoutSession } from './usePaymentData';
+
+// V2 Client
+export { useLabourV2Client } from './useLabourV2Client';
+
+// V2 Hooks (re-export from v2 folder)
+export * from './v2';

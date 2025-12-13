@@ -1,5 +1,5 @@
 import { useLabour } from '@base/contexts/LabourContext';
-import { useLabourById } from '@shared/hooks';
+import { useLabourByIdV2, useLabourV2Client } from '@shared/hooks';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -14,7 +14,8 @@ import baseClasses from '@shared/shared-styles.module.css';
 export default function LabourDetails({ setActiveTab }: { setActiveTab: Function }) {
   const navigate = useNavigate();
   const { labourId } = useLabour();
-  const { isPending, isError, data, error } = useLabourById(labourId);
+  const client = useLabourV2Client();
+  const { isPending, isError, data, error } = useLabourByIdV2(client, labourId);
 
   let content = undefined;
 
@@ -43,7 +44,7 @@ export default function LabourDetails({ setActiveTab }: { setActiveTab: Function
       'Welcome back! You’re viewing your completed labour journey. All details are preserved for your reference, though editing is no longer available. Browse through the tabs above to revisit each part of your experience.';
     const currentPhase = completed
       ? 'Completed'
-      : data.current_phase === 'planned'
+      : data.current_phase === 'PLANNED'
         ? 'Not in labour'
         : `In ${data.current_phase} labour`;
     content = (

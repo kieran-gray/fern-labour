@@ -1,7 +1,5 @@
 import { NotFoundError } from '@base/lib/errors';
-import { ApiError } from '@clients/labour_service/index';
 import { AppShell } from '@shared/AppShell';
-import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
 import { useActiveLabour } from '@shared/hooks/index';
 import { PageLoading } from '@shared/PageLoading/PageLoading';
 import Plan from './Components/Plan/Plan';
@@ -12,13 +10,6 @@ export const OnboardingPage = () => {
 
   if (isPending) {
     return <PageLoading />;
-  } else if (isError) {
-    if (error instanceof ApiError && error.status === 404) {
-      // Continue with undefined labour for new users
-      // No need to return here
-    } else {
-      return <ErrorContainer message="Failed to load labour details. Please try again later." />;
-    }
   }
 
   const labour = isError && error instanceof NotFoundError ? undefined : data;

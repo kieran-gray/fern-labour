@@ -17,6 +17,7 @@ pub struct LabourReadModel {
     pub labour_name: Option<String>,
     pub start_time: Option<DateTime<Utc>>,
     pub end_time: Option<DateTime<Utc>>,
+    pub notes: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -39,6 +40,7 @@ impl LabourReadModel {
             labour_name,
             start_time: None,
             end_time: None,
+            notes: None,
             created_at,
             updated_at: created_at,
         }
@@ -65,6 +67,7 @@ pub struct LabourRow {
     pub labour_name: Option<String>,
     pub start_time: Option<String>,
     pub end_time: Option<String>,
+    pub notes: Option<String>,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -81,6 +84,7 @@ impl LabourRow {
             labour_name: self.labour_name,
             start_time: Self::parse_optional_timestamp(self.start_time)?,
             end_time: Self::parse_optional_timestamp(self.end_time)?,
+            notes: self.notes,
             created_at: Self::parse_timestamp(&self.created_at)?,
             updated_at: Self::parse_timestamp(&self.updated_at)?,
         })
@@ -96,6 +100,7 @@ impl LabourRow {
             labour_name: model.labour_name.clone(),
             start_time: model.start_time.map(|dt| dt.to_rfc3339()),
             end_time: model.end_time.map(|dt| dt.to_rfc3339()),
+            notes: model.notes.clone(),
             created_at: model.created_at.to_rfc3339(),
             updated_at: model.updated_at.to_rfc3339(),
         })

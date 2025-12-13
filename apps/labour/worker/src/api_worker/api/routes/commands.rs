@@ -24,7 +24,7 @@ pub async fn handle_command(
 
     let labour_id = command.labour_id();
 
-    let response = match command {
+    let mut do_response = match command {
         ApiCommand::Admin(cmd) => ctx
             .data
             .do_client
@@ -63,5 +63,21 @@ pub async fn handle_command(
             .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?,
     };
 
-    Ok(cors_context.add_to_response(response))
+    let body = do_response.text().await?;
+    let status = do_response.status_code();
+
+    let new_response = if body.is_empty() {
+        Response::empty()?
+    } else {
+        let mut response = Response::ok(body)?;
+        let _ = response
+            .headers_mut()
+            .set("Content-Type", "application/json");
+        response
+    }
+    .with_status(status);
+
+    dbg!("{:?}", new_response.status_code());
+
+    Ok(cors_context.add_to_response(new_response))
 }

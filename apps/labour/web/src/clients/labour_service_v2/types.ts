@@ -114,6 +114,7 @@ export type CompleteLabourCommand = {
   type: "CompleteLabour";
   payload: {
     labour_id: string;
+    notes: string;
   };
 };
 
@@ -284,6 +285,128 @@ export type ApiCommand =
   | { type: "Subscriber"; payload: SubscriberCommand }
   | { type: "Subscription"; payload: SubscriptionCommand };
 
+// Query Types
+
+export type Cursor = {
+  id: string;
+  updated_at: string;
+};
+
+// Labour Queries
+
+export type GetLabourQuery = {
+  type: "GetLabour";
+  payload: {
+    labour_id: string;
+  };
+};
+
+export type LabourQuery = GetLabourQuery;
+
+// Contraction Queries
+
+export type GetContractionsQuery = {
+  type: "GetContractions";
+  payload: {
+    labour_id: string;
+    limit: number;
+    cursor?: Cursor;
+  };
+};
+
+export type GetContractionByIdQuery = {
+  type: "GetContractionById";
+  payload: {
+    labour_id: string;
+    contraction_id: string;
+  };
+};
+
+export type ContractionQuery = GetContractionsQuery | GetContractionByIdQuery;
+
+// Labour Update Queries
+
+export type GetLabourUpdatesQuery = {
+  type: "GetLabourUpdates";
+  payload: {
+    labour_id: string;
+    limit: number;
+    cursor?: Cursor;
+  };
+};
+
+export type GetLabourUpdateByIdQuery = {
+  type: "GetLabourUpdateById";
+  payload: {
+    labour_id: string;
+    labour_update_id: string;
+  };
+};
+
+export type LabourUpdateQuery = GetLabourUpdatesQuery | GetLabourUpdateByIdQuery;
+
+// Top-level API Query (matches Rust ApiQuery enum)
+
+export type ApiQuery =
+  | { type: "Labour"; payload: LabourQuery }
+  | { type: "Contraction"; payload: ContractionQuery }
+  | { type: "LabourUpdate"; payload: LabourUpdateQuery };
+
+// Read Model Types
+
+export enum LabourPhase {
+  PLANNED = "PLANNED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+}
+
+export type LabourReadModel = {
+  labour_id: string;
+  birthing_person_id: string;
+  current_phase: LabourPhase;
+  first_labour: boolean;
+  due_date: string;
+  labour_name: string | null;
+  start_time: string | null;
+  end_time: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Duration = {
+  start_time: string;
+  end_time: string;
+};
+
+export type ContractionReadModel = {
+  labour_id: string;
+  contraction_id: string;
+  duration: Duration;
+  intensity: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LabourUpdateReadModel = {
+  labour_id: string;
+  labour_update_id: string;
+  labour_update_type: LabourUpdateType;
+  message: string;
+  edited: boolean;
+  application_generated: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+// Paginated Response
+
+export type PaginatedResponse<T> = {
+  data: T[];
+  next_cursor: string | null;
+  has_more: boolean;
+};
+
 // Response types (you can extend these based on your API responses)
 
 export type ApiResponse<T = unknown> = {
@@ -293,3 +416,5 @@ export type ApiResponse<T = unknown> = {
 };
 
 export type CommandResponse = ApiResponse<void>;
+
+export type QueryResponse<T> = ApiResponse<T>;

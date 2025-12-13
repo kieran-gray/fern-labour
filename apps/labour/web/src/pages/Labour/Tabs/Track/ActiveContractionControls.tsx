@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useState } from 'react';
-import { ContractionDTO } from '@clients/labour_service/types.gen';
+import { ContractionReadModel } from '@clients/labour_service_v2/types';
 import { Slider, Space, Text } from '@mantine/core';
 import EndContractionButton from './EndContractionButton';
 import Stopwatch, { StopwatchHandle } from './Stopwatch/Stopwatch';
@@ -12,20 +12,20 @@ export function ActiveContractionControls({
   disabled,
 }: {
   stopwatchRef: RefObject<StopwatchHandle>;
-  activeContraction: ContractionDTO;
+  activeContraction: ContractionReadModel;
   disabled: boolean;
 }) {
   const [intensity, setIntensity] = useState(5);
   const stopwatch = <Stopwatch ref={stopwatchRef} />;
 
   useEffect(() => {
-    const startTime = new Date(activeContraction.start_time).getTime();
+    const startTime = new Date(activeContraction.duration.start_time).getTime();
     const seconds = stopwatchRef.current?.seconds || 0;
     const secondsElapsed = Math.round((Date.now() - startTime) / 1000);
     if (Math.abs(secondsElapsed - seconds) > 1) {
       stopwatchRef.current?.set(secondsElapsed);
     }
-  }, [stopwatchRef]);
+  }, [stopwatchRef, activeContraction]);
 
   return (
     <>

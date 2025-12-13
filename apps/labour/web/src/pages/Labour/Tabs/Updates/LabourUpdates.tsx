@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
-import { LabourDTO, LabourUpdateDTO } from '@clients/labour_service';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -13,9 +12,11 @@ import { LabourUpdateControls } from './LabourUpdateControls';
 import { LabourUpdatesHelpModal } from './Modals/HelpModal';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
+import { LabourReadModel, LabourUpdateReadModel } from '@base/clients/labour_service_v2';
+import { useLabourUpdatesV2, useLabourV2Client } from '@base/shared-components/hooks';
 
 interface LabourUpdatesProps {
-  labour: LabourDTO;
+  labour: LabourReadModel;
 }
 
 const MESSAGES = {
@@ -25,17 +26,17 @@ const MESSAGES = {
 };
 
 const mapLabourUpdateToProps = (
-  update: LabourUpdateDTO,
+  update: LabourUpdateReadModel,
   sharedLabourBegunMessage: string,
   privateLabourBegunMessage: string,
   completed: boolean
 ): LabourUpdateProps => {
-  const sentTime = new Date(update.sent_time).toLocaleString().slice(0, 17).replace(',', ' at');
+  const sentTime = new Date(update.created_at).toLocaleString().slice(0, 17).replace(',', ' at');
   switch (update.labour_update_type) {
-    case 'announcement':
+    case 'ANNOUNCEMENT':
       if (update.application_generated) {
         return {
-          id: update.id,
+          id: update.labour_update_id,
           sentTime,
           class: classes.privateNotePanel,
           icon: '🌱',
@@ -48,7 +49,7 @@ const mapLabourUpdateToProps = (
         };
       }
       return {
-        id: update.id,
+        id: update.labour_update_id,
         sentTime,
         class: classes.announcementPanel,
         icon: '📣',
@@ -60,9 +61,9 @@ const mapLabourUpdateToProps = (
         showFooter: true,
       };
 
-    case 'status_update':
+    case 'STATUS_UPDATE':
       return {
-        id: update.id,
+        id: update.labour_update_id,
         sentTime,
         class: classes.statusUpdatePanel,
         icon: '💫',
@@ -76,7 +77,7 @@ const mapLabourUpdateToProps = (
 
     default:
       return {
-        id: update.id,
+        id: update.labour_update_id,
         sentTime,
         class: classes.privateNotePanel,
         icon: '🌱',
@@ -94,9 +95,16 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
   const { user } = useApiAuth();
+
+  const client = useLabourV2Client();
+  const { data: labourUpdatesData } = useLabourUpdatesV2(client, labour.labour_id, 20);
+  const labourUpdatesTemp = labourUpdatesData?.data || [];
+  const labourUpdates = [...labourUpdatesTemp].sort((a, b) => {
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+  });
+
   const firstName = user?.given_name || '';
   const completed = labour.end_time != null;
-  const labourUpdates = labour.labour_updates;
 
   const sharedLabourBegunMessage = useMemo(
     () => MESSAGES.SHARED_LABOUR_BEGUN(firstName),
@@ -131,7 +139,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
             privateLabourBegunMessage,
             completed
           )}
-          key={data.id}
+          key={data.labour_update_id}
         />
       );
     });

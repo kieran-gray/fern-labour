@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLabour } from '@base/contexts/LabourContext';
 import { GenericConfirmModal } from '@base/shared-components/GenericConfirmModal/GenericConfirmModal';
-import { useCompleteLabour } from '@shared/hooks';
+import { useCompleteLabourV2, useLabourV2Client } from '@shared/hooks';
 import { IconConfetti } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';
@@ -14,12 +14,17 @@ export default function CompleteLabourButton({
   disabled: boolean;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const completeLabourMutation = useCompleteLabour();
+  const client = useLabourV2Client();
+  const mutation = useCompleteLabourV2(client);
   const navigate = useNavigate();
-  const { setLabourId } = useLabour();
+  const { labourId, setLabourId } = useLabour();
 
   const handleCompleteLabour = (labourNotes: string) => {
-    completeLabourMutation.mutate(labourNotes);
+    const payload = {
+      labourId: labourId!,
+      notes: labourNotes
+    };
+    mutation.mutate(payload);
     setLabourId(null);
     navigate('/completed');
   };
@@ -48,7 +53,7 @@ export default function CompleteLabourButton({
           color="var(--mantine-color-pink-4)"
           radius="xl"
           variant="filled"
-          loading={completeLabourMutation.isPending}
+          loading={mutation.isPending}
           onClick={(event) => event.preventDefault()}
         >
           Complete Labour

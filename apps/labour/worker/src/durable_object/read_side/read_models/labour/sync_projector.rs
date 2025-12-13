@@ -86,6 +86,7 @@ impl LabourReadModelProjector {
 
             LabourEvent::LabourCompleted {
                 labour_id,
+                notes,
                 end_time,
             } => {
                 let mut labour = match model {
@@ -94,6 +95,7 @@ impl LabourReadModelProjector {
                 };
 
                 labour.end_time = Some(*end_time);
+                labour.notes = notes.clone();
                 labour.current_phase = LabourPhase::COMPLETE;
                 Some(labour)
             }

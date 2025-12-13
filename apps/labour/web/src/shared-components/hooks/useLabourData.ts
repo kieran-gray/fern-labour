@@ -34,8 +34,7 @@ export function useActiveLabour() {
         const activeLabour = labours.find((labour) => labour.current_phase !== 'completed');
         return activeLabour || undefined;
       }
-      const response = await LabourQueriesService.getActiveLabour();
-      return response.labour;
+      throw NotFoundError;
     },
     enabled: !!user?.sub || (isGuestMode && !!guestProfile),
     retry: 0,
@@ -102,7 +101,7 @@ export function useCurrentLabour(labourId?: string | null) {
         if (labourId) {
           response = await LabourQueriesService.getLabourById({ labourId });
         } else {
-          response = await LabourQueriesService.getActiveLabour();
+          throw new NotFoundError();
         }
         return response.labour;
       } catch (err) {
@@ -113,7 +112,8 @@ export function useCurrentLabour(labourId?: string | null) {
             throw new PermissionDenied();
           }
         }
-        throw new Error('Failed to load labour. Please try again later.');
+        throw new NotFoundError();
+        // throw new Error('Failed to load labour. Please try again later.');
       }
     },
     enabled: !!user?.sub,

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 use tracing::{error, info};
 
 use fern_labour_event_sourcing_rs::{
@@ -73,7 +73,6 @@ impl SyncProjectionProcessor {
             "Processing projector from checkpoint"
         );
 
-        // Fetch unprocessed events
         let stored_events = self
             .event_store
             .events_since(last_sequence, self.batch_size)
@@ -87,7 +86,6 @@ impl SyncProjectionProcessor {
             return Ok(());
         }
 
-        // Convert to envelopes
         let envelopes = stored_events
             .iter()
             .map(|stored| stored.to_envelope())
@@ -100,13 +98,10 @@ impl SyncProjectionProcessor {
             "Processing events"
         );
 
-        // Process batch - if this fails, checkpoint is NOT updated
-        projector.project_batch(&envelopes).context(format!(
-            "Projector {} failed to process batch",
-            projector_name
+        projector.project_batch(&envelopes).map_err(|err| anyhow!(
+            "Projector {projector_name} failed to process batch: {err}",
         ))?;
 
-        // Only update checkpoint on success
         let last_envelope = envelopes.last().unwrap();
         let new_checkpoint = ProjectionCheckpoint {
             projector_name: projector_name.to_string(),

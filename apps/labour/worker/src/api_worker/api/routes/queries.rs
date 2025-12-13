@@ -24,7 +24,7 @@ pub async fn handle_query(
 
     let labour_id = query.labour_id();
 
-    let response = match query {
+    let mut do_response = match query {
         ApiQuery::Labour(qry) => ctx
             .data
             .do_client
@@ -45,5 +45,11 @@ pub async fn handle_query(
             .map_err(|e| format!("Failed to send query to labour aggregate: {e}"))?,
     };
 
-    Ok(cors_context.add_to_response(response))
+    let body = do_response.text().await?;
+    let status = do_response.status_code();
+
+    let mut new_response = Response::ok(body)?.with_status(status);
+    let _ = new_response.headers_mut().set("Content-Type", "application/json");
+
+    Ok(cors_context.add_to_response(new_response))
 }

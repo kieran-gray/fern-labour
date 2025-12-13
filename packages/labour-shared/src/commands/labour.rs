@@ -28,7 +28,10 @@ pub enum LabourCommand {
     BeginLabour { labour_id: Uuid },
 
     #[serde(rename = "CompleteLabour")]
-    CompleteLabour { labour_id: Uuid },
+    CompleteLabour {
+        labour_id: Uuid,
+        notes: Option<String>,
+    },
 
     #[serde(rename = "SendLabourInvite")]
     SendLabourInvite {
@@ -45,7 +48,7 @@ impl LabourCommand {
         match self {
             LabourCommand::UpdateLabourPlan { labour_id, .. } => *labour_id,
             LabourCommand::BeginLabour { labour_id, .. } => *labour_id,
-            LabourCommand::CompleteLabour { labour_id } => *labour_id,
+            LabourCommand::CompleteLabour { labour_id, .. } => *labour_id,
             LabourCommand::SendLabourInvite { labour_id, .. } => *labour_id,
             LabourCommand::DeleteLabour { labour_id, .. } => *labour_id,
         }

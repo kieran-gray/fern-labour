@@ -14,6 +14,7 @@ export {
   SubscriberAccessLevel,
   SubscriberRole,
   LabourUpdateType,
+  LabourPhase,
 } from './types';
 
 export type {
@@ -56,7 +57,26 @@ export type {
   UpdateSubscriberRoleCommand,
   // Top-level API Command
   ApiCommand,
+  // Query Types
+  Cursor,
+  LabourQuery,
+  GetLabourQuery,
+  ContractionQuery,
+  GetContractionsQuery,
+  GetContractionByIdQuery,
+  LabourUpdateQuery,
+  GetLabourUpdatesQuery,
+  GetLabourUpdateByIdQuery,
+  ApiQuery,
+  // Read Model Types
+  LabourReadModel,
+  Duration,
+  ContractionReadModel,
+  LabourUpdateReadModel,
+  // Paginated Response
+  PaginatedResponse,
   // Response types
   ApiResponse,
   CommandResponse,
+  QueryResponse,
 } from './types';

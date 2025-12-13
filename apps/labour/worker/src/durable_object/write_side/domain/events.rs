@@ -27,6 +27,7 @@ pub enum LabourEvent {
     },
     LabourCompleted {
         labour_id: Uuid,
+        notes: Option<String>,
         end_time: DateTime<Utc>,
     },
     LabourInviteSent {

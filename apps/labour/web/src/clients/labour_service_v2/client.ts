@@ -18,6 +18,15 @@ import type {
   SubscriberAccessLevel,
   SubscriberRole,
   LabourUpdateType,
+  LabourQuery,
+  ContractionQuery,
+  LabourUpdateQuery,
+  Cursor,
+  LabourReadModel,
+  ContractionReadModel,
+  LabourUpdateReadModel,
+  PaginatedResponse,
+  QueryResponse,
 } from './types';
 
 export interface LabourServiceV2Config {
@@ -40,7 +49,7 @@ export class LabourServiceV2Client {
     if (this.config.getAccessToken) {
       const token = await this.config.getAccessToken();
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers.Authorization = `Bearer ${token}`;
       }
     }
 
@@ -230,10 +239,10 @@ export class LabourServiceV2Client {
     return this.sendCommand({ type: 'Labour', payload: command });
   }
 
-  async completeLabour(labourId: string): Promise<CommandResponse> {
+  async completeLabour(params: {labourId: string, notes: string}): Promise<CommandResponse> {
     const command: LabourCommand = {
       type: 'CompleteLabour',
-      payload: { labour_id: labourId },
+      payload: { labour_id: params.labourId, notes: params.notes },
     };
     return this.sendCommand({ type: 'Labour', payload: command });
   }
@@ -436,5 +445,114 @@ export class LabourServiceV2Client {
       },
     };
     return this.sendCommand({ type: 'Subscription', payload: command });
+  }
+
+  // Query Methods
+
+  private async sendQuery<T>(query: unknown): Promise<QueryResponse<T>> {
+    const headers = await this.getHeaders();
+    const url = `${this.config.baseUrl}/api/v1/query`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(query),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return {
+          success: false,
+          error: errorText || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+
+      const data = await response.json();
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
+  // Labour Queries
+
+  async getLabour(labourId: string): Promise<QueryResponse<LabourReadModel>> {
+    const query: LabourQuery = {
+      type: 'GetLabour',
+      payload: { labour_id: labourId },
+    };
+    return this.sendQuery({ type: 'Labour', payload: query });
+  }
+
+  // Contraction Queries
+
+  async getContractions(
+    labourId: string,
+    limit: number = 20,
+    cursor?: Cursor
+  ): Promise<QueryResponse<PaginatedResponse<ContractionReadModel>>> {
+    const query: ContractionQuery = {
+      type: 'GetContractions',
+      payload: {
+        labour_id: labourId,
+        limit,
+        cursor,
+      },
+    };
+    return this.sendQuery({ type: 'Contraction', payload: query });
+  }
+
+  async getContractionById(
+    labourId: string,
+    contractionId: string
+  ): Promise<QueryResponse<PaginatedResponse<ContractionReadModel>>> {
+    const query: ContractionQuery = {
+      type: 'GetContractionById',
+      payload: {
+        labour_id: labourId,
+        contraction_id: contractionId,
+      },
+    };
+    return this.sendQuery({ type: 'Contraction', payload: query });
+  }
+
+  // Labour Update Queries
+
+  async getLabourUpdates(
+    labourId: string,
+    limit: number = 20,
+    cursor?: Cursor
+  ): Promise<QueryResponse<PaginatedResponse<LabourUpdateReadModel>>> {
+    const query: LabourUpdateQuery = {
+      type: 'GetLabourUpdates',
+      payload: {
+        labour_id: labourId,
+        limit,
+        cursor,
+      },
+    };
+    return this.sendQuery({ type: 'LabourUpdate', payload: query });
+  }
+
+  async getLabourUpdateById(
+    labourId: string,
+    labourUpdateId: string
+  ): Promise<QueryResponse<PaginatedResponse<LabourUpdateReadModel>>> {
+    const query: LabourUpdateQuery = {
+      type: 'GetLabourUpdateById',
+      payload: {
+        labour_id: labourId,
+        labour_update_id: labourUpdateId,
+      },
+    };
+    return this.sendQuery({ type: 'LabourUpdate', payload: query });
   }
 }
