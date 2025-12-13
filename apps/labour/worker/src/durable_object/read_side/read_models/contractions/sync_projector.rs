@@ -80,7 +80,7 @@ impl ContractionReadModelProjector {
                     None => contraction.duration.end_time(),
                 };
                 contraction.duration = Duration::create(*new_start_time, *new_end_time)?;
-                contraction.intensity = intensity.clone();
+                contraction.intensity = *intensity;
                 self.repository.upsert(&contraction)
             }
             _ => Ok(()),

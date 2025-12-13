@@ -12,12 +12,15 @@ import type {
   LabourUpdateType,
 } from '@clients/labour_service_v2';
 import { useApiAuth } from '../useApiAuth';
+import { NotFoundError } from '@base/lib/errors';
 
 // Query Keys for V2
 export const queryKeysV2 = {
   labour: {
     all: ['labour-v2'] as const,
     byId: (labourId: string) => [...queryKeysV2.labour.all, labourId] as const,
+    history: (userId: string) => [...queryKeysV2.labour.all, 'history', userId] as const,
+    active: (userId: string) => [...queryKeysV2.labour.all, 'active', userId] as const,
   },
   contractions: {
     all: ['contractions-v2'] as const,
@@ -49,6 +52,47 @@ function decodeCursor(cursorString: string): Cursor {
 }
 
 /**
+ * Hook to get labour by ID or active
+ * Always returns full LabourReadModel
+ */
+export function useCurrentLabourV2(client: LabourServiceV2Client, labourId: string | null) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: labourId
+      ? queryKeysV2.labour.byId(labourId)
+      : queryKeysV2.labour.active(user?.sub || ''),
+    queryFn: async () => {
+      let targetLabourId = labourId;
+
+      if (!targetLabourId) {
+        const activeResponse = await client.getActiveLabour();
+
+        if (!activeResponse.success) {
+          throw new Error(activeResponse.error || 'Failed to load active labour');
+        }
+
+        if (!activeResponse.data) {
+          throw new NotFoundError;
+        }
+
+        targetLabourId = activeResponse.data.labour_id;
+      }
+
+      const response = await client.getLabour(targetLabourId);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load labour');
+      }
+
+      return response.data;
+    },
+    enabled: !!user?.sub,
+    retry: 0,
+  });
+}
+
+/**
  * Hook to get labour by ID
  */
 export function useLabourByIdV2(client: LabourServiceV2Client, labourId: string | null) {
@@ -70,6 +114,50 @@ export function useLabourByIdV2(client: LabourServiceV2Client, labourId: string 
       return response.data;
     },
     enabled: !!labourId && !!user?.sub,
+    retry: 0,
+  });
+}
+
+/**
+ * Hook to get labour history
+ */
+export function useLabourHistoryV2(client: LabourServiceV2Client) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: queryKeysV2.labour.history(user?.sub || ''),
+    queryFn: async () => {
+      const response = await client.getLabourHistory();
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load labour history');
+      }
+
+      return response.data;
+    },
+    enabled: !!user?.sub,
+    retry: 0,
+  });
+}
+
+/**
+ * Hook to get active labour
+ */
+export function useActiveLabourV2(client: LabourServiceV2Client) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: queryKeysV2.labour.active(user?.sub || ''),
+    queryFn: async () => {
+      const response = await client.getActiveLabour();
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load active labour');
+      }
+
+      return response.data;
+    },
+    enabled: !!user?.sub,
     retry: 0,
   });
 }

@@ -374,6 +374,15 @@ export type LabourReadModel = {
   updated_at: string;
 };
 
+export type LabourStatusReadModel = {
+  labour_id: string;
+  birthing_person_id: string;
+  current_phase: LabourPhase;
+  labour_name: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Duration = {
   start_time: string;
   end_time: string;

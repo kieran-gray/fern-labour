@@ -16,7 +16,7 @@ export const OnboardingPage = () => {
 
   return (
     <AppShell>
-      <div className={baseClasses.flexPageColumn} style={{ flexGrow: 1 }}>
+      <div className={baseClasses.flexPageColumn}>
         <div className={baseClasses.root} style={{ width: '100%' }}>
           <div className={baseClasses.body}>
             <div className={baseClasses.inner}>

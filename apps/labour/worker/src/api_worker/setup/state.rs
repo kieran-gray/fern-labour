@@ -5,12 +5,18 @@ use fern_labour_workers_shared::{
 };
 use worker::Env;
 
-use crate::api_worker::Config;
+use crate::{
+    api_worker::Config,
+    durable_object::read_side::read_models::labour_status::{
+        D1LabourStatusRepository, LabourStatusReadModelQuery,
+    },
+};
 
 pub struct AppState {
     pub config: Config,
     pub auth_service: Box<dyn AuthServiceClient>,
     pub do_client: DurableObjectCQRSClient,
+    pub labour_status_query: LabourStatusReadModelQuery,
 }
 
 impl AppState {
@@ -32,16 +38,28 @@ impl AppState {
         )))
     }
 
+    fn create_labour_status_query(env: &Env) -> Result<LabourStatusReadModelQuery> {
+        let binding = "READ_MODEL_DB";
+        let db = env
+            .d1(binding)
+            .context(format!("Failed to load {}", binding))?;
+        let repository = Box::new(D1LabourStatusRepository::create(db));
+        Ok(LabourStatusReadModelQuery::create(repository))
+    }
+
     pub fn from_env(env: &Env) -> Result<Self> {
         let config = Config::from_env(env)?;
         let auth_service = Self::create_auth_service(env)?;
 
         let do_client = Self::create_do_client(env)?;
 
+        let labour_status_query = Self::create_labour_status_query(env)?;
+
         Ok(Self {
             config,
             auth_service,
             do_client,
+            labour_status_query,
         })
     }
 }

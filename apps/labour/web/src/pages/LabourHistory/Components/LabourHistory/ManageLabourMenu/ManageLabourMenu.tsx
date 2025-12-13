@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { useDeleteLabour } from '@shared/hooks';
+import { useDeleteLabourV2, useLabourV2Client } from '@shared/hooks';
 import { IconDots, IconTrash } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -8,11 +8,12 @@ import baseClasses from '@shared/shared-styles.module.css';
 export function ManageLabourMenu({ labourId }: { labourId: string }) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const deleteLabourMutation = useDeleteLabour();
+  const client = useLabourV2Client();
+  const mutation = useDeleteLabourV2(client);
 
   const handleConfirm = () => {
     setIsModalOpen(false);
-    deleteLabourMutation.mutate(labourId);
+    mutation.mutate(labourId);
   };
 
   const handleCancel = () => {

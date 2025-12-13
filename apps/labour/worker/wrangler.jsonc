@@ -43,7 +43,7 @@
     {
       "binding": "READ_MODEL_DB",
       "database_name": "fern-labour-read-model-db",
-      "database_id": ""
+      "database_id": "769fcd30-5240-400a-bd5c-5a2d304168d3"
     }
   ],
   "durable_objects": {
@@ -83,7 +83,7 @@
         {
           "binding": "READ_MODEL_DB",
           "database_name": "fern-labour-read-model-db",
-          "database_id": ""
+          "database_id": "769fcd30-5240-400a-bd5c-5a2d304168d3"
         }
       ],
       "durable_objects": {

@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 
-use worker::State;
+use worker::{Env, State};
 
 use fern_labour_event_sourcing_rs::{
     AggregateRepository, AsyncProjector, CheckpointRepository, SyncProjector,
@@ -16,6 +16,7 @@ use crate::durable_object::{
                 ContractionReadModelProjector, ContractionReadModelQuery, SqlContractionRepository,
             },
             labour::{LabourReadModelProjector, LabourReadModelQuery, SqlLabourRepository},
+            labour_status::{D1LabourStatusRepository, LabourStatusReadModelProjector},
             labour_updates::{
                 LabourUpdateReadModelProjector, LabourUpdateReadModelQuery,
                 SqlLabourUpdateRepository,
@@ -135,16 +136,26 @@ impl AggregateServices {
         ))
     }
 
-    fn build_async_projection_processor(state: &State) -> Result<AsyncProjectionProcessor> {
+    fn build_async_projection_processor(
+        state: &State,
+        env: &Env,
+    ) -> Result<AsyncProjectionProcessor> {
         let sql = state.storage().sql();
         let event_store = SqlEventStore::create(sql.clone());
 
-        let projectors: Vec<Box<dyn AsyncProjector<LabourEvent>>> = vec![];
+        let binding = "READ_MODEL_DB";
+        let db = env
+            .d1(binding)
+            .context(format!("Failed to load {}", binding))?;
+        let repository = Box::new(D1LabourStatusRepository::create(db));
+        let labour_status_projector = Box::new(LabourStatusReadModelProjector::create(repository));
+
+        let projectors: Vec<Box<dyn AsyncProjector<LabourEvent>>> = vec![labour_status_projector];
         Ok(AsyncProjectionProcessor::create(event_store, projectors))
     }
 
-    fn build_async_processors(state: &State) -> Result<AsyncProcessors> {
-        let async_projection_processor = Self::build_async_projection_processor(state)?;
+    fn build_async_processors(state: &State, env: &Env) -> Result<AsyncProcessors> {
+        let async_projection_processor = Self::build_async_projection_processor(state, env)?;
         let sync_projection_processor = Self::build_sync_projection_processor(state)?;
         Ok(AsyncProcessors {
             async_projection_processor,
@@ -152,10 +163,10 @@ impl AggregateServices {
         })
     }
 
-    pub fn from_worker_state(state: &State) -> Result<Self> {
+    pub fn from_worker_state(state: &State, env: &Env) -> Result<Self> {
         let write_model = Self::build_write_model(state)?;
         let read_model = Self::build_read_model(state)?;
-        let async_processors = Self::build_async_processors(state)?;
+        let async_processors = Self::build_async_processors(state, env)?;
 
         Ok(Self {
             write_model,

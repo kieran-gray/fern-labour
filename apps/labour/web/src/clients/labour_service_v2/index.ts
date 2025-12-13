@@ -70,6 +70,7 @@ export type {
   ApiQuery,
   // Read Model Types
   LabourReadModel,
+  LabourStatusReadModel,
   Duration,
   ContractionReadModel,
   LabourUpdateReadModel,

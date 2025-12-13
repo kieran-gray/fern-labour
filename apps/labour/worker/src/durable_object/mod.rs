@@ -22,7 +22,7 @@ pub struct LabourAggregate {
 
 impl DurableObject for LabourAggregate {
     fn new(state: State, env: Env) -> Self {
-        let services = match AggregateServices::from_worker_state(&state) {
+        let services = match AggregateServices::from_worker_state(&state, &env) {
             Ok(s) => s,
             Err(err) => panic!("{}", err),
         };

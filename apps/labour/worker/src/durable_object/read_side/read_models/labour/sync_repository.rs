@@ -34,7 +34,8 @@ impl SqlLabourRepository {
             )
             .map_err(|err| anyhow!("Failed to create labours table: {err}"))?;
 
-        let _ = self.sql
+        let _ = self
+            .sql
             .exec("ALTER TABLE labours ADD COLUMN notes TEXT", None)
             .map_err(|err| warn!("Migration failed, it may have already run: {err}"));
 

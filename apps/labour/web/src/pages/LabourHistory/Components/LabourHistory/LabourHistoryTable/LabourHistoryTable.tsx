@@ -1,5 +1,5 @@
 import { useLabour } from '@base/contexts/LabourContext';
-import { useLabourHistory, useRefreshLabourData } from '@shared/hooks';
+import { useLabourHistoryV2, useLabourV2Client, useRefreshLabourData } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
@@ -13,9 +13,10 @@ export function LabourHistoryTable() {
   const { labourId, setLabourId } = useLabour();
   const navigate = useNavigate();
   const refreshLabourData = useRefreshLabourData();
-  const { isPending, isError, data, error } = useLabourHistory();
+  const client = useLabourV2Client();
+  const { isPending, isError, data, error } = useLabourHistoryV2(client);
 
-  const labours = data?.labours || [];
+  const labours = data || [];
 
   if (isPending) {
     return (
@@ -30,7 +31,7 @@ export function LabourHistoryTable() {
   }
 
   const sortedLabours = labours.sort((a, b) =>
-    a.due_date < b.due_date ? -1 : a.due_date > b.due_date ? 1 : 0
+    a.updated_at < b.updated_at ? -1 : a.updated_at > b.updated_at ? 1 : 0
   );
 
   const setLabour = async (newLabourId: string) => {
@@ -53,11 +54,11 @@ export function LabourHistoryTable() {
 
   const rows = sortedLabours.map((labour) => {
     const date =
-      labour.end_time != null
-        ? new Date(labour.end_time).toISOString().substring(0, 10)
-        : new Date(labour.due_date).toISOString().substring(0, 10);
+      labour.updated_at != null
+        ? new Date(labour.updated_at).toISOString().substring(0, 10)
+        : new Date(labour.updated_at).toISOString().substring(0, 10);
     return (
-      <Table.Tr key={labour.id}>
+      <Table.Tr key={labour.labour_id}>
         <Table.Td>
           <div
             className={baseClasses.flexRow}
@@ -84,33 +85,33 @@ export function LabourHistoryTable() {
         <Table.Td>
           <Button
             color="var(--mantine-primary-color-4)"
-            rightSection={toggleButtonIcon(labour.id)}
+            rightSection={toggleButtonIcon(labour.labour_id)}
             variant="light"
             radius="xl"
             size="md"
             visibleFrom="xs"
             className={classes.submitButton}
-            onClick={() => setLabour(labour.id)}
+            onClick={() => setLabour(labour.labour_id)}
             type="submit"
           >
-            {labourId === labour.id ? 'Exit' : 'View'}
+            {labourId === labour.labour_id ? 'Exit' : 'View'}
           </Button>
           <Button
             color="var(--mantine-primary-color-4)"
-            rightSection={toggleButtonIcon(labour.id)}
+            rightSection={toggleButtonIcon(labour.labour_id)}
             variant="light"
             radius="xl"
             size="xs"
             hiddenFrom="xs"
             className={classes.submitButton}
-            onClick={() => setLabour(labour.id)}
+            onClick={() => setLabour(labour.labour_id)}
             type="submit"
           >
-            {labourId === labour.id ? 'Exit' : 'View'}
+            {labourId === labour.labour_id ? 'Exit' : 'View'}
           </Button>
         </Table.Td>
         <Table.Td>
-          <ManageLabourMenu labourId={labour.id} />
+          <ManageLabourMenu labourId={labour.labour_id} />
         </Table.Td>
       </Table.Tr>
     );

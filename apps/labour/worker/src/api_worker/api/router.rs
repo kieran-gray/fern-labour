@@ -4,6 +4,8 @@ use crate::api_worker::AppState;
 use crate::api_worker::api::middleware::authenticated;
 use crate::api_worker::api::middleware::create_options_handler;
 use crate::api_worker::api::routes::commands::handle_command;
+use crate::api_worker::api::routes::labour::get_active_labour;
+use crate::api_worker::api::routes::labour::get_labour_history;
 use crate::api_worker::api::routes::labour::handle_plan_labour;
 use crate::api_worker::api::routes::queries::handle_query;
 
@@ -13,6 +15,14 @@ pub fn create_router(app_state: AppState) -> Router<'static, AppState> {
             authenticated(handle_plan_labour, req, ctx)
         })
         .options("/api/v1/labour/plan", create_options_handler)
+        .get_async("/api/v1/labour/history", |req, ctx| {
+            authenticated(get_labour_history, req, ctx)
+        })
+        .options("/api/v1/labour/history", create_options_handler)
+        .get_async("/api/v1/labour/active", |req, ctx| {
+            authenticated(get_active_labour, req, ctx)
+        })
+        .options("/api/v1/labour/active", create_options_handler)
         .post_async("/api/v1/command", |req, ctx| {
             authenticated(handle_command, req, ctx)
         })

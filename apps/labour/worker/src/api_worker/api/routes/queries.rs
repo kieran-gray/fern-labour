@@ -49,7 +49,9 @@ pub async fn handle_query(
     let status = do_response.status_code();
 
     let mut new_response = Response::ok(body)?.with_status(status);
-    let _ = new_response.headers_mut().set("Content-Type", "application/json");
+    let _ = new_response
+        .headers_mut()
+        .set("Content-Type", "application/json");
 
     Ok(cors_context.add_to_response(new_response))
 }

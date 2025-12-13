@@ -98,9 +98,9 @@ impl SyncProjectionProcessor {
             "Processing events"
         );
 
-        projector.project_batch(&envelopes).map_err(|err| anyhow!(
-            "Projector {projector_name} failed to process batch: {err}",
-        ))?;
+        projector
+            .project_batch(&envelopes)
+            .map_err(|err| anyhow!("Projector {projector_name} failed to process batch: {err}",))?;
 
         let last_envelope = envelopes.last().unwrap();
         let new_checkpoint = ProjectionCheckpoint {

@@ -23,6 +23,7 @@ import type {
   LabourUpdateQuery,
   Cursor,
   LabourReadModel,
+  LabourStatusReadModel,
   ContractionReadModel,
   LabourUpdateReadModel,
   PaginatedResponse,
@@ -490,6 +491,70 @@ export class LabourServiceV2Client {
       payload: { labour_id: labourId },
     };
     return this.sendQuery({ type: 'Labour', payload: query });
+  }
+
+  async getLabourHistory(): Promise<ApiResponse<LabourStatusReadModel[]>> {
+    const headers = await this.getHeaders();
+    const url = `${this.config.baseUrl}/api/v1/labour/history`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return {
+          success: false,
+          error: errorText || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+
+      const data = await response.json();
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
+  async getActiveLabour(): Promise<ApiResponse<LabourStatusReadModel | null>> {
+    const headers = await this.getHeaders();
+    const url = `${this.config.baseUrl}/api/v1/labour/active`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return {
+          success: false,
+          error: errorText || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+
+      const data = await response.json();
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
   }
 
   // Contraction Queries

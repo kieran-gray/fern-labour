@@ -6,6 +6,8 @@ export {
   queryKeysV2,
   // Query hooks
   useLabourByIdV2,
+  useLabourHistoryV2,
+  useActiveLabourV2,
   useContractionsV2,
   useContractionByIdV2,
   useLabourUpdatesV2,

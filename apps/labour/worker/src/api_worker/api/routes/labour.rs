@@ -4,9 +4,12 @@ use tracing::{error, info};
 use uuid::Uuid;
 use worker::{Request, Response, RouteContext};
 
-use crate::api_worker::{
-    AppState,
-    api::{exceptions::ApiError, schemas::requests::PlanLabourDTO},
+use crate::{
+    api_worker::{
+        AppState,
+        api::{exceptions::ApiError, schemas::requests::PlanLabourDTO},
+    },
+    durable_object::read_side::read_models::labour_status::LabourStatusReadModelQueryHandler,
 };
 
 #[derive(Serialize)]
@@ -51,6 +54,44 @@ pub async fn handle_plan_labour(
     };
 
     let response = Response::from_json(&response_body)
+        .map_err(|e| format!("Failed to serialize response: {e}"))?;
+
+    Ok(cors_context.add_to_response(response))
+}
+
+pub async fn get_labour_history(
+    _req: Request,
+    ctx: RouteContext<AppState>,
+    cors_context: CorsContext,
+    user_id: String,
+) -> worker::Result<Response> {
+    let labour_status = ctx
+        .data
+        .labour_status_query
+        .get_by_user_id(user_id)
+        .await
+        .map_err(|e| format!("Failed to query labour status: {e}"))?;
+
+    let response = Response::from_json(&labour_status)
+        .map_err(|e| format!("Failed to serialize response: {e}"))?;
+
+    Ok(cors_context.add_to_response(response))
+}
+
+pub async fn get_active_labour(
+    _req: Request,
+    ctx: RouteContext<AppState>,
+    cors_context: CorsContext,
+    user_id: String,
+) -> worker::Result<Response> {
+    let labour_status = ctx
+        .data
+        .labour_status_query
+        .get_active(user_id)
+        .await
+        .map_err(|e| format!("Failed to query active labour: {e}"))?;
+
+    let response = Response::from_json(&labour_status)
         .map_err(|e| format!("Failed to serialize response: {e}"))?;
 
     Ok(cors_context.add_to_response(response))
