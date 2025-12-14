@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 
 use worker::{Env, State};
 
@@ -8,13 +8,15 @@ use fern_labour_event_sourcing_rs::{
 
 use crate::durable_object::{
     read_side::{
-        QueryService,
-        async_projection_processor::AsyncProjectionProcessor,
         checkpoint_repository::SqlCheckpointRepository,
+        projection_processors::{
+            async_processor::AsyncProjectionProcessor, sync_processor::SyncProjectionProcessor,
+        },
         read_models::{
             contractions::{
                 ContractionReadModelProjector, ContractionReadModelQuery, SqlContractionRepository,
             },
+            events::query::EventQuery,
             labour::{LabourReadModelProjector, LabourReadModelQuery, SqlLabourRepository},
             labour_status::{D1LabourStatusRepository, LabourStatusReadModelProjector},
             labour_updates::{
@@ -22,8 +24,8 @@ use crate::durable_object::{
                 SqlLabourUpdateRepository,
             },
         },
-        sync_projection_processor::SyncProjectionProcessor,
     },
+    token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator},
     write_side::{
         application::{AdminCommandProcessor, command_processors::LabourCommandProcessor},
         domain::LabourEvent,
@@ -37,10 +39,11 @@ pub struct WriteModel {
 }
 
 pub struct ReadModel {
-    pub query_service: QueryService,
+    pub event_query: EventQuery,
     pub labour_query: LabourReadModelQuery,
     pub contraction_query: ContractionReadModelQuery,
     pub labour_update_query: LabourUpdateReadModelQuery,
+    pub subscription_token_generator: Box<dyn SubscriptionTokenGenerator>,
 }
 
 pub struct AsyncProcessors {
@@ -76,9 +79,9 @@ impl AggregateServices {
         })
     }
 
-    fn build_read_model(state: &State) -> Result<ReadModel> {
+    fn build_read_model(state: &State, env: &Env) -> Result<ReadModel> {
         let sql = state.storage().sql();
-        let query_service = QueryService::new(SqlEventStore::create(sql.clone()));
+        let event_query = EventQuery::new(SqlEventStore::create(sql.clone()));
 
         let labour_repository = Box::new(SqlLabourRepository::create(sql.clone()));
         let labour_query = LabourReadModelQuery::create(labour_repository);
@@ -89,11 +92,20 @@ impl AggregateServices {
         let labour_update_repository = Box::new(SqlLabourUpdateRepository::create(sql.clone()));
         let labour_update_query = LabourUpdateReadModelQuery::create(labour_update_repository);
 
+        let subscription_token_salt: String = env
+            .var("SUBSCRIPTION_TOKEN_SALT")
+            .map_err(|e| anyhow!("Missing env binding: {e}"))?
+            .to_string();
+
+        let subscription_token_generator =
+            Box::new(SplitMix64TokenGenerator::create(subscription_token_salt));
+
         Ok(ReadModel {
-            query_service,
+            event_query,
             labour_query,
             contraction_query,
             labour_update_query,
+            subscription_token_generator,
         })
     }
 
@@ -165,7 +177,7 @@ impl AggregateServices {
 
     pub fn from_worker_state(state: &State, env: &Env) -> Result<Self> {
         let write_model = Self::build_write_model(state)?;
-        let read_model = Self::build_read_model(state)?;
+        let read_model = Self::build_read_model(state, env)?;
         let async_processors = Self::build_async_processors(state, env)?;
 
         Ok(Self {

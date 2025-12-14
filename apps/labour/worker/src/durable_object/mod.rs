@@ -2,6 +2,7 @@ pub mod api;
 pub mod exceptions;
 pub mod read_side;
 pub mod state;
+pub mod token_generator;
 pub mod write_side;
 
 use tracing::{error, info};
@@ -45,7 +46,9 @@ impl DurableObject for LabourAggregate {
 
         let result = api::route_and_handle(self, request_dto);
 
-        if result.is_success() {
+        if result.is_success() && result.response().status_code() == 204 {
+            // Only run alarm for empty responses, so we only run it when handling a
+            // write-side command request.
             self.alarm_manager
                 .set_alarm(0)
                 .await

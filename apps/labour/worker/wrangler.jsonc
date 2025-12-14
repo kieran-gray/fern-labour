@@ -105,7 +105,8 @@
       "vars": {
         "ENVIRONMENT": "dev",
         "ALLOWED_ORIGINS": "",
-        "AUTH_ENABLED": "true"
+        "AUTH_ENABLED": "true",
+        "SUBSCRIPTION_TOKEN_SALT": "changeme"
       }
     }
   }

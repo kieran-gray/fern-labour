@@ -3,6 +3,7 @@ pub mod durable_object;
 pub mod read_models;
 
 use anyhow::anyhow;
+use fern_labour_workers_shared::clients::worker_clients::auth::User;
 use tracing::{Instrument, debug, error, info, info_span};
 use uuid::Uuid;
 
@@ -81,6 +82,9 @@ pub async fn main(message_batch: MessageBatch<String>, env: Env, _ctx: Context) 
                         };
 
                     info!(aggregate_id = %envelope.metadata.aggregate_id, "Processing command from queue");
+                    
+                    let user = User {user_id: envelope.metadata.user_id.clone(), issuer: "internal".to_string(), email: None, email_verified: None, name: None};
+                    
                     let response = match envelope.command {
                         QueueMessage::Service(cmd) => {
                             match cmd {
@@ -110,6 +114,7 @@ pub async fn main(message_batch: MessageBatch<String>, env: Env, _ctx: Context) 
                                     internal_envelope.metadata.aggregate_id,
                                     "/notification/command",
                                     internal_envelope,
+                                    &user
                                 )
                                 .await
                                 .map_err(|e| anyhow!("Notification DO Error: {e}"))
@@ -125,6 +130,7 @@ pub async fn main(message_batch: MessageBatch<String>, env: Env, _ctx: Context) 
                                     admin_envelope.metadata.aggregate_id,
                                     "/admin/command",
                                     admin_envelope,
+                                    &user
                                 )
                                 .await
                                 .map_err(|e| anyhow!("Notification DO Error: {e}"))
@@ -149,6 +155,7 @@ pub async fn main(message_batch: MessageBatch<String>, env: Env, _ctx: Context) 
                                     domain_envelope.metadata.aggregate_id,
                                     "/notification/domain",
                                     domain_envelope,
+                                    &user
                                 )
                                 .await
                                 .map_err(|e| anyhow!("Notification DO Error: {e}"))

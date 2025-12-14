@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use tracing::error;
 
 use async_trait::async_trait;
 
@@ -46,7 +47,10 @@ impl AuthenticationServiceTrait for AuthenticationService {
         let principal = self
             .extractor
             .extract_principal(&claims, &issuer.name)
-            .map_err(|_| AuthError::ExtractionFailed)?;
+            .map_err(|err| {
+                error!("{err}");
+                AuthError::ExtractionFailed
+            })?;
 
         Ok(UserDto::from(principal))
     }

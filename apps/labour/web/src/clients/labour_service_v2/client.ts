@@ -21,6 +21,7 @@ import type {
   LabourQuery,
   ContractionQuery,
   LabourUpdateQuery,
+  SubscriptionQuery,
   Cursor,
   LabourReadModel,
   LabourStatusReadModel,
@@ -619,5 +620,17 @@ export class LabourServiceV2Client {
       },
     };
     return this.sendQuery({ type: 'LabourUpdate', payload: query });
+  }
+
+  // Subscription Queries
+
+  async getSubscriptionToken(labourId: string): Promise<QueryResponse<{ token: string }>> {
+    const query: SubscriptionQuery = {
+      type: 'GetSubscriptionToken',
+      payload: {
+        labour_id: labourId,
+      },
+    };
+    return this.sendQuery({ type: 'Subscription', payload: query });
   }
 }

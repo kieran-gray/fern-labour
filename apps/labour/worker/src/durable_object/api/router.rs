@@ -1,7 +1,9 @@
 use base64::{Engine, prelude::BASE64_URL_SAFE_NO_PAD};
 use chrono::DateTime;
 use fern_labour_event_sourcing_rs::{Cursor, DecodedCursor, PaginatedResponse};
-use fern_labour_labour_shared::{ContractionQuery, LabourQuery, LabourUpdateQuery};
+use fern_labour_labour_shared::{
+    ContractionQuery, LabourQuery, LabourUpdateQuery, queries::subscription::SubscriptionQuery,
+};
 use tracing::{error, info};
 use worker::Response;
 
@@ -28,6 +30,12 @@ impl ApiResult {
         }
     }
 
+    pub fn response(&self) -> &Response {
+        match self {
+            ApiResult::Success(r) | ApiResult::Failed(r) => r,
+        }
+    }
+
     pub fn is_success(&self) -> bool {
         matches!(self, ApiResult::Success(_))
     }
@@ -49,11 +57,12 @@ impl ApiResult {
 
 pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> ApiResult {
     match request {
-        RequestDto::DomainCommand { envelope } => {
+        RequestDto::DomainCommand { envelope, auth } => {
             info!(
                 aggregate_id = %envelope.metadata.aggregate_id,
                 correlation_id = %envelope.metadata.correlation_id,
                 user_id = %envelope.metadata.user_id,
+                auth_user_id = %auth.user.user_id,
                 idempotency_key = %envelope.metadata.idempotency_key,
                 "Processing domain command"
             );
@@ -72,11 +81,12 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
 
             ApiResult::from_unit_result(result)
         }
-        RequestDto::LabourCommand { envelope } => {
+        RequestDto::LabourCommand { envelope, auth } => {
             info!(
                 aggregate_id = %envelope.metadata.aggregate_id,
                 correlation_id = %envelope.metadata.correlation_id,
                 user_id = %envelope.metadata.user_id,
+                auth_user_id = %auth.user.user_id,
                 idempotency_key = %envelope.metadata.idempotency_key,
                 "Processing labour command"
             );
@@ -97,11 +107,12 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
 
             ApiResult::from_unit_result(result)
         }
-        RequestDto::LabourUpdateCommand { envelope } => {
+        RequestDto::LabourUpdateCommand { envelope, auth } => {
             info!(
                 aggregate_id = %envelope.metadata.aggregate_id,
                 correlation_id = %envelope.metadata.correlation_id,
                 user_id = %envelope.metadata.user_id,
+                auth_user_id = %auth.user.user_id,
                 idempotency_key = %envelope.metadata.idempotency_key,
                 "Processing labour update command"
             );
@@ -122,11 +133,12 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
 
             ApiResult::from_unit_result(result)
         }
-        RequestDto::ContractionCommand { envelope } => {
+        RequestDto::ContractionCommand { envelope, auth } => {
             info!(
                 aggregate_id = %envelope.metadata.aggregate_id,
                 correlation_id = %envelope.metadata.correlation_id,
                 user_id = %envelope.metadata.user_id,
+                auth_user_id = %auth.user.user_id,
                 idempotency_key = %envelope.metadata.idempotency_key,
                 "Processing contraction command"
             );
@@ -147,11 +159,12 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
 
             ApiResult::from_unit_result(result)
         }
-        RequestDto::AdminCommand { envelope } => {
+        RequestDto::AdminCommand { envelope, auth } => {
             info!(
                 aggregate_id = %envelope.metadata.aggregate_id,
                 correlation_id = %envelope.metadata.correlation_id,
                 user_id = %envelope.metadata.user_id,
+                auth_user_id = %auth.user.user_id,
                 "Processing admin command"
             );
 
@@ -169,15 +182,18 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
 
             ApiResult::from_unit_result(result)
         }
-        RequestDto::EventsQuery => ApiResult::from_json_result(
-            aggregate
-                .services
-                .read_model()
-                .query_service
-                .get_event_stream(),
-        ),
-        RequestDto::LabourQuery { query } => {
-            info!(query = ?query, "Processing labour query");
+        RequestDto::EventsQuery { auth } => {
+            info!(auth_user_id = %auth.user.user_id, "Processing events query");
+            ApiResult::from_json_result(
+                aggregate
+                    .services
+                    .read_model()
+                    .event_query
+                    .get_event_stream(),
+            )
+        }
+        RequestDto::LabourQuery { query, auth } => {
+            info!(query = ?query, auth_user_id = %auth.user.user_id, "Processing labour query");
 
             let result = match query {
                 LabourQuery::GetLabour { labour_id } => {
@@ -194,8 +210,8 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
 
             ApiResult::from_json_result(result)
         }
-        RequestDto::ContractionQuery { query } => {
-            info!(query = ?query, "Processing contraction query");
+        RequestDto::ContractionQuery { query, auth } => {
+            info!(query = ?query, auth_user_id = %auth.user.user_id, "Processing contraction query");
 
             let result = match query {
                 ContractionQuery::GetContractions {
@@ -244,8 +260,8 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
 
             ApiResult::from_json_result(result)
         }
-        RequestDto::LabourUpdateQuery { query } => {
-            info!(query = ?query, "Processing labour update query");
+        RequestDto::LabourUpdateQuery { query, auth } => {
+            info!(query = ?query, auth_user_id = %auth.user.user_id, "Processing labour update query");
 
             let result = match query {
                 LabourUpdateQuery::GetLabourUpdates {
@@ -291,6 +307,23 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
             } else {
                 info!("Query executed successfully");
             }
+
+            ApiResult::from_json_result(result)
+        }
+        RequestDto::SubscriptionQuery { query, auth } => {
+            info!(query = ?query, auth_user_id = %auth.user.user_id, "Processing subscription query");
+
+            let result = match query {
+                SubscriptionQuery::GetSubscriptionToken { labour_id } => {
+                    info!(labour_id = %labour_id, user_id = %auth.user.user_id, "Getting subscription token");
+                    let token = aggregate
+                        .services
+                        .read_model()
+                        .subscription_token_generator
+                        .generate(&auth.user.user_id, &labour_id.to_string());
+                    Ok(serde_json::json!({ "token": token }))
+                }
+            };
 
             ApiResult::from_json_result(result)
         }

@@ -6,11 +6,11 @@ use fern_labour_event_sourcing_rs::{Event, EventEnvelope, EventMetadata, EventSt
 
 use crate::durable_object::write_side::domain::LabourEvent;
 
-pub struct QueryService {
+pub struct EventQuery {
     event_store: Rc<dyn EventStoreTrait>,
 }
 
-impl QueryService {
+impl EventQuery {
     pub fn new(event_store: Rc<dyn EventStoreTrait>) -> Self {
         Self { event_store }
     }

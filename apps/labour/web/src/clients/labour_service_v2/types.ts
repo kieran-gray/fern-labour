@@ -345,12 +345,24 @@ export type GetLabourUpdateByIdQuery = {
 
 export type LabourUpdateQuery = GetLabourUpdatesQuery | GetLabourUpdateByIdQuery;
 
+// Subscription Queries
+
+export type GetSubscriptionTokenQuery = {
+  type: "GetSubscriptionToken";
+  payload: {
+    labour_id: string;
+  };
+};
+
+export type SubscriptionQuery = GetSubscriptionTokenQuery;
+
 // Top-level API Query (matches Rust ApiQuery enum)
 
 export type ApiQuery =
   | { type: "Labour"; payload: LabourQuery }
   | { type: "Contraction"; payload: ContractionQuery }
-  | { type: "LabourUpdate"; payload: LabourUpdateQuery };
+  | { type: "LabourUpdate"; payload: LabourUpdateQuery }
+  | { type: "Subscription"; payload: SubscriptionQuery };
 
 // Read Model Types
 
@@ -392,6 +404,7 @@ export type ContractionReadModel = {
   labour_id: string;
   contraction_id: string;
   duration: Duration;
+  duration_seconds: number;
   intensity: number | null;
   created_at: string;
   updated_at: string;

@@ -51,8 +51,9 @@ impl ContractionReadModelProjector {
                     .repository
                     .get_by_id(*contraction_id)
                     .unwrap_or_else(|_| panic!("No contraction found with id: {contraction_id}"));
-                contraction.duration =
-                    Duration::create(*contraction.duration.start_time(), *end_time)?;
+                let duration = Duration::create(*contraction.duration.start_time(), *end_time)?;
+                contraction.duration_seconds = duration.duration_seconds();
+                contraction.duration = duration;
                 contraction.intensity = Some(*intensity);
                 contraction.updated_at = timestamp;
                 self.repository.upsert(&contraction)
@@ -79,7 +80,9 @@ impl ContractionReadModelProjector {
                     Some(end_time) => end_time,
                     None => contraction.duration.end_time(),
                 };
-                contraction.duration = Duration::create(*new_start_time, *new_end_time)?;
+                let duration = Duration::create(*new_start_time, *new_end_time)?;
+                contraction.duration_seconds = duration.duration_seconds();
+                contraction.duration = duration;
                 contraction.intensity = *intensity;
                 self.repository.upsert(&contraction)
             }

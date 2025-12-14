@@ -1,6 +1,6 @@
-import { ContractionDTO } from '@clients/labour_service';
 import { ScatterChart } from '@mantine/charts';
 import classes from './LabourStatistics.module.css';
+import { ContractionReadModel } from '@base/clients/labour_service_v2';
 
 interface ChartData {
   color: string;
@@ -18,7 +18,7 @@ export const LabourStatisticsChart = ({
   minutes,
   endTime,
 }: {
-  contractions: ContractionDTO[];
+  contractions: ContractionReadModel[];
   minutes?: number;
   endTime?: Date;
 }) => {
@@ -29,14 +29,14 @@ export const LabourStatisticsChart = ({
     data: [],
   };
   contractions.forEach((contraction) => {
-    const startTime = new Date(contraction.start_time).getTime();
+    const startTime = new Date(contraction.duration.start_time).getTime();
     minStartTime =
       minStartTime === null || (minStartTime && startTime < minStartTime)
         ? startTime
         : minStartTime;
     chartData.data.push({
       time: startTime,
-      duration: contraction.duration,
+      duration: contraction.duration_seconds,
     });
   });
   const now = new Date();

@@ -1,5 +1,5 @@
 import { useLabour } from '@base/contexts/LabourContext';
-import { useSubscriptionToken } from '@shared/hooks';
+import { useLabourV2Client } from '@shared/hooks';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -9,10 +9,12 @@ import QRButton from '../QRButton/QRButton';
 import image from './share.svg';
 import classes from './ShareContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
+import { useSubscriptionTokenV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
 
 export function ShareContainer() {
   const { labourId } = useLabour();
-  const { isPending, isError, data, error } = useSubscriptionToken();
+  const client = useLabourV2Client();
+  const { data: token, isPending, isError, error } = useSubscriptionTokenV2(client, labourId);
 
   if (isPending) {
     return (
@@ -40,8 +42,8 @@ export function ShareContainer() {
 
   const title = 'Share with your circle';
   const description = 'Share invites to your labour with your chosen circle of family and friends.';
-  const shareUrl = `${window.location.origin}/subscribe/${labourId}?token=${data}`;
-  const shareMessage = `Hey! I'd love for you to be part of my labour circle.\n\nUse the link below to sign up and get updates as things happen.\n\nYou'll also need this code for access: ${data}`;
+  const shareUrl = `${window.location.origin}/subscribe/${labourId}?token=${token}`;
+  const shareMessage = `Hey! I'd love for you to be part of my labour circle.\n\nUse the link below to sign up and get updates as things happen.\n\nYou'll also need this code for access: ${token}`;
 
   return (
     <div className={baseClasses.inner}>
@@ -61,7 +63,7 @@ export function ShareContainer() {
               }}
             />
             <Space w="sm" />
-            <QRButton url={`${shareUrl}?token=${data}`} />
+            <QRButton url={`${shareUrl}?token=${token}`} />
           </div>
         </Group>
       </div>

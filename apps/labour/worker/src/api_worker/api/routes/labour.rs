@@ -1,4 +1,4 @@
-use fern_labour_workers_shared::CorsContext;
+use fern_labour_workers_shared::{CorsContext, clients::worker_clients::auth::User};
 use serde::Serialize;
 use tracing::{error, info};
 use uuid::Uuid;
@@ -21,12 +21,12 @@ pub async fn handle_plan_labour(
     mut req: Request,
     ctx: RouteContext<AppState>,
     cors_context: CorsContext,
-    user_id: String,
+    user: User,
 ) -> worker::Result<Response> {
     let request_dto: PlanLabourDTO = match req.json().await {
         Ok(dto) => dto,
         Err(e) => {
-            error!(user_id = %user_id, error = ?e, "Failed to parse request body");
+            error!(user_id = %user.user_id, error = ?e, "Failed to parse request body");
             let response = Response::from(ApiError::ValidationError(
                 "Failed to parse request body".into(),
             ));
@@ -36,11 +36,11 @@ pub async fn handle_plan_labour(
 
     let labour_id = Uuid::now_v7();
 
-    let domain_command = request_dto.into_domain(labour_id, user_id.clone());
+    let domain_command = request_dto.into_domain(labour_id, user.user_id.clone());
 
     ctx.data
         .do_client
-        .command(labour_id, domain_command, user_id, "/labour/domain")
+        .command(labour_id, domain_command, &user, "/labour/domain")
         .await
         .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?;
 
@@ -63,8 +63,9 @@ pub async fn get_labour_history(
     _req: Request,
     ctx: RouteContext<AppState>,
     cors_context: CorsContext,
-    user_id: String,
+    user: User,
 ) -> worker::Result<Response> {
+    let user_id = user.user_id;
     let labour_status = ctx
         .data
         .labour_status_query
@@ -82,8 +83,9 @@ pub async fn get_active_labour(
     _req: Request,
     ctx: RouteContext<AppState>,
     cors_context: CorsContext,
-    user_id: String,
+    user: User,
 ) -> worker::Result<Response> {
+    let user_id = user.user_id;
     let labour_status = ctx
         .data
         .labour_status_query

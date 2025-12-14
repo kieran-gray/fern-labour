@@ -43,9 +43,9 @@ impl AppState {
         ));
 
         let mut extractors: HashMap<String, Box<dyn ClaimsExtractor>> = HashMap::new();
-        extractors.insert("auth0".to_string(), Box::new(Auth0ClaimsExtractor));
+        extractors.insert("Auth0".to_string(), Box::new(Auth0ClaimsExtractor));
         extractors.insert(
-            "cloudflare".to_string(),
+            "Cloudflare".to_string(),
             Box::new(CloudflareClaimsExtractor),
         );
 

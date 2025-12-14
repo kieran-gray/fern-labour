@@ -38,6 +38,10 @@ export const queryKeysV2 = {
     byId: (labourId: string, labourUpdateId: string) =>
       [...queryKeysV2.labourUpdates.byLabour(labourId), labourUpdateId] as const,
   },
+  subscriptionToken: {
+    all: ['subscription-token-v2'] as const,
+    byLabour: (labourId: string) => [...queryKeysV2.subscriptionToken.all, labourId] as const,
+  },
 } as const;
 
 // Helper function to decode cursor
@@ -312,12 +316,6 @@ export function useStartContractionV2(client: LabourServiceV2Client) {
       queryClient.invalidateQueries({
         queryKey: queryKeysV2.contractions.all,
       });
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Contraction started',
-      });
     },
     onError: (error: Error) => {
       notifications.show({
@@ -356,12 +354,6 @@ export function useEndContractionV2(client: LabourServiceV2Client) {
     onSuccess: (_, __) => {
       queryClient.invalidateQueries({
         queryKey: queryKeysV2.contractions.all,
-      });
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Contraction ended',
       });
     },
     onError: (error: Error) => {
@@ -859,5 +851,31 @@ export function useDeleteLabourV2(client: LabourServiceV2Client) {
         message: `Failed to delete labour: ${error.message}`,
       });
     },
+  });
+}
+
+/**
+ * Hook for fetching subscription token
+ */
+export function useSubscriptionTokenV2(client: LabourServiceV2Client, labourId: string | null) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: labourId ? queryKeysV2.subscriptionToken.byLabour(labourId) : [],
+    queryFn: async () => {
+      if (!labourId) {
+        throw new Error('Labour ID is required');
+      }
+
+      const response = await client.getSubscriptionToken(labourId);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load subscription token');
+      }
+
+      return response.data.token;
+    },
+    enabled: !!labourId && !!user?.sub,
+    retry: 0,
   });
 }

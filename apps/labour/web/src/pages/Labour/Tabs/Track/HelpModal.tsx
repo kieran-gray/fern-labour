@@ -1,4 +1,3 @@
-import { ContractionDTO } from '@clients/labour_service';
 import { IconHourglassHigh, IconHourglassLow } from '@tabler/icons-react';
 import { Anchor, Button, List, Modal, Slider, Stack, Text, Title } from '@mantine/core';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';
@@ -8,6 +7,7 @@ import ContractionTimelineCustom from './ContractionTimelineCustom';
 import contractionClasses from './Contractions.module.css';
 import modalClasses from '@shared/Modal.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
+import { ContractionReadModel } from '@base/clients/labour_service_v2';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -19,26 +19,24 @@ export const ContractionsHelpModal = ({
   close: CloseFunctionType;
 }) => {
   const now = new Date();
-  const mockContractions: ContractionDTO[] = [
+  const mockContractions: ContractionReadModel[] = [
     {
-      id: 'mock-contraction-1',
+      contraction_id: 'mock-contraction-1',
       labour_id: 'mock-labour-id',
-      start_time: new Date(now.getTime() - 300 * 1000).toISOString(),
-      end_time: new Date(now.getTime() - 229 * 1000).toISOString(),
-      duration: 71,
+      duration: {start_time: new Date(now.getTime() - 300 * 1000).toISOString(), end_time: new Date(now.getTime() - 229 * 1000).toISOString()},
+      duration_seconds: 71,
       intensity: 3,
-      notes: null,
-      is_active: false,
+      created_at: now.toISOString(),
+      updated_at: now.toISOString()
     },
     {
-      id: 'mock-contraction-2',
+      contraction_id: 'mock-contraction-2',
       labour_id: 'mock-labour-id',
-      start_time: new Date(now.getTime() - 44 * 1000).toISOString(),
-      end_time: now.toISOString(),
-      duration: 44,
+      duration: {start_time: new Date(now.getTime() - 44 * 1000).toISOString(), end_time: now.toISOString()},
+      duration_seconds: 44,
       intensity: 2,
-      notes: null,
-      is_active: false,
+      created_at: now.toISOString(),
+      updated_at: now.toISOString()
     },
   ];
   return (

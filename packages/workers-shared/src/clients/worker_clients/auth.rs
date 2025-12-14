@@ -33,6 +33,20 @@ struct VerifyTokenResponse {
     user_id: String,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct User {
+    pub user_id: String,
+    pub issuer: String,
+    pub email: Option<String>,
+    pub email_verified: Option<bool>,
+    pub name: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct AuthenticateResponse {
+    user: User,
+}
+
 #[derive(Deserialize)]
 struct ErrorResponse {
     message: String,
@@ -41,6 +55,7 @@ struct ErrorResponse {
 #[async_trait(?Send)]
 pub trait AuthServiceClient {
     async fn verify_token(&self, token: &str) -> Result<String, AuthClientError>;
+    async fn authenticate(&self, token: &str) -> Result<User, AuthClientError>;
 }
 
 pub struct FetcherAuthServiceClient {
@@ -98,6 +113,72 @@ impl AuthServiceClient for FetcherAuthServiceClient {
 
                 debug!(user_id = %verify_response.user_id, "Token verified via auth service");
                 Ok(verify_response.user_id)
+            }
+            401 => {
+                let error_response: ErrorResponse =
+                    response.json().await.unwrap_or_else(|_| ErrorResponse {
+                        message: "Unauthorised".to_string(),
+                    });
+                Err(AuthClientError::Unauthorised(error_response.message))
+            }
+            status => {
+                let error_response: ErrorResponse =
+                    response.json().await.unwrap_or_else(|_| ErrorResponse {
+                        message: format!("Unexpected status: {}", status),
+                    });
+                Err(AuthClientError::RequestFailed(error_response.message))
+            }
+        }
+    }
+
+    async fn authenticate(&self, token: &str) -> Result<User, AuthClientError> {
+        let body = VerifyTokenRequest {
+            token: token.to_string(),
+        };
+
+        let body_bytes = serde_json::to_vec(&body).map_err(|e| {
+            AuthClientError::ParseError(format!("Failed to serialize request: {e}"))
+        })?;
+
+        let headers = Headers::new();
+        headers
+            .set("Content-Type", "application/json")
+            .map_err(|e| {
+                AuthClientError::RequestFailed(format!("Failed to set Content-Type: {e}"))
+            })?;
+
+        let mut init = RequestInit::new();
+        init.with_method(Method::Post);
+        init.with_headers(headers);
+        init.with_body(Some(body_bytes.into()));
+
+        let mut response = self
+            .fetcher
+            .fetch(
+                "https://quest-lock.com/api/v1/auth/authenticate/",
+                Some(init),
+            )
+            .await
+            .map_err(|e| {
+                error!(error = ?e, "Auth service authenticate request failed");
+                AuthClientError::RequestFailed(format!("Auth service request failed: {e}"))
+            })?;
+
+        match response.status_code() {
+            200 => {
+                let auth_response: AuthenticateResponse = response.json().await.map_err(|e| {
+                    error!(error = ?e, "Failed to parse authenticate response");
+                    AuthClientError::ParseError(format!(
+                        "Failed to parse authenticate response: {e}"
+                    ))
+                })?;
+
+                debug!(
+                    user_id = %auth_response.user.user_id,
+                    issuer = %auth_response.user.issuer,
+                    "Token authenticated via auth service"
+                );
+                Ok(auth_response.user)
             }
             401 => {
                 let error_response: ErrorResponse =

@@ -3,7 +3,9 @@ use fern_labour_event_sourcing_rs::{CommandEnvelope, CommandMetadata};
 use serde::Serialize;
 use tracing::error;
 use uuid::Uuid;
-use worker::{Method, ObjectNamespace, Request, RequestInit, Response};
+use worker::{Headers, Method, ObjectNamespace, Request, RequestInit, Response};
+
+use crate::clients::worker_clients::auth::User;
 
 #[derive(Debug)]
 pub enum DurableObjectCQRSClientError {
@@ -43,11 +45,42 @@ impl DurableObjectCQRSClient {
         Self { namespace }
     }
 
+    fn create_headers_with_user(user: &User) -> Result<Headers, DurableObjectCQRSClientError> {
+        let headers = Headers::new();
+
+        let user_json = serde_json::to_string(user).map_err(|e| {
+            DurableObjectCQRSClientError::SerializationError(format!(
+                "Failed to serialize user: {}",
+                e
+            ))
+        })?;
+
+        headers
+            .set("X-User-Info", &user_json)
+            .map_err(|e| {
+                DurableObjectCQRSClientError::RequestError(format!(
+                    "Failed to set X-User-Info header: {}",
+                    e
+                ))
+            })?;
+
+        headers
+            .set("Content-Type", "application/json")
+            .map_err(|e| {
+                DurableObjectCQRSClientError::RequestError(format!(
+                    "Failed to set Content-Type header: {}",
+                    e
+                ))
+            })?;
+
+        Ok(headers)
+    }
+
     pub async fn command<C: Serialize>(
         &self,
         aggregate_id: Uuid,
         command: C,
-        user_id: String,
+        user: &User,
         url: &str,
     ) -> Result<Response, DurableObjectCQRSClientError> {
         let aggregate_stub = self
@@ -65,7 +98,7 @@ impl DurableObjectCQRSClient {
             aggregate_id,
             correlation_id,
             correlation_id,
-            user_id,
+            user.user_id.clone(),
             Utc::now(),
         );
 
@@ -78,8 +111,11 @@ impl DurableObjectCQRSClient {
             ))
         })?;
 
+        let headers = Self::create_headers_with_user(user)?;
+
         let mut init = RequestInit::new();
         init.with_method(Method::Post);
+        init.with_headers(headers);
         init.with_body(Some(body_string.into()));
 
         let request =
@@ -109,6 +145,7 @@ impl DurableObjectCQRSClient {
         aggregate_id: Uuid,
         url: &str,
         envelope: CommandEnvelope<C>,
+        user: &User,
     ) -> Result<Response, DurableObjectCQRSClientError> {
         let aggregate_stub = self
             .namespace
@@ -127,8 +164,11 @@ impl DurableObjectCQRSClient {
             ))
         })?;
 
+        let headers = Self::create_headers_with_user(user)?;
+
         let mut init = RequestInit::new();
         init.with_method(Method::Post);
+        init.with_headers(headers);
         init.with_body(Some(body_string.into()));
 
         let request =
@@ -157,6 +197,7 @@ impl DurableObjectCQRSClient {
         &self,
         aggregate_id: Uuid,
         url: &str,
+        user: &User,
     ) -> Result<Response, DurableObjectCQRSClientError> {
         let aggregate_stub = self
             .namespace
@@ -168,8 +209,11 @@ impl DurableObjectCQRSClient {
                 ))
             })?;
 
+        let headers = Self::create_headers_with_user(user)?;
+
         let mut init = RequestInit::new();
         init.with_method(Method::Get);
+        init.with_headers(headers);
 
         let request =
             Request::new_with_init(&format!("https://durable.fern-labour.com{url}"), &init)
@@ -197,7 +241,7 @@ impl DurableObjectCQRSClient {
         &self,
         aggregate_id: Uuid,
         query: Q,
-        _user_id: String,
+        user: &User,
         url: &str,
     ) -> Result<Response, DurableObjectCQRSClientError> {
         let aggregate_stub = self
@@ -217,8 +261,11 @@ impl DurableObjectCQRSClient {
             ))
         })?;
 
+        let headers = Self::create_headers_with_user(user)?;
+
         let mut init = RequestInit::new();
         init.with_method(Method::Post);
+        init.with_headers(headers);
         init.with_body(Some(body_string.into()));
 
         let request =

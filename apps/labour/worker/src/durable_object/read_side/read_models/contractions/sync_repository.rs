@@ -20,7 +20,9 @@ impl SqlContractionRepository {
                 "CREATE TABLE IF NOT EXISTS contractions (
                     contraction_id TEXT PRIMARY KEY,
                     labour_id TEXT NOT NULL,
-                    duration TEXT NOT NULL,
+                    start_time TEXT NOT NULL,
+                    end_time TEXT NOT NULL,
+                    duration_seconds TEXT NOT NULL,
                     intensity TEXT,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
@@ -31,11 +33,11 @@ impl SqlContractionRepository {
 
         self.sql
             .exec(
-                "CREATE INDEX IF NOT EXISTS idx_contractions_updated_at
-                 ON contractions(updated_at DESC)",
+                "CREATE INDEX IF NOT EXISTS idx_contractions_start_time
+                 ON contractions(start_time ASC)",
                 None,
             )
-            .context("Failed to create updated_at index")?;
+            .context("Failed to create start_time index")?;
 
         Ok(())
     }
@@ -43,7 +45,7 @@ impl SqlContractionRepository {
     pub fn get_all(&self) -> Result<Vec<ContractionReadModel>> {
         let rows: Vec<ContractionRow> = self
             .sql
-            .exec("SELECT * FROM contractions ORDER BY created_at ASC", None)
+            .exec("SELECT * FROM contractions ORDER BY start_time ASC", None)
             .context("Failed to execute contractions query")?
             .to_array()
             .context("Failed to fetch contractions")?;
@@ -55,7 +57,7 @@ impl SqlContractionRepository {
         let rows: Vec<ContractionRow> = self
             .sql
             .exec(
-                "SELECT * FROM contractions WHERE labour_id = ?1 ORDER BY created_at ASC",
+                "SELECT * FROM contractions WHERE labour_id = ?1 ORDER BY start_time ASC",
                 Some(vec![labour_id.to_string().into()]),
             )
             .context("Failed to execute contractions query")?
@@ -100,7 +102,7 @@ impl SyncRepositoryTrait<ContractionReadModel> for SqlContractionRepository {
 
         let limit_param_index = bindings.len() + 1;
         query.push_str(&format!(
-            " ORDER BY updated_at DESC, contraction_id DESC LIMIT ?{}",
+            " ORDER BY start_time ASC LIMIT ?{}",
             limit_param_index
         ));
 
@@ -124,7 +126,9 @@ impl SyncRepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         let mut bindings = vec![
             row.contraction_id.into(),
             row.labour_id.into(),
-            row.duration.into(),
+            row.start_time.into(),
+            row.end_time.into(),
+            row.duration_seconds.into(),
         ];
 
         bindings.push(match row.intensity {
@@ -138,18 +142,20 @@ impl SyncRepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         self.sql
             .exec(
                 "INSERT INTO contractions (
-                    contraction_id, labour_id, duration, intensity,
+                    contraction_id, labour_id, start_time, end_time, duration_seconds, intensity,
                     created_at, updated_at
                  )
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
                  ON CONFLICT(contraction_id)
                  DO UPDATE SET
-                    duration = ?3,
-                    intensity = ?4,
-                    updated_at = ?6",
+                    start_time = ?3,
+                    end_time = ?4,
+                    duration_seconds = ?5,
+                    intensity = ?6,
+                    updated_at = ?8",
                 Some(bindings),
             )
-            .context("Failed to upsert contraction")?;
+            .map_err(|err| anyhow!("Failed to upsert contraction: {err}"))?;
 
         Ok(())
     }
@@ -172,7 +178,9 @@ impl SyncRepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         let mut bindings = vec![
             row.contraction_id.into(),
             row.labour_id.into(),
-            row.duration.into(),
+            row.start_time.into(),
+            row.end_time.into(),
+            row.duration_seconds.into(),
         ];
 
         bindings.push(match row.intensity {
@@ -186,10 +194,10 @@ impl SyncRepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         self.sql
             .exec(
                 "INSERT OR REPLACE INTO contractions (
-                    contraction_id, labour_id, duration, intensity,
+                    contraction_id, labour_id, start_time, end_time, duration_seconds, intensity,
                     created_at, updated_at
                  )
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
                 Some(bindings),
             )
             .context("Failed to overwrite contraction")?;

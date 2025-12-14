@@ -1,7 +1,7 @@
 use chrono::NaiveDate;
 use fern_labour_event_sourcing_rs::DecodedCursor;
 use fern_labour_notifications_shared::AdminApiCommand;
-use fern_labour_workers_shared::CorsContext;
+use fern_labour_workers_shared::{CorsContext, clients::worker_clients::auth::User};
 use std::collections::HashMap;
 use tracing::{error, info};
 use worker::{Request, Response, RouteContext};
@@ -15,12 +15,12 @@ pub async fn handle_admin_command(
     mut req: Request,
     ctx: RouteContext<AppState>,
     cors_context: CorsContext,
-    service_id: String,
+    user: User,
 ) -> worker::Result<Response> {
     let admin_command: AdminApiCommand = match req.json().await {
         Ok(cmd) => cmd,
         Err(e) => {
-            error!(service_id = %service_id, error = ?e, "Failed to parse admin command");
+            error!(user_id = %user.user_id, error = ?e, "Failed to parse admin command");
             let response = Response::from(ApiError::ValidationError(
                 "Failed to parse admin command".into(),
             ));
@@ -33,7 +33,7 @@ pub async fn handle_admin_command(
 
     info!(
         notification_id = %notification_id,
-        service_id = %service_id,
+        user_id = %user.user_id,
         command_name = %command_name,
         "Executing admin command"
     );
@@ -42,7 +42,7 @@ pub async fn handle_admin_command(
         AdminApiCommand::Admin(command) => ctx
             .data
             .do_client
-            .command(notification_id, command, service_id, "/admin/command")
+            .command(notification_id, command, &user, "/admin/command")
             .await
             .map_err(|e| format!("Failed to send admin command to DO: {e}"))?,
 
@@ -52,7 +52,7 @@ pub async fn handle_admin_command(
             .command(
                 notification_id,
                 command,
-                service_id,
+                &user,
                 "/notification/command",
             )
             .await
@@ -72,14 +72,14 @@ pub async fn rebuild_notification_activity(
     _req: Request,
     ctx: RouteContext<AppState>,
     cors_context: CorsContext,
-    service_id: String,
+    user: User,
 ) -> worker::Result<Response> {
-    info!(service_id = %service_id, "Rebuilding notification activity projection");
+    info!(user_id = %user.user_id, "Rebuilding notification activity projection");
 
     match rebuild_activity_internal(&ctx.data).await {
         Ok(count) => {
             info!(
-                service_id = %service_id,
+                user_id = %user.user_id,
                 dates_updated = count,
                 "Successfully rebuilt notification activity"
             );
@@ -91,7 +91,7 @@ pub async fn rebuild_notification_activity(
             Ok(cors_context.add_to_response(response))
         }
         Err(e) => {
-            error!(service_id = %service_id, error = ?e, "Failed to rebuild notification activity");
+            error!(user_id = %user.user_id, error = ?e, "Failed to rebuild notification activity");
             let response = Response::from(ApiError::InternalServerError(
                 "Failed to rebuild notification activity".into(),
             ));

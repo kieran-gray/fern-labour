@@ -1,5 +1,5 @@
 use fern_labour_labour_shared::ApiCommand;
-use fern_labour_workers_shared::CorsContext;
+use fern_labour_workers_shared::{CorsContext, clients::worker_clients::auth::User};
 use tracing::error;
 use worker::{Request, Response, RouteContext};
 
@@ -9,12 +9,12 @@ pub async fn handle_command(
     mut req: Request,
     ctx: RouteContext<AppState>,
     cors_context: CorsContext,
-    user_id: String,
+    user: User,
 ) -> worker::Result<Response> {
     let command: ApiCommand = match req.json().await {
         Ok(command) => command,
         Err(e) => {
-            error!(user_id = %user_id, error = ?e, "Failed to parse request body");
+            error!(user_id = %user.user_id, error = ?e, "Failed to parse request body");
             let response = Response::from(ApiError::ValidationError(
                 "Failed to parse request body".into(),
             ));
@@ -24,44 +24,21 @@ pub async fn handle_command(
 
     let labour_id = command.labour_id();
 
-    let mut do_response = match command {
-        ApiCommand::Admin(cmd) => ctx
-            .data
-            .do_client
-            .command(labour_id, cmd, user_id, "/admin/command")
-            .await
-            .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?,
-        ApiCommand::Labour(cmd) => ctx
-            .data
-            .do_client
-            .command(labour_id, cmd, user_id, "/labour/command")
-            .await
-            .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?,
-        ApiCommand::LabourUpdate(cmd) => ctx
-            .data
-            .do_client
-            .command(labour_id, cmd, user_id, "/labour-update/command")
-            .await
-            .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?,
-        ApiCommand::Contraction(cmd) => ctx
-            .data
-            .do_client
-            .command(labour_id, cmd, user_id, "/contraction/command")
-            .await
-            .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?,
-        ApiCommand::Subscriber(cmd) => ctx
-            .data
-            .do_client
-            .command(labour_id, cmd, user_id, "/subscriber/command")
-            .await
-            .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?,
-        ApiCommand::Subscription(cmd) => ctx
-            .data
-            .do_client
-            .command(labour_id, cmd, user_id, "/subscription/command")
-            .await
-            .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?,
+    let (url, command_payload) = match command {
+        ApiCommand::Admin(cmd) => ("/admin/command", serde_json::to_value(cmd)?),
+        ApiCommand::Labour(cmd) => ("/labour/command", serde_json::to_value(cmd)?),
+        ApiCommand::LabourUpdate(cmd) => ("/labour-update/command", serde_json::to_value(cmd)?),
+        ApiCommand::Contraction(cmd) => ("/contraction/command", serde_json::to_value(cmd)?),
+        ApiCommand::Subscriber(cmd) => ("/subscriber/command", serde_json::to_value(cmd)?),
+        ApiCommand::Subscription(cmd) => ("/subscription/command", serde_json::to_value(cmd)?),
     };
+
+    let mut do_response = ctx
+        .data
+        .do_client
+        .command(labour_id, command_payload, &user, url)
+        .await
+        .map_err(|e| format!("Failed to send command to labour_aggregate: {e}"))?;
 
     let body = do_response.text().await?;
     let status = do_response.status_code();

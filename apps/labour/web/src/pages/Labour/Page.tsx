@@ -26,6 +26,7 @@ import baseClasses from '@shared/shared-styles.module.css';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
 import { useCurrentLabourV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 
 const TABS = [
   { id: 'details', label: 'Manage', icon: IconSettings },
@@ -156,8 +157,8 @@ export const LabourPage = () => {
         );
       case 'track':
         return <Contractions labour={labour} />;
-      // case 'stats':
-      //   return <LabourStatistics labour={labour} />;
+      case 'stats':
+        return <LabourStatistics labour={labour} contractions={contractions} />;
       case 'updates':
         return <LabourUpdates labour={labour} />;
       case 'invite':

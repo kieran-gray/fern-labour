@@ -1,4 +1,4 @@
-use fern_labour_workers_shared::CorsContext;
+use fern_labour_workers_shared::{CorsContext, clients::worker_clients::auth::User};
 use tracing::info;
 use worker::{Request, Response, Result, RouteContext};
 
@@ -22,7 +22,7 @@ pub async fn authenticated<F, Fut>(
     ctx: RouteContext<AppState>,
 ) -> Result<Response>
 where
-    F: Fn(Request, RouteContext<AppState>, CorsContext, String) -> Fut,
+    F: Fn(Request, RouteContext<AppState>, CorsContext, User) -> Fut,
     Fut: std::future::Future<Output = Result<Response>>,
 {
     let cors_context = CorsContext::new(ctx.data.config.allowed_origins.clone(), &req);
@@ -30,9 +30,7 @@ where
         return Ok(response);
     }
 
-    let mut user_id = "anonymous".to_string();
-
-    if ctx.data.config.auth_enabled {
+    let user = if ctx.data.config.auth_enabled {
         let authorization = match req.headers().get("Authorization").ok().flatten() {
             Some(auth_header) => auth_header,
             None => {
@@ -40,19 +38,26 @@ where
                 return Ok(cors_context.add_to_response(response));
             }
         };
-
-        user_id = match ctx.data.auth_service.verify_token(&authorization).await {
-            Ok(user_id) => user_id,
+        match ctx.data.auth_service.authenticate(&authorization).await {
+            Ok(user) => user,
             Err(e) => {
                 info!(error = ?e, "User verification failed");
                 let response =
                     Response::error("Unauthorised: User verification failed".to_string(), 404)?;
                 return Ok(cors_context.add_to_response(response));
             }
-        };
-    }
+        }
+    } else {
+        User {
+            user_id: "anonymous".to_string(),
+            issuer: "none".to_string(),
+            email: None,
+            email_verified: None,
+            name: None,
+        }
+    };
 
-    handler(req, ctx, cors_context, user_id).await
+    handler(req, ctx, cors_context, user).await
 }
 
 pub async fn public<F, Fut>(

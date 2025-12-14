@@ -1,4 +1,4 @@
-use fern_labour_workers_shared::CorsContext;
+use fern_labour_workers_shared::{CorsContext, clients::worker_clients::auth::User};
 use tracing::{error, info};
 use uuid::Uuid;
 use worker::{Request, Response, RouteContext};
@@ -12,12 +12,12 @@ pub async fn handle_create_notification(
     mut req: Request,
     ctx: RouteContext<AppState>,
     cors_context: CorsContext,
-    service_id: String,
+    user: User,
 ) -> worker::Result<Response> {
     let request_dto: RequestNotificationDto = match req.json().await {
         Ok(dto) => dto,
         Err(e) => {
-            error!(service_id = %service_id, error = ?e, "Failed to parse request body");
+            error!(user_id = %user.user_id, error = ?e, "Failed to parse request body");
             let response = Response::from(ApiError::ValidationError(
                 "Failed to parse request body".into(),
             ));
@@ -32,7 +32,7 @@ pub async fn handle_create_notification(
         Err(e) => {
             error!(
                 notification_id = %notification_id,
-                service_id = %service_id,
+                user_id = %user.user_id,
                 error = %e,
                 "Validation failed for notification request"
             );
@@ -43,7 +43,7 @@ pub async fn handle_create_notification(
 
     info!(
         notification_id = %notification_id,
-        service_id = %service_id,
+        user_id = %user.user_id,
         "Creating notification via public API"
     );
 
@@ -53,7 +53,7 @@ pub async fn handle_create_notification(
         .command(
             notification_id,
             domain_command,
-            service_id,
+            &user,
             "/notification/domain",
         )
         .await

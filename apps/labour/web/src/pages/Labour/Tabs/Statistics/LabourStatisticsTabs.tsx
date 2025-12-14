@@ -1,15 +1,17 @@
-import { LabourDTO } from '@clients/labour_service';
 import { Space, Tabs } from '@mantine/core';
 import { filterContractions, LabourStatistics } from './LabourStatistics';
 import { LabourStatisticsChart } from './LabourStatisticsChart';
 import { LabourStatisticsTable } from './LabourStatsticsTable';
 import classes from './LabourStatistics.module.css';
+import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
 
 export const LabourStatisticsTabs = ({
   labour,
+  contractions,
   statistics,
 }: {
-  labour: LabourDTO;
+  labour: LabourReadModel;
+  contractions: ContractionReadModel[];
   statistics: LabourStatistics;
 }) => {
   return (
@@ -32,7 +34,7 @@ export const LabourStatisticsTabs = ({
             <LabourStatisticsTable data={statistics.total} />
             <Space h="lg" />
             <LabourStatisticsChart
-              contractions={labour.contractions}
+              contractions={contractions}
               endTime={labour.end_time ? new Date(labour.end_time) : undefined}
             />
           </Tabs.Panel>
@@ -43,7 +45,7 @@ export const LabourStatisticsTabs = ({
             <Space h="lg" />
             <LabourStatisticsChart
               minutes={60}
-              contractions={filterContractions(labour.contractions, 60)}
+              contractions={filterContractions(contractions, 60)}
             />
           </Tabs.Panel>
         )}
@@ -53,7 +55,7 @@ export const LabourStatisticsTabs = ({
             <Space h="lg" />
             <LabourStatisticsChart
               minutes={30}
-              contractions={filterContractions(labour.contractions, 30)}
+              contractions={filterContractions(contractions, 30)}
             />
           </Tabs.Panel>
         )}

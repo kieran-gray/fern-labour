@@ -1,4 +1,3 @@
-import { ContractionDTO, LabourDTO } from '@clients/labour_service';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -8,6 +7,7 @@ import { LabourStatisticsTabs } from './LabourStatisticsTabs';
 import image from './statistics.svg';
 import classes from './LabourStatistics.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
+import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
 
 export interface LabourStatisticsData {
   contraction_count: number;
@@ -31,22 +31,22 @@ function isRecentDate(date: Date, minutes: 30 | 60): boolean {
 }
 
 export function filterContractions(
-  contractions: ContractionDTO[],
+  contractions: ContractionReadModel[],
   minutes: 30 | 60
-): ContractionDTO[] {
+): ContractionReadModel[] {
   return contractions.filter((contraction) =>
-    isRecentDate(new Date(contraction.start_time), minutes)
+    isRecentDate(new Date(contraction.duration.start_time), minutes)
   );
 }
 
-function generateStatisticsData(contractions: ContractionDTO[]): LabourStatisticsData {
+function generateStatisticsData(contractions: ContractionReadModel[]): LabourStatisticsData {
   const contractionIntensities: number[] = [];
   const contractionDurations: number[] = [];
   const contractionFrequencies: number[] = [];
 
   contractions.forEach((contraction) => {
-    if (contraction.duration > 0) {
-      contractionDurations.push(contraction.duration);
+    if (contraction.duration.start_time !== contraction.duration.end_time) {
+      contractionDurations.push(contraction.duration_seconds);
     }
     if (contraction.intensity !== null) {
       contractionIntensities.push(contraction.intensity);
@@ -71,7 +71,7 @@ function generateStatisticsData(contractions: ContractionDTO[]): LabourStatistic
     const prev = contractions[i];
 
     const frequency =
-      (new Date(curr.start_time).getTime() - new Date(prev.start_time).getTime()) / 1000;
+      (new Date(curr.duration.start_time).getTime() - new Date(prev.duration.start_time).getTime()) / 1000;
     contractionFrequencies.push(frequency);
   }
   if (contractionFrequencies.length > 0) {
@@ -87,7 +87,7 @@ function generateStatisticsData(contractions: ContractionDTO[]): LabourStatistic
   };
 }
 
-export function createLabourStatistics(contractions: ContractionDTO[]): LabourStatistics {
+export function createLabourStatistics(contractions: ContractionReadModel[]): LabourStatistics {
   const statistics: LabourStatistics = {};
 
   if (contractions.length < 3) {
@@ -109,12 +109,13 @@ export function createLabourStatistics(contractions: ContractionDTO[]): LabourSt
 }
 
 interface LabourStatisticsProps {
-  labour: LabourDTO;
+  labour: LabourReadModel;
+  contractions: ContractionReadModel[];
   inContainer?: boolean;
 }
 
-export const LabourStatistics = ({ labour, inContainer = true }: LabourStatisticsProps) => {
-  const labourStatistics = createLabourStatistics(labour.contractions);
+export const LabourStatistics = ({ labour, contractions, inContainer = true }: LabourStatisticsProps) => {
+  const labourStatistics = createLabourStatistics(contractions);
   const completed = labour.end_time !== null;
 
   const renderTimingInfo = () => (
@@ -160,7 +161,7 @@ export const LabourStatistics = ({ labour, inContainer = true }: LabourStatistic
         <ImportantText message="You didn't track enough contractions to see statistics." />
       )}
       {labourStatistics.total && (
-        <LabourStatisticsTabs labour={labour} statistics={labourStatistics} />
+        <LabourStatisticsTabs labour={labour} contractions={contractions} statistics={labourStatistics} />
       )}
     </>
   );
