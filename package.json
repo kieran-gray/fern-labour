@@ -12,11 +12,12 @@
     "apps/labour/worker",
     "services/dashboard",
     "services/auth-service",
-    "services/contact-service"
+    "services/contact-service",
+    "services/user-service"
   ],
   "scripts": {
     "dev": "concurrently -n labour,admin,services,notifications \"npm run dev --workspace=apps/labour/worker\" \"sleep 1 && npm run dev --workspace=services/dashboard\" \"sleep 2 && npm run dev:services\" \"sleep 3 && npm run dev --prefix services/notification-service\"",
-    "dev:services": "concurrently -n auth-service,contact-service \"npm run dev --workspace=services/auth-service\" \"npm run dev --workspace=services/contact-service\"",
+    "dev:services": "concurrently -n auth-service,contact-service,user-service \"npm run dev --workspace=services/auth-service\" \"sleep 1 && npm run dev --workspace=services/contact-service\"  \"sleep 2 && npm run dev --workspace=services/user-service\"",
     "build": "npm run build --workspaces --if-present",
     "build:dev": "npm run build:dev --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
