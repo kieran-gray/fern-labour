@@ -1,3 +1,4 @@
+import { ContractionReadModel } from '@base/clients/labour_service_v2';
 import { IconHourglassHigh, IconHourglassLow } from '@tabler/icons-react';
 import { Anchor, Button, List, Modal, Slider, Stack, Text, Title } from '@mantine/core';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';
@@ -7,7 +8,6 @@ import ContractionTimelineCustom from './ContractionTimelineCustom';
 import contractionClasses from './Contractions.module.css';
 import modalClasses from '@shared/Modal.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-import { ContractionReadModel } from '@base/clients/labour_service_v2';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -23,20 +23,26 @@ export const ContractionsHelpModal = ({
     {
       contraction_id: 'mock-contraction-1',
       labour_id: 'mock-labour-id',
-      duration: {start_time: new Date(now.getTime() - 300 * 1000).toISOString(), end_time: new Date(now.getTime() - 229 * 1000).toISOString()},
+      duration: {
+        start_time: new Date(now.getTime() - 300 * 1000).toISOString(),
+        end_time: new Date(now.getTime() - 229 * 1000).toISOString(),
+      },
       duration_seconds: 71,
       intensity: 3,
       created_at: now.toISOString(),
-      updated_at: now.toISOString()
+      updated_at: now.toISOString(),
     },
     {
       contraction_id: 'mock-contraction-2',
       labour_id: 'mock-labour-id',
-      duration: {start_time: new Date(now.getTime() - 44 * 1000).toISOString(), end_time: now.toISOString()},
+      duration: {
+        start_time: new Date(now.getTime() - 44 * 1000).toISOString(),
+        end_time: now.toISOString(),
+      },
       duration_seconds: 44,
       intensity: 2,
       created_at: now.toISOString(),
-      updated_at: now.toISOString()
+      updated_at: now.toISOString(),
     },
   ];
   return (

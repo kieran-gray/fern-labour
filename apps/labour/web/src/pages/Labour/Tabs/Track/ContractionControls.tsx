@@ -9,7 +9,10 @@ interface ContractionControlsProps {
   activeContraction: ContractionReadModel | undefined;
 }
 
-export function ContractionControls({ labourCompleted, activeContraction }: ContractionControlsProps) {
+export function ContractionControls({
+  labourCompleted,
+  activeContraction,
+}: ContractionControlsProps) {
   const stopwatchRef = useRef<StopwatchHandle>(null);
   // Don't show controls if labour is completed
   if (labourCompleted) {

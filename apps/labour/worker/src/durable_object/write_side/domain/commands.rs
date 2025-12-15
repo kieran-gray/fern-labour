@@ -1,9 +1,11 @@
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use fern_labour_labour_shared::{
-    ContractionCommand, LabourUpdateCommand,
+    ContractionCommand, LabourUpdateCommand, SubscriberCommand, SubscriptionCommand,
     commands::labour::{LabourCommand as LabourApiCommand, PublicCommand},
-    value_objects::LabourUpdateType,
+    value_objects::{
+        LabourUpdateType, SubscriberAccessLevel, SubscriberContactMethod, SubscriberRole,
+    },
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -77,6 +79,49 @@ pub enum LabourCommand {
     DeleteLabourUpdate {
         labour_id: Uuid,
         labour_update_id: Uuid,
+    },
+    // Subscriber Commands
+    RequestAccess {
+        labour_id: Uuid,
+        subscriber_id: String,
+        token: String,
+    },
+    Unsubscribe {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    UpdateNotificationMethods {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+        notification_methods: Vec<SubscriberContactMethod>,
+    },
+    UpdateAccessLevel {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+        access_level: SubscriberAccessLevel,
+    },
+    // Subscription Commands
+    ApproveSubscriber {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    #[serde(rename = "RemoveSubscriber")]
+    RemoveSubscriber {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    BlockSubscriber {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    UnblockSubscriber {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    UpdateSubscriberRole {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+        role: SubscriberRole,
     },
 }
 
@@ -212,6 +257,87 @@ impl From<LabourUpdateCommand> for LabourCommand {
             } => LabourCommand::DeleteLabourUpdate {
                 labour_id,
                 labour_update_id,
+            },
+        }
+    }
+}
+
+impl From<(SubscriberCommand, String)> for LabourCommand {
+    fn from((cmd, subscriber_id): (SubscriberCommand, String)) -> Self {
+        match cmd {
+            SubscriberCommand::RequestAccess { labour_id, token } => LabourCommand::RequestAccess {
+                labour_id,
+                subscriber_id,
+                token,
+            },
+            SubscriberCommand::Unsubscribe {
+                labour_id,
+                subscription_id,
+            } => LabourCommand::Unsubscribe {
+                labour_id,
+                subscription_id,
+            },
+            SubscriberCommand::UpdateAccessLevel {
+                labour_id,
+                access_level,
+                subscription_id,
+            } => LabourCommand::UpdateAccessLevel {
+                labour_id,
+                subscription_id,
+                access_level,
+            },
+            SubscriberCommand::UpdateNotificationMethods {
+                labour_id,
+                subscription_id,
+                notification_methods,
+            } => LabourCommand::UpdateNotificationMethods {
+                labour_id,
+                subscription_id,
+                notification_methods,
+            },
+        }
+    }
+}
+
+impl From<SubscriptionCommand> for LabourCommand {
+    fn from(cmd: SubscriptionCommand) -> Self {
+        match cmd {
+            SubscriptionCommand::ApproveSubscriber {
+                labour_id,
+                subscription_id,
+            } => LabourCommand::ApproveSubscriber {
+                labour_id,
+                subscription_id,
+            },
+            SubscriptionCommand::BlockSubscriber {
+                labour_id,
+                subscription_id,
+            } => LabourCommand::BlockSubscriber {
+                labour_id,
+                subscription_id,
+            },
+            SubscriptionCommand::RemoveSubscriber {
+                labour_id,
+                subscription_id,
+            } => LabourCommand::RemoveSubscriber {
+                labour_id,
+                subscription_id,
+            },
+            SubscriptionCommand::UnblockSubscriber {
+                labour_id,
+                subscription_id,
+            } => LabourCommand::UnblockSubscriber {
+                labour_id,
+                subscription_id,
+            },
+            SubscriptionCommand::UpdateSubscriberRole {
+                labour_id,
+                subscription_id,
+                role,
+            } => LabourCommand::UpdateSubscriberRole {
+                labour_id,
+                subscription_id,
+                role,
             },
         }
     }

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { OpenAPI as ContactServiceAPI } from '@clients/contact_service';
 import { OpenAPI as LabourServiceAPI } from '@clients/labour_service';
-import { useAuth0 } from '@auth0/auth0-react';
 
 /**
  * Custom hook that automatically sets up API authentication tokens

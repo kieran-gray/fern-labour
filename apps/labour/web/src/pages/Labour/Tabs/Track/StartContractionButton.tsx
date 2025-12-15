@@ -1,10 +1,10 @@
 import { RefObject } from 'react';
+import { ContractionReadModel } from '@base/clients/labour_service_v2';
 import { useLabour } from '@base/contexts/LabourContext';
 import { useLabourV2Client, useStartContractionV2 } from '@shared/hooks';
 import { IconHourglassLow } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
 import { StopwatchHandle } from './Stopwatch/Stopwatch';
-import { ContractionReadModel } from '@base/clients/labour_service_v2';
 
 export default function StartContractionButton({
   stopwatchRef,
@@ -13,14 +13,14 @@ export default function StartContractionButton({
 }) {
   const { labourId } = useLabour();
   const client = useLabourV2Client();
-  const mutation = useStartContractionV2(client)
+  const mutation = useStartContractionV2(client);
 
   const createNewContraction = (): ContractionReadModel => {
     const startTime = new Date().toISOString();
     return {
       contraction_id: 'placeholder',
       labour_id: labourId!,
-      duration: {start_time: startTime, end_time: startTime},
+      duration: { start_time: startTime, end_time: startTime },
       intensity: null,
       created_at: startTime,
       updated_at: startTime,
@@ -30,7 +30,7 @@ export default function StartContractionButton({
   const handleStartContraction = (contraction: ContractionReadModel) => {
     stopwatchRef.current?.start();
 
-    mutation.mutate({labourId: contraction.labour_id, startTime: new Date() }); // todo
+    mutation.mutate({ labourId: contraction.labour_id, startTime: new Date() }); // todo
   };
 
   const icon = <IconHourglassLow size={25} />;

@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { useLabour } from '@base/contexts/LabourContext';
 import {
-  useApproveSubscriber,
-  useBlockSubscriber,
-  useRemoveSubscriber,
-  useUnblockSubscriber,
-} from '@shared/hooks';
+  useApproveSubscriberV2,
+  useBlockSubscriberV2,
+  useRemoveSubscriberV2,
+  useUnblockSubscriberV2,
+} from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { useLabourV2Client } from '@shared/hooks';
 import {
   IconBan,
   IconCheck,
@@ -18,19 +20,21 @@ import { ActionIcon, Menu } from '@mantine/core';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({
-  subscription_id,
+  subscriptionId,
   status,
 }: {
-  subscription_id: string;
+  subscriptionId: string;
   status: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [action, setAction] = useState('');
+  const { labourId } = useLabour();
 
-  const approveSubscriberMutation = useApproveSubscriber();
-  const removeSubscriberMutation = useRemoveSubscriber();
-  const blockSubscriberMutation = useBlockSubscriber();
-  const unblockSubscriberMutation = useUnblockSubscriber();
+  const client = useLabourV2Client();
+  const approveSubscriberMutation = useApproveSubscriberV2(client);
+  const removeSubscriberMutation = useRemoveSubscriberV2(client);
+  const blockSubscriberMutation = useBlockSubscriberV2(client);
+  const unblockSubscriberMutation = useUnblockSubscriberV2(client);
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -39,9 +43,9 @@ export function ManageSubscriptionMenu({
   const handleConfirm = () => {
     setIsModalOpen(false);
     if (action === 'remove') {
-      removeSubscriberMutation.mutate(subscription_id);
+      removeSubscriberMutation.mutate({ labourId: labourId!, subscriptionId });
     } else if (action === 'block') {
-      blockSubscriberMutation.mutate(subscription_id);
+      blockSubscriberMutation.mutate({ labourId: labourId!, subscriptionId });
     }
   };
 
@@ -60,14 +64,18 @@ export function ManageSubscriptionMenu({
               <Menu.Item
                 className={baseClasses.actionMenuOk}
                 leftSection={<IconCheck size={20} stroke={1.5} />}
-                onClick={() => approveSubscriberMutation.mutate(subscription_id)}
+                onClick={() =>
+                  approveSubscriberMutation.mutate({ labourId: labourId!, subscriptionId })
+                }
               >
                 Approve
               </Menu.Item>
               <Menu.Item
                 className={baseClasses.actionMenuDanger}
                 leftSection={<IconX size={20} stroke={1.5} />}
-                onClick={() => removeSubscriberMutation.mutate(subscription_id)}
+                onClick={() =>
+                  removeSubscriberMutation.mutate({ labourId: labourId!, subscriptionId })
+                }
               >
                 Reject
               </Menu.Item>
@@ -101,7 +109,9 @@ export function ManageSubscriptionMenu({
             <Menu.Item
               className={baseClasses.actionMenuOk}
               leftSection={<IconCircleCheck size={20} stroke={1.5} />}
-              onClick={() => unblockSubscriberMutation.mutate(subscription_id)}
+              onClick={() =>
+                unblockSubscriberMutation.mutate({ labourId: labourId!, subscriptionId })
+              }
             >
               Unblock
             </Menu.Item>

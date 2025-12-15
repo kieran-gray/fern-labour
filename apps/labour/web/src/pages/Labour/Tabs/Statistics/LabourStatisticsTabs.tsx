@@ -1,9 +1,9 @@
+import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
 import { Space, Tabs } from '@mantine/core';
 import { filterContractions, LabourStatistics } from './LabourStatistics';
 import { LabourStatisticsChart } from './LabourStatisticsChart';
 import { LabourStatisticsTable } from './LabourStatsticsTable';
 import classes from './LabourStatistics.module.css';
-import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
 
 export const LabourStatisticsTabs = ({
   labour,

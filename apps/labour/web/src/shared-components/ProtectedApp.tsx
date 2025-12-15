@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { useNetworkState } from '@base/offline/sync/networkDetector';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useNetworkState } from '@base/offline/sync/networkDetector';
 import { ErrorContainer } from './ErrorContainer/ErrorContainer';
 import { PageLoading } from './PageLoading/PageLoading';
 
@@ -12,7 +12,8 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
   const { children } = props;
 
   const { isOnline } = useNetworkState();
-  const { isAuthenticated, isLoading, error, user, loginWithRedirect, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, isLoading, error, user, loginWithRedirect, getAccessTokenSilently } =
+    useAuth0();
   const wasOnlineRef = useRef<boolean | null>(null);
 
   // Handle reconnection - refresh token when coming back online

@@ -1,7 +1,9 @@
 use std::fmt::Debug;
 
 use chrono::{DateTime, Duration, Utc};
-use fern_labour_labour_shared::value_objects::{LabourPhase, LabourUpdateType};
+use fern_labour_labour_shared::value_objects::{
+    LabourPhase, LabourUpdateType, subscriber::status::SubscriberStatus,
+};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -9,7 +11,7 @@ use fern_labour_event_sourcing_rs::Aggregate;
 
 use crate::durable_object::write_side::domain::{
     LabourCommand, LabourError, LabourEvent,
-    entities::{contraction::Contraction, labour_update::LabourUpdate},
+    entities::{contraction::Contraction, labour_update::LabourUpdate, subscription::Subscription},
 };
 
 // TODO move somewhere else
@@ -22,52 +24,52 @@ pub struct Labour {
     phase: LabourPhase,
     contractions: Vec<Contraction>,
     labour_updates: Vec<LabourUpdate>,
+    subscriptions: Vec<Subscription>,
     start_time: Option<DateTime<Utc>>,
     end_time: Option<DateTime<Utc>>,
 }
 
 impl Labour {
-    // TODO which need to be public
-    pub fn id(&self) -> Uuid {
-        self.id
-    }
-
-    pub fn birthing_person_id(&self) -> &String {
-        &self.birthing_person_id
-    }
-
-    pub fn phase(&self) -> &LabourPhase {
-        &self.phase
-    }
-
-    pub fn find_active_contraction(&self) -> Option<&Contraction> {
+    fn find_active_contraction(&self) -> Option<&Contraction> {
         self.contractions.iter().find(|c| c.is_active())
     }
 
-    pub fn find_contraction(&self, contraction_id: Uuid) -> Option<&Contraction> {
+    fn find_contraction(&self, contraction_id: Uuid) -> Option<&Contraction> {
         self.contractions.iter().find(|c| c.id() == contraction_id)
     }
 
-    pub fn find_labour_update(&self, labour_update_id: Uuid) -> Option<&LabourUpdate> {
+    fn find_labour_update(&self, labour_update_id: Uuid) -> Option<&LabourUpdate> {
         self.labour_updates
             .iter()
             .find(|lu| lu.id() == labour_update_id)
     }
 
-    pub fn find_last_announcement(&self) -> Option<&LabourUpdate> {
+    fn find_last_announcement(&self) -> Option<&LabourUpdate> {
         self.labour_updates
             .iter()
             .filter(|lu| lu.labour_update_type() == &LabourUpdateType::ANNOUNCEMENT)
             .max_by_key(|lu| lu.sent_time())
     }
 
-    pub fn can_send_announcement(&self) -> bool {
+    fn can_send_announcement(&self) -> bool {
         match self.find_last_announcement() {
             None => true,
             Some(last) => {
                 Utc::now() - last.sent_time() > Duration::seconds(ANNOUNCEMENT_COOLDOWN_SECONDS)
             }
         }
+    }
+
+    fn find_subscription_from_subscriber_id(&self, subscriber_id: &str) -> Option<&Subscription> {
+        self.subscriptions
+            .iter()
+            .find(|s| s.subscriber_id() == subscriber_id)
+    }
+
+    fn find_subscription(&self, subscription_id: Uuid) -> Option<&Subscription> {
+        self.subscriptions
+            .iter()
+            .find(|s| s.id() == subscription_id)
     }
 }
 
@@ -150,6 +152,117 @@ impl Aggregate for Labour {
                 labour_update_id, ..
             } => {
                 self.labour_updates.pop_if(|c| c.id() == *labour_update_id);
+            }
+            LabourEvent::SubscriberRequested {
+                labour_id,
+                subscriber_id,
+                subscription_id,
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.request();
+                } else {
+                    let subscription =
+                        Subscription::create(*subscription_id, *labour_id, subscriber_id.clone());
+                    self.subscriptions.push(subscription);
+                }
+            }
+            LabourEvent::SubscriberUnsubscribed {
+                subscription_id, ..
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.unsubscribe();
+                }
+            }
+            LabourEvent::SubscriberNotificationMethodsUpdated {
+                subscription_id,
+                notification_methods,
+                ..
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.update_notification_methods(notification_methods.clone());
+                }
+            }
+            LabourEvent::SubscriberAccessLevelUpdated {
+                subscription_id,
+                access_level,
+                ..
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.update_access_level(access_level.clone());
+                }
+            }
+            LabourEvent::SubscriberApproved {
+                subscription_id, ..
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.approve();
+                }
+            }
+            LabourEvent::SubscriberRemoved {
+                subscription_id, ..
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.remove();
+                }
+            }
+            LabourEvent::SubscriberBlocked {
+                subscription_id, ..
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.block();
+                }
+            }
+            LabourEvent::SubscriberUnblocked {
+                subscription_id, ..
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.unblock();
+                }
+            }
+            LabourEvent::SubscriberRoleUpdated {
+                subscription_id,
+                role,
+                ..
+            } => {
+                if let Some(subscription) = self
+                    .subscriptions
+                    .iter_mut()
+                    .find(|s| s.id() == *subscription_id)
+                {
+                    subscription.update_role(role.clone());
+                }
             }
             LabourEvent::LabourPlanUpdated { .. }
             | LabourEvent::LabourInviteSent { .. }
@@ -536,6 +649,259 @@ impl Aggregate for Labour {
                     labour_update_id,
                 }]
             }
+            LabourCommand::RequestAccess {
+                labour_id,
+                subscriber_id,
+                token: _token, // TODO
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if subscriber_id == labour.birthing_person_id {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot subscribe to own labour".to_string(),
+                    ));
+                }
+
+                if labour.phase == LabourPhase::COMPLETE {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot subscribe to completed labour".to_string(),
+                    ));
+                }
+
+                let mut events = vec![];
+
+                if let Some(subscription) =
+                    labour.find_subscription_from_subscriber_id(&subscriber_id)
+                {
+                    if [
+                        SubscriberStatus::BLOCKED,
+                        SubscriberStatus::SUBSCRIBED,
+                        SubscriberStatus::REQUESTED,
+                    ]
+                    .contains(subscription.status())
+                    {
+                        return Err(LabourError::InvalidCommand(
+                            "Cannot subscribe to labour".to_string(),
+                        ));
+                    }
+                    events.push(LabourEvent::SubscriberRequested {
+                        labour_id,
+                        subscriber_id,
+                        subscription_id: subscription.id(),
+                    })
+                } else {
+                    events.push(LabourEvent::SubscriberRequested {
+                        labour_id,
+                        subscriber_id,
+                        subscription_id: Uuid::now_v7(),
+                    })
+                }
+                events
+            }
+            LabourCommand::Unsubscribe {
+                labour_id,
+                subscription_id,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(subscription) = labour.find_subscription(subscription_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription not found".to_string(),
+                    ));
+                };
+
+                if subscription.status() != &SubscriberStatus::SUBSCRIBED {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot unsubscribe from labour".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::SubscriberUnsubscribed {
+                    labour_id,
+                    subscription_id,
+                }]
+            }
+            LabourCommand::UpdateNotificationMethods {
+                labour_id,
+                subscription_id,
+                notification_methods,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                if labour.find_subscription(subscription_id).is_none() {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription not found".to_string(),
+                    ));
+                };
+
+                vec![LabourEvent::SubscriberNotificationMethodsUpdated {
+                    labour_id,
+                    subscription_id,
+                    notification_methods,
+                }]
+            }
+            LabourCommand::UpdateAccessLevel {
+                labour_id,
+                subscription_id,
+                access_level,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(subscription) = labour.find_subscription(subscription_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription not found".to_string(),
+                    ));
+                };
+
+                if subscription.access_level() == &access_level {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription already has access level".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::SubscriberAccessLevelUpdated {
+                    labour_id,
+                    subscription_id,
+                    access_level,
+                }]
+            }
+            LabourCommand::ApproveSubscriber {
+                labour_id,
+                subscription_id,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(subscription) = labour.find_subscription(subscription_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription not found".to_string(),
+                    ));
+                };
+
+                if subscription.status() != &SubscriberStatus::REQUESTED {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription is not in REQUESTED state".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::SubscriberApproved {
+                    labour_id,
+                    subscription_id,
+                }]
+            }
+            LabourCommand::RemoveSubscriber {
+                labour_id,
+                subscription_id,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(subscription) = labour.find_subscription(subscription_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription not found".to_string(),
+                    ));
+                };
+
+                if [SubscriberStatus::BLOCKED, SubscriberStatus::REMOVED]
+                    .contains(subscription.status())
+                {
+                    return Err(LabourError::InvalidCommand(
+                        "Cannot remove subscriber".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::SubscriberRemoved {
+                    labour_id,
+                    subscription_id,
+                }]
+            }
+            LabourCommand::BlockSubscriber {
+                labour_id,
+                subscription_id,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(subscription) = labour.find_subscription(subscription_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription not found".to_string(),
+                    ));
+                };
+
+                if subscription.status() == &SubscriberStatus::BLOCKED {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscriber is already blocked".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::SubscriberBlocked {
+                    labour_id,
+                    subscription_id,
+                }]
+            }
+            LabourCommand::UnblockSubscriber {
+                labour_id,
+                subscription_id,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(subscription) = labour.find_subscription(subscription_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription not found".to_string(),
+                    ));
+                };
+
+                if subscription.status() != &SubscriberStatus::BLOCKED {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscriber is not blocked".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::SubscriberUnblocked {
+                    labour_id,
+                    subscription_id,
+                }]
+            }
+            LabourCommand::UpdateSubscriberRole {
+                labour_id,
+                subscription_id,
+                role,
+            } => {
+                let Some(labour) = state else {
+                    return Err(LabourError::NotFound);
+                };
+
+                let Some(subscription) = labour.find_subscription(subscription_id) else {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscription not found".to_string(),
+                    ));
+                };
+
+                if &role == subscription.role() {
+                    return Err(LabourError::InvalidCommand(
+                        "Subscriber already has role".to_string(),
+                    ));
+                }
+
+                vec![LabourEvent::SubscriberRoleUpdated {
+                    labour_id,
+                    subscription_id,
+                    role,
+                }]
+            }
         };
         Ok(events)
     }
@@ -552,6 +918,7 @@ impl Aggregate for Labour {
                 phase: LabourPhase::PLANNED,
                 contractions: vec![],
                 labour_updates: vec![],
+                subscriptions: vec![],
                 start_time: None,
                 end_time: None,
             },

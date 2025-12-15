@@ -1,6 +1,7 @@
+import { SubscriptionReadModel } from '@base/clients/labour_service_v2/types';
 import { useLabour } from '@base/contexts/LabourContext';
-import { SubscriptionDTO } from '@clients/labour_service';
-import { useLabourSubscriptions } from '@shared/hooks';
+import { useSubscriptionsV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useLabourV2Client } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconUserCheck, IconUserOff, IconUserQuestion } from '@tabler/icons-react';
@@ -16,7 +17,8 @@ const TABS = [
 
 export const ManageSubscribersTabs = () => {
   const { labourId } = useLabour();
-  const { isPending, isError, data, error } = useLabourSubscriptions(labourId!);
+  const client = useLabourV2Client();
+  const { isPending, isError, data: subscriptions, error } = useSubscriptionsV2(client, labourId!);
 
   if (isPending) {
     return (
@@ -34,24 +36,30 @@ export const ManageSubscribersTabs = () => {
     );
   }
 
-  if (data.subscriptions.length === 0) {
+  if (subscriptions.length === 0) {
     return (
       <ImportantText message="You don't have any subscribers yet, share invites with loved ones in the invite tab." />
     );
   }
 
+  console.log(subscriptions);
+
   const subscriberById = Object.fromEntries(
-    data.subscribers.map((subscriber) => [subscriber.id, subscriber])
+    subscriptions.map((subscription) => [
+      subscription.subscriber_id,
+      { first_name: 'unknown', last_name: 'TODO', id: subscription.subscriber_id },
+    ])
   );
-  const activeSubscriptions: SubscriptionDTO[] = [];
-  const requestedSubscriptions: SubscriptionDTO[] = [];
-  const blockedSubscriptions: SubscriptionDTO[] = [];
-  data.subscriptions.forEach((sub) => {
-    if (sub.status === 'subscribed') {
+
+  const activeSubscriptions: SubscriptionReadModel[] = [];
+  const requestedSubscriptions: SubscriptionReadModel[] = [];
+  const blockedSubscriptions: SubscriptionReadModel[] = [];
+  subscriptions.forEach((sub) => {
+    if (sub.status === 'SUBSCRIBED') {
       activeSubscriptions.push(sub);
-    } else if (sub.status === 'requested') {
+    } else if (sub.status === 'REQUESTED') {
       requestedSubscriptions.push(sub);
-    } else if (sub.status === 'blocked') {
+    } else if (sub.status === 'BLOCKED') {
       blockedSubscriptions.push(sub);
     }
   });

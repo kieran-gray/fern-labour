@@ -1,6 +1,6 @@
+import { ContractionReadModel } from '@base/clients/labour_service_v2';
 import { ScatterChart } from '@mantine/charts';
 import classes from './LabourStatistics.module.css';
-import { ContractionReadModel } from '@base/clients/labour_service_v2';
 
 interface ChartData {
   color: string;

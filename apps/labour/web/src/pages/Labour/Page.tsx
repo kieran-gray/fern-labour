@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useLabour } from '@base/contexts/LabourContext';
 import { NotFoundError, PermissionDenied } from '@base/lib/errors';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
+import { useCurrentLabourV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
-import { useLabourV2Client, useContractionsV2 } from '@shared/hooks';
+import { useContractionsV2, useLabourV2Client } from '@shared/hooks';
 import { PageLoading } from '@shared/PageLoading/PageLoading';
 import {
   IconChartHistogram,
@@ -20,13 +21,12 @@ import { CompletedLabourContainer } from '../CompletedLabour/Page';
 import { Share } from './Tabs/Invites/Share';
 import { LabourControls } from './Tabs/Manage/LabourControls';
 import { SubscribersContainer } from './Tabs/Manage/ManageSubscribers/ManageSubscribers';
+import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import { Contractions } from './Tabs/Track/Contractions';
 import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls';
-import baseClasses from '@shared/shared-styles.module.css';
-import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
-import { useCurrentLabourV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
-import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
+import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
+import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [
   { id: 'details', label: 'Manage', icon: IconSettings },
@@ -91,7 +91,7 @@ export const LabourPage = () => {
   const { isPending, isError, data: labour, error } = useCurrentLabourV2(client, currentLabourId);
   const { data: contractionsData } = useContractionsV2(client, currentLabourId, 20);
   const contractions = contractionsData?.data || [];
-  
+
   // Set labour ID if we got it from active labour
   if (labour && !currentLabourId && labour.labour_id !== labourId) {
     setLabourId(labour.labour_id);
@@ -124,7 +124,9 @@ export const LabourPage = () => {
   }
 
   const completed = labour.end_time !== null;
-  const activeContraction = contractions.find((contraction) => contraction.duration.start_time === contraction.duration.end_time);
+  const activeContraction = contractions.find(
+    (contraction) => contraction.duration.start_time === contraction.duration.end_time
+  );
 
   const getFloatingControlsPadding = () => {
     if (window.innerWidth >= 768 || completed) {

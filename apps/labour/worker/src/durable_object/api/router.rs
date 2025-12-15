@@ -14,6 +14,7 @@ use crate::durable_object::{
     read_side::read_models::{
         contractions::ContractionReadModelQueryHandler, labour::LabourReadModelQueryHandler,
         labour_updates::LabourUpdateReadModelQueryHandler,
+        subscriptions::SubscriptionReadModelQueryHandler,
     },
     write_side::domain::LabourCommand,
 };
@@ -71,7 +72,7 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
                 .services
                 .write_model()
                 .labour_command_processor
-                .handle_command(envelope.command, envelope.metadata.user_id.clone());
+                .handle_command(envelope.command, auth.user);
 
             if let Err(ref err) = result {
                 error!("Command execution failed: {}", err);
@@ -97,7 +98,7 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
                 .services
                 .write_model()
                 .labour_command_processor
-                .handle_command(domain_command, envelope.metadata.user_id.clone());
+                .handle_command(domain_command, auth.user);
 
             if let Err(ref err) = result {
                 error!("Command execution failed: {}", err);
@@ -123,7 +124,7 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
                 .services
                 .write_model()
                 .labour_command_processor
-                .handle_command(domain_command, envelope.metadata.user_id.clone());
+                .handle_command(domain_command, auth.user);
 
             if let Err(ref err) = result {
                 error!("Command execution failed: {}", err);
@@ -149,7 +150,60 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
                 .services
                 .write_model()
                 .labour_command_processor
-                .handle_command(domain_command, envelope.metadata.user_id.clone());
+                .handle_command(domain_command, auth.user);
+
+            if let Err(ref err) = result {
+                error!("Command execution failed: {}", err);
+            } else {
+                info!("Command executed successfully");
+            }
+
+            ApiResult::from_unit_result(result)
+        }
+        RequestDto::SubscriberCommand { envelope, auth } => {
+            info!(
+                aggregate_id = %envelope.metadata.aggregate_id,
+                correlation_id = %envelope.metadata.correlation_id,
+                user_id = %envelope.metadata.user_id,
+                auth_user_id = %auth.user.user_id,
+                idempotency_key = %envelope.metadata.idempotency_key,
+                "Processing subscriber command"
+            );
+
+            let domain_command =
+                LabourCommand::from((envelope.command.clone(), auth.user.user_id.clone()));
+
+            let result = aggregate
+                .services
+                .write_model()
+                .labour_command_processor
+                .handle_command(domain_command, auth.user);
+
+            if let Err(ref err) = result {
+                error!("Command execution failed: {}", err);
+            } else {
+                info!("Command executed successfully");
+            }
+
+            ApiResult::from_unit_result(result)
+        }
+        RequestDto::SubscriptionCommand { envelope, auth } => {
+            info!(
+                aggregate_id = %envelope.metadata.aggregate_id,
+                correlation_id = %envelope.metadata.correlation_id,
+                user_id = %envelope.metadata.user_id,
+                auth_user_id = %auth.user.user_id,
+                idempotency_key = %envelope.metadata.idempotency_key,
+                "Processing subscription command"
+            );
+
+            let domain_command = LabourCommand::from(envelope.command.clone());
+
+            let result = aggregate
+                .services
+                .write_model()
+                .labour_command_processor
+                .handle_command(domain_command, auth.user);
 
             if let Err(ref err) = result {
                 error!("Command execution failed: {}", err);
@@ -172,7 +226,7 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
                 .services
                 .write_model()
                 .admin_command_processor
-                .handle(envelope);
+                .handle(envelope, auth.user);
 
             if let Err(ref err) = result {
                 error!("Admin command handling failed: {}", err);
@@ -313,7 +367,7 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
         RequestDto::SubscriptionQuery { query, auth } => {
             info!(query = ?query, auth_user_id = %auth.user.user_id, "Processing subscription query");
 
-            let result = match query {
+            match query {
                 SubscriptionQuery::GetSubscriptionToken { labour_id } => {
                     info!(labour_id = %labour_id, user_id = %auth.user.user_id, "Getting subscription token");
                     let token = aggregate
@@ -321,11 +375,19 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
                         .read_model()
                         .subscription_token_generator
                         .generate(&auth.user.user_id, &labour_id.to_string());
-                    Ok(serde_json::json!({ "token": token }))
+                    ApiResult::from_json_result(Ok(serde_json::json!({ "token": token })))
                 }
-            };
-
-            ApiResult::from_json_result(result)
+                SubscriptionQuery::GetSubscriptions { labour_id } => {
+                    info!(labour_id = %labour_id, user_id = %auth.user.user_id, "Getting subscriptions");
+                    let subscriptions = aggregate
+                        .services
+                        .read_model()
+                        .subscription_query
+                        .get(100, None) // TODO
+                        .map(|items| build_paginated_response(items, 100));
+                    ApiResult::from_json_result(subscriptions)
+                }
+            }
         }
     }
 }

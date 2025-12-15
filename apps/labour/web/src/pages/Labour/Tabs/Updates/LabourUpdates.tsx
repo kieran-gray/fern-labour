@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { LabourReadModel, LabourUpdateReadModel } from '@base/clients/labour_service_v2';
+import { useLabourUpdatesV2, useLabourV2Client } from '@base/shared-components/hooks';
 import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
@@ -12,8 +14,6 @@ import { LabourUpdateControls } from './LabourUpdateControls';
 import { LabourUpdatesHelpModal } from './Modals/HelpModal';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-import { LabourReadModel, LabourUpdateReadModel } from '@base/clients/labour_service_v2';
-import { useLabourUpdatesV2, useLabourV2Client } from '@base/shared-components/hooks';
 
 interface LabourUpdatesProps {
   labour: LabourReadModel;

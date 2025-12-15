@@ -6,9 +6,9 @@ import '@mantine/carousel/styles.css';
 import './styles.css';
 
 import { StrictMode } from 'react';
+import { Auth0Provider } from '@auth0/auth0-react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import reactDom from 'react-dom/client';
-import { Auth0Provider } from '@auth0/auth0-react';
 import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';

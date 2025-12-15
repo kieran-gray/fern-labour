@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLabour } from '@base/contexts/LabourContext';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import { useDeleteContractionV2, useLabourV2Client, useUpdateContractionV2 } from '@shared/hooks';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
@@ -9,7 +10,6 @@ import { ContractionData } from './ContractionTimelineCustom';
 import { updateTime } from './UpdateTime';
 import classes from './Contractions.module.css';
 import modalClasses from '@shared/Modal.module.css';
-import { useLabour } from '@base/contexts/LabourContext';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -41,8 +41,8 @@ export const EditContractionModal = ({
   const handleDeleteContraction = (contractionId: string) => {
     const payload = {
       labourId: labourId!,
-      contractionId
-    }
+      contractionId,
+    };
     deleteMutation.mutate(payload, {
       onSuccess: () => {
         close();

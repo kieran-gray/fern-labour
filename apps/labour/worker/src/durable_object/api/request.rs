@@ -1,7 +1,8 @@
 use fern_labour_event_sourcing_rs::CommandEnvelope;
 use fern_labour_labour_shared::{
     AdminCommand, ContractionCommand, ContractionQuery, LabourCommand, LabourQuery,
-    LabourUpdateCommand, LabourUpdateQuery, queries::subscription::SubscriptionQuery,
+    LabourUpdateCommand, LabourUpdateQuery, SubscriberCommand, SubscriptionCommand,
+    queries::subscription::SubscriptionQuery,
 };
 use fern_labour_workers_shared::clients::worker_clients::auth::User;
 use tracing::info;
@@ -29,6 +30,14 @@ pub enum RequestDto {
     },
     LabourUpdateCommand {
         envelope: CommandEnvelope<LabourUpdateCommand>,
+        auth: AuthContext,
+    },
+    SubscriberCommand {
+        envelope: CommandEnvelope<SubscriberCommand>,
+        auth: AuthContext,
+    },
+    SubscriptionCommand {
+        envelope: CommandEnvelope<SubscriptionCommand>,
         auth: AuthContext,
     },
     AdminCommand {
@@ -129,6 +138,32 @@ impl RequestDto {
                 );
 
                 Ok(Self::LabourUpdateCommand { envelope, auth })
+            }
+            (worker::Method::Post, "/subscription/command") => {
+                let envelope: CommandEnvelope<SubscriptionCommand> = req.json().await?;
+
+                info!(
+                    aggregate_id = %envelope.metadata.aggregate_id,
+                    correlation_id = %envelope.metadata.correlation_id,
+                    user_id = %envelope.metadata.user_id,
+                    idempotency_key = %envelope.metadata.idempotency_key,
+                    "Deserialized labour update command"
+                );
+
+                Ok(Self::SubscriptionCommand { envelope, auth })
+            }
+            (worker::Method::Post, "/subscriber/command") => {
+                let envelope: CommandEnvelope<SubscriberCommand> = req.json().await?;
+
+                info!(
+                    aggregate_id = %envelope.metadata.aggregate_id,
+                    correlation_id = %envelope.metadata.correlation_id,
+                    user_id = %envelope.metadata.user_id,
+                    idempotency_key = %envelope.metadata.idempotency_key,
+                    "Deserialized labour update command"
+                );
+
+                Ok(Self::SubscriberCommand { envelope, auth })
             }
             (worker::Method::Post, "/admin/command") => {
                 let envelope: CommandEnvelope<AdminCommand> = req.json().await?;

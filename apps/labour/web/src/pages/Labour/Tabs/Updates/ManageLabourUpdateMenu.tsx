@@ -1,4 +1,11 @@
 import { useState } from 'react';
+import { LabourUpdateType } from '@base/clients/labour_service_v2';
+import { useLabour } from '@base/contexts/LabourContext';
+import {
+  useDeleteLabourUpdateV2,
+  useUpdateLabourUpdateMessageV2,
+  useUpdateLabourUpdateTypeV2,
+} from '@base/shared-components/hooks/v2/useLabourDataV2';
 import { useLabourV2Client } from '@shared/hooks';
 import { Error } from '@shared/Notifications';
 import { IconDots, IconPencil, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
@@ -9,9 +16,6 @@ import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import ConfirmDeleteModal from './Modals/ConfirmDelete';
 import EditLabourUpdateModal from './Modals/EditLabourUpdate';
 import baseClasses from '@shared/shared-styles.module.css';
-import { useDeleteLabourUpdateV2, useUpdateLabourUpdateMessageV2, useUpdateLabourUpdateTypeV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
-import { useLabour } from '@base/contexts/LabourContext';
-import { LabourUpdateType } from '@base/clients/labour_service_v2';
 
 interface ManageLabourUpdateMenuProps {
   statusUpdateId: string;
@@ -56,7 +60,7 @@ export function ManageLabourUpdateMenu({
     const requestBody = {
       labourId: labourId!,
       labourUpdateId: statusUpdateId,
-    }
+    };
     deleteMutation.mutate(requestBody);
   };
 

@@ -3,16 +3,12 @@
  * Uses the new Cloudflare Workers API with CQRS pattern
  */
 
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { notifications } from '@mantine/notifications';
-import { Error as ErrorNotification, Success } from '@shared/Notifications';
-import type {
-  LabourServiceV2Client,
-  Cursor,
-  LabourUpdateType,
-} from '@clients/labour_service_v2';
-import { useApiAuth } from '../useApiAuth';
 import { NotFoundError } from '@base/lib/errors';
+import type { Cursor, LabourServiceV2Client, LabourUpdateType } from '@clients/labour_service_v2';
+import { Error as ErrorNotification, Success } from '@shared/Notifications';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { notifications } from '@mantine/notifications';
+import { useApiAuth } from '../useApiAuth';
 
 // Query Keys for V2
 export const queryKeysV2 = {
@@ -41,6 +37,14 @@ export const queryKeysV2 = {
   subscriptionToken: {
     all: ['subscription-token-v2'] as const,
     byLabour: (labourId: string) => [...queryKeysV2.subscriptionToken.all, labourId] as const,
+  },
+  subscriptions: {
+    all: ['subscriptions-v2'] as const,
+    byLabour: (labourId: string) => [...queryKeysV2.subscriptions.all, labourId] as const,
+    paginated: (labourId: string, cursor: string | null) =>
+      [...queryKeysV2.subscriptions.byLabour(labourId), 'paginated', cursor] as const,
+    byId: (labourId: string, subscriptionId: string) =>
+      [...queryKeysV2.subscriptions.byLabour(labourId), subscriptionId] as const,
   },
 } as const;
 
@@ -77,7 +81,7 @@ export function useCurrentLabourV2(client: LabourServiceV2Client, labourId: stri
         }
 
         if (!activeResponse.data) {
-          throw new NotFoundError;
+          throw new NotFoundError();
         }
 
         targetLabourId = activeResponse.data.labour_id;
@@ -273,9 +277,7 @@ export function useLabourUpdateByIdV2(
 
   return useQuery({
     queryKey:
-      labourId && labourUpdateId
-        ? queryKeysV2.labourUpdates.byId(labourId, labourUpdateId)
-        : [],
+      labourId && labourUpdateId ? queryKeysV2.labourUpdates.byId(labourId, labourUpdateId) : [],
     queryFn: async () => {
       if (!labourId || !labourUpdateId) {
         throw new Error('Labour ID and Labour Update ID are required');
@@ -513,7 +515,11 @@ export function useUpdateLabourUpdateTypeV2(client: LabourServiceV2Client) {
       labourUpdateId: string;
       labourUpdateType: LabourUpdateType;
     }) => {
-      const response = await client.updateLabourUpdateType(labourId, labourUpdateId, labourUpdateType);
+      const response = await client.updateLabourUpdateType(
+        labourId,
+        labourUpdateId,
+        labourUpdateType
+      );
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to update labour update type');
@@ -781,8 +787,8 @@ export function useCompleteLabourV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({labourId, notes}: {labourId: string, notes: string}) => {
-      const response = await client.completeLabour({labourId, notes});
+    mutationFn: async ({ labourId, notes }: { labourId: string; notes: string }) => {
+      const response = await client.completeLabour({ labourId, notes });
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to complete labour');
@@ -877,5 +883,412 @@ export function useSubscriptionTokenV2(client: LabourServiceV2Client, labourId: 
     },
     enabled: !!labourId && !!user?.sub,
     retry: 0,
+  });
+}
+
+/**
+ * Hook for fetching subscriptions
+ */
+export function useSubscriptionsV2(client: LabourServiceV2Client, labourId: string | null) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: labourId ? queryKeysV2.subscriptions.byLabour(labourId) : [],
+    queryFn: async () => {
+      if (!labourId) {
+        throw new Error('Labour ID is required');
+      }
+
+      const response = await client.getSubscriptions(labourId);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load subscriptions');
+      }
+
+      return response.data.data;
+    },
+    enabled: !!labourId && !!user?.sub,
+    retry: 0,
+  });
+}
+
+// Subscriber Command Hooks (Self-service)
+
+/**
+ * Hook for requesting access to a labour
+ */
+export function useRequestAccessV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ labourId, token }: { labourId: string; token: string }) => {
+      const response = await client.requestAccess(labourId, token);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to request access');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Access requested successfully',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to request access: ${error.message}`,
+      });
+    },
+  });
+}
+
+/**
+ * Hook for unsubscribing from a labour
+ */
+export function useUnsubscribeV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (labourId: string) => {
+      const response = await client.unsubscribe(labourId);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to unsubscribe');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, labourId) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Unsubscribed successfully',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to unsubscribe: ${error.message}`,
+      });
+    },
+  });
+}
+
+/**
+ * Hook for updating notification methods
+ */
+export function useUpdateNotificationMethodsV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      labourId,
+      methods,
+    }: {
+      labourId: string;
+      methods: import('@clients/labour_service_v2').SubscriberContactMethod[];
+    }) => {
+      const response = await client.updateNotificationMethods(labourId, methods);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to update notification methods');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Notification methods updated',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to update notification methods: ${error.message}`,
+      });
+    },
+  });
+}
+
+/**
+ * Hook for updating access level
+ */
+export function useUpdateAccessLevelV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      labourId,
+      accessLevel,
+    }: {
+      labourId: string;
+      accessLevel: import('@clients/labour_service_v2').SubscriberAccessLevel;
+    }) => {
+      const response = await client.updateAccessLevel(labourId, accessLevel);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to update access level');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Access level updated',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to update access level: ${error.message}`,
+      });
+    },
+  });
+}
+
+// Subscription Command Hooks (Admin/Owner)
+
+/**
+ * Hook for approving a subscriber
+ */
+export function useApproveSubscriberV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      labourId,
+      subscriptionId,
+    }: {
+      labourId: string;
+      subscriptionId: string;
+    }) => {
+      const response = await client.approveSubscriber(labourId, subscriptionId);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to approve subscriber');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Subscriber approved',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to approve subscriber: ${error.message}`,
+      });
+    },
+  });
+}
+
+/**
+ * Hook for removing a subscriber
+ */
+export function useRemoveSubscriberV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      labourId,
+      subscriptionId,
+    }: {
+      labourId: string;
+      subscriptionId: string;
+    }) => {
+      const response = await client.removeSubscriber(labourId, subscriptionId);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to remove subscriber');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Subscriber removed',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to remove subscriber: ${error.message}`,
+      });
+    },
+  });
+}
+
+/**
+ * Hook for blocking a subscriber
+ */
+export function useBlockSubscriberV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      labourId,
+      subscriptionId,
+    }: {
+      labourId: string;
+      subscriptionId: string;
+    }) => {
+      const response = await client.blockSubscriber(labourId, subscriptionId);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to block subscriber');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Subscriber blocked',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to block subscriber: ${error.message}`,
+      });
+    },
+  });
+}
+
+/**
+ * Hook for unblocking a subscriber
+ */
+export function useUnblockSubscriberV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      labourId,
+      subscriptionId,
+    }: {
+      labourId: string;
+      subscriptionId: string;
+    }) => {
+      const response = await client.unblockSubscriber(labourId, subscriptionId);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to unblock subscriber');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Subscriber unblocked',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to unblock subscriber: ${error.message}`,
+      });
+    },
+  });
+}
+
+/**
+ * Hook for updating subscriber role
+ */
+export function useUpdateSubscriberRoleV2(client: LabourServiceV2Client) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      labourId,
+      subscriptionId,
+      role,
+    }: {
+      labourId: string;
+      subscriptionId: string;
+      role: import('@clients/labour_service_v2').SubscriberRole;
+    }) => {
+      const response = await client.updateSubscriberRole(labourId, subscriptionId, role);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to update subscriber role');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+      });
+
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Subscriber role updated',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to update subscriber role: ${error.message}`,
+      });
+    },
   });
 }

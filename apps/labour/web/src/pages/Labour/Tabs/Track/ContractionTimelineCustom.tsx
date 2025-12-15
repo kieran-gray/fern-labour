@@ -66,8 +66,7 @@ export default function ContractionTimelineCustom({
   const [opened, { open, close }] = useDisclosure(false);
   const [modalData, setModalData] = useState<ContractionData | null>(null);
 
-  const isFinished = (c: ContractionReadModel) =>
-    c.duration.start_time !== c.duration.end_time;
+  const isFinished = (c: ContractionReadModel) => c.duration.start_time !== c.duration.end_time;
   const gaps = useMemo(() => getTimeSinceLastStarted(contractions), [contractions]);
 
   useEffect(() => {
@@ -119,10 +118,7 @@ export default function ContractionTimelineCustom({
     const finished = isFinished(c);
     const nextGap = gaps[c.contraction_id]?.next ?? 0;
     const clickable = finished && !completed;
-    const durationSeconds = calculateDurationSeconds(
-      c.duration.start_time,
-      c.duration.end_time
-    );
+    const durationSeconds = calculateDurationSeconds(c.duration.start_time, c.duration.end_time);
 
     const node = (
       <div key={`${c.contraction_id}-node`} className={classes.gridRow}>
@@ -166,9 +162,7 @@ export default function ContractionTimelineCustom({
             </div>
           </div>
         </div>
-        <div className={classes.rightColumn}>
-          {/* Notes removed from V2 read model */}
-        </div>
+        <div className={classes.rightColumn}>{/* Notes removed from V2 read model */}</div>
       </div>
     );
 

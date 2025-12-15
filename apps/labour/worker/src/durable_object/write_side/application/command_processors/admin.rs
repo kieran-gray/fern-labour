@@ -1,6 +1,7 @@
 use anyhow::{Result, anyhow};
 use fern_labour_event_sourcing_rs::{CheckpointRepository, CommandEnvelope};
 use fern_labour_labour_shared::AdminCommand;
+use fern_labour_workers_shared::User;
 use tracing::info;
 
 pub struct AdminCommandProcessor {
@@ -14,8 +15,12 @@ impl AdminCommandProcessor {
         }
     }
 
-    pub fn handle(&self, command_envelope: CommandEnvelope<AdminCommand>) -> Result<()> {
-        info!(user_id = %command_envelope.metadata.user_id, "Processing admin command");
+    pub fn handle(
+        &self,
+        command_envelope: CommandEnvelope<AdminCommand>,
+        user: User,
+    ) -> Result<()> {
+        info!(user_id = %user.user_id, "Processing admin command");
 
         match command_envelope.command {
             AdminCommand::RebuildReadModels { aggregate_id } => {

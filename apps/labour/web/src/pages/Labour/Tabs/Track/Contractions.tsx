@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { LabourReadModel } from '@clients/labour_service_v2/types';
+import { useContractionsV2, useLabourV2Client } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconBook } from '@tabler/icons-react';
 import { ActionIcon, Image, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useContractionsV2, useLabourV2Client } from '@shared/hooks';
 import { ContractionControls } from './ContractionControls';
 import ContractionTimelineCustom from './ContractionTimelineCustom';
 import { ContractionsHelpModal } from './HelpModal';
@@ -33,7 +33,9 @@ export function Contractions({ labour }: { labour: LabourReadModel }) {
   }, [labour]);
 
   const completed = labour.end_time !== null;
-  const activeContraction = contractions.find(contraction => contraction.duration.start_time === contraction.duration.end_time);
+  const activeContraction = contractions.find(
+    (contraction) => contraction.duration.start_time === contraction.duration.end_time
+  );
   const activeDescription =
     'Track your contractions here. Simply press the button below to start a new contraction. Click the book icon above for more info.';
   const completedDescription =
@@ -83,7 +85,10 @@ export function Contractions({ labour }: { labour: LabourReadModel }) {
               <Stack align="stretch" justify="flex-end">
                 {/* Desktop controls - only show on larger screens */}
                 <div className={classes.desktopControls}>
-                  <ContractionControls labourCompleted={completed} activeContraction={activeContraction} />
+                  <ContractionControls
+                    labourCompleted={completed}
+                    activeContraction={activeContraction}
+                  />
                 </div>
               </Stack>
             </div>

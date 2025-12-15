@@ -14,12 +14,16 @@ pub enum SubscriptionQuery {
     GetSubscriptionToken {
         labour_id: Uuid,
     },
+    GetSubscriptions {
+        labour_id: Uuid,
+    },
 }
 
 impl SubscriptionQuery {
     pub fn labour_id(&self) -> Uuid {
         match self {
             SubscriptionQuery::GetSubscriptionToken { labour_id } => *labour_id,
+            SubscriptionQuery::GetSubscriptions { labour_id } => *labour_id,
         }
     }
 }

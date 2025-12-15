@@ -1,4 +1,5 @@
 import { forwardRef, useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { AppMode, useMode } from '@base/contexts/AppModeContext';
 import {
   IconArrowLeft,
@@ -13,7 +14,6 @@ import {
   IconSwitchHorizontal,
   IconTrash,
 } from '@tabler/icons-react';
-import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import {
   Avatar,

@@ -1,4 +1,5 @@
 import { useLabour } from '@base/contexts/LabourContext';
+import { useSubscriptionTokenV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
 import { useLabourV2Client } from '@shared/hooks';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
@@ -9,7 +10,6 @@ import QRButton from '../QRButton/QRButton';
 import image from './share.svg';
 import classes from './ShareContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-import { useSubscriptionTokenV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
 
 export function ShareContainer() {
   const { labourId } = useLabour();

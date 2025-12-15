@@ -23,9 +23,13 @@ use crate::durable_object::{
                 LabourUpdateReadModelProjector, LabourUpdateReadModelQuery,
                 SqlLabourUpdateRepository,
             },
+            subscriptions::{
+                SqlSubscriptionRepository, SubscriptionReadModelProjector,
+                SubscriptionReadModelQuery,
+            },
         },
     },
-    token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator},
+    security::token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator},
     write_side::{
         application::{AdminCommandProcessor, command_processors::LabourCommandProcessor},
         domain::LabourEvent,
@@ -43,6 +47,7 @@ pub struct ReadModel {
     pub labour_query: LabourReadModelQuery,
     pub contraction_query: ContractionReadModelQuery,
     pub labour_update_query: LabourUpdateReadModelQuery,
+    pub subscription_query: SubscriptionReadModelQuery,
     pub subscription_token_generator: Box<dyn SubscriptionTokenGenerator>,
 }
 
@@ -92,6 +97,9 @@ impl AggregateServices {
         let labour_update_repository = Box::new(SqlLabourUpdateRepository::create(sql.clone()));
         let labour_update_query = LabourUpdateReadModelQuery::create(labour_update_repository);
 
+        let subscription_repository = Box::new(SqlSubscriptionRepository::create(sql.clone()));
+        let subscription_query = SubscriptionReadModelQuery::create(subscription_repository);
+
         let subscription_token_salt: String = env
             .var("SUBSCRIPTION_TOKEN_SALT")
             .map_err(|e| anyhow!("Missing env binding: {e}"))?
@@ -105,6 +113,7 @@ impl AggregateServices {
             labour_query,
             contraction_query,
             labour_update_query,
+            subscription_query,
             subscription_token_generator,
         })
     }
@@ -135,10 +144,18 @@ impl AggregateServices {
             labour_update_repository,
         ));
 
+        let subscription_repository = Box::new(SqlSubscriptionRepository::create(sql.clone()));
+        subscription_repository.init_schema()?;
+
+        let subscription_projector = Box::new(SubscriptionReadModelProjector::create(
+            subscription_repository,
+        ));
+
         let projectors: Vec<Box<dyn SyncProjector<LabourEvent>>> = vec![
             labour_projector,
             contraction_projector,
             labour_update_projector,
+            subscription_projector,
         ];
 
         Ok(SyncProjectionProcessor::create(

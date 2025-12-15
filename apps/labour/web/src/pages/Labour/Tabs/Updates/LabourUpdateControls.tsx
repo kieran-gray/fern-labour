@@ -1,4 +1,6 @@
 import { useCallback, useState } from 'react';
+import { LabourUpdateType } from '@base/clients/labour_service_v2';
+import { useLabour } from '@base/contexts/LabourContext';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
 import { useNetworkState } from '@base/offline/hooks';
 import { useLabourV2Client, usePostLabourUpdateV2 } from '@shared/hooks';
@@ -7,13 +9,13 @@ import { Button, SegmentedControl, Text, Textarea } from '@mantine/core';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-import { useLabour } from '@base/contexts/LabourContext';
-import { LabourUpdateType } from '@base/clients/labour_service_v2';
 
 export function LabourUpdateControls() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [labourUpdateType, setLabourUpdateType] = useState<LabourUpdateType>(LabourUpdateType.STATUS_UPDATE);
+  const [labourUpdateType, setLabourUpdateType] = useState<LabourUpdateType>(
+    LabourUpdateType.STATUS_UPDATE
+  );
   const { labourId } = useLabour();
   const { isOnline } = useNetworkState();
 

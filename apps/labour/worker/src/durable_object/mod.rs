@@ -1,8 +1,8 @@
 pub mod api;
 pub mod exceptions;
 pub mod read_side;
+pub mod security;
 pub mod state;
-pub mod token_generator;
 pub mod write_side;
 
 use tracing::{error, info};

@@ -1,7 +1,7 @@
+import { useLabour } from '@base/contexts/LabourContext';
 import { useEndContractionV2, useLabourV2Client } from '@shared/hooks';
 import { IconHourglassHigh } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
-import { useLabour } from '@base/contexts/LabourContext';
 
 export default function EndContractionButton({
   intensity,

@@ -1,5 +1,7 @@
 use chrono::{DateTime, Utc};
-use fern_labour_labour_shared::value_objects::LabourUpdateType;
+use fern_labour_labour_shared::value_objects::{
+    LabourUpdateType, SubscriberAccessLevel, SubscriberContactMethod, SubscriberRole,
+};
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use uuid::Uuid;
@@ -81,6 +83,46 @@ pub enum LabourEvent {
         labour_id: Uuid,
         labour_update_id: Uuid,
     },
+    SubscriberRequested {
+        labour_id: Uuid,
+        subscriber_id: String,
+        subscription_id: Uuid,
+    },
+    SubscriberUnsubscribed {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    SubscriberNotificationMethodsUpdated {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+        notification_methods: Vec<SubscriberContactMethod>,
+    },
+    SubscriberAccessLevelUpdated {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+        access_level: SubscriberAccessLevel,
+    },
+    SubscriberApproved {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    SubscriberRemoved {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    SubscriberBlocked {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    SubscriberUnblocked {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+    },
+    SubscriberRoleUpdated {
+        labour_id: Uuid,
+        subscription_id: Uuid,
+        role: SubscriberRole,
+    },
 }
 
 impl LabourEvent {
@@ -145,6 +187,17 @@ impl Event for LabourEvent {
             LabourEvent::LabourUpdateMessageUpdated { .. } => "LabourUpdateMessageUpdated",
             LabourEvent::LabourUpdateTypeUpdated { .. } => "LabourUpdateTypeUpdated",
             LabourEvent::LabourUpdateDeleted { .. } => "LabourUpdateDeleted",
+            LabourEvent::SubscriberRequested { .. } => "SubscriberRequested",
+            LabourEvent::SubscriberUnsubscribed { .. } => "SubscriberUnsubscribed",
+            LabourEvent::SubscriberNotificationMethodsUpdated { .. } => {
+                "SubscriberNotificationMethodsUpdated"
+            }
+            LabourEvent::SubscriberAccessLevelUpdated { .. } => "SubscriberAccessLevelUpdated",
+            LabourEvent::SubscriberApproved { .. } => "SubscriberApproved",
+            LabourEvent::SubscriberRemoved { .. } => "SubscriberRemoved",
+            LabourEvent::SubscriberBlocked { .. } => "SubscriberBlocked",
+            LabourEvent::SubscriberUnblocked { .. } => "SubscriberUnblocked",
+            LabourEvent::SubscriberRoleUpdated { .. } => "SubscriberRoleUpdated",
         }
     }
 
@@ -168,6 +221,15 @@ impl Event for LabourEvent {
             LabourEvent::LabourUpdateMessageUpdated { labour_id, .. } => *labour_id,
             LabourEvent::LabourUpdateTypeUpdated { labour_id, .. } => *labour_id,
             LabourEvent::LabourUpdateDeleted { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberRequested { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberUnsubscribed { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberNotificationMethodsUpdated { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberAccessLevelUpdated { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberApproved { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberRemoved { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberBlocked { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberUnblocked { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriberRoleUpdated { labour_id, .. } => *labour_id,
         }
     }
 }

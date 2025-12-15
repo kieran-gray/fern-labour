@@ -7,28 +7,29 @@
 
 import type {
   AdminCommand,
-  ContractionCommand,
-  LabourCommand,
-  LabourUpdateCommand,
-  SubscriberCommand,
-  SubscriptionCommand,
-  CommandResponse,
   ApiResponse,
-  SubscriberContactMethod,
-  SubscriberAccessLevel,
-  SubscriberRole,
-  LabourUpdateType,
-  LabourQuery,
+  CommandResponse,
+  ContractionCommand,
   ContractionQuery,
-  LabourUpdateQuery,
-  SubscriptionQuery,
+  ContractionReadModel,
   Cursor,
+  LabourCommand,
+  LabourQuery,
   LabourReadModel,
   LabourStatusReadModel,
-  ContractionReadModel,
+  LabourUpdateCommand,
+  LabourUpdateQuery,
   LabourUpdateReadModel,
+  LabourUpdateType,
   PaginatedResponse,
   QueryResponse,
+  SubscriberAccessLevel,
+  SubscriberCommand,
+  SubscriberContactMethod,
+  SubscriberRole,
+  SubscriptionCommand,
+  SubscriptionQuery,
+  SubscriptionReadModel,
 } from './types';
 
 export interface LabourServiceV2Config {
@@ -187,10 +188,7 @@ export class LabourServiceV2Client {
     return this.sendCommand({ type: 'Contraction', payload: command });
   }
 
-  async deleteContraction(
-    labourId: string,
-    contractionId: string
-  ): Promise<CommandResponse> {
+  async deleteContraction(labourId: string, contractionId: string): Promise<CommandResponse> {
     const command: ContractionCommand = {
       type: 'DeleteContraction',
       payload: {
@@ -241,7 +239,7 @@ export class LabourServiceV2Client {
     return this.sendCommand({ type: 'Labour', payload: command });
   }
 
-  async completeLabour(params: {labourId: string, notes: string}): Promise<CommandResponse> {
+  async completeLabour(params: { labourId: string; notes: string }): Promise<CommandResponse> {
     const command: LabourCommand = {
       type: 'CompleteLabour',
       payload: { labour_id: params.labourId, notes: params.notes },
@@ -318,10 +316,7 @@ export class LabourServiceV2Client {
     return this.sendCommand({ type: 'LabourUpdate', payload: command });
   }
 
-  async deleteLabourUpdate(
-    labourId: string,
-    labourUpdateId: string
-  ): Promise<CommandResponse> {
+  async deleteLabourUpdate(labourId: string, labourUpdateId: string): Promise<CommandResponse> {
     const command: LabourUpdateCommand = {
       type: 'DeleteLabourUpdate',
       payload: {
@@ -383,10 +378,7 @@ export class LabourServiceV2Client {
 
   // Subscription Commands
 
-  async approveSubscriber(
-    labourId: string,
-    subscriptionId: string
-  ): Promise<CommandResponse> {
+  async approveSubscriber(labourId: string, subscriptionId: string): Promise<CommandResponse> {
     const command: SubscriptionCommand = {
       type: 'ApproveSubscriber',
       payload: {
@@ -419,10 +411,7 @@ export class LabourServiceV2Client {
     return this.sendCommand({ type: 'Subscription', payload: command });
   }
 
-  async unblockSubscriber(
-    labourId: string,
-    subscriptionId: string
-  ): Promise<CommandResponse> {
+  async unblockSubscriber(labourId: string, subscriptionId: string): Promise<CommandResponse> {
     const command: SubscriptionCommand = {
       type: 'UnblockSubscriber',
       payload: {
@@ -627,6 +616,18 @@ export class LabourServiceV2Client {
   async getSubscriptionToken(labourId: string): Promise<QueryResponse<{ token: string }>> {
     const query: SubscriptionQuery = {
       type: 'GetSubscriptionToken',
+      payload: {
+        labour_id: labourId,
+      },
+    };
+    return this.sendQuery({ type: 'Subscription', payload: query });
+  }
+
+  async getSubscriptions(
+    labourId: string
+  ): Promise<QueryResponse<PaginatedResponse<SubscriptionReadModel>>> {
+    const query: SubscriptionQuery = {
+      type: 'GetSubscriptions',
       payload: {
         labour_id: labourId,
       },

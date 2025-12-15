@@ -6,31 +6,39 @@
 // Value Objects / Enums
 
 export enum SubscriberContactMethod {
-  EMAIL = "EMAIL",
-  SMS = "SMS",
-  WHATSAPP = "WHATSAPP",
+  EMAIL = 'EMAIL',
+  SMS = 'SMS',
+  WHATSAPP = 'WHATSAPP',
 }
 
 export enum SubscriberAccessLevel {
-  BASIC = "BASIC",
-  SUPPORTER = "SUPPORTER",
+  BASIC = 'BASIC',
+  SUPPORTER = 'SUPPORTER',
 }
 
 export enum SubscriberRole {
-  BIRTH_PARTNER = "BIRTH_PARTNER",
-  FRIENDS_AND_FAMILY = "FRIENDS_AND_FAMILY",
+  BIRTH_PARTNER = 'BIRTH_PARTNER',
+  FRIENDS_AND_FAMILY = 'FRIENDS_AND_FAMILY',
+}
+
+export enum SubscriberStatus {
+  REQUESTED = 'REQUESTED',
+  SUBSCRIBED = 'SUBSCRIBED',
+  UNSUBSCRIBED = 'UNSUBSCRIBED',
+  REMOVED = 'REMOVED',
+  BLOCKED = 'BLOCKED',
 }
 
 export enum LabourUpdateType {
-  ANNOUNCEMENT = "ANNOUNCEMENT",
-  STATUS_UPDATE = "STATUS_UPDATE",
-  PRIVATE_NOTE = "PRIVATE_NOTE",
+  ANNOUNCEMENT = 'ANNOUNCEMENT',
+  STATUS_UPDATE = 'STATUS_UPDATE',
+  PRIVATE_NOTE = 'PRIVATE_NOTE',
 }
 
 // Admin Commands
 
 export type RebuildReadModelsCommand = {
-  type: "RebuildReadModels";
+  type: 'RebuildReadModels';
   payload: {
     aggregate_id: string;
   };
@@ -41,7 +49,7 @@ export type AdminCommand = RebuildReadModelsCommand;
 // Contraction Commands
 
 export type StartContractionCommand = {
-  type: "StartContraction";
+  type: 'StartContraction';
   payload: {
     labour_id: string;
     start_time: string; // ISO 8601 datetime
@@ -49,7 +57,7 @@ export type StartContractionCommand = {
 };
 
 export type EndContractionCommand = {
-  type: "EndContraction";
+  type: 'EndContraction';
   payload: {
     labour_id: string;
     end_time: string; // ISO 8601 datetime
@@ -58,7 +66,7 @@ export type EndContractionCommand = {
 };
 
 export type UpdateContractionCommand = {
-  type: "UpdateContraction";
+  type: 'UpdateContraction';
   payload: {
     labour_id: string;
     contraction_id: string;
@@ -69,7 +77,7 @@ export type UpdateContractionCommand = {
 };
 
 export type DeleteContractionCommand = {
-  type: "DeleteContraction";
+  type: 'DeleteContraction';
   payload: {
     labour_id: string;
     contraction_id: string;
@@ -85,7 +93,7 @@ export type ContractionCommand =
 // Labour Commands
 
 export type PlanLabourCommand = {
-  type: "PlanLabour";
+  type: 'PlanLabour';
   payload: {
     first_labour: boolean;
     due_date: string; // ISO 8601 datetime
@@ -94,7 +102,7 @@ export type PlanLabourCommand = {
 };
 
 export type UpdateLabourPlanCommand = {
-  type: "UpdateLabourPlan";
+  type: 'UpdateLabourPlan';
   payload: {
     labour_id: string;
     first_labour: boolean;
@@ -104,14 +112,14 @@ export type UpdateLabourPlanCommand = {
 };
 
 export type BeginLabourCommand = {
-  type: "BeginLabour";
+  type: 'BeginLabour';
   payload: {
     labour_id: string;
   };
 };
 
 export type CompleteLabourCommand = {
-  type: "CompleteLabour";
+  type: 'CompleteLabour';
   payload: {
     labour_id: string;
     notes: string;
@@ -119,7 +127,7 @@ export type CompleteLabourCommand = {
 };
 
 export type SendLabourInviteCommand = {
-  type: "SendLabourInvite";
+  type: 'SendLabourInvite';
   payload: {
     labour_id: string;
     invite_email: string;
@@ -127,7 +135,7 @@ export type SendLabourInviteCommand = {
 };
 
 export type DeleteLabourCommand = {
-  type: "DeleteLabour";
+  type: 'DeleteLabour';
   payload: {
     labour_id: string;
   };
@@ -146,7 +154,7 @@ export type PublicCommand = PlanLabourCommand;
 // Labour Update Commands
 
 export type PostLabourUpdateCommand = {
-  type: "PostLabourUpdate";
+  type: 'PostLabourUpdate';
   payload: {
     labour_id: string;
     labour_update_type: LabourUpdateType;
@@ -155,7 +163,7 @@ export type PostLabourUpdateCommand = {
 };
 
 export type UpdateLabourUpdateMessageCommand = {
-  type: "UpdateLabourUpdateMessage";
+  type: 'UpdateLabourUpdateMessage';
   payload: {
     labour_id: string;
     labour_update_id: string;
@@ -164,7 +172,7 @@ export type UpdateLabourUpdateMessageCommand = {
 };
 
 export type UpdateLabourUpdateTypeCommand = {
-  type: "UpdateLabourUpdateType";
+  type: 'UpdateLabourUpdateType';
   payload: {
     labour_id: string;
     labour_update_id: string;
@@ -173,7 +181,7 @@ export type UpdateLabourUpdateTypeCommand = {
 };
 
 export type DeleteLabourUpdateCommand = {
-  type: "DeleteLabourUpdate";
+  type: 'DeleteLabourUpdate';
   payload: {
     labour_id: string;
     labour_update_id: string;
@@ -189,7 +197,7 @@ export type LabourUpdateCommand =
 // Subscriber Commands
 
 export type RequestAccessCommand = {
-  type: "RequestAccess";
+  type: 'RequestAccess';
   payload: {
     labour_id: string;
     token: string;
@@ -197,14 +205,14 @@ export type RequestAccessCommand = {
 };
 
 export type UnsubscribeCommand = {
-  type: "Unsubscribe";
+  type: 'Unsubscribe';
   payload: {
     labour_id: string;
   };
 };
 
 export type UpdateNotificationMethodsCommand = {
-  type: "UpdateNotificationMethods";
+  type: 'UpdateNotificationMethods';
   payload: {
     labour_id: string;
     notification_methods: SubscriberContactMethod[];
@@ -212,7 +220,7 @@ export type UpdateNotificationMethodsCommand = {
 };
 
 export type UpdateAccessLevelCommand = {
-  type: "UpdateAccessLevel";
+  type: 'UpdateAccessLevel';
   payload: {
     labour_id: string;
     access_level: SubscriberAccessLevel;
@@ -228,7 +236,7 @@ export type SubscriberCommand =
 // Subscription Commands
 
 export type ApproveSubscriberCommand = {
-  type: "ApproveSubscriber";
+  type: 'ApproveSubscriber';
   payload: {
     labour_id: string;
     subscription_id: string;
@@ -236,7 +244,7 @@ export type ApproveSubscriberCommand = {
 };
 
 export type RemoveSubscriberCommand = {
-  type: "RemoveSubscriber";
+  type: 'RemoveSubscriber';
   payload: {
     labour_id: string;
     subscription_id: string;
@@ -244,7 +252,7 @@ export type RemoveSubscriberCommand = {
 };
 
 export type BlockSubscriberCommand = {
-  type: "BlockSubscriber";
+  type: 'BlockSubscriber';
   payload: {
     labour_id: string;
     subscription_id: string;
@@ -252,7 +260,7 @@ export type BlockSubscriberCommand = {
 };
 
 export type UnblockSubscriberCommand = {
-  type: "UnblockSubscriber";
+  type: 'UnblockSubscriber';
   payload: {
     labour_id: string;
     subscription_id: string;
@@ -260,7 +268,7 @@ export type UnblockSubscriberCommand = {
 };
 
 export type UpdateSubscriberRoleCommand = {
-  type: "UpdateSubscriberRole";
+  type: 'UpdateSubscriberRole';
   payload: {
     labour_id: string;
     subscription_id: string;
@@ -278,12 +286,12 @@ export type SubscriptionCommand =
 // Top-level API Command (matches Rust ApiCommand enum)
 
 export type ApiCommand =
-  | { type: "Admin"; payload: AdminCommand }
-  | { type: "Contraction"; payload: ContractionCommand }
-  | { type: "Labour"; payload: LabourCommand }
-  | { type: "LabourUpdate"; payload: LabourUpdateCommand }
-  | { type: "Subscriber"; payload: SubscriberCommand }
-  | { type: "Subscription"; payload: SubscriptionCommand };
+  | { type: 'Admin'; payload: AdminCommand }
+  | { type: 'Contraction'; payload: ContractionCommand }
+  | { type: 'Labour'; payload: LabourCommand }
+  | { type: 'LabourUpdate'; payload: LabourUpdateCommand }
+  | { type: 'Subscriber'; payload: SubscriberCommand }
+  | { type: 'Subscription'; payload: SubscriptionCommand };
 
 // Query Types
 
@@ -295,7 +303,7 @@ export type Cursor = {
 // Labour Queries
 
 export type GetLabourQuery = {
-  type: "GetLabour";
+  type: 'GetLabour';
   payload: {
     labour_id: string;
   };
@@ -306,7 +314,7 @@ export type LabourQuery = GetLabourQuery;
 // Contraction Queries
 
 export type GetContractionsQuery = {
-  type: "GetContractions";
+  type: 'GetContractions';
   payload: {
     labour_id: string;
     limit: number;
@@ -315,7 +323,7 @@ export type GetContractionsQuery = {
 };
 
 export type GetContractionByIdQuery = {
-  type: "GetContractionById";
+  type: 'GetContractionById';
   payload: {
     labour_id: string;
     contraction_id: string;
@@ -327,7 +335,7 @@ export type ContractionQuery = GetContractionsQuery | GetContractionByIdQuery;
 // Labour Update Queries
 
 export type GetLabourUpdatesQuery = {
-  type: "GetLabourUpdates";
+  type: 'GetLabourUpdates';
   payload: {
     labour_id: string;
     limit: number;
@@ -336,7 +344,7 @@ export type GetLabourUpdatesQuery = {
 };
 
 export type GetLabourUpdateByIdQuery = {
-  type: "GetLabourUpdateById";
+  type: 'GetLabourUpdateById';
   payload: {
     labour_id: string;
     labour_update_id: string;
@@ -348,28 +356,35 @@ export type LabourUpdateQuery = GetLabourUpdatesQuery | GetLabourUpdateByIdQuery
 // Subscription Queries
 
 export type GetSubscriptionTokenQuery = {
-  type: "GetSubscriptionToken";
+  type: 'GetSubscriptionToken';
   payload: {
     labour_id: string;
   };
 };
 
-export type SubscriptionQuery = GetSubscriptionTokenQuery;
+export type GetSubscriptionsQuery = {
+  type: 'GetSubscriptions';
+  payload: {
+    labour_id: string;
+  };
+};
+
+export type SubscriptionQuery = GetSubscriptionTokenQuery | GetSubscriptionsQuery;
 
 // Top-level API Query (matches Rust ApiQuery enum)
 
 export type ApiQuery =
-  | { type: "Labour"; payload: LabourQuery }
-  | { type: "Contraction"; payload: ContractionQuery }
-  | { type: "LabourUpdate"; payload: LabourUpdateQuery }
-  | { type: "Subscription"; payload: SubscriptionQuery };
+  | { type: 'Labour'; payload: LabourQuery }
+  | { type: 'Contraction'; payload: ContractionQuery }
+  | { type: 'LabourUpdate'; payload: LabourUpdateQuery }
+  | { type: 'Subscription'; payload: SubscriptionQuery };
 
 // Read Model Types
 
 export enum LabourPhase {
-  PLANNED = "PLANNED",
-  IN_PROGRESS = "IN_PROGRESS",
-  COMPLETED = "COMPLETED",
+  PLANNED = 'PLANNED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
 }
 
 export type LabourReadModel = {
@@ -417,6 +432,18 @@ export type LabourUpdateReadModel = {
   message: string;
   edited: boolean;
   application_generated: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SubscriptionReadModel = {
+  subscription_id: string;
+  labour_id: string;
+  subscriber_id: string;
+  role: SubscriberRole;
+  status: SubscriberStatus;
+  access_level: SubscriberAccessLevel;
+  contact_methods: SubscriberContactMethod[];
   created_at: string;
   updated_at: string;
 };

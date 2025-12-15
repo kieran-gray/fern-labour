@@ -1,5 +1,6 @@
 use anyhow::{Result, anyhow};
 use fern_labour_event_sourcing_rs::{Aggregate, AggregateRepository};
+use fern_labour_workers_shared::User;
 
 use crate::durable_object::write_side::domain::{Labour, LabourCommand};
 
@@ -12,7 +13,7 @@ impl LabourCommandProcessor {
         Self { repository }
     }
 
-    pub fn handle_command(&self, command: LabourCommand, user_id: String) -> Result<()> {
+    pub fn handle_command(&self, command: LabourCommand, user: User) -> Result<()> {
         let aggregate = self.repository.load()?;
 
         let events = Labour::handle_command(aggregate.as_ref(), command)
@@ -22,7 +23,7 @@ impl LabourCommandProcessor {
             return Ok(());
         }
 
-        self.repository.save(&events, user_id)?;
+        self.repository.save(&events, user.user_id)?;
 
         Ok(())
     }

@@ -22,7 +22,7 @@ export default function CompleteLabourButton({
   const handleCompleteLabour = (labourNotes: string) => {
     const payload = {
       labourId: labourId!,
-      notes: labourNotes
+      notes: labourNotes,
     };
     mutation.mutate(payload);
     setLabourId(null);

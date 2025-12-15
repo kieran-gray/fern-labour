@@ -48,7 +48,10 @@ export function FloatingContractionControls({
 
       {isExpanded && (
         <div className={classes.controlsContent}>
-          <ContractionControls labourCompleted={labourCompleted} activeContraction={activeContraction} />
+          <ContractionControls
+            labourCompleted={labourCompleted}
+            activeContraction={activeContraction}
+          />
         </div>
       )}
     </div>

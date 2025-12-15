@@ -1,3 +1,4 @@
+import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -7,7 +8,6 @@ import { LabourStatisticsTabs } from './LabourStatisticsTabs';
 import image from './statistics.svg';
 import classes from './LabourStatistics.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
 
 export interface LabourStatisticsData {
   contraction_count: number;
@@ -71,7 +71,9 @@ function generateStatisticsData(contractions: ContractionReadModel[]): LabourSta
     const prev = contractions[i];
 
     const frequency =
-      (new Date(curr.duration.start_time).getTime() - new Date(prev.duration.start_time).getTime()) / 1000;
+      (new Date(curr.duration.start_time).getTime() -
+        new Date(prev.duration.start_time).getTime()) /
+      1000;
     contractionFrequencies.push(frequency);
   }
   if (contractionFrequencies.length > 0) {
@@ -114,7 +116,11 @@ interface LabourStatisticsProps {
   inContainer?: boolean;
 }
 
-export const LabourStatistics = ({ labour, contractions, inContainer = true }: LabourStatisticsProps) => {
+export const LabourStatistics = ({
+  labour,
+  contractions,
+  inContainer = true,
+}: LabourStatisticsProps) => {
   const labourStatistics = createLabourStatistics(contractions);
   const completed = labour.end_time !== null;
 
@@ -161,7 +167,11 @@ export const LabourStatistics = ({ labour, contractions, inContainer = true }: L
         <ImportantText message="You didn't track enough contractions to see statistics." />
       )}
       {labourStatistics.total && (
-        <LabourStatisticsTabs labour={labour} contractions={contractions} statistics={labourStatistics} />
+        <LabourStatisticsTabs
+          labour={labour}
+          contractions={contractions}
+          statistics={labourStatistics}
+        />
       )}
     </>
   );

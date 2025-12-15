@@ -1,6 +1,6 @@
 import { AppMode, useMode } from '@base/contexts/AppModeContext';
-import { SubscribeToRequest } from '@clients/labour_service';
-import { useSubscribeTo } from '@shared/hooks';
+import { useRequestAccessV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useLabourV2Client } from '@shared/hooks';
 import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -29,19 +29,17 @@ export default function SubscribeForm({
     },
   });
 
-  const subscribeToMutation = useSubscribeTo();
+  const client = useLabourV2Client();
+  const mutation = useRequestAccessV2(client);
 
   const handleSubscribeTo = (values: typeof form.values) => {
-    const requestBody: SubscribeToRequest = { token: values.token };
-    subscribeToMutation.mutate(
-      { requestBody, labourId },
-      {
-        onSuccess: () => {
-          setMode(AppMode.Subscriber);
-          navigate(`/?prompt=requested`);
-        },
-      }
-    );
+    const requestBody = { labourId, token: values.token };
+    mutation.mutate(requestBody, {
+      onSuccess: () => {
+        setMode(AppMode.Subscriber);
+        navigate(`/?prompt=requested`);
+      },
+    });
   };
 
   return (
@@ -87,7 +85,7 @@ export default function SubscribeForm({
                     radius="lg"
                     variant="filled"
                     type="submit"
-                    loading={subscribeToMutation.isPending}
+                    loading={mutation.isPending}
                   >
                     Submit
                   </Button>
