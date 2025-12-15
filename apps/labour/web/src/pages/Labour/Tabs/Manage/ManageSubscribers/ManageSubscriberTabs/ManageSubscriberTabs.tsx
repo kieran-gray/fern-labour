@@ -42,8 +42,6 @@ export const ManageSubscribersTabs = () => {
     );
   }
 
-  console.log(subscriptions);
-
   const subscriberById = Object.fromEntries(
     subscriptions.map((subscription) => [
       subscription.subscriber_id,

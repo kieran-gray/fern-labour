@@ -1,18 +1,18 @@
-name: Frontend CI
+name: Labour Web CI
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'frontend/**'
+      - 'apps/labour/web/**'
       - '.github/workflows/**'
   pull_request:
     types:
       - opened
       - synchronize
     paths:
-      - 'frontend/**'
+      - 'apps/labour/web/**'
       - '.github/workflows/**'
 
 jobs:
@@ -30,9 +30,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version-file: './frontend/.nvmrc'
+          node-version-file: './apps/labour/web/.nvmrc'
           cache: 'npm'
-          cache-dependency-path: ./frontend/package-lock.json
+          cache-dependency-path: ./apps/labour/web/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -61,6 +61,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-build-${{ github.sha }}
-          path: ./frontend/dist/
+          name: labour-web-build-${{ github.sha }}
+          path: ./apps/labour/web/dist/
           retention-days: 7

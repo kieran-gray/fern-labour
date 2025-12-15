@@ -2,7 +2,7 @@ name: Deploy Marketing to Cloudflare Pages
 
 on:
   workflow_run:
-    workflows: ["Marketing CI"]
+    workflows: ["Marketing Web CI"]
     types:
       - completed
     branches: ['main']
@@ -24,7 +24,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v5
         with:
-          name: marketing-build-${{ github.event.workflow_run.head_sha }}
+          name: marketing-web-build-${{ github.event.workflow_run.head_sha }}
           path: ./marketing/out
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
