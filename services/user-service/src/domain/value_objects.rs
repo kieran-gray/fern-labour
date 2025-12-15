@@ -87,9 +87,9 @@ impl PhoneNumber {
                     "International phone number must be between 7 and 15 digits (plus '+')".into(),
                 ));
             }
-        } else if cleaned.len() < 7 || cleaned.len() > 15 {
+        } else {
             return Err(ValidationError::InvalidPhoneNumber(
-                "Phone number must be between 7 and 15 digits".into(),
+                "Phone number must use international format (+44 etc)".into(),
             ));
         }
 
@@ -152,14 +152,7 @@ mod tests {
 
     #[test]
     fn test_phone_number_valid() {
-        let valid_phones = vec![
-            "+1234567890",
-            "+441234567890",
-            "1234567890",
-            "+12345678901234",
-            "123-456-7890",
-            "(123) 456-7890",
-        ];
+        let valid_phones = vec!["+1234567890", "+441234567890", "+12345678901234"];
 
         for phone in valid_phones {
             let result = PhoneNumber::new(phone.to_string());
@@ -182,6 +175,12 @@ mod tests {
     #[test]
     fn test_phone_number_too_long() {
         let result = PhoneNumber::new("+12345678901234567".to_string());
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_phone_number_invalid_format() {
+        let result = PhoneNumber::new("1234567890".to_string());
         assert!(result.is_err());
     }
 }
