@@ -26,13 +26,17 @@ use crate::durable_object::{
             subscriptions::{
                 SqlSubscriptionRepository, SubscriptionReadModelProjector,
                 SubscriptionReadModelQuery,
-            }, users::query::UserQuery,
+            },
+            users::query::UserQuery,
         },
-    }, security::token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator}, user_storage::UserStorage, write_side::{
+    },
+    security::token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator},
+    user_storage::UserStorage,
+    write_side::{
         application::{AdminCommandProcessor, command_processors::LabourCommandProcessor},
         domain::LabourEvent,
         infrastructure::SqlEventStore,
-    }
+    },
 };
 
 pub struct WriteModel {

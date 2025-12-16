@@ -2,7 +2,8 @@ use base64::{Engine, prelude::BASE64_URL_SAFE_NO_PAD};
 use chrono::DateTime;
 use fern_labour_event_sourcing_rs::{Cursor, DecodedCursor, PaginatedResponse};
 use fern_labour_labour_shared::{
-    ContractionQuery, LabourQuery, LabourUpdateQuery, queries::{subscription::SubscriptionQuery, user::UserQuery},
+    ContractionQuery, LabourQuery, LabourUpdateQuery,
+    queries::{subscription::SubscriptionQuery, user::UserQuery},
 };
 use tracing::{error, info};
 use worker::Response;
@@ -270,8 +271,12 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
             let result = match query {
                 UserQuery::GetUser { labour_id, user_id } => {
                     info!(labour_id = %labour_id, user_id = %user_id, "Getting user");
-                    aggregate.services.read_model().user_query.get_user_by_id(user_id)
-                },
+                    aggregate
+                        .services
+                        .read_model()
+                        .user_query
+                        .get_user_by_id(user_id)
+                }
                 UserQuery::GetUsers { labour_id } => {
                     info!(labour_id = %labour_id, "Getting users");
                     aggregate.services.read_model().user_query.get_users()
