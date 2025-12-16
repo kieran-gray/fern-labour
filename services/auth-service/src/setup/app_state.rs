@@ -9,7 +9,10 @@ use crate::{
         token_validation_service::TokenValidationService,
     },
     infrastructure::{
-        claims_extractors::{auth0::Auth0ClaimsExtractor, cloudflare::CloudflareClaimsExtractor},
+        claims_extractors::{
+            auth0::Auth0ClaimsExtractor, clerk::ClerkClaimsExtractor,
+            cloudflare::CloudflareClaimsExtractor,
+        },
         jwt_parser::JwtParser,
         repositories::jwks_repository::JwksRepository,
         signature_verifiers::rs256_verifier::RS256SignatureVerifier,
@@ -44,6 +47,7 @@ impl AppState {
 
         let mut extractors: HashMap<String, Box<dyn ClaimsExtractor>> = HashMap::new();
         extractors.insert("Auth0".to_string(), Box::new(Auth0ClaimsExtractor));
+        extractors.insert("Clerk".to_string(), Box::new(ClerkClaimsExtractor));
         extractors.insert(
             "Cloudflare".to_string(),
             Box::new(CloudflareClaimsExtractor),

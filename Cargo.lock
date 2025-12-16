@@ -551,28 +551,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fern_labour_user_service"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "chrono",
- "fern-labour-workers-shared",
- "getrandom 0.2.16",
- "regex",
- "serde",
- "serde_json",
- "strum",
- "time",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "tracing-web",
- "uuid",
- "wiremock",
- "worker",
-]
-
-[[package]]
 name = "find-msvc-tools"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"

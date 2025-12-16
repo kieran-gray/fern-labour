@@ -6,7 +6,6 @@ members = [
     "packages/workers-shared",
     "services/auth-service",
     "services/contact-service",
-    "services/user-service",
     "services/notification-service/notification",
     "services/notification-service/generation",
     "services/notification-service/dispatch",

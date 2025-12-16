@@ -1,6 +1,6 @@
-import { SubscriptionReadModel } from '@base/clients/labour_service_v2/types';
+import { SubscriptionReadModel, User } from '@base/clients/labour_service_v2/types';
 import { useLabour } from '@base/contexts/LabourContext';
-import { useSubscriptionsV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useSubscriptionsV2, useUsersV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
 import { useLabourV2Client } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
@@ -19,6 +19,7 @@ export const ManageSubscribersTabs = () => {
   const { labourId } = useLabour();
   const client = useLabourV2Client();
   const { isPending, isError, data: subscriptions, error } = useSubscriptionsV2(client, labourId!);
+  const { data: users = [] } = useUsersV2(client, labourId!);
 
   if (isPending) {
     return (
@@ -43,9 +44,13 @@ export const ManageSubscribersTabs = () => {
   }
 
   const subscriberById = Object.fromEntries(
-    subscriptions.map((subscription) => [
-      subscription.subscriber_id,
-      { first_name: 'unknown', last_name: 'TODO', id: subscription.subscriber_id },
+    users.map((user: User) => [
+      user.user_id,
+      {
+        first_name: user.first_name || 'Unknown',
+        last_name: user.last_name || '',
+        id: user.user_id,
+      },
     ])
   );
 

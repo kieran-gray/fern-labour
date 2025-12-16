@@ -83,7 +83,7 @@ pub async fn main(message_batch: MessageBatch<String>, env: Env, _ctx: Context) 
 
                     info!(aggregate_id = %envelope.metadata.aggregate_id, "Processing command from queue");
                     
-                    let user = User {user_id: envelope.metadata.user_id.clone(), issuer: "internal".to_string(), email: None, email_verified: None, name: None};
+                    let user = User::internal(envelope.metadata.user_id.clone());
                     
                     let response = match envelope.command {
                         QueueMessage::Service(cmd) => {

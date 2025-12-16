@@ -371,13 +371,25 @@ export type GetSubscriptionsQuery = {
 
 export type SubscriptionQuery = GetSubscriptionTokenQuery | GetSubscriptionsQuery;
 
+// User Queries
+
+export type GetUsersQuery = {
+  type: 'GetUsers';
+  payload: {
+    labour_id: string;
+  };
+};
+
+export type UserQuery = GetUsersQuery;
+
 // Top-level API Query (matches Rust ApiQuery enum)
 
 export type ApiQuery =
   | { type: 'Labour'; payload: LabourQuery }
   | { type: 'Contraction'; payload: ContractionQuery }
   | { type: 'LabourUpdate'; payload: LabourUpdateQuery }
-  | { type: 'Subscription'; payload: SubscriptionQuery };
+  | { type: 'Subscription'; payload: SubscriptionQuery }
+  | { type: 'User'; payload: UserQuery };
 
 // Read Model Types
 
@@ -446,6 +458,16 @@ export type SubscriptionReadModel = {
   contact_methods: SubscriberContactMethod[];
   created_at: string;
   updated_at: string;
+};
+
+export type User = {
+  user_id: string;
+  issuer: string;
+  email?: string;
+  phone_number?: string;
+  first_name?: string;
+  last_name?: string;
+  name?: string;
 };
 
 // Paginated Response

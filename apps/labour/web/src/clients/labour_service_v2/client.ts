@@ -30,6 +30,8 @@ import type {
   SubscriptionCommand,
   SubscriptionQuery,
   SubscriptionReadModel,
+  User,
+  UserQuery,
 } from './types';
 
 export interface LabourServiceV2Config {
@@ -633,5 +635,17 @@ export class LabourServiceV2Client {
       },
     };
     return this.sendQuery({ type: 'Subscription', payload: query });
+  }
+
+  // User Queries
+
+  async getUsers(labourId: string): Promise<QueryResponse<User[]>> {
+    const query: UserQuery = {
+      type: 'GetUsers',
+      payload: {
+        labour_id: labourId,
+      },
+    };
+    return this.sendQuery({ type: 'User', payload: query });
   }
 }

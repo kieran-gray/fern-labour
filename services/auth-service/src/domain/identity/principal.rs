@@ -6,6 +6,10 @@ pub struct AuthenticatedPrincipal {
     pub issuer: String,
     pub email: Option<String>,
     pub email_verified: Option<bool>,
+    pub phone_number: Option<String>,
+    pub phone_number_verified: Option<String>,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
     pub name: Option<String>,
     pub metadata: serde_json::Value,
 }
@@ -16,6 +20,10 @@ impl AuthenticatedPrincipal {
         issuer: String,
         email: Option<String>,
         email_verified: Option<bool>,
+        phone_number: Option<String>,
+        phone_number_verified: Option<String>,
+        first_name: Option<String>,
+        last_name: Option<String>,
         name: Option<String>,
         metadata: serde_json::Value,
     ) -> Result<Self, DomainError> {
@@ -30,6 +38,10 @@ impl AuthenticatedPrincipal {
             issuer,
             email,
             email_verified,
+            phone_number,
+            phone_number_verified,
+            first_name,
+            last_name,
             name,
             metadata,
         })
@@ -57,6 +69,10 @@ mod tests {
             "https://example.com/".to_string(),
             Some("user@example.com".to_string()),
             Some(true),
+            Some("+1234567890".to_string()),
+            Some("true".to_string()),
+            Some("John".to_string()),
+            Some("Doe".to_string()),
             Some("John Doe".to_string()),
             metadata.clone(),
         );
@@ -76,6 +92,10 @@ mod tests {
         let result = AuthenticatedPrincipal::new(
             "".to_string(),
             "https://example.com/".to_string(),
+            None,
+            None,
+            None,
+            None,
             None,
             None,
             None,
@@ -99,6 +119,10 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
+            None,
+            None,
             json!({}),
         );
 
@@ -119,6 +143,10 @@ mod tests {
             Some("user@example.com".to_string()),
             Some(true),
             None,
+            None,
+            None,
+            None,
+            None,
             json!({}),
         )
         .unwrap();
@@ -133,6 +161,10 @@ mod tests {
             "https://example.com/".to_string(),
             Some("user@example.com".to_string()),
             Some(false),
+            None,
+            None,
+            None,
+            None,
             None,
             json!({}),
         )
@@ -149,6 +181,10 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
+            None,
+            None,
             json!({}),
         )
         .unwrap();
@@ -162,6 +198,10 @@ mod tests {
         let principal = AuthenticatedPrincipal::new(
             "user123".to_string(),
             "https://example.com/".to_string(),
+            None,
+            None,
+            None,
+            None,
             None,
             None,
             None,
@@ -186,6 +226,10 @@ mod tests {
         let principal = AuthenticatedPrincipal::new(
             "user123".to_string(),
             "https://example.com/".to_string(),
+            None,
+            None,
+            None,
+            None,
             None,
             None,
             None,

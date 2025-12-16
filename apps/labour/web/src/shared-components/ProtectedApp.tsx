@@ -1,8 +1,8 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
-import { ErrorContainer } from './ErrorContainer/ErrorContainer';
 import { PageLoading } from './PageLoading/PageLoading';
+import { useClerkUser } from './hooks/useClerkUser';
 
 interface ProtectedAppProps {
   children: ReactNode;
@@ -12,8 +12,8 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
   const { children } = props;
 
   const { isOnline } = useNetworkState();
-  const { isAuthenticated, isLoading, error, user, loginWithRedirect, getAccessTokenSilently } =
-    useAuth0();
+  const { isLoaded: isAuthLoaded, isSignedIn, getToken } = useAuth();
+  const { user, isLoaded: isUserLoaded } = useClerkUser();
   const wasOnlineRef = useRef<boolean | null>(null);
 
   // Handle reconnection - refresh token when coming back online
@@ -30,42 +30,28 @@ export const ProtectedApp: React.FC<ProtectedAppProps> = (props) => {
       return;
     }
 
-    if (user || isAuthenticated) {
-      getAccessTokenSilently({ cacheMode: 'off' }).catch(() => {
-        void loginWithRedirect();
+    if (user || isSignedIn) {
+      getToken({ skipCache: true }).catch(() => {
+        // Token refresh failed, user will be redirected to sign in
       });
-      return;
     }
+  }, [isOnline, user, isSignedIn, getToken]);
 
-    if (!isLoading) {
-      void loginWithRedirect();
-    }
-  }, [isOnline, user, isAuthenticated, isLoading, getAccessTokenSilently, loginWithRedirect]);
-
-  if (error) {
-    if (error?.message.includes('No matching state') || error?.message.includes('state mismatch')) {
-      window.location.href = '/';
-      return <PageLoading />;
-    }
-
-    if (!isOnline && user) {
-      return children;
-    }
-
-    return <ErrorContainer message={error?.message} />;
-  }
-
-  if (isLoading) {
-    return <PageLoading />;
-  }
-
-  if (isAuthenticated) {
+  // Handle offline mode with cached user
+  if (!isOnline && user) {
     return children;
   }
 
-  if (!isLoading) {
-    void loginWithRedirect();
+  // Show loading while auth state is being determined
+  if (!isAuthLoaded || !isUserLoaded) {
+    return <PageLoading />;
   }
 
-  return <PageLoading />;
+  // If signed in, show the app
+  if (isSignedIn) {
+    return children;
+  }
+
+  // Not signed in, redirect to sign in
+  return <RedirectToSignIn />;
 };

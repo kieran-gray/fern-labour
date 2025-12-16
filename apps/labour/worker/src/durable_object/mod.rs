@@ -3,6 +3,7 @@ pub mod exceptions;
 pub mod read_side;
 pub mod security;
 pub mod state;
+pub mod user_storage;
 pub mod write_side;
 
 use tracing::{error, info};
@@ -10,7 +11,7 @@ use worker::{DurableObject, Env, Request, Response, Result, State, durable_objec
 
 use crate::durable_object::{
     api::RequestDto, exceptions::IntoWorkerResponse, state::AggregateServices,
-    write_side::infrastructure::alarm_manager::AlarmManager,
+    user_storage::UserStorage, write_side::infrastructure::alarm_manager::AlarmManager,
 };
 
 #[durable_object]
@@ -19,6 +20,7 @@ pub struct LabourAggregate {
     _env: Env,
     pub(crate) services: AggregateServices,
     alarm_manager: AlarmManager,
+    user_storage: UserStorage,
 }
 
 impl DurableObject for LabourAggregate {
@@ -29,12 +31,17 @@ impl DurableObject for LabourAggregate {
         };
 
         let alarm_manager = AlarmManager::create(state.storage());
+        let user_storage = UserStorage::create(state.storage().sql());
+        if let Err(err) = user_storage.init_schema() {
+            panic!("Failed to initialize user storage schema: {}", err);
+        }
 
         Self {
             _state: state,
             _env: env,
             services,
             alarm_manager,
+            user_storage,
         }
     }
 
@@ -43,6 +50,11 @@ impl DurableObject for LabourAggregate {
             Ok(dto) => dto,
             Err(err) => return Response::error(format!("Bad request: {}", err), 400),
         };
+
+        let user = &request_dto.auth_context().user;
+        if let Err(e) = self.user_storage.save_user_if_not_exists(user) {
+            error!(error = %e, user_id = %user.user_id, "Failed to save user");
+        }
 
         let result = api::route_and_handle(self, request_dto);
 

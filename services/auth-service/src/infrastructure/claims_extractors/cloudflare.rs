@@ -10,6 +10,22 @@ impl ClaimsExtractor for CloudflareClaimsExtractor {
         claims.get("email_verified").and_then(|v| v.as_bool())
     }
 
+    fn extract_phone_number(&self, _claims: &serde_json::Value) -> Option<String> {
+        None
+    }
+
+    fn extract_phone_number_verified(&self, _claims: &serde_json::Value) -> Option<String> {
+        None
+    }
+
+    fn extract_first_name(&self, _claims: &serde_json::Value) -> Option<String> {
+        None
+    }
+
+    fn extract_last_name(&self, _claims: &serde_json::Value) -> Option<String> {
+        None
+    }
+
     fn extract_name(&self, claims: &serde_json::Value) -> Option<String> {
         claims
             .get("name")

@@ -29,6 +29,7 @@ pub async fn handle_query(
         ApiQuery::Contraction(qry) => ("/contraction/query", serde_json::to_value(qry)?),
         ApiQuery::LabourUpdate(qry) => ("/labour-update/query", serde_json::to_value(qry)?),
         ApiQuery::Subscription(qry) => ("/subscription/query", serde_json::to_value(qry)?),
+        ApiQuery::User(qry) => ("/user/query", serde_json::to_value(qry)?),
     };
 
     let mut do_response = ctx

@@ -46,6 +46,10 @@ export const queryKeysV2 = {
     byId: (labourId: string, subscriptionId: string) =>
       [...queryKeysV2.subscriptions.byLabour(labourId), subscriptionId] as const,
   },
+  users: {
+    all: ['users-v2'] as const,
+    byLabour: (labourId: string) => [...queryKeysV2.users.all, labourId] as const,
+  },
 } as const;
 
 // Helper function to decode cursor
@@ -906,6 +910,32 @@ export function useSubscriptionsV2(client: LabourServiceV2Client, labourId: stri
       }
 
       return response.data.data;
+    },
+    enabled: !!labourId && !!user?.sub,
+    retry: 0,
+  });
+}
+
+/**
+ * Hook for fetching users
+ */
+export function useUsersV2(client: LabourServiceV2Client, labourId: string | null) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: labourId ? queryKeysV2.users.byLabour(labourId) : [],
+    queryFn: async () => {
+      if (!labourId) {
+        throw new Error('Labour ID is required');
+      }
+
+      const response = await client.getUsers(labourId);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load users');
+      }
+
+      return response.data;
     },
     enabled: !!labourId && !!user?.sub,
     retry: 0,

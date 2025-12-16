@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use tracing::info;
+
 use crate::{
     application::exceptions::AppError,
     domain::{AuthenticatedPrincipal, TokenClaims},
@@ -42,11 +44,17 @@ impl IdentityExtractionServiceTrait for IdentityExtractionService {
                 issuer_name
             )))?;
 
+        info!("{:?}", claims);
+
         AuthenticatedPrincipal::new(
             claims.subject.to_string(),
             claims.issuer.to_string(),
             extractor.extract_email(&claims.custom_claims),
             extractor.extract_email_verified(&claims.custom_claims),
+            extractor.extract_phone_number(&claims.custom_claims),
+            extractor.extract_phone_number_verified(&claims.custom_claims),
+            extractor.extract_first_name(&claims.custom_claims),
+            extractor.extract_last_name(&claims.custom_claims),
             extractor.extract_name(&claims.custom_claims),
             claims.custom_claims.clone(),
         )
@@ -57,6 +65,10 @@ impl IdentityExtractionServiceTrait for IdentityExtractionService {
 pub trait ClaimsExtractor: Send + Sync {
     fn extract_email(&self, claims: &serde_json::Value) -> Option<String>;
     fn extract_email_verified(&self, claims: &serde_json::Value) -> Option<bool>;
+    fn extract_phone_number(&self, claims: &serde_json::Value) -> Option<String>;
+    fn extract_phone_number_verified(&self, claims: &serde_json::Value) -> Option<String>;
+    fn extract_first_name(&self, claims: &serde_json::Value) -> Option<String>;
+    fn extract_last_name(&self, claims: &serde_json::Value) -> Option<String>;
     fn extract_name(&self, claims: &serde_json::Value) -> Option<String>;
     fn extract_roles(&self, claims: &serde_json::Value) -> Vec<String>;
 }

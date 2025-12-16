@@ -42,6 +42,12 @@
         "jwks_path": "cdn-cgi/access/certs",
         "audience": "2479075b8cec955a824027301a8c611e914863c26996fbf2522769a1e236e4a1",
         "name": "Cloudflare"
+      },
+      "clerk": {
+        "issuer_url": "https://humane-treefrog-17.clerk.accounts.dev/",
+        "jwks_path": ".well-known/jwks.json",
+        "audience": null,
+        "name": "Clerk"
       }
     }
   },
@@ -68,6 +74,12 @@
             "jwks_path": "cdn-cgi/access/certs",
             "audience": "6e2f6299ee749058bc5745580f2e14ed0b38aa30f7c7551436687fd89f265aff",
             "name": "Cloudflare"
+          },
+          "clerk": {
+            "issuer_url": "https://humane-treefrog-17.clerk.accounts.dev/",
+            "jwks_path": ".well-known/jwks.json",
+            "audience": "",
+            "name": "Clerk"
           }
         }
       }

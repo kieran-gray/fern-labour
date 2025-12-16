@@ -26,15 +26,13 @@ use crate::durable_object::{
             subscriptions::{
                 SqlSubscriptionRepository, SubscriptionReadModelProjector,
                 SubscriptionReadModelQuery,
-            },
+            }, users::query::UserQuery,
         },
-    },
-    security::token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator},
-    write_side::{
+    }, security::token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator}, user_storage::UserStorage, write_side::{
         application::{AdminCommandProcessor, command_processors::LabourCommandProcessor},
         domain::LabourEvent,
         infrastructure::SqlEventStore,
-    },
+    }
 };
 
 pub struct WriteModel {
@@ -44,6 +42,7 @@ pub struct WriteModel {
 
 pub struct ReadModel {
     pub event_query: EventQuery,
+    pub user_query: UserQuery,
     pub labour_query: LabourReadModelQuery,
     pub contraction_query: ContractionReadModelQuery,
     pub labour_update_query: LabourUpdateReadModelQuery,
@@ -108,8 +107,12 @@ impl AggregateServices {
         let subscription_token_generator =
             Box::new(SplitMix64TokenGenerator::create(subscription_token_salt));
 
+        let user_storage = UserStorage::create(sql);
+        let user_query = UserQuery::new(user_storage);
+
         Ok(ReadModel {
             event_query,
+            user_query,
             labour_query,
             contraction_query,
             labour_update_query,

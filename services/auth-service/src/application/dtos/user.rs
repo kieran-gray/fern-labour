@@ -8,6 +8,10 @@ pub struct UserDto {
     pub issuer: String,
     pub email: Option<String>,
     pub email_verified: Option<bool>,
+    pub phone_number: Option<String>,
+    pub phone_number_verified: Option<String>,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
     pub name: Option<String>,
 }
 
@@ -18,6 +22,10 @@ impl From<AuthenticatedPrincipal> for UserDto {
             issuer: value.issuer,
             email: value.email,
             email_verified: value.email_verified,
+            phone_number: value.phone_number,
+            phone_number_verified: value.phone_number_verified,
+            first_name: value.first_name,
+            last_name: value.last_name,
             name: value.name,
         }
     }

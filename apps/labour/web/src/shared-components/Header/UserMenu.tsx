@@ -1,5 +1,6 @@
 import { forwardRef, useState } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useClerk } from '@clerk/clerk-react';
+import { useClerkUser } from '../hooks/useClerkUser';
 import { AppMode, useMode } from '@base/contexts/AppModeContext';
 import {
   IconArrowLeft,
@@ -8,11 +9,9 @@ import {
   IconLogout,
   IconMessageCircleQuestion,
   IconMoon,
-  IconPassword,
   IconSettings,
   IconSun,
   IconSwitchHorizontal,
-  IconTrash,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -57,7 +56,8 @@ export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
 
 export function MobileUserMenu() {
   const [section, setSection] = useState<'app' | 'account'>('app');
-  const { user, loginWithRedirect, logout } = useAuth0();
+  const { user } = useClerkUser();
+  const { signOut, openUserProfile } = useClerk();
   const navigate = useNavigate();
   const pathname = window.location.pathname;
   const { mode, setMode } = useMode();
@@ -156,48 +156,14 @@ export function MobileUserMenu() {
           className={classes.mainLink}
           onClick={(event) => {
             event.preventDefault();
-            void loginWithRedirect({
-              authorizationParams: { kc_action: 'UPDATE_PROFILE' },
-            });
+            openUserProfile();
           }}
           leftSection={<IconSettings size={16} stroke={1.5} />}
           size="md"
           w="100%"
           variant="transparent"
         >
-          Update Profile
-        </Button>
-        <Button
-          key="password"
-          className={classes.mainLink}
-          onClick={(event) => {
-            event.preventDefault();
-            void loginWithRedirect({
-              authorizationParams: { kc_action: 'UPDATE_PASSWORD' },
-            });
-          }}
-          leftSection={<IconPassword size={16} stroke={1.5} />}
-          size="md"
-          w="100%"
-          variant="transparent"
-        >
-          Change Password
-        </Button>
-        <Button
-          key="delete"
-          className={classes.mainLink}
-          onClick={(event) => {
-            event.preventDefault();
-            void loginWithRedirect({
-              authorizationParams: { kc_action: 'delete_account' },
-            });
-          }}
-          leftSection={<IconTrash size={16} stroke={1.5} />}
-          size="md"
-          w="100%"
-          variant="transparent"
-        >
-          Delete Account
+          Manage Account
         </Button>
       </Group>
     </>
@@ -231,13 +197,13 @@ export function MobileUserMenu() {
 
       <div style={{ flexGrow: 1 }} />
       <div className={classes.footer}>
-        <UserButton name={user?.name ?? ''} />
+        <UserButton name={user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? ''} />
         <Button
           key="logout"
           className={classes.mainLink}
           onClick={(event) => {
             event.preventDefault();
-            void logout({ logoutParams: { returnTo: window.location.origin } });
+            void signOut({ redirectUrl: window.location.origin });
           }}
           size="md"
           w="100%"

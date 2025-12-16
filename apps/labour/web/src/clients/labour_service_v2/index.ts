@@ -67,6 +67,8 @@ export type {
   LabourUpdateQuery,
   GetLabourUpdatesQuery,
   GetLabourUpdateByIdQuery,
+  UserQuery,
+  GetUsersQuery,
   ApiQuery,
   // Read Model Types
   LabourReadModel,
@@ -74,6 +76,8 @@ export type {
   Duration,
   ContractionReadModel,
   LabourUpdateReadModel,
+  SubscriptionReadModel,
+  User,
   // Paginated Response
   PaginatedResponse,
   // Response types

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{ContractionQuery, LabourQuery, LabourUpdateQuery, queries::subscription::SubscriptionQuery};
+use crate::{ContractionQuery, LabourQuery, LabourUpdateQuery, queries::{subscription::SubscriptionQuery, user::UserQuery}};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "payload")]
@@ -16,7 +16,10 @@ pub enum ApiQuery {
     LabourUpdate(LabourUpdateQuery),
 
     #[serde(rename = "Subscription")]
-    Subscription(SubscriptionQuery)
+    Subscription(SubscriptionQuery),
+
+    #[serde(rename = "User")]
+    User(UserQuery),
 }
 
 impl ApiQuery {
@@ -26,6 +29,7 @@ impl ApiQuery {
             Self::Contraction(query) => query.labour_id(),
             Self::LabourUpdate(query) => query.labour_id(),
             Self::Subscription(query) => query.labour_id(),
+            Self::User(query) => query.labour_id(),
         }
     }
 }

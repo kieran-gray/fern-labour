@@ -48,13 +48,7 @@ where
             }
         }
     } else {
-        User {
-            user_id: "anonymous".to_string(),
-            issuer: "none".to_string(),
-            email: None,
-            email_verified: None,
-            name: None,
-        }
+        User::internal("anonymous".to_string())
     };
 
     handler(req, ctx, cors_context, user).await

@@ -2,7 +2,7 @@ use fern_labour_event_sourcing_rs::CommandEnvelope;
 use fern_labour_labour_shared::{
     AdminCommand, ContractionCommand, ContractionQuery, LabourCommand, LabourQuery,
     LabourUpdateCommand, LabourUpdateQuery, SubscriberCommand, SubscriptionCommand,
-    queries::subscription::SubscriptionQuery,
+    queries::{subscription::SubscriptionQuery, user::UserQuery},
 };
 use fern_labour_workers_shared::clients::worker_clients::auth::User;
 use tracing::info;
@@ -47,6 +47,10 @@ pub enum RequestDto {
     EventsQuery {
         auth: AuthContext,
     },
+    UserQuery {
+        query: UserQuery,
+        auth: AuthContext,
+    },
     LabourQuery {
         query: LabourQuery,
         auth: AuthContext,
@@ -77,6 +81,24 @@ impl RequestDto {
             .map_err(|e| worker::Error::RustError(format!("Invalid user info: {}", e)))?;
 
         Ok(AuthContext { user })
+    }
+
+    pub fn auth_context(&self) -> &AuthContext {
+        match self {
+            RequestDto::DomainCommand { auth, .. } => auth,
+            RequestDto::LabourCommand { auth, .. } => auth,
+            RequestDto::ContractionCommand { auth, .. } => auth,
+            RequestDto::LabourUpdateCommand { auth, .. } => auth,
+            RequestDto::SubscriberCommand { auth, .. } => auth,
+            RequestDto::SubscriptionCommand { auth, .. } => auth,
+            RequestDto::AdminCommand { auth, .. } => auth,
+            RequestDto::EventsQuery { auth } => auth,
+            RequestDto::LabourQuery { auth, .. } => auth,
+            RequestDto::ContractionQuery { auth, .. } => auth,
+            RequestDto::LabourUpdateQuery { auth, .. } => auth,
+            RequestDto::SubscriptionQuery { auth, .. } => auth,
+            RequestDto::UserQuery { auth, .. } => auth,
+        }
     }
 
     pub async fn from_request(mut req: Request) -> Result<Self> {
@@ -216,6 +238,15 @@ impl RequestDto {
                 );
 
                 Ok(Self::SubscriptionQuery { query, auth })
+            }
+            (worker::Method::Post, "/user/query") => {
+                let query: UserQuery = req.json().await?;
+                info!(
+                    query = ?query,
+                    "Deserialized user query"
+                );
+
+                Ok(Self::UserQuery { query, auth })
             }
             _ => Response::error("Not Found", 404).map(|_| unreachable!()),
         }
