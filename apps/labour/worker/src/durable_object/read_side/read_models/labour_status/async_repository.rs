@@ -9,15 +9,11 @@ use worker::D1Database;
 use super::read_model::{LabourStatusReadModel, LabourStatusRow};
 
 #[async_trait(?Send)]
-pub trait ActiveLabourTrait {
-    async fn get_active_labour(&self, user_id: String) -> Result<Option<LabourStatusReadModel>>;
-}
-
 pub trait LabourStatusRepositoryTrait:
-    AsyncRepositoryTrait<LabourStatusReadModel>
-    + AsyncRepositoryUserTrait<LabourStatusReadModel>
-    + ActiveLabourTrait
+    AsyncRepositoryTrait<LabourStatusReadModel> + AsyncRepositoryUserTrait<LabourStatusReadModel>
 {
+    async fn get_active_labour(&self, user_id: String) -> Result<Option<LabourStatusReadModel>>;
+    async fn get_by_ids(&self, labour_ids: Vec<Uuid>) -> Result<Vec<LabourStatusReadModel>>;
 }
 
 pub struct D1LabourStatusRepository {
@@ -96,19 +92,19 @@ impl AsyncRepositoryTrait<LabourStatusReadModel> for D1LabourStatusRepository {
         self.db
             .prepare(
                 "INSERT INTO labour_status (
-                    labour_id, birthing_person_id, current_phase, labour_name, created_at, updated_at
+                    labour_id, mother_id, mother_name, current_phase, labour_name, created_at, updated_at
                  )
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
                  ON CONFLICT(labour_id)
                  DO UPDATE SET
-                    birthing_person_id = ?2,
-                    current_phase = ?3,
-                    labour_name = ?4,
-                    updated_at = ?6",
+                    current_phase = ?4,
+                    labour_name = ?5,
+                    updated_at = ?7",
             )
             .bind(&[
                 labour.labour_id.to_string().into(),
-                labour.birthing_person_id.clone().into(),
+                labour.mother_id.clone().into(),
+                labour.mother_name.clone().into(),
                 labour.current_phase.to_string().into(),
                 labour_name_value,
                 labour.created_at.to_rfc3339().into(),
@@ -149,13 +145,14 @@ impl AsyncRepositoryTrait<LabourStatusReadModel> for D1LabourStatusRepository {
         self.db
             .prepare(
                 "INSERT OR REPLACE INTO labour_status (
-                    labour_id, birthing_person_id, current_phase, labour_name, created_at, updated_at
+                    labour_id, mother_id, mother_name, current_phase, labour_name, created_at, updated_at
                  )
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
             )
             .bind(&[
                 labour.labour_id.to_string().into(),
-                labour.birthing_person_id.clone().into(),
+                labour.mother_id.clone().into(),
+                labour.mother_name.clone().into(),
                 labour.current_phase.to_string().into(),
                 labour_name_value,
                 labour.created_at.to_rfc3339().into(),
@@ -178,7 +175,7 @@ impl AsyncRepositoryUserTrait<LabourStatusReadModel> for D1LabourStatusRepositor
         limit: usize,
         cursor: Option<DecodedCursor>,
     ) -> Result<Vec<LabourStatusReadModel>> {
-        let mut query = "SELECT * FROM labour_status WHERE birthing_person_id = ?1".to_string();
+        let mut query = "SELECT * FROM labour_status WHERE mother_id = ?1".to_string();
         let mut bindings = vec![user_id.into()];
 
         if let Some(cur) = cursor {
@@ -214,11 +211,13 @@ impl AsyncRepositoryUserTrait<LabourStatusReadModel> for D1LabourStatusRepositor
 }
 
 #[async_trait(?Send)]
-impl ActiveLabourTrait for D1LabourStatusRepository {
+impl LabourStatusRepositoryTrait for D1LabourStatusRepository {
     async fn get_active_labour(&self, user_id: String) -> Result<Option<LabourStatusReadModel>> {
         let result: Option<LabourStatusRow> = self
             .db
-            .prepare("SELECT * FROM labour_status WHERE birthing_person_id = ?1 AND current_phase != 'COMPLETED'")
+            .prepare(
+                "SELECT * FROM labour_status WHERE mother_id = ?1 AND current_phase != 'COMPLETED'",
+            )
             .bind(&[user_id.to_string().into()])
             .context("Failed to prepare active labour query")?
             .first(None)
@@ -230,6 +229,34 @@ impl ActiveLabourTrait for D1LabourStatusRepository {
             None => Ok(None),
         }
     }
-}
 
-impl LabourStatusRepositoryTrait for D1LabourStatusRepository {}
+    async fn get_by_ids(&self, labour_ids: Vec<Uuid>) -> Result<Vec<LabourStatusReadModel>> {
+        if labour_ids.is_empty() {
+            return Ok(vec![]);
+        }
+
+        let placeholders: Vec<String> = (1..=labour_ids.len()).map(|i| format!("?{}", i)).collect();
+        let query = format!(
+            "SELECT * FROM labour_status WHERE labour_id IN ({})",
+            placeholders.join(", ")
+        );
+
+        let bindings: Vec<worker::wasm_bindgen::JsValue> =
+            labour_ids.iter().map(|id| id.to_string().into()).collect();
+
+        let statement = self
+            .db
+            .prepare(query)
+            .bind(&bindings)
+            .context("Failed to bind parameters")?;
+
+        let rows: Vec<LabourStatusRow> = statement
+            .all()
+            .await
+            .context("Failed to fetch labour status")?
+            .results()
+            .context("Failed to parse labour status results")?;
+
+        rows.into_iter().map(|row| row.into_read_model()).collect()
+    }
+}

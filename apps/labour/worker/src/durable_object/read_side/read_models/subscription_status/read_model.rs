@@ -3,44 +3,42 @@ use std::str::FromStr;
 use anyhow::{Result, anyhow};
 use chrono::{DateTime, Utc};
 use fern_labour_event_sourcing_rs::Cursor;
-use fern_labour_labour_shared::value_objects::LabourPhase;
+use fern_labour_labour_shared::value_objects::subscriber::status::SubscriberStatus;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LabourStatusReadModel {
+pub struct SubscriptionStatusReadModel {
+    pub subscription_id: Uuid,
     pub labour_id: Uuid,
-    pub mother_id: String,
-    pub mother_name: String,
-    pub current_phase: LabourPhase,
-    pub labour_name: Option<String>,
+    pub subscriber_id: String,
+    pub status: SubscriberStatus,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
-impl LabourStatusReadModel {
+impl SubscriptionStatusReadModel {
     pub fn new(
         labour_id: Uuid,
-        mother_id: String,
-        mother_name: String,
-        labour_name: Option<String>,
+        subscription_id: Uuid,
+        subscriber_id: String,
+        status: SubscriberStatus,
         created_at: DateTime<Utc>,
     ) -> Self {
         Self {
             labour_id,
-            mother_id,
-            mother_name,
-            current_phase: LabourPhase::PLANNED,
-            labour_name,
+            subscription_id,
+            subscriber_id,
+            status,
             created_at,
             updated_at: created_at,
         }
     }
 }
 
-impl Cursor for LabourStatusReadModel {
+impl Cursor for SubscriptionStatusReadModel {
     fn id(&self) -> Uuid {
-        self.labour_id
+        self.subscription_id
     }
 
     fn updated_at(&self) -> DateTime<Utc> {
@@ -49,46 +47,44 @@ impl Cursor for LabourStatusReadModel {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct LabourStatusRow {
+pub struct SubscriptionStatusRow {
+    pub subscription_id: String,
     pub labour_id: String,
-    pub mother_id: String,
-    pub mother_name: String,
-    pub current_phase: String,
-    pub labour_name: Option<String>,
+    pub subscriber_id: String,
+    pub status: String,
     pub created_at: String,
     pub updated_at: String,
 }
 
-impl LabourStatusRow {
-    pub fn into_read_model(self) -> Result<LabourStatusReadModel> {
-        Ok(LabourStatusReadModel {
+impl SubscriptionStatusRow {
+    pub fn into_read_model(self) -> Result<SubscriptionStatusReadModel> {
+        Ok(SubscriptionStatusReadModel {
+            subscription_id: Uuid::parse_str(&self.subscription_id)
+                .map_err(|e| anyhow!("Invalid subscription_id UUID: {}", e))?,
             labour_id: Uuid::parse_str(&self.labour_id)
                 .map_err(|e| anyhow!("Invalid labour_id UUID: {}", e))?,
-            mother_id: self.mother_id,
-            mother_name: self.mother_name,
-            current_phase: Self::parse_labour_phase(&self.current_phase)?,
-            labour_name: self.labour_name,
+            subscriber_id: self.subscriber_id,
+            status: Self::parse_subscriber_status(&self.status)?,
             created_at: Self::parse_timestamp(&self.created_at)?,
             updated_at: Self::parse_timestamp(&self.updated_at)?,
         })
     }
 
-    pub fn from_read_model(model: &LabourStatusReadModel) -> Result<Self> {
+    pub fn from_read_model(model: &SubscriptionStatusReadModel) -> Result<Self> {
         Ok(Self {
+            subscription_id: model.subscription_id.to_string(),
             labour_id: model.labour_id.to_string(),
-            mother_id: model.mother_id.clone(),
-            mother_name: model.mother_name.clone(),
-            current_phase: model.current_phase.to_string(),
-            labour_name: model.labour_name.clone(),
+            subscriber_id: model.subscriber_id.clone(),
+            status: model.status.to_string(),
             created_at: model.created_at.to_rfc3339(),
             updated_at: model.updated_at.to_rfc3339(),
         })
     }
 
-    fn parse_labour_phase(phase: &str) -> Result<LabourPhase> {
-        let phase =
-            LabourPhase::from_str(phase).map_err(|e| anyhow!("Invalid labour_phase: {}", e))?;
-        Ok(phase)
+    fn parse_subscriber_status(status: &str) -> Result<SubscriberStatus> {
+        let status =
+            SubscriberStatus::from_str(status).map_err(|e| anyhow!("Invalid status: {}", e))?;
+        Ok(status)
     }
 
     fn parse_timestamp(timestamp: &str) -> Result<DateTime<Utc>> {

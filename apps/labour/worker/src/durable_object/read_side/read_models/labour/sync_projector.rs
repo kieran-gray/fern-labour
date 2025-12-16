@@ -40,13 +40,15 @@ impl LabourReadModelProjector {
         match event {
             LabourEvent::LabourPlanned {
                 labour_id,
-                birthing_person_id,
+                mother_id,
+                mother_name,
                 first_labour,
                 due_date,
                 labour_name,
             } if model.is_none() => Some(LabourReadModel::new(
                 *labour_id,
-                birthing_person_id.clone(),
+                mother_id.clone(),
+                mother_name.clone(),
                 *first_labour,
                 *due_date,
                 labour_name.clone(),

@@ -1,6 +1,6 @@
 import { SubscriptionReadModel, User } from '@base/clients/labour_service_v2/types';
 import { useLabour } from '@base/contexts/LabourContext';
-import { useSubscriptionsV2, useUsersV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useLabourSubscriptionsV2, useUsersV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
 import { useLabourV2Client } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
@@ -18,7 +18,7 @@ const TABS = [
 export const ManageSubscribersTabs = () => {
   const { labourId } = useLabour();
   const client = useLabourV2Client();
-  const { isPending, isError, data: subscriptions, error } = useSubscriptionsV2(client, labourId!);
+  const { isPending, isError, data: subscriptions, error } = useLabourSubscriptionsV2(client, labourId!);
   const { data: users = [] } = useUsersV2(client, labourId!);
 
   if (isPending) {

@@ -5,6 +5,12 @@ use worker::SqlStorage;
 
 use super::read_model::{SubscriptionReadModel, SubscriptionRow};
 
+pub trait SubscriptionRepositoryTrait: SyncRepositoryTrait<SubscriptionReadModel> {
+    fn get_all(&self) -> Result<Vec<SubscriptionReadModel>>;
+    fn get_by_labour_id(&self, labour_id: Uuid) -> Result<Vec<SubscriptionReadModel>>;
+    fn get_by_subscriber_id(&self, subscriber_id: &str) -> Result<SubscriptionReadModel>;
+}
+
 pub struct SqlSubscriptionRepository {
     sql: SqlStorage,
 }
@@ -42,8 +48,10 @@ impl SqlSubscriptionRepository {
 
         Ok(())
     }
+}
 
-    pub fn get_all(&self) -> Result<Vec<SubscriptionReadModel>> {
+impl SubscriptionRepositoryTrait for SqlSubscriptionRepository {
+    fn get_all(&self) -> Result<Vec<SubscriptionReadModel>> {
         let rows: Vec<SubscriptionRow> = self
             .sql
             .exec("SELECT * FROM subscriptions ORDER BY created_at ASC", None)
@@ -54,7 +62,7 @@ impl SqlSubscriptionRepository {
         rows.into_iter().map(|row| row.into_read_model()).collect()
     }
 
-    pub fn get_by_labour_id(&self, labour_id: Uuid) -> Result<Vec<SubscriptionReadModel>> {
+    fn get_by_labour_id(&self, labour_id: Uuid) -> Result<Vec<SubscriptionReadModel>> {
         let rows: Vec<SubscriptionRow> = self
             .sql
             .exec(
@@ -68,7 +76,7 @@ impl SqlSubscriptionRepository {
         rows.into_iter().map(|row| row.into_read_model()).collect()
     }
 
-    pub fn get_by_subscriber_id(&self, subscriber_id: &str) -> Result<Vec<SubscriptionReadModel>> {
+    fn get_by_subscriber_id(&self, subscriber_id: &str) -> Result<SubscriptionReadModel> {
         let rows: Vec<SubscriptionRow> = self
             .sql
             .exec(
@@ -79,7 +87,10 @@ impl SqlSubscriptionRepository {
             .to_array()
             .context("Failed to fetch subscriptions")?;
 
-        rows.into_iter().map(|row| row.into_read_model()).collect()
+        match rows.into_iter().next() {
+            Some(row) => row.into_read_model(),
+            None => Err(anyhow::anyhow!("Subscription not found")),
+        }
     }
 }
 

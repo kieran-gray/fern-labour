@@ -10,7 +10,8 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LabourReadModel {
     pub labour_id: Uuid,
-    pub birthing_person_id: String,
+    pub mother_id: String,
+    pub mother_name: String,
     pub current_phase: LabourPhase,
     pub first_labour: bool,
     pub due_date: DateTime<Utc>,
@@ -25,7 +26,8 @@ pub struct LabourReadModel {
 impl LabourReadModel {
     pub fn new(
         labour_id: Uuid,
-        birthing_person_id: String,
+        mother_id: String,
+        mother_name: String,
         first_labour: bool,
         due_date: DateTime<Utc>,
         labour_name: Option<String>,
@@ -33,7 +35,8 @@ impl LabourReadModel {
     ) -> Self {
         Self {
             labour_id,
-            birthing_person_id,
+            mother_id,
+            mother_name,
             current_phase: LabourPhase::PLANNED,
             first_labour,
             due_date,
@@ -60,7 +63,8 @@ impl Cursor for LabourReadModel {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LabourRow {
     pub labour_id: String,
-    pub birthing_person_id: String,
+    pub mother_id: String,
+    pub mother_name: String,
     pub current_phase: String,
     pub first_labour: String,
     pub due_date: String,
@@ -77,7 +81,8 @@ impl LabourRow {
         Ok(LabourReadModel {
             labour_id: Uuid::parse_str(&self.labour_id)
                 .map_err(|e| anyhow!("Invalid labour_id UUID: {}", e))?,
-            birthing_person_id: self.birthing_person_id,
+            mother_id: self.mother_id,
+            mother_name: self.mother_name,
             current_phase: Self::parse_labour_phase(&self.current_phase)?,
             first_labour: Self::parse_bool(&self.first_labour)?,
             due_date: Self::parse_timestamp(&self.due_date)?,
@@ -93,7 +98,8 @@ impl LabourRow {
     pub fn from_read_model(model: &LabourReadModel) -> Result<Self> {
         Ok(Self {
             labour_id: model.labour_id.to_string(),
-            birthing_person_id: model.birthing_person_id.clone(),
+            mother_id: model.mother_id.clone(),
+            mother_name: model.mother_name.clone(),
             current_phase: model.current_phase.to_string(),
             first_labour: model.first_labour.to_string(),
             due_date: model.due_date.to_rfc3339(),

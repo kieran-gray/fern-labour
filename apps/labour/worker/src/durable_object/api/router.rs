@@ -404,7 +404,7 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
                         .generate(&auth.user.user_id, &labour_id.to_string());
                     ApiResult::from_json_result(Ok(serde_json::json!({ "token": token })))
                 }
-                SubscriptionQuery::GetSubscriptions { labour_id } => {
+                SubscriptionQuery::GetLabourSubscriptions { labour_id } => {
                     info!(labour_id = %labour_id, user_id = %auth.user.user_id, "Getting subscriptions");
                     let subscriptions = aggregate
                         .services
@@ -413,6 +413,15 @@ pub fn route_and_handle(aggregate: &LabourAggregate, request: RequestDto) -> Api
                         .get(100, None) // TODO
                         .map(|items| build_paginated_response(items, 100));
                     ApiResult::from_json_result(subscriptions)
+                }
+                SubscriptionQuery::GetUserSubscription { labour_id } => {
+                    info!(labour_id = %labour_id, user_id = %auth.user.user_id, "Getting subscriptions");
+                    let subscription = aggregate
+                        .services
+                        .read_model()
+                        .subscription_query
+                        .get_user_subscription(auth.user.user_id);
+                    ApiResult::from_json_result(subscription)
                 }
             }
         }

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useSubscription } from '@base/contexts/SubscriptionContext';
-import { useSubscriptionById } from '@base/shared-components/hooks/useSubscriptionData';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
 import { PageLoading } from '@shared/PageLoading/PageLoading';
@@ -24,6 +23,8 @@ import LabourDetails from './Tabs/LabourDetails/LabourDetails';
 import { StatusUpdates } from './Tabs/LabourUpdates/LabourUpdates';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import baseClasses from '@shared/shared-styles.module.css';
+import { useUserSubscriptionV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useLabourV2Client } from '@base/shared-components/hooks';
 
 const TABS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
@@ -68,7 +69,8 @@ export const SubscriptionPage = () => {
     preventScrollOnSwipe: true,
   });
 
-  const { isPending, isError, data, error } = useSubscriptionById(subscriptionId);
+  const client = useLabourV2Client();
+  const { isPending, isError, data, error } = useUserSubscriptionV2(subscriptionId);
 
   if (isPending) {
     return (

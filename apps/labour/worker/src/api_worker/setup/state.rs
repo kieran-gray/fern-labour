@@ -7,8 +7,9 @@ use worker::Env;
 
 use crate::{
     api_worker::Config,
-    durable_object::read_side::read_models::labour_status::{
-        D1LabourStatusRepository, LabourStatusReadModelQuery,
+    durable_object::read_side::read_models::{
+        labour_status::{D1LabourStatusRepository, LabourStatusReadModelQuery},
+        subscription_status::{D1SubscriptionStatusRepository, SubscriptionStatusReadModelQuery},
     },
 };
 
@@ -17,6 +18,7 @@ pub struct AppState {
     pub auth_service: Box<dyn AuthServiceClient>,
     pub do_client: DurableObjectCQRSClient,
     pub labour_status_query: LabourStatusReadModelQuery,
+    pub subscription_status_query: SubscriptionStatusReadModelQuery,
 }
 
 impl AppState {
@@ -47,6 +49,15 @@ impl AppState {
         Ok(LabourStatusReadModelQuery::create(repository))
     }
 
+    fn create_subscription_status_query(env: &Env) -> Result<SubscriptionStatusReadModelQuery> {
+        let binding = "READ_MODEL_DB";
+        let db = env
+            .d1(binding)
+            .context(format!("Failed to load {}", binding))?;
+        let repository = Box::new(D1SubscriptionStatusRepository::create(db));
+        Ok(SubscriptionStatusReadModelQuery::create(repository))
+    }
+
     pub fn from_env(env: &Env) -> Result<Self> {
         let config = Config::from_env(env)?;
         let auth_service = Self::create_auth_service(env)?;
@@ -54,12 +65,14 @@ impl AppState {
         let do_client = Self::create_do_client(env)?;
 
         let labour_status_query = Self::create_labour_status_query(env)?;
+        let subscription_status_query = Self::create_subscription_status_query(env)?;
 
         Ok(Self {
             config,
             auth_service,
             do_client,
             labour_status_query,
+            subscription_status_query,
         })
     }
 }

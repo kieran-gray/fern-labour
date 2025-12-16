@@ -8,6 +8,8 @@ use crate::api_worker::api::routes::labour::get_active_labour;
 use crate::api_worker::api::routes::labour::get_labour_history;
 use crate::api_worker::api::routes::labour::handle_plan_labour;
 use crate::api_worker::api::routes::queries::handle_query;
+use crate::api_worker::api::routes::subscriptions::get_subscribed_labours;
+use crate::api_worker::api::routes::subscriptions::get_user_subscriptions;
 
 pub fn create_router(app_state: AppState) -> Router<'static, AppState> {
     Router::with_data(app_state)
@@ -23,6 +25,14 @@ pub fn create_router(app_state: AppState) -> Router<'static, AppState> {
             authenticated(get_active_labour, req, ctx)
         })
         .options("/api/v1/labour/active", create_options_handler)
+        .get_async("/api/v1/subscriptions/list", |req, ctx| {
+            authenticated(get_user_subscriptions, req, ctx)
+        })
+        .options("/api/v1/subscriptions/list", create_options_handler)
+        .get_async("/api/v1/subscriptions/labours", |req, ctx| {
+            authenticated(get_subscribed_labours, req, ctx)
+        })
+        .options("/api/v1/subscriptions/labours", create_options_handler)
         .post_async("/api/v1/command", |req, ctx| {
             authenticated(handle_command, req, ctx)
         })

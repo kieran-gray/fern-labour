@@ -36,7 +36,7 @@ pub async fn handle_plan_labour(
 
     let labour_id = Uuid::now_v7();
 
-    let domain_command = request_dto.into_domain(labour_id, user.user_id.clone());
+    let domain_command = request_dto.into_domain(labour_id, &user);
 
     ctx.data
         .do_client
@@ -65,11 +65,10 @@ pub async fn get_labour_history(
     cors_context: CorsContext,
     user: User,
 ) -> worker::Result<Response> {
-    let user_id = user.user_id;
     let labour_status = ctx
         .data
         .labour_status_query
-        .get_by_user_id(user_id)
+        .get_by_user_id(user.user_id)
         .await
         .map_err(|e| format!("Failed to query labour status: {e}"))?;
 
@@ -85,11 +84,10 @@ pub async fn get_active_labour(
     cors_context: CorsContext,
     user: User,
 ) -> worker::Result<Response> {
-    let user_id = user.user_id;
     let labour_status = ctx
         .data
         .labour_status_query
-        .get_active(user_id)
+        .get_active(user.user_id)
         .await
         .map_err(|e| format!("Failed to query active labour: {e}"))?;
 

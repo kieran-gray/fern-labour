@@ -41,6 +41,8 @@ export const queryKeysV2 = {
   subscriptions: {
     all: ['subscriptions-v2'] as const,
     byLabour: (labourId: string) => [...queryKeysV2.subscriptions.all, labourId] as const,
+    byUser: (userId: string) => [...queryKeysV2.subscriptions.all, userId] as const,
+    byLabourAndUser: (labourId: string, userId: string) => [...queryKeysV2.subscriptions.all, labourId, userId] as const,
     paginated: (labourId: string, cursor: string | null) =>
       [...queryKeysV2.subscriptions.byLabour(labourId), 'paginated', cursor] as const,
     byId: (labourId: string, subscriptionId: string) =>
@@ -893,7 +895,7 @@ export function useSubscriptionTokenV2(client: LabourServiceV2Client, labourId: 
 /**
  * Hook for fetching subscriptions
  */
-export function useSubscriptionsV2(client: LabourServiceV2Client, labourId: string | null) {
+export function useLabourSubscriptionsV2(client: LabourServiceV2Client, labourId: string | null) {
   const { user } = useApiAuth();
 
   return useQuery({
@@ -903,7 +905,7 @@ export function useSubscriptionsV2(client: LabourServiceV2Client, labourId: stri
         throw new Error('Labour ID is required');
       }
 
-      const response = await client.getSubscriptions(labourId);
+      const response = await client.getLabourSubscriptions(labourId);
 
       if (!response.success || !response.data) {
         throw new Error(response.error || 'Failed to load subscriptions');
@@ -912,6 +914,67 @@ export function useSubscriptionsV2(client: LabourServiceV2Client, labourId: stri
       return response.data.data;
     },
     enabled: !!labourId && !!user?.sub,
+    retry: 0,
+  });
+}
+
+export function useUserSubscriptionV2(client: LabourServiceV2Client, labourId: string | null) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: labourId ? queryKeysV2.subscriptions.byLabourAndUser(labourId, user?.sub || '') : [],
+    queryFn: async () => {
+      if (!labourId) {
+        throw new Error('Labour ID is required');
+      }
+
+      const response = await client.getUserSubscription(labourId);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load subscription');
+      }
+
+      return response.data.data;
+    },
+    enabled: !!labourId && !!user?.sub,
+    retry: 0,
+  });
+}
+
+export function useUserSubscribedLaboursV2(client: LabourServiceV2Client) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: queryKeysV2.labour.history(user?.sub || ''), // TODO
+    queryFn: async () => {
+      const response = await client.getSubscribedLabours();
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load labours');
+      }
+
+      return response.data;
+    },
+    enabled: !!user?.sub,
+    retry: 0,
+  });
+}
+
+export function useUserSubscriptionsV2(client: LabourServiceV2Client) {
+  const { user } = useApiAuth();
+
+  return useQuery({
+    queryKey: queryKeysV2.subscriptions.byUser(user?.sub || ''),
+    queryFn: async () => {
+      const response = await client.getUserSubscriptions();
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to load user subscriptions');
+      }
+
+      return response.data;
+    },
+    enabled: !!user?.sub,
     retry: 0,
   });
 }

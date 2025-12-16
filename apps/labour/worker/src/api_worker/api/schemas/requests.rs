@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use fern_labour_workers_shared::User;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -12,10 +13,11 @@ pub struct PlanLabourDTO {
 }
 
 impl PlanLabourDTO {
-    pub fn into_domain(self, labour_id: Uuid, user_id: String) -> LabourCommand {
+    pub fn into_domain(self, labour_id: Uuid, user: &User) -> LabourCommand {
         LabourCommand::PlanLabour {
             labour_id,
-            birthing_person_id: user_id,
+            mother_id: user.user_id.clone(),
+            mother_name: user.name.clone().unwrap_or_default(),
             first_labour: self.first_labour,
             due_date: self.due_date,
             labour_name: self.labour_name,

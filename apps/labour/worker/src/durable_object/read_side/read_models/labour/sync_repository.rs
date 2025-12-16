@@ -1,6 +1,5 @@
 use anyhow::{Context, Result, anyhow};
 use fern_labour_event_sourcing_rs::{DecodedCursor, SyncRepositoryTrait};
-use tracing::warn;
 use uuid::Uuid;
 use worker::SqlStorage;
 
@@ -20,24 +19,21 @@ impl SqlLabourRepository {
             .exec(
                 "CREATE TABLE IF NOT EXISTS labours (
                     labour_id TEXT PRIMARY KEY,
-                    birthing_person_id TEXT NOT NULL,
+                    mother_id TEXT NOT NULL,
+                    mother_name TEXT NOT NULL,
                     current_phase TEXT NOT NULL,
                     first_labour TEXT NOT NULL,
                     due_date TEXT NOT NULL,
                     labour_name TEXT,
                     start_time TEXT,
                     end_time TEXT,
+                    notes TEXT,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 )",
                 None,
             )
             .map_err(|err| anyhow!("Failed to create labours table: {err}"))?;
-
-        let _ = self
-            .sql
-            .exec("ALTER TABLE labours ADD COLUMN notes TEXT", None)
-            .map_err(|err| warn!("Migration failed, it may have already run: {err}"));
 
         Ok(())
     }
@@ -88,7 +84,8 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
 
         let mut bindings = vec![
             row.labour_id.into(),
-            row.birthing_person_id.into(),
+            row.mother_id.into(),
+            row.mother_name.into(),
             row.current_phase.into(),
             row.first_labour.into(),
             row.due_date.into(),
@@ -120,21 +117,21 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
         self.sql
             .exec(
                 "INSERT INTO labours (
-                    labour_id, birthing_person_id, current_phase, first_labour,
+                    labour_id, mother_id, mother_name, current_phase, first_labour,
                     due_date, labour_name, start_time, end_time, notes,
                     created_at, updated_at
                  )
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
                  ON CONFLICT(labour_id)
                  DO UPDATE SET
-                    current_phase = ?3,
-                    first_labour = ?4,
-                    due_date = ?5,
-                    labour_name = ?6,
-                    start_time = ?7,
-                    end_time = ?8,
-                    notes = ?9,
-                    updated_at = ?11",
+                    current_phase = ?4,
+                    first_labour = ?5,
+                    due_date = ?6,
+                    labour_name = ?7,
+                    start_time = ?8,
+                    end_time = ?9,
+                    notes = ?10,
+                    updated_at = ?12",
                 Some(bindings),
             )
             .context("Failed to upsert labour")?;
@@ -147,7 +144,8 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
 
         let mut bindings = vec![
             row.labour_id.into(),
-            row.birthing_person_id.into(),
+            row.mother_id.into(),
+            row.mother_name.into(),
             row.current_phase.into(),
             row.first_labour.into(),
             row.due_date.into(),
@@ -179,11 +177,11 @@ impl SyncRepositoryTrait<LabourReadModel> for SqlLabourRepository {
         self.sql
             .exec(
                 "INSERT OR REPLACE INTO labours (
-                    labour_id, birthing_person_id, current_phase, first_labour,
+                    labour_id, mother_id, mother_name, current_phase, first_labour,
                     due_date, labour_name, start_time, end_time, notes,
                     created_at, updated_at
                  )
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
                 Some(bindings),
             )
             .context("Failed to overwrite labour")?;

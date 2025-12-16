@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-use tracing::info;
-
 use crate::{
     application::exceptions::AppError,
     domain::{AuthenticatedPrincipal, TokenClaims},
@@ -43,8 +41,6 @@ impl IdentityExtractionServiceTrait for IdentityExtractionService {
                 "No extractor for {}",
                 issuer_name
             )))?;
-
-        info!("{:?}", claims);
 
         AuthenticatedPrincipal::new(
             claims.subject.to_string(),

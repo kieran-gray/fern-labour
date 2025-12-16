@@ -35,12 +35,14 @@ impl LabourStatusReadModelProjector {
         match event {
             LabourEvent::LabourPlanned {
                 labour_id,
-                birthing_person_id,
+                mother_id,
+                mother_name,
                 labour_name,
                 ..
             } if model.is_none() => Some(LabourStatusReadModel::new(
                 *labour_id,
-                birthing_person_id.clone(),
+                mother_id.clone(),
+                mother_name.clone(),
                 labour_name.clone(),
                 timestamp,
             )),

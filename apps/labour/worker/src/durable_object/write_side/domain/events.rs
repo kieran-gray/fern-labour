@@ -12,7 +12,8 @@ use fern_labour_event_sourcing_rs::{Event, StoredEvent};
 pub enum LabourEvent {
     LabourPlanned {
         labour_id: Uuid,
-        birthing_person_id: String,
+        mother_id: String,
+        mother_name: String,
         first_labour: bool,
         due_date: DateTime<Utc>,
         labour_name: Option<String>,

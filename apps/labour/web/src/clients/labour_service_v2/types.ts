@@ -362,14 +362,30 @@ export type GetSubscriptionTokenQuery = {
   };
 };
 
-export type GetSubscriptionsQuery = {
-  type: 'GetSubscriptions';
+export type GetLabourSubscriptionsQuery = {
+  type: 'GetLabourSubscriptions';
   payload: {
     labour_id: string;
   };
 };
 
-export type SubscriptionQuery = GetSubscriptionTokenQuery | GetSubscriptionsQuery;
+export type GetUserSubscriptionsQuery = {
+  type: 'GetUserSubscriptions';
+  payload: {
+    limit: number;
+    cursor?: Cursor;
+  };
+};
+
+export type GetUserSubscriptionQuery = {
+  type: "GetUserSubscription";
+  payload: {
+    labour_id: string;
+  };
+}
+
+
+export type SubscriptionQuery = GetSubscriptionTokenQuery | GetLabourSubscriptionsQuery | GetUserSubscriptionsQuery | GetUserSubscriptionQuery;
 
 // User Queries
 
@@ -459,6 +475,16 @@ export type SubscriptionReadModel = {
   created_at: string;
   updated_at: string;
 };
+
+export type SubscriptionStatusReadModel = {
+  subscription_id: string;
+  labour_id: string;
+  subscriber_id: string;
+  status: SubscriberStatus;
+  created_at: string;
+  updated_at: string;
+};
+
 
 export type User = {
   user_id: string;

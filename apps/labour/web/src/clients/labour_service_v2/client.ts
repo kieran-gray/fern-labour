@@ -30,6 +30,7 @@ import type {
   SubscriptionCommand,
   SubscriptionQuery,
   SubscriptionReadModel,
+  SubscriptionStatusReadModel,
   User,
   UserQuery,
 } from './types';
@@ -625,16 +626,92 @@ export class LabourServiceV2Client {
     return this.sendQuery({ type: 'Subscription', payload: query });
   }
 
-  async getSubscriptions(
+  async getLabourSubscriptions(
     labourId: string
   ): Promise<QueryResponse<PaginatedResponse<SubscriptionReadModel>>> {
     const query: SubscriptionQuery = {
-      type: 'GetSubscriptions',
+      type: 'GetLabourSubscriptions',
       payload: {
         labour_id: labourId,
       },
     };
     return this.sendQuery({ type: 'Subscription', payload: query });
+  }
+
+  async getUserSubscription(
+    labourId: string
+  ): Promise<QueryResponse<PaginatedResponse<SubscriptionReadModel>>> {
+    const query: SubscriptionQuery = {
+      type: 'GetUserSubscription',
+      payload: {
+        labour_id: labourId,
+      },
+    };
+    return this.sendQuery({ type: 'Subscription', payload: query });
+  }
+
+  async getUserSubscriptions(): Promise<ApiResponse<SubscriptionStatusReadModel[]>> {
+    const headers = await this.getHeaders();
+    const url = `${this.config.baseUrl}/api/v1/subscriptions/list`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return {
+          success: false,
+          error: errorText || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+
+      const data = await response.json();
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
+  async getSubscribedLabours(): Promise<ApiResponse<LabourStatusReadModel[]>> {
+    const headers = await this.getHeaders();
+    const url = `${this.config.baseUrl}/api/v1/subscriptions/labours`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return {
+          success: false,
+          error: errorText || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+
+      const data = await response.json();
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
   }
 
   // User Queries

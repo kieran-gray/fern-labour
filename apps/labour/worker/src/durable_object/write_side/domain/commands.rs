@@ -7,6 +7,7 @@ use fern_labour_labour_shared::{
         LabourUpdateType, SubscriberAccessLevel, SubscriberContactMethod, SubscriberRole,
     },
 };
+use fern_labour_workers_shared::User;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -14,7 +15,8 @@ use uuid::Uuid;
 pub enum LabourCommand {
     PlanLabour {
         labour_id: Uuid,
-        birthing_person_id: String,
+        mother_id: String,
+        mother_name: String,
         first_labour: bool,
         due_date: DateTime<Utc>,
         labour_name: Option<String>,
@@ -125,11 +127,9 @@ pub enum LabourCommand {
     },
 }
 
-impl TryFrom<(PublicCommand, Uuid, String)> for LabourCommand {
+impl TryFrom<(PublicCommand, Uuid, User)> for LabourCommand {
     type Error = anyhow::Error;
-    fn try_from(
-        (command, labour_id, birthing_person_id): (PublicCommand, Uuid, String),
-    ) -> Result<Self> {
+    fn try_from((command, labour_id, user): (PublicCommand, Uuid, User)) -> Result<Self> {
         match command {
             PublicCommand::PlanLabour {
                 first_labour,
@@ -137,7 +137,8 @@ impl TryFrom<(PublicCommand, Uuid, String)> for LabourCommand {
                 labour_name,
             } => Ok(LabourCommand::PlanLabour {
                 labour_id,
-                birthing_person_id,
+                mother_id: user.user_id,
+                mother_name: user.name.unwrap_or_default(),
                 first_labour,
                 due_date,
                 labour_name,

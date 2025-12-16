@@ -23,6 +23,9 @@ use crate::durable_object::{
                 LabourUpdateReadModelProjector, LabourUpdateReadModelQuery,
                 SqlLabourUpdateRepository,
             },
+            subscription_status::{
+                D1SubscriptionStatusRepository, SubscriptionStatusReadModelProjector,
+            },
             subscriptions::{
                 SqlSubscriptionRepository, SubscriptionReadModelProjector,
                 SubscriptionReadModelQuery,
@@ -183,10 +186,20 @@ impl AggregateServices {
         let db = env
             .d1(binding)
             .context(format!("Failed to load {}", binding))?;
-        let repository = Box::new(D1LabourStatusRepository::create(db));
-        let labour_status_projector = Box::new(LabourStatusReadModelProjector::create(repository));
+        let labour_repository = Box::new(D1LabourStatusRepository::create(db));
+        let labour_status_projector =
+            Box::new(LabourStatusReadModelProjector::create(labour_repository));
 
-        let projectors: Vec<Box<dyn AsyncProjector<LabourEvent>>> = vec![labour_status_projector];
+        let db = env
+            .d1(binding)
+            .context(format!("Failed to load {}", binding))?;
+        let subscription_repository = Box::new(D1SubscriptionStatusRepository::create(db));
+        let subscription_status_projector = Box::new(SubscriptionStatusReadModelProjector::create(
+            subscription_repository,
+        ));
+
+        let projectors: Vec<Box<dyn AsyncProjector<LabourEvent>>> =
+            vec![labour_status_projector, subscription_status_projector];
         Ok(AsyncProjectionProcessor::create(event_store, projectors))
     }
 

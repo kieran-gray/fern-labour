@@ -20,7 +20,7 @@ const ANNOUNCEMENT_COOLDOWN_SECONDS: i64 = 10;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Labour {
     id: Uuid,
-    birthing_person_id: String,
+    mother_id: String,
     phase: LabourPhase,
     contractions: Vec<Contraction>,
     labour_updates: Vec<LabourUpdate>,
@@ -86,11 +86,11 @@ impl Aggregate for Labour {
         match event {
             LabourEvent::LabourPlanned {
                 labour_id,
-                birthing_person_id,
+                mother_id,
                 ..
             } => {
                 self.id = *labour_id;
-                self.birthing_person_id = birthing_person_id.clone();
+                self.mother_id = mother_id.clone();
                 self.phase = LabourPhase::PLANNED;
             }
             LabourEvent::LabourBegun { start_time, .. } => {
@@ -277,10 +277,11 @@ impl Aggregate for Labour {
         let events = match command {
             LabourCommand::PlanLabour {
                 labour_id,
-                birthing_person_id,
+                mother_id,
                 first_labour,
                 due_date,
                 labour_name,
+                mother_name,
             } => {
                 if let Some(labour) = state {
                     return Err(LabourError::InvalidStateTransition(
@@ -291,7 +292,8 @@ impl Aggregate for Labour {
 
                 vec![LabourEvent::LabourPlanned {
                     labour_id,
-                    birthing_person_id,
+                    mother_id,
+                    mother_name,
                     first_labour,
                     due_date,
                     labour_name,
@@ -658,7 +660,7 @@ impl Aggregate for Labour {
                     return Err(LabourError::NotFound);
                 };
 
-                if subscriber_id == labour.birthing_person_id {
+                if subscriber_id == labour.mother_id {
                     return Err(LabourError::InvalidCommand(
                         "Cannot subscribe to own labour".to_string(),
                     ));
@@ -910,11 +912,11 @@ impl Aggregate for Labour {
         let mut notification = match events.first() {
             Some(LabourEvent::LabourPlanned {
                 labour_id,
-                birthing_person_id,
+                mother_id,
                 ..
             }) => Labour {
                 id: *labour_id,
-                birthing_person_id: birthing_person_id.clone(),
+                mother_id: mother_id.clone(),
                 phase: LabourPhase::PLANNED,
                 contractions: vec![],
                 labour_updates: vec![],

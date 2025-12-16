@@ -1,16 +1,19 @@
 import { ReactElement } from 'react';
 import { useSubscription } from '@base/contexts/SubscriptionContext';
-import { useSubscriberSubscriptions } from '@shared/hooks';
+import { useLabourV2Client } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconX } from '@tabler/icons-react';
-import { Avatar, Button, Group, Table, Text } from '@mantine/core';
+import { Button, Table } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import classes from './SubscriptionsTable.module.css';
+import { useUserSubscriptionsV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
 
 export function SubscriptionsTable() {
   const { subscriptionId, setSubscriptionId } = useSubscription();
-  const { isPending, isError, data, error } = useSubscriberSubscriptions();
+
+  const client = useLabourV2Client();
+  const { isPending, isError, data, error } = useUserSubscriptionsV2(client);
 
   if (isPending) {
     return (
@@ -35,60 +38,38 @@ export function SubscriptionsTable() {
     );
   };
 
-  const birthingPersons = data.birthing_persons || [];
-
-  const birthingPersonById = Object.fromEntries(
-    birthingPersons.map((birthingPerson) => [birthingPerson.id, birthingPerson])
-  );
   const rows: ReactElement[] = [];
 
-  data.subscriptions.forEach((subscription) => {
-    const birthing_person = birthingPersonById[subscription.birthing_person_id];
-    if (!birthing_person) {
-      return;
-    }
+  data.forEach((subscription) => {
     rows.push(
-      <Table.Tr key={subscription.id}>
-        <Table.Td>
-          <Group gap="sm" wrap="nowrap">
-            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-primary-color-5)" />
-            <>
-              <Text fw={500} className={classes.cropText} size="xs" hiddenFrom="xs">
-                {birthing_person.first_name} {birthing_person.last_name}
-              </Text>
-              <Text fw={500} className={classes.cropText} size="sm" visibleFrom="xs">
-                {birthing_person.first_name} {birthing_person.last_name}
-              </Text>
-            </>
-          </Group>
-        </Table.Td>
+      <Table.Tr key={subscription.subscription_id}>
         <Table.Td>
           <Button
             color="var(--mantine-primary-color-4)"
-            rightSection={toggleButtonIcon(subscription.id)}
+            rightSection={toggleButtonIcon(subscription.subscription_id)}
             variant="light"
             radius="xl"
             size="md"
             visibleFrom="sm"
             className={classes.submitButton}
-            onClick={() => toggleSubscription(subscription.id)}
+            onClick={() => toggleSubscription(subscription.subscription_id)}
             type="submit"
           >
-            {subscriptionId === subscription.id ? 'Exit' : 'View'}
+            {subscriptionId === subscription.subscription_id ? 'Exit' : 'View'}
           </Button>
           <Button
             color="var(--mantine-primary-color-4)"
-            rightSection={toggleButtonIcon(subscription.id)}
+            rightSection={toggleButtonIcon(subscription.subscription_id)}
             variant="light"
             radius="xl"
             size="xs"
             h={40}
             hiddenFrom="sm"
             className={classes.submitButton}
-            onClick={() => toggleSubscription(subscription.id)}
+            onClick={() => toggleSubscription(subscription.subscription_id)}
             type="submit"
           >
-            {subscriptionId === subscription.id ? 'Exit' : 'View'}
+            {subscriptionId === subscription.subscription_id ? 'Exit' : 'View'}
           </Button>
         </Table.Td>
         <Table.Td>
