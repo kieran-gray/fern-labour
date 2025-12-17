@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { useSubscription } from '@base/contexts/SubscriptionContext';
+import { useLabourSession } from '@base/contexts';
+import { useLabourV2Client } from '@base/shared-components/hooks';
+import {
+  useLabourByIdV2,
+  useUserSubscriptionV2,
+} from '@base/shared-components/hooks/useLabourDataV2';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
 import { PageLoading } from '@shared/PageLoading/PageLoading';
@@ -23,8 +28,6 @@ import LabourDetails from './Tabs/LabourDetails/LabourDetails';
 import { StatusUpdates } from './Tabs/LabourUpdates/LabourUpdates';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import baseClasses from '@shared/shared-styles.module.css';
-import { useUserSubscriptionV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
-import { useLabourV2Client } from '@base/shared-components/hooks';
 
 const TABS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
@@ -38,8 +41,9 @@ const tabOrder = TABS.map((tab) => tab.id);
 
 export const SubscriptionPage = () => {
   const navigate = useNavigate();
-  const { subscriptionId, setSubscriptionId } = useSubscription();
   const [activeTab, setActiveTab] = useState<string | null>('details');
+
+  const { labourId, subscriptionId, setSubscriptionId } = useLabourSession();
 
   if (!subscriptionId) {
     navigate('/subscriptions');
@@ -70,9 +74,15 @@ export const SubscriptionPage = () => {
   });
 
   const client = useLabourV2Client();
-  const { isPending, isError, data, error } = useUserSubscriptionV2(subscriptionId);
+  const { isPending, isError, data, error } = useUserSubscriptionV2(client, labourId);
+  const {
+    isPending: isLabourPending,
+    isError: isLabourError,
+    data: labour,
+    error: labourError,
+  } = useLabourByIdV2(client, labourId);
 
-  if (isPending) {
+  if (isPending || isLabourPending) {
     return (
       <AppShell>
         <PageLoading />
@@ -80,19 +90,20 @@ export const SubscriptionPage = () => {
     );
   }
 
-  if (isError) {
-    if (error.message.includes('not found')) {
+  if (isError || isLabourError) {
+    if (error?.message.includes('not found') || labourError?.message.includes('not found')) {
       setSubscriptionId('');
       navigate('/');
     }
     return (
       <AppShell>
-        <ErrorContainer message={error.message} />
+        <ErrorContainer message={error?.message || labourError?.message || ''} />
       </AppShell>
     );
   }
 
-  const pluralisedBirthingPersonName = pluraliseName(data.birthing_person.first_name);
+  const motherFirstName = labour?.mother_name.split(' ')[0];
+  const pluralisedMotherName = pluraliseName(motherFirstName || '');
 
   const renderTabPanel = (tabId: string) => {
     switch (tabId) {
@@ -107,28 +118,23 @@ export const SubscriptionPage = () => {
       case 'details':
         return (
           <>
-            <LabourDetails labour={data.labour} birthingPersonName={pluralisedBirthingPersonName} />
-            {data.labour.end_time == null && (
+            <LabourDetails labour={labour} birthingPersonName={pluralisedMotherName} />
+            {labour.end_time == null && (
               <>
                 <Space h="xl" />
-                {(data.subscription.access_level === 'basic' && <PayWall />) || (
-                  <ContactMethods subscription={data.subscription} />
+                {(data.access_level === 'BASIC' && <PayWall />) || (
+                  <ContactMethods subscription={data} />
                 )}
               </>
             )}
           </>
         );
       case 'stats':
-        return (
-          <LabourStatistics
-            labour={data.labour}
-            birthingPersonName={pluralisedBirthingPersonName}
-          />
-        );
+        return <LabourStatistics labour={labour} />;
       case 'updates':
-        return <StatusUpdates labour={data.labour} birthingPerson={data.birthing_person} />;
+        return <StatusUpdates labour={labour} />;
       case 'gifts':
-        return <Gifts birthingPersonName={data.birthing_person.first_name} />;
+        return <Gifts birthingPersonName={motherFirstName} />;
       default:
         return null;
     }

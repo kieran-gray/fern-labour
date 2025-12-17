@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useLabour } from '@base/contexts/LabourContext';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { NotFoundError, PermissionDenied } from '@base/lib/errors';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
-import { useCurrentLabourV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useCurrentLabourV2 } from '@base/shared-components/hooks/useLabourDataV2';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
 import { useContractionsV2, useLabourV2Client } from '@shared/hooks';
@@ -41,7 +41,7 @@ const tabOrder = TABS.map((tab) => tab.id);
 export const LabourPage = () => {
   const navigate = useNavigate();
   const { isOnline } = useNetworkState();
-  const { labourId, setLabourId } = useLabour();
+  const { labourId, setLabourId } = useLabourSession();
   const [searchParams, setSearchParams] = useSearchParams();
   const labourIdParam = searchParams.get('labourId');
   const [activeTab, setActiveTab] = useState<string | null>('track');

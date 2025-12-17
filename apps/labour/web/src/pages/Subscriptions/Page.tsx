@@ -1,4 +1,4 @@
-import { useSubscription } from '@base/contexts/SubscriptionContext';
+import { useLabourSession } from '@base/contexts';
 import { AppShell } from '@shared/AppShell';
 import { useSearchParams } from 'react-router-dom';
 import { Space } from '@mantine/core';
@@ -10,7 +10,7 @@ import SubscriptionRequestedModal from './Components/SubscriptionRequestedModal/
 import baseClasses from '@shared/shared-styles.module.css';
 
 export const SubscriptionsPage = () => {
-  const { subscriptionId } = useSubscription();
+  const { subscriptionId } = useLabourSession();
   const [searchParams] = useSearchParams();
   const [opened, { close }] = useDisclosure(false);
   const prompt = searchParams.get('prompt');

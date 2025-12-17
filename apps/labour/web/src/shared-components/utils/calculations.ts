@@ -1,4 +1,4 @@
-import { ContractionDTO } from '@clients/labour_service';
+import { ContractionReadModel } from '@base/clients/labour_service_v2';
 
 interface ContractionFrequencyGaps {
   previous: number;
@@ -6,7 +6,7 @@ interface ContractionFrequencyGaps {
 }
 
 export const getTimeSinceLastStarted = (
-  contractions: ContractionDTO[]
+  contractions: ContractionReadModel[]
 ): Record<string, ContractionFrequencyGaps> => {
   const contractionFrequencyGaps: Record<string, ContractionFrequencyGaps> = {};
   let lastStartTime: string = '';
@@ -14,32 +14,32 @@ export const getTimeSinceLastStarted = (
 
   contractions.forEach((contraction) => {
     const frequency = lastStartTime
-      ? new Date(contraction.start_time).getTime() - new Date(lastStartTime).getTime()
+      ? new Date(contraction.duration.start_time).getTime() - new Date(lastStartTime).getTime()
       : 0;
     const frequencies: ContractionFrequencyGaps = {
       previous: frequency,
       next: 0,
     };
-    contractionFrequencyGaps[contraction.id] = frequencies;
+    contractionFrequencyGaps[contraction.contraction_id] = frequencies;
 
     if (previousContractionId) {
       contractionFrequencyGaps[previousContractionId].next = frequency;
     }
 
-    lastStartTime = contraction.start_time;
-    previousContractionId = contraction.id;
+    lastStartTime = contraction.duration.start_time;
+    previousContractionId = contraction.contraction_id;
   });
   return contractionFrequencyGaps;
 };
 
-export const secondsElapsed = (contraction: ContractionDTO): number => {
-  const timestamp = new Date(contraction.start_time).getTime();
+export const secondsElapsed = (contraction: ContractionReadModel): number => {
+  const timestamp = new Date(contraction.duration.start_time).getTime();
   const now = Date.now();
   return Math.round((now - timestamp) / 1000);
 };
 
-export const contractionDurationSeconds = (contraction: ContractionDTO): number => {
-  const startTime = new Date(contraction.start_time).getTime();
-  const endTime = new Date(contraction.end_time).getTime();
+export const contractionDurationSeconds = (contraction: ContractionReadModel): number => {
+  const startTime = new Date(contraction.duration.start_time).getTime();
+  const endTime = new Date(contraction.duration.end_time).getTime();
   return Math.round((endTime - startTime) / 1000);
 };

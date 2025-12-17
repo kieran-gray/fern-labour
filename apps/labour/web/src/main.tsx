@@ -13,11 +13,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import App from './App';
-import { OpenAPI as ContactService } from './clients/contact_service';
-import { OpenAPI as LabourService } from './clients/labour_service';
 import { queryClient } from './config/index';
 import { SyncEngineProvider } from './offline/hooks/SyncEngineProvider';
-import { GuestModeProvider } from './offline/hooks/useGuestMode';
 import { initializeQueryPersistence } from './offline/persistence/queryPersistence';
 import { initializeDatabase } from './offline/storage/database';
 import { ProtectedApp } from './shared-components/ProtectedApp';
@@ -28,9 +25,6 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) {
   throw new Error('Missing Clerk Publishable Key');
 }
-
-LabourService.BASE = import.meta.env.VITE_LABOUR_SERVICE_URL;
-ContactService.BASE = import.meta.env.VITE_CONTACT_SERVICE_URL;
 
 async function initializeOfflineInfrastructure() {
   try {
@@ -52,12 +46,10 @@ reactDom.createRoot(document.getElementById('root')!).render(
         <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
           <QueryClientProvider client={queryClient}>
             <SyncEngineProvider>
-              <GuestModeProvider>
-                <ProtectedApp>
-                  <PWAUpdateHandler />
-                  <App />
-                </ProtectedApp>
-              </GuestModeProvider>
+              <ProtectedApp>
+                <PWAUpdateHandler />
+                <App />
+              </ProtectedApp>
             </SyncEngineProvider>
           </QueryClientProvider>
         </ClerkProvider>

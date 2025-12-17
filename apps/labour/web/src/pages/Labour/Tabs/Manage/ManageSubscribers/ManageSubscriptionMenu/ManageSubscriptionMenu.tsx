@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useLabour } from '@base/contexts/LabourContext';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import {
   useApproveSubscriberV2,
   useBlockSubscriberV2,
   useRemoveSubscriberV2,
   useUnblockSubscriberV2,
-} from '@base/shared-components/hooks/v2/useLabourDataV2';
+} from '@base/shared-components/hooks/useLabourDataV2';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import { useLabourV2Client } from '@shared/hooks';
 import {
@@ -28,7 +28,7 @@ export function ManageSubscriptionMenu({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [action, setAction] = useState('');
-  const { labourId } = useLabour();
+  const { labourId } = useLabourSession();
 
   const client = useLabourV2Client();
   const approveSubscriberMutation = useApproveSubscriberV2(client);

@@ -9,10 +9,15 @@ import type {
   AdminCommand,
   ApiResponse,
   CommandResponse,
+  CompleteLabourPayload,
   ContractionCommand,
   ContractionQuery,
   ContractionReadModel,
+  CreateCheckoutSessionRequest,
+  CreateCheckoutSessionResponse,
   Cursor,
+  DeleteContractionPayload,
+  EndContractionPayload,
   LabourCommand,
   LabourQuery,
   LabourReadModel,
@@ -22,7 +27,10 @@ import type {
   LabourUpdateReadModel,
   LabourUpdateType,
   PaginatedResponse,
+  PlanLabourPayload,
+  PostLabourUpdatePayload,
   QueryResponse,
+  StartContractionPayload,
   SubscriberAccessLevel,
   SubscriberCommand,
   SubscriberContactMethod,
@@ -31,6 +39,7 @@ import type {
   SubscriptionQuery,
   SubscriptionReadModel,
   SubscriptionStatusReadModel,
+  UpdateContractionPayload,
   User,
   UserQuery,
 } from './types';
@@ -638,9 +647,7 @@ export class LabourServiceV2Client {
     return this.sendQuery({ type: 'Subscription', payload: query });
   }
 
-  async getUserSubscription(
-    labourId: string
-  ): Promise<QueryResponse<PaginatedResponse<SubscriptionReadModel>>> {
+  async getUserSubscription(labourId: string): Promise<QueryResponse<SubscriptionReadModel>> {
     const query: SubscriptionQuery = {
       type: 'GetUserSubscription',
       payload: {
@@ -724,5 +731,74 @@ export class LabourServiceV2Client {
       },
     };
     return this.sendQuery({ type: 'User', payload: query });
+  }
+
+  sendStartContractionCommand(payload: StartContractionPayload): Promise<CommandResponse> {
+    const command: ContractionCommand = { type: 'StartContraction', payload };
+    return this.sendCommand({ type: 'Contraction', payload: command });
+  }
+
+  sendEndContractionCommand(payload: EndContractionPayload): Promise<CommandResponse> {
+    const command: ContractionCommand = { type: 'EndContraction', payload };
+    return this.sendCommand({ type: 'Contraction', payload: command });
+  }
+
+  sendUpdateContractionCommand(payload: UpdateContractionPayload): Promise<CommandResponse> {
+    const command: ContractionCommand = { type: 'UpdateContraction', payload };
+    return this.sendCommand({ type: 'Contraction', payload: command });
+  }
+
+  sendDeleteContractionCommand(payload: DeleteContractionPayload): Promise<CommandResponse> {
+    const command: ContractionCommand = { type: 'DeleteContraction', payload };
+    return this.sendCommand({ type: 'Contraction', payload: command });
+  }
+
+  sendPlanLabourCommand(payload: PlanLabourPayload): Promise<ApiResponse<{ labour_id: string }>> {
+    return this.sendPlanLabour(payload);
+  }
+
+  sendCompleteLabourCommand(payload: CompleteLabourPayload): Promise<CommandResponse> {
+    const command: LabourCommand = { type: 'CompleteLabour', payload };
+    return this.sendCommand({ type: 'Labour', payload: command });
+  }
+
+  sendPostLabourUpdateCommand(payload: PostLabourUpdatePayload): Promise<CommandResponse> {
+    const command: LabourUpdateCommand = { type: 'PostLabourUpdate', payload };
+    return this.sendCommand({ type: 'LabourUpdate', payload: command });
+  }
+
+  async createCheckoutSession(
+    request: CreateCheckoutSessionRequest
+  ): Promise<ApiResponse<CreateCheckoutSessionResponse>> {
+    const headers = await this.getHeaders();
+    const url = `${this.config.baseUrl}/api/v1/payments/checkout`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return {
+          success: false,
+          error: errorText || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+
+      const data = await response.json();
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
   }
 }

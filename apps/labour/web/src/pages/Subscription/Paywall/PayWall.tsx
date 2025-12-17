@@ -1,5 +1,5 @@
-import { useSubscription } from '@base/contexts/SubscriptionContext';
-import { useApiAuth, useCreateCheckoutSession } from '@shared/hooks';
+import { useLabourSession } from '@base/contexts';
+import { useCreateCheckoutSessionV2, useLabourV2Client } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowUp } from '@tabler/icons-react';
@@ -9,9 +9,9 @@ import classes from './PayWall.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export const PayWall = () => {
-  useApiAuth();
-  const { subscriptionId } = useSubscription();
-  const createCheckout = useCreateCheckoutSession();
+  const { subscriptionId } = useLabourSession();
+  const client = useLabourV2Client();
+  const createCheckout = useCreateCheckoutSessionV2(client);
 
   const handleUpgrade = () => {
     const baseUrl = window.location.href.split('?')[0];

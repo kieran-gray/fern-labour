@@ -1,4 +1,4 @@
-import { useLabour } from '@base/contexts/LabourContext';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useLabourByIdV2, useLabourV2Client } from '@shared/hooks';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
@@ -13,7 +13,7 @@ import baseClasses from '@shared/shared-styles.module.css';
 
 export default function LabourDetails({ setActiveTab }: { setActiveTab: Function }) {
   const navigate = useNavigate();
-  const { labourId } = useLabour();
+  const { labourId } = useLabourSession();
   const client = useLabourV2Client();
   const { isPending, isError, data, error } = useLabourByIdV2(client, labourId);
 

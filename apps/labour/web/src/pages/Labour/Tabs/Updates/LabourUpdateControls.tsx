@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { LabourUpdateType } from '@base/clients/labour_service_v2';
-import { useLabour } from '@base/contexts/LabourContext';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
 import { useNetworkState } from '@base/offline/hooks';
 import { useLabourV2Client, usePostLabourUpdateV2 } from '@shared/hooks';
@@ -16,7 +16,7 @@ export function LabourUpdateControls() {
   const [labourUpdateType, setLabourUpdateType] = useState<LabourUpdateType>(
     LabourUpdateType.STATUS_UPDATE
   );
-  const { labourId } = useLabour();
+  const { labourId } = useLabourSession();
   const { isOnline } = useNetworkState();
 
   const client = useLabourV2Client();

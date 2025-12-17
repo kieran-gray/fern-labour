@@ -8,7 +8,7 @@ import type { Cursor, LabourServiceV2Client, LabourUpdateType } from '@clients/l
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
-import { useApiAuth } from '../useApiAuth';
+import { useApiAuth } from './useApiAuth';
 
 // Query Keys for V2
 export const queryKeysV2 = {
@@ -42,7 +42,8 @@ export const queryKeysV2 = {
     all: ['subscriptions-v2'] as const,
     byLabour: (labourId: string) => [...queryKeysV2.subscriptions.all, labourId] as const,
     byUser: (userId: string) => [...queryKeysV2.subscriptions.all, userId] as const,
-    byLabourAndUser: (labourId: string, userId: string) => [...queryKeysV2.subscriptions.all, labourId, userId] as const,
+    byLabourAndUser: (labourId: string, userId: string) =>
+      [...queryKeysV2.subscriptions.all, labourId, userId] as const,
     paginated: (labourId: string, cursor: string | null) =>
       [...queryKeysV2.subscriptions.byLabour(labourId), 'paginated', cursor] as const,
     byId: (labourId: string, subscriptionId: string) =>
@@ -866,6 +867,34 @@ export function useDeleteLabourV2(client: LabourServiceV2Client) {
   });
 }
 
+export function useSendLabourInviteV2(client: LabourServiceV2Client) {
+  return useMutation({
+    mutationFn: async ({ labourId, email }: { labourId: string; email: string }) => {
+      const response = await client.sendLabourInvite(labourId, email);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to send labour invite');
+      }
+
+      return response.data;
+    },
+    onSuccess: (_, __) => {
+      notifications.show({
+        ...Success,
+        title: 'Success',
+        message: 'Invite sent successfully',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        ...ErrorNotification,
+        title: 'Error',
+        message: `Failed to send invite: ${error.message}`,
+      });
+    },
+  });
+}
+
 /**
  * Hook for fetching subscription token
  */
@@ -934,7 +963,7 @@ export function useUserSubscriptionV2(client: LabourServiceV2Client, labourId: s
         throw new Error(response.error || 'Failed to load subscription');
       }
 
-      return response.data.data;
+      return response.data;
     },
     enabled: !!labourId && !!user?.sub,
     retry: 0,

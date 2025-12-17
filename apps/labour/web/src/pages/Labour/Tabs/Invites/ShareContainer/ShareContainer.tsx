@@ -1,5 +1,5 @@
-import { useLabour } from '@base/contexts/LabourContext';
-import { useSubscriptionTokenV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useLabourSession } from '@base/contexts';
+import { useSubscriptionTokenV2 } from '@base/shared-components/hooks/useLabourDataV2';
 import { useLabourV2Client } from '@shared/hooks';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
@@ -12,7 +12,7 @@ import classes from './ShareContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ShareContainer() {
-  const { labourId } = useLabour();
+  const { labourId } = useLabourSession();
   const client = useLabourV2Client();
   const { data: token, isPending, isError, error } = useSubscriptionTokenV2(client, labourId);
 

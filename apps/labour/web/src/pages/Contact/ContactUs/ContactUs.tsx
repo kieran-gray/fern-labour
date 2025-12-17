@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
 import { useSubmitContactForm } from '@base/shared-components/hooks/useContactData';
 import { validateMessage } from '@base/shared-components/utils';
-import { ContactUsRequest } from '@clients/contact_service/types.gen';
+import type { CreateContactMessageRequest } from '@clients/contact_service';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconInfoCircle } from '@tabler/icons-react';
@@ -56,12 +56,11 @@ export function ContactUs() {
       data = { rating, consent: checked };
     }
 
-    const requestBody: ContactUsRequest = {
+    const requestBody: CreateContactMessageRequest = {
       email: `${user?.email}`,
       name: `${user?.given_name} ${user?.family_name}`,
       message: values.message,
       token: turnstileToken!,
-      user_id: user?.sub,
       category: values.category,
       data,
     };

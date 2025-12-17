@@ -1,6 +1,5 @@
 import { SubscriptionReadModel } from '@base/clients/labour_service_v2/types';
 import { ImportantText } from '@base/shared-components/ImportantText/ImportantText';
-import { UserSummaryDTO } from '@clients/labour_service';
 import { Avatar, Group, Table, Text } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import classes from './SubscribersTable.module.css';
@@ -11,7 +10,7 @@ export function SubscribersTable({
   status,
 }: {
   subscriptions: SubscriptionReadModel[];
-  subscriberById: { [k: string]: UserSummaryDTO };
+  subscriberById: { [k: string]: { id: string; firstName: string; lastName: string } };
   status: string;
 }) {
   const rows = subscriptions.map((subscription) => {
@@ -23,10 +22,10 @@ export function SubscribersTable({
             <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-primary-color-5)" />
             <>
               <Text fz="sm" visibleFrom="xs" fw={500} className={classes.cropText}>
-                {subscriber.first_name} {subscriber.last_name}
+                {subscriber.firstName} {subscriber.lastName}
               </Text>
               <Text fz="xs" hiddenFrom="xs" fw={500} className={classes.cropText}>
-                {subscriber.first_name} {subscriber.last_name}
+                {subscriber.firstName} {subscriber.lastName}
               </Text>
             </>
           </Group>

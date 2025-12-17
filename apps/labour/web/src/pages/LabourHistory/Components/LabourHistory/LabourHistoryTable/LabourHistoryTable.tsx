@@ -1,5 +1,5 @@
-import { useLabour } from '@base/contexts/LabourContext';
-import { useLabourHistoryV2, useLabourV2Client, useRefreshLabourData } from '@shared/hooks';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useLabourHistoryV2, useLabourV2Client } from '@shared/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';
@@ -10,9 +10,8 @@ import classes from './LabourHistoryTable.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function LabourHistoryTable() {
-  const { labourId, setLabourId } = useLabour();
+  const { labourId, setLabourId, clearSession } = useLabourSession();
   const navigate = useNavigate();
-  const refreshLabourData = useRefreshLabourData();
   const client = useLabourV2Client();
   const { isPending, isError, data, error } = useLabourHistoryV2(client);
 
@@ -35,7 +34,7 @@ export function LabourHistoryTable() {
   );
 
   const setLabour = async (newLabourId: string) => {
-    await refreshLabourData();
+    clearSession();
     if (labourId === newLabourId) {
       setLabourId(null);
     } else {

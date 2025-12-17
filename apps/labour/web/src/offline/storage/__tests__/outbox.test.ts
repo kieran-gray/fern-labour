@@ -9,15 +9,10 @@ describe('OutboxManager', () => {
   beforeEach(async () => {
     testDb = new OfflineDatabase();
     await testDb.open();
-    await testDb.transaction(
-      'rw',
-      [testDb.outbox, testDb.guestProfiles, testDb.sequences],
-      async () => {
-        await testDb.outbox.clear();
-        await testDb.guestProfiles.clear();
-        await testDb.sequences.clear();
-      }
-    );
+    await testDb.transaction('rw', [testDb.outbox, testDb.sequences], async () => {
+      await testDb.outbox.clear();
+      await testDb.sequences.clear();
+    });
   });
 
   afterEach(async () => {

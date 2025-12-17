@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useSubscription } from '@base/contexts/SubscriptionContext';
-import { useUnsubscribeFrom } from '@base/shared-components/hooks/useSubscriptionData';
+import { useLabourSession } from '@base/contexts';
+import { useLabourV2Client, useUnsubscribeV2 } from '@base/shared-components/hooks';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import { IconDots, IconUserMinus } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
@@ -8,9 +8,10 @@ import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({ labour_id }: { labour_id: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { setSubscriptionId } = useSubscription();
+  const { setSubscriptionId } = useLabourSession();
 
-  const unsubscribeMutation = useUnsubscribeFrom();
+  const client = useLabourV2Client();
+  const unsubscribeMutation = useUnsubscribeV2(client);
 
   const handleConfirm = async () => {
     setIsModalOpen(false);

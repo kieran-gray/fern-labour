@@ -1,6 +1,6 @@
 import { validateEmail } from '@base/shared-components/utils';
 import image from '@labour/Tabs/Invites/InviteContainer/invite.svg';
-import { useApiAuth, useSendSubscriberInvite } from '@shared/hooks';
+import { useApiAuth } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconAt, IconSend } from '@tabler/icons-react';
@@ -22,14 +22,12 @@ export function InviteContainer() {
     },
   });
 
-  const sendInviteMutation = useSendSubscriberInvite();
-
-  const handleSubmit = (values: typeof form.values) => {
-    sendInviteMutation.mutate(values.email, {
-      onSuccess: () => {
-        form.reset();
-      },
-    });
+  const handleSubmit = (_values: typeof form.values) => {
+    // sendInviteMutation.mutate(values.email, {
+    //   onSuccess: () => {
+    //     form.reset();
+    //   },
+    // });
   };
 
   const title = 'Know an expecting mum? Invite her to join!';
@@ -79,7 +77,7 @@ export function InviteContainer() {
                     mt="var(--mantine-spacing-lg)"
                     styles={{ section: { marginLeft: 22 }, label: { overflow: 'unset' } }}
                     type="submit"
-                    loading={sendInviteMutation.isPending}
+                    loading={false}
                   >
                     Send invite
                   </Button>

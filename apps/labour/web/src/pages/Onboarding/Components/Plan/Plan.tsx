@@ -1,5 +1,5 @@
+import { LabourReadModel } from '@base/clients/labour_service_v2';
 import { validateLabourName } from '@base/shared-components/utils';
-import { LabourDTO } from '@clients/labour_service';
 import { useLabourV2Client, usePlanLabourV2, useUpdateLabourPlanV2 } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -12,7 +12,7 @@ import image from './plan.svg';
 import classes from './Plan.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
-export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
+export default function Plan({ labour }: { labour: LabourReadModel | undefined }) {
   const navigate = useNavigate();
   const client = useLabourV2Client();
   const planLabourMutation = usePlanLabourV2(client);
@@ -48,7 +48,7 @@ export default function Plan({ labour }: { labour: LabourDTO | undefined }) {
 
     if (labour) {
       updateLabourMutation.mutate({
-        labourId: labour.id,
+        labourId: labour.labour_id,
         firstLabour,
         dueDate,
         labourName,

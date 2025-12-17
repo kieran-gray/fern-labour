@@ -9,9 +9,8 @@ describe('OfflineDatabase', () => {
     db = new OfflineDatabase();
     await db.open();
 
-    await db.transaction('rw', [db.outbox, db.guestProfiles, db.sequences], async () => {
+    await db.transaction('rw', [db.outbox, db.sequences], async () => {
       await db.outbox.clear();
-      await db.guestProfiles.clear();
       await db.sequences.clear();
     });
   });
@@ -39,7 +38,7 @@ describe('OfflineDatabase', () => {
 
   describe('atomic operations', () => {
     it('should handle cross-table transactions', async () => {
-      await db.transaction('rw', [db.outbox, db.guestProfiles, db.sequences], async () => {
+      await db.transaction('rw', [db.outbox, db.sequences], async () => {
         await db.outbox.add({
           id: 'event-1',
           aggregateId: 'labour-123',
@@ -53,28 +52,15 @@ describe('OfflineDatabase', () => {
           isGuestEvent: 1,
         });
 
-        await db.guestProfiles.add({
-          guestId: 'guest-123',
-          createdAt: new Date(),
-          labours: [],
-          isUpgraded: 0,
-          lastActiveAt: new Date(),
-        });
-
         await db.sequences.add({
           aggregateId: 'labour-123',
           sequence: 1,
         });
       });
 
-      const [eventCount, profileCount, seqCount] = await Promise.all([
-        db.outbox.count(),
-        db.guestProfiles.count(),
-        db.sequences.count(),
-      ]);
+      const [eventCount, seqCount] = await Promise.all([db.outbox.count(), db.sequences.count()]);
 
       expect(eventCount).toBe(1);
-      expect(profileCount).toBe(1);
       expect(seqCount).toBe(1);
     });
   });

@@ -378,14 +378,17 @@ export type GetUserSubscriptionsQuery = {
 };
 
 export type GetUserSubscriptionQuery = {
-  type: "GetUserSubscription";
+  type: 'GetUserSubscription';
   payload: {
     labour_id: string;
   };
-}
+};
 
-
-export type SubscriptionQuery = GetSubscriptionTokenQuery | GetLabourSubscriptionsQuery | GetUserSubscriptionsQuery | GetUserSubscriptionQuery;
+export type SubscriptionQuery =
+  | GetSubscriptionTokenQuery
+  | GetLabourSubscriptionsQuery
+  | GetUserSubscriptionsQuery
+  | GetUserSubscriptionQuery;
 
 // User Queries
 
@@ -411,13 +414,17 @@ export type ApiQuery =
 
 export enum LabourPhase {
   PLANNED = 'PLANNED',
-  IN_PROGRESS = 'IN_PROGRESS',
+  EARLY = 'EARLY',
+  ACTIVE = 'ACTIVE',
+  TRANSITION = 'TRANSITION',
+  PUSHING = 'PUSHING',
   COMPLETED = 'COMPLETED',
 }
 
 export type LabourReadModel = {
   labour_id: string;
-  birthing_person_id: string;
+  mother_id: string;
+  mother_name: string;
   current_phase: LabourPhase;
   first_labour: boolean;
   due_date: string;
@@ -431,7 +438,8 @@ export type LabourReadModel = {
 
 export type LabourStatusReadModel = {
   labour_id: string;
-  birthing_person_id: string;
+  mother_id: string;
+  mother_name: string;
   current_phase: LabourPhase;
   labour_name: string | null;
   created_at: string;
@@ -485,7 +493,6 @@ export type SubscriptionStatusReadModel = {
   updated_at: string;
 };
 
-
 export type User = {
   user_id: string;
   issuer: string;
@@ -515,3 +522,44 @@ export type ApiResponse<T = unknown> = {
 export type CommandResponse = ApiResponse<void>;
 
 export type QueryResponse<T> = ApiResponse<T>;
+
+export type PlanLabourPayload = PlanLabourCommand['payload'];
+export type UpdateLabourPlanPayload = UpdateLabourPlanCommand['payload'];
+export type BeginLabourPayload = BeginLabourCommand['payload'];
+export type CompleteLabourPayload = CompleteLabourCommand['payload'];
+export type SendLabourInvitePayload = SendLabourInviteCommand['payload'];
+export type DeleteLabourPayload = DeleteLabourCommand['payload'];
+
+export type StartContractionPayload = StartContractionCommand['payload'];
+export type EndContractionPayload = EndContractionCommand['payload'];
+export type UpdateContractionPayload = UpdateContractionCommand['payload'];
+export type DeleteContractionPayload = DeleteContractionCommand['payload'];
+
+export type PostLabourUpdatePayload = PostLabourUpdateCommand['payload'];
+export type UpdateLabourUpdateMessagePayload = UpdateLabourUpdateMessageCommand['payload'];
+export type UpdateLabourUpdateTypePayload = UpdateLabourUpdateTypeCommand['payload'];
+export type DeleteLabourUpdatePayload = DeleteLabourUpdateCommand['payload'];
+
+export type RequestAccessPayload = RequestAccessCommand['payload'];
+export type UnsubscribePayload = UnsubscribeCommand['payload'];
+export type UpdateNotificationMethodsPayload = UpdateNotificationMethodsCommand['payload'];
+export type UpdateAccessLevelPayload = UpdateAccessLevelCommand['payload'];
+
+export type ApproveSubscriberPayload = ApproveSubscriberCommand['payload'];
+export type RemoveSubscriberPayload = RemoveSubscriberCommand['payload'];
+export type BlockSubscriberPayload = BlockSubscriberCommand['payload'];
+export type UnblockSubscriberPayload = UnblockSubscriberCommand['payload'];
+export type UpdateSubscriberRolePayload = UpdateSubscriberRoleCommand['payload'];
+
+export type RebuildReadModelsPayload = RebuildReadModelsCommand['payload'];
+
+export interface CreateCheckoutSessionRequest {
+  subscription_id: string;
+  success_url: string;
+  cancel_url: string;
+}
+
+export interface CreateCheckoutSessionResponse {
+  url: string;
+  session_id: string;
+}

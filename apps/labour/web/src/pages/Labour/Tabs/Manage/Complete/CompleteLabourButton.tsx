@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLabour } from '@base/contexts/LabourContext';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { GenericConfirmModal } from '@base/shared-components/GenericConfirmModal/GenericConfirmModal';
 import { useCompleteLabourV2, useLabourV2Client } from '@shared/hooks';
 import { IconConfetti } from '@tabler/icons-react';
@@ -17,7 +17,7 @@ export default function CompleteLabourButton({
   const client = useLabourV2Client();
   const mutation = useCompleteLabourV2(client);
   const navigate = useNavigate();
-  const { labourId, setLabourId } = useLabour();
+  const { labourId, setLabourId } = useLabourSession();
 
   const handleCompleteLabour = (labourNotes: string) => {
     const payload = {

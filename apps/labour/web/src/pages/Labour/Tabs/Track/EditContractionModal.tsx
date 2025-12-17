@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLabour } from '@base/contexts/LabourContext';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import { useDeleteContractionV2, useLabourV2Client, useUpdateContractionV2 } from '@shared/hooks';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
@@ -23,7 +23,7 @@ export const EditContractionModal = ({
   close: CloseFunctionType;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { labourId } = useLabour();
+  const { labourId } = useLabourSession();
 
   const form = useForm({
     mode: 'uncontrolled',

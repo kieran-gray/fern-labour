@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { LabourUpdateType } from '@base/clients/labour_service_v2';
-import { useLabour } from '@base/contexts/LabourContext';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import {
   useDeleteLabourUpdateV2,
   useUpdateLabourUpdateMessageV2,
   useUpdateLabourUpdateTypeV2,
-} from '@base/shared-components/hooks/v2/useLabourDataV2';
+} from '@base/shared-components/hooks/useLabourDataV2';
 import { useLabourV2Client } from '@shared/hooks';
 import { Error } from '@shared/Notifications';
 import { IconDots, IconPencil, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
@@ -30,7 +30,7 @@ export function ManageLabourUpdateMenu({
   const [announceOpened, { open: openAnnounce, close: closeAnnounce }] = useDisclosure(false);
   const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
   const [editMessage, setEditMessage] = useState(currentMessage);
-  const { labourId } = useLabour();
+  const { labourId } = useLabourSession();
 
   const client = useLabourV2Client();
   const updateTypeMutation = useUpdateLabourUpdateTypeV2(client);

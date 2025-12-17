@@ -1,4 +1,4 @@
-import { LabourDTO } from '@clients/labour_service';
+import { LabourReadModel } from '@base/clients/labour_service_v2';
 import image from '@labour/Tabs/Manage/LabourDetails/Meditate.svg';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -11,7 +11,7 @@ export default function LabourDetails({
   labour,
   birthingPersonName,
 }: {
-  labour: LabourDTO;
+  labour: LabourReadModel;
   birthingPersonName: string;
 }) {
   const completed = labour.end_time !== null;
@@ -21,7 +21,7 @@ export default function LabourDetails({
     'You were part of this incredible journey, providing support during a life-changing moment. This page shows the updates and notifications you received throughout the labour experience.';
   const currentPhase = completed
     ? 'Completed'
-    : labour.current_phase === 'planned'
+    : labour.current_phase === 'PLANNED'
       ? 'Not in labour'
       : `In ${labour.current_phase} labour`;
 

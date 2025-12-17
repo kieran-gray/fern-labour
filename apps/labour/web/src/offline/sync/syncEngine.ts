@@ -1,15 +1,13 @@
-import {
-  CompleteLabourRequest,
-  ContractionsService,
-  DeleteContractionRequest,
-  EndContractionRequest,
-  LabourService,
-  LabourUpdateRequest,
-  LabourUpdatesService,
-  PlanLabourRequest,
-  StartContractionRequest,
-  UpdateContractionRequest,
-} from '@clients/labour_service';
+import { useLabourV2Client } from '@base/shared-components/hooks';
+import type {
+  CompleteLabourPayload,
+  DeleteContractionPayload,
+  EndContractionPayload,
+  PlanLabourPayload,
+  PostLabourUpdatePayload,
+  StartContractionPayload,
+  UpdateContractionPayload,
+} from '@clients/labour_service_v2';
 import { OutboxEvent } from '../hooks';
 import { ContractionIdMapper } from '../storage/contractionIdMap';
 import { OutboxManager } from '../storage/outbox';
@@ -152,77 +150,73 @@ export class SyncEngine {
    * Execute event against appropriate service
    */
   private async executeEvent(event: OutboxEvent): Promise<any> {
-    const payload = event.payload as any;
+    const client = useLabourV2Client();
 
     switch (event.eventType) {
-      case 'plan_labour':
-        return await LabourService.planLabour({
-          requestBody: payload as PlanLabourRequest,
-        });
+      case 'plan_labour': {
+        const payload = event.payload as PlanLabourPayload;
+        return await client.sendPlanLabourCommand(payload);
+      }
 
-      case 'complete_labour':
-        return await LabourService.completeLabour({
-          requestBody: payload as CompleteLabourRequest,
-        });
+      case 'complete_labour': {
+        const payload = event.payload as CompleteLabourPayload;
+        return await client.sendCompleteLabourCommand(payload);
+      }
 
       case 'start_contraction': {
-        const res = await ContractionsService.startContraction({
-          requestBody: payload as StartContractionRequest,
-        });
+        const payload = event.payload as StartContractionPayload;
+        const res = await client.sendStartContractionCommand(payload);
+
         try {
-          const startTime = (payload as StartContractionRequest).start_time;
-          const contractions = res.labour?.contractions || [];
-
-          let created = contractions.find((c: any) => c.is_active);
-
-          if (!created && startTime) {
-            const reqTs = Date.parse(startTime);
-            const ranked = contractions
-              .map((c: any) => ({ c, diff: Math.abs(Date.parse(c.start_time) - reqTs) }))
-              .sort((a, b) => a.diff - b.diff);
-            if (ranked.length > 0 && ranked[0].diff <= 1500) {
-              created = ranked[0].c;
-            }
-          }
-
-          if (startTime && created?.id) {
-            await ContractionIdMapper.resolveByStartTime(event.aggregateId, startTime, created.id);
+          if (res.success && payload.start_time) {
+            await ContractionIdMapper.resolveByStartTime(
+              event.aggregateId,
+              payload.start_time,
+              'temp-id'
+            );
           }
         } catch {
           // best-effort; ignore
         }
+
         return res;
       }
 
-      case 'end_contraction':
-        return await ContractionsService.endContraction({
-          requestBody: payload as EndContractionRequest,
-        });
+      case 'end_contraction': {
+        const payload = event.payload as EndContractionPayload;
+        return await client.sendEndContractionCommand(payload);
+      }
 
       case 'update_contraction': {
-        const req = payload as UpdateContractionRequest;
+        const payload = event.payload as UpdateContractionPayload;
         const realId = await ContractionIdMapper.getRealIdFor(
           event.aggregateId,
-          req.contraction_id
+          payload.contraction_id
         );
-        const toSend: UpdateContractionRequest = { ...req, contraction_id: realId };
-        return await ContractionsService.updateContraction({ requestBody: toSend });
+        const updatedPayload: UpdateContractionPayload = {
+          ...payload,
+          contraction_id: realId,
+        };
+        return await client.sendUpdateContractionCommand(updatedPayload);
       }
 
       case 'delete_contraction': {
-        const req = payload as DeleteContractionRequest;
+        const payload = event.payload as DeleteContractionPayload;
         const realId = await ContractionIdMapper.getRealIdFor(
           event.aggregateId,
-          req.contraction_id
+          payload.contraction_id
         );
-        const toSend: DeleteContractionRequest = { contraction_id: realId };
-        return await ContractionsService.deleteContraction({ requestBody: toSend });
+        const updatedPayload: DeleteContractionPayload = {
+          ...payload,
+          contraction_id: realId,
+        };
+        return await client.sendDeleteContractionCommand(updatedPayload);
       }
 
-      case 'labour_update':
-        return await LabourUpdatesService.postLabourUpdate({
-          requestBody: payload as LabourUpdateRequest,
-        });
+      case 'labour_update': {
+        const payload = event.payload as PostLabourUpdatePayload;
+        return await client.sendPostLabourUpdateCommand(payload);
+      }
 
       default:
         throw new Error(`Unknown event type: ${event.eventType}`);

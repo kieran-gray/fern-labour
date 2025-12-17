@@ -1,12 +1,13 @@
 import { NotFoundError } from '@base/lib/errors';
+import { useCurrentLabourV2, useLabourV2Client } from '@base/shared-components/hooks';
 import { AppShell } from '@shared/AppShell';
-import { useActiveLabour } from '@shared/hooks/index';
 import { PageLoading } from '@shared/PageLoading/PageLoading';
 import Plan from './Components/Plan/Plan';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export const OnboardingPage = () => {
-  const { isPending, isError, data, error } = useActiveLabour();
+  const client = useLabourV2Client();
+  const { isPending, isError, data, error } = useCurrentLabourV2(client, null);
 
   if (isPending) {
     return <PageLoading />;

@@ -1,5 +1,5 @@
 import { AppMode, useMode } from '@base/contexts/AppModeContext';
-import { useRequestAccessV2 } from '@base/shared-components/hooks/v2/useLabourDataV2';
+import { useRequestAccessV2 } from '@base/shared-components/hooks/useLabourDataV2';
 import { useLabourV2Client } from '@shared/hooks';
 import { useNavigate } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';

@@ -1,15 +1,10 @@
-import { ApiError, CreateCheckoutRequest, PaymentsService } from '@clients/labour_service';
+import type { LabourServiceV2Client } from '@clients/labour_service_v2';
 import { Error as ErrorNotification } from '@shared/Notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
-import { queryKeys } from './queryKeys';
-import { useApiAuth } from './useApiAuth';
+import { queryKeysV2 } from './useLabourDataV2';
 
-/**
- * Custom hook for creating Stripe checkout sessions
- */
-export function useCreateCheckoutSession() {
-  const { user } = useApiAuth();
+export function useCreateCheckoutSessionV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -22,32 +17,30 @@ export function useCreateCheckoutSession() {
       successUrl: string;
       cancelUrl: string;
     }) => {
-      const requestBody: CreateCheckoutRequest = {
-        upgrade: 'supporter',
+      const response = await client.createCheckoutSession({
         subscription_id: subscriptionId,
         success_url: successUrl,
         cancel_url: cancelUrl,
-      };
-      return await PaymentsService.createCheckoutSession({ requestBody });
-    },
-    onSuccess: async (data) => {
-      window.location.href = data.url!;
-      queryClient.invalidateQueries({ queryKey: queryKeys.labour.user(user?.sub || '') });
-    },
-    onError: async (error) => {
-      let message = 'Unknown error occurred';
-      if (error instanceof ApiError) {
-        try {
-          const body = error.body as { description: string };
-          message = body.description;
-        } catch {
-          // Fallback to default message
-        }
+      });
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to create checkout session');
       }
+
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.subscriptions.all,
+      });
+
+      window.location.href = data.url;
+    },
+    onError: (error: Error) => {
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
-        message,
+        message: `Failed to create checkout session: ${error.message}`,
       });
     },
   });

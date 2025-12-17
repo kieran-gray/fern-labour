@@ -1,4 +1,4 @@
-import { useLabour } from '@base/contexts/LabourContext';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useEndContractionV2, useLabourV2Client } from '@shared/hooks';
 import { IconHourglassHigh } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
@@ -10,7 +10,7 @@ export default function EndContractionButton({
   intensity: number;
   disabled: boolean;
 }) {
-  const { labourId } = useLabour();
+  const { labourId } = useLabourSession();
   const client = useLabourV2Client();
   const mutation = useEndContractionV2(client);
 

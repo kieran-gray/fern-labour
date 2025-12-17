@@ -1,5 +1,7 @@
-import { SubscriptionDTO, UpdateContactMethodsRequest } from '@clients/labour_service';
-import { useUpdateContactMethods } from '@shared/hooks';
+import { SubscriberContactMethod, SubscriptionReadModel } from '@base/clients/labour_service_v2';
+import { useLabourSession } from '@base/contexts';
+import { useUpdateNotificationMethodsV2 } from '@base/shared-components/hooks/useLabourDataV2';
+import { useLabourV2Client } from '@shared/hooks';
 import { IconSelector, IconUpload } from '@tabler/icons-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button, Modal, MultiSelect } from '@mantine/core';
@@ -14,11 +16,12 @@ export default function ContactMethodsForm({
   opened,
   close,
 }: {
-  subscription: SubscriptionDTO;
+  subscription: SubscriptionReadModel;
   opened: boolean;
   close: CloseFunctionType;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { labourId } = useLabourSession();
   const prompt = searchParams.get('prompt');
 
   const defaultIcon = <IconUpload size={18} stroke={1.5} />;
@@ -30,13 +33,14 @@ export default function ContactMethodsForm({
     },
   });
 
-  const updateContactMethodsMutation = useUpdateContactMethods();
+  const client = useLabourV2Client();
+  const mutation = useUpdateNotificationMethodsV2(client);
   const handleUpdateContactMethods = (values: typeof form.values) => {
-    const requestBody: UpdateContactMethodsRequest = {
-      contact_methods: values.contactMethods,
-      subscription_id: subscription.id,
+    const requestBody = {
+      labourId: labourId!,
+      methods: values.contactMethods,
     };
-    updateContactMethodsMutation.mutate(requestBody, {
+    mutation.mutate(requestBody, {
       onSuccess: () => {
         if (prompt === 'contactMethods') {
           searchParams.delete('prompt');
@@ -48,9 +52,17 @@ export default function ContactMethodsForm({
   };
 
   const options = [
-    { value: 'whatsapp', label: 'WhatsApp', disabled: form.values.contactMethods.includes('sms') },
-    { value: 'sms', label: 'Text', disabled: form.values.contactMethods.includes('whatsapp') },
-    { value: 'email', label: 'Email' },
+    {
+      value: 'WHATSAPP',
+      label: 'WhatsApp',
+      disabled: form.values.contactMethods.includes(SubscriberContactMethod.SMS),
+    },
+    {
+      value: 'SMS',
+      label: 'Text',
+      disabled: form.values.contactMethods.includes(SubscriberContactMethod.WHATSAPP),
+    },
+    { value: 'EMAIL', label: 'Email' },
   ];
 
   return (
@@ -110,7 +122,7 @@ export default function ContactMethodsForm({
               className={classes.submitButton}
               styles={{ section: { marginRight: 22 } }}
               type="submit"
-              loading={updateContactMethodsMutation.isPending}
+              loading={mutation.isPending}
               visibleFrom="xs"
             >
               Update Contact Methods
@@ -125,7 +137,7 @@ export default function ContactMethodsForm({
               className={classes.submitButton}
               styles={{ section: { marginRight: 22 } }}
               type="submit"
-              loading={updateContactMethodsMutation.isPending}
+              loading={mutation.isPending}
               hiddenFrom="xs"
             >
               Update Contact Methods

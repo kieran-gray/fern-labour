@@ -1,5 +1,5 @@
-import { useLabour } from '@base/contexts/LabourContext';
-import { useApiAuth, useSendLabourInvite } from '@shared/hooks';
+import { useLabourSession } from '@base/contexts';
+import { useLabourV2Client, useSendLabourInviteV2 } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { validateEmail } from '@shared/utils';
@@ -11,8 +11,8 @@ import classes from './InviteContainer.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function InviteContainer() {
-  useApiAuth();
-  const { labourId } = useLabour();
+  const { labourId } = useLabourSession();
+  const client = useLabourV2Client();
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -24,7 +24,7 @@ export function InviteContainer() {
     },
   });
 
-  const sendInviteMutation = useSendLabourInvite();
+  const sendInviteMutation = useSendLabourInviteV2(client);
 
   const handleSubmit = (values: typeof form.values) => {
     sendInviteMutation.mutate(

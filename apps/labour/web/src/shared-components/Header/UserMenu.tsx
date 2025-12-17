@@ -1,7 +1,6 @@
 import { forwardRef, useState } from 'react';
-import { useClerk } from '@clerk/clerk-react';
-import { useClerkUser } from '../hooks/useClerkUser';
 import { AppMode, useMode } from '@base/contexts/AppModeContext';
+import { useClerk } from '@clerk/clerk-react';
 import {
   IconArrowLeft,
   IconHistory,
@@ -24,7 +23,9 @@ import {
   UnstyledButton,
   useMantineColorScheme,
 } from '@mantine/core';
+import { useClerkUser } from '../hooks/useClerkUser';
 import classes from './Header.module.css';
+import { useLabourSession } from '@base/contexts';
 
 interface UserButtonProps extends React.ComponentPropsWithoutRef<'button'> {
   name: string;
@@ -61,6 +62,7 @@ export function MobileUserMenu() {
   const navigate = useNavigate();
   const pathname = window.location.pathname;
   const { mode, setMode } = useMode();
+  const { clearSession } = useLabourSession();
   const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
   const { colorScheme, setColorScheme } = useMantineColorScheme();
 
@@ -107,6 +109,7 @@ export function MobileUserMenu() {
             className={classes.mainLink}
             onClick={() => {
               setMode(switchToMode);
+              clearSession();
               navigate('/');
             }}
             leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}

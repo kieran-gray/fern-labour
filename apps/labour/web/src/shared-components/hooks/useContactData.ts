@@ -1,18 +1,18 @@
-import { ContactUsRequest, ContactUsService } from '@clients/contact_service';
+import type { CreateContactMessageRequest } from '@clients/contact_service';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
-import { useApiAuth } from './useApiAuth';
+import { useContactClient } from './useContactClient';
 
-/**
- * Custom hook for submitting contact form
- */
 export function useSubmitContactForm() {
-  useApiAuth();
+  const client = useContactClient();
 
   return useMutation({
-    mutationFn: async (requestBody: ContactUsRequest) => {
-      const response = await ContactUsService.contactUsSendMessage({ requestBody });
+    mutationFn: async (request: CreateContactMessageRequest) => {
+      const response = await client.createContactMessage(request);
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to send message');
+      }
       return response;
     },
     onSuccess: () => {

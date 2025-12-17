@@ -1,7 +1,6 @@
 import { useMutation, UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { EventType, OutboxManager } from '../storage/outbox';
 import { offlineLogger } from '../utils/logger';
-import { useGuestMode } from './useGuestMode';
 import { useSyncEngine } from './useSyncEngine';
 
 interface OfflineMutationOptions<TData, TError, TVariables>
@@ -41,7 +40,6 @@ interface OfflineMutationOptions<TData, TError, TVariables>
 export function useOfflineMutation<TData, TError = Error, TVariables = void>(
   options: OfflineMutationOptions<TData, TError, TVariables>
 ): UseMutationResult<TData, TError, TVariables> {
-  const { isGuestMode } = useGuestMode();
   const { triggerSync } = useSyncEngine();
 
   const {
@@ -66,12 +64,12 @@ export function useOfflineMutation<TData, TError = Error, TVariables = void>(
       let addedEventId: string | null = null;
 
       if (!skipOutbox) {
-        const evt = await OutboxManager.addEvent(aggregateId, eventType, payload, isGuestMode);
+        const evt = await OutboxManager.addEvent(aggregateId, eventType, payload);
         addedEventId = evt.id;
-        offlineLogger.info('mutation:queued', { eventType, aggregateId, isGuestMode, payload });
+        offlineLogger.info('mutation:queued', { eventType, aggregateId, payload });
       }
 
-      if (navigator.onLine && !isGuestMode) {
+      if (navigator.onLine) {
         try {
           const result = await mutationFn(variables);
           if (addedEventId) {
@@ -93,10 +91,8 @@ export function useOfflineMutation<TData, TError = Error, TVariables = void>(
           throw new Error(String(err));
         }
       }
-      if (!isGuestMode) {
-        triggerSync();
-      }
-      offlineLogger.info('mutation:offlineOrGuest', { eventType, aggregateId, isGuestMode });
+      triggerSync();
+      offlineLogger.info('mutation:offline', { eventType, aggregateId });
       return null as TData;
     },
 

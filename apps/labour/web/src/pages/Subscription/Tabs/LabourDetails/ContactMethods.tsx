@@ -1,6 +1,6 @@
+import { SubscriptionReadModel } from '@base/clients/labour_service_v2';
 import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
-import { SubscriptionDTO } from '@clients/labour_service';
-import { useSubscriber } from '@shared/hooks';
+import { useClerkUser } from '@base/shared-components/hooks/useClerkUser';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -38,19 +38,19 @@ export function warnNonUKNumber(
   return warning;
 }
 
-export default function ContactMethods({ subscription }: { subscription: SubscriptionDTO }) {
+export default function ContactMethods({ subscription }: { subscription: SubscriptionReadModel }) {
   useApiAuth();
   const [searchParams] = useSearchParams();
   const [opened, { open, close }] = useDisclosure(false);
   const prompt = searchParams.get('prompt');
 
-  const { status, data } = useSubscriber();
+  const { user, isLoaded } = useClerkUser();
 
   let contactMethodsWarning = null;
-  if (status === 'success') {
+  if (isLoaded) {
     contactMethodsWarning =
-      warnNoNumberSet(subscription.contact_methods, data.user.phone_number) ||
-      warnNonUKNumber(subscription.contact_methods, data.user.phone_number);
+      warnNoNumberSet(subscription.contact_methods, user?.phone_number || '') ||
+      warnNonUKNumber(subscription.contact_methods, user?.phone_number || '');
   }
 
   const selectedContactMethods = subscription.contact_methods.map((method) => (

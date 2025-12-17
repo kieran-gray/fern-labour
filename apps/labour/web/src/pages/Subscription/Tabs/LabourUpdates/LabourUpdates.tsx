@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { LabourDTO, UserSummaryDTO } from '@clients/labour_service';
+import { LabourReadModel } from '@base/clients/labour_service_v2';
+import { useLabourUpdatesV2, useLabourV2Client } from '@base/shared-components/hooks';
 import { LabourUpdate, LabourUpdateProps } from '@labour/Tabs/Updates/LabourUpdate';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
@@ -9,17 +10,20 @@ import { ScrollArea, Space } from '@mantine/core';
 import classes from '@labour/Tabs/Updates/LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
-export function StatusUpdates({
-  labour,
-  birthingPerson,
-}: {
-  labour: LabourDTO;
-  birthingPerson: UserSummaryDTO;
-}) {
-  const labourUpdates = labour.labour_updates;
+export function StatusUpdates({ labour }: { labour: LabourReadModel }) {
+  const client = useLabourV2Client();
+  const { data: labourUpdatesData } = useLabourUpdatesV2(client, labour.labour_id, 20);
+  const labourUpdatesTemp = labourUpdatesData?.data || [];
+  const labourUpdates = [...labourUpdatesTemp].sort((a, b) => {
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+  });
+
   const viewport = useRef<HTMLDivElement>(null);
-  const pluralisedBirthingPersonName = pluraliseName(birthingPerson.first_name);
-  const sharedLabourBegunMessage = `Exciting news, ${birthingPerson.first_name} has started labour!`;
+
+  const motherFirstName = labour.mother_name.split(' ')[0];
+
+  const pluralisedBirthingPersonName = pluraliseName(motherFirstName);
+  const sharedLabourBegunMessage = `Exciting news, ${motherFirstName} has started labour!`;
 
   const formatTime = (time: string) =>
     new Date(time).toLocaleString().slice(0, 17).replace(',', ' at');
@@ -29,13 +33,13 @@ export function StatusUpdates({
     labourUpdates.forEach((data) => {
       let props: LabourUpdateProps | null = null;
       const baseProps = {
-        id: data.id,
-        sentTime: formatTime(data.sent_time),
+        id: data.labour_update_id,
+        sentTime: formatTime(data.created_at),
         visibility: '',
         showMenu: false,
         showFooter: false,
       };
-      if (data.labour_update_type === 'announcement') {
+      if (data.labour_update_type === 'ANNOUNCEMENT') {
         if (data.application_generated) {
           props = {
             ...baseProps,
@@ -55,7 +59,7 @@ export function StatusUpdates({
             text: data.message,
           };
         }
-      } else if (data.labour_update_type === 'status_update') {
+      } else if (data.labour_update_type === 'STATUS_UPDATE') {
         props = {
           ...baseProps,
           class: classes.statusUpdatePanel,
@@ -79,8 +83,8 @@ export function StatusUpdates({
   }, [labourUpdates]);
 
   const completed = labour.end_time !== null;
-  const activeDescription = `Curious about how things are going? ${birthingPerson.first_name} can update her status here, giving you a glimpse into her progress. Check in regularly to stay informed without needing to reach out directly.`;
-  const completedDescription = `Here's where ${birthingPerson.first_name} kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`;
+  const activeDescription = `Curious about how things are going? ${motherFirstName} can update her status here, giving you a glimpse into her progress. Check in regularly to stay informed without needing to reach out directly.`;
+  const completedDescription = `Here's where ${motherFirstName} kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`;
   const description = completed ? completedDescription : activeDescription;
   return (
     <div className={baseClasses.root}>
@@ -97,11 +101,7 @@ export function StatusUpdates({
                 </ScrollArea.Autosize>
                 <Space h="lg" />
               </>
-            )) || (
-              <ImportantText
-                message={`${birthingPerson.first_name} hasn't posted any updates yet.`}
-              />
-            )}
+            )) || <ImportantText message={`${motherFirstName} hasn't posted any updates yet.`} />}
           </div>
         </div>
       </div>
