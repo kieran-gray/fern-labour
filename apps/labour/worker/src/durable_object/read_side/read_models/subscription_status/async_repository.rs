@@ -160,7 +160,9 @@ impl AsyncRepositoryUserTrait<SubscriptionStatusReadModel> for D1SubscriptionSta
         limit: usize,
         cursor: Option<DecodedCursor>,
     ) -> Result<Vec<SubscriptionStatusReadModel>> {
-        let mut query = "SELECT * FROM subscription_status WHERE subscriber_id = ?1 AND status='SUBSCRIBED'".to_string();
+        let mut query =
+            "SELECT * FROM subscription_status WHERE subscriber_id = ?1 AND status='SUBSCRIBED'"
+                .to_string();
         let mut bindings = vec![user_id.into()];
 
         if let Some(cur) = cursor {

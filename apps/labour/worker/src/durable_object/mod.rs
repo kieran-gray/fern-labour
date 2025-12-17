@@ -10,8 +10,8 @@ use tracing::{error, info};
 use worker::{DurableObject, Env, Request, Response, Result, State, durable_object};
 
 use crate::durable_object::{
-    api::RequestDto, exceptions::IntoWorkerResponse, state::AggregateServices,
-    user_storage::UserStorage, write_side::infrastructure::alarm_manager::AlarmManager,
+    api::router::route_request, exceptions::IntoWorkerResponse, state::AggregateServices,
+    write_side::infrastructure::alarm_manager::AlarmManager,
 };
 
 #[durable_object]
@@ -20,7 +20,6 @@ pub struct LabourAggregate {
     _env: Env,
     pub(crate) services: AggregateServices,
     alarm_manager: AlarmManager,
-    user_storage: UserStorage,
 }
 
 impl DurableObject for LabourAggregate {
@@ -31,34 +30,19 @@ impl DurableObject for LabourAggregate {
         };
 
         let alarm_manager = AlarmManager::create(state.storage());
-        let user_storage = UserStorage::create(state.storage().sql());
-        if let Err(err) = user_storage.init_schema() {
-            panic!("Failed to initialize user storage schema: {}", err);
-        }
 
         Self {
             _state: state,
             _env: env,
             services,
             alarm_manager,
-            user_storage,
         }
     }
 
     async fn fetch(&self, req: Request) -> Result<Response> {
-        let request_dto = match RequestDto::from_request(req).await {
-            Ok(dto) => dto,
-            Err(err) => return Response::error(format!("Bad request: {}", err), 400),
-        };
+        let result = route_request(req, &self.services).await?;
 
-        let user = &request_dto.auth_context().user;
-        if let Err(e) = self.user_storage.save_user_if_not_exists(user) {
-            error!(error = %e, user_id = %user.user_id, "Failed to save user");
-        }
-
-        let result = api::route_and_handle(self, request_dto);
-
-        if result.is_success() && result.response().status_code() == 204 {
+        if result.status_code() == 204 {
             // Only run alarm for empty responses, so we only run it when handling a
             // write-side command request.
             self.alarm_manager
@@ -67,7 +51,7 @@ impl DurableObject for LabourAggregate {
                 .map_err(|e| worker::Error::RustError(e.to_string()))?;
         }
 
-        Ok(result.into_response())
+        Ok(result)
     }
 
     async fn alarm(&self) -> Result<Response> {

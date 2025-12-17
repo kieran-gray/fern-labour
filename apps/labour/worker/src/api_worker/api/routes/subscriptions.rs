@@ -3,7 +3,10 @@ use worker::{Request, Response, RouteContext};
 
 use crate::{
     api_worker::AppState,
-    durable_object::read_side::read_models::{labour_status::LabourStatusReadModelQueryHandler, subscription_status::SubscriptionStatusReadModelQueryHandler},
+    durable_object::read_side::read_models::{
+        labour_status::LabourStatusReadModelQueryHandler,
+        subscription_status::SubscriptionStatusReadModelQueryHandler,
+    },
 };
 
 pub async fn get_user_subscriptions(
@@ -47,8 +50,8 @@ pub async fn get_subscribed_labours(
         .await
         .map_err(|e| format!("Failed to query labour status: {e}"))?;
 
-    let response = Response::from_json(&labours)
-        .map_err(|e| format!("Failed to serialize response: {e}"))?;
+    let response =
+        Response::from_json(&labours).map_err(|e| format!("Failed to serialize response: {e}"))?;
 
     Ok(cors_context.add_to_response(response))
 }

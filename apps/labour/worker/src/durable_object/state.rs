@@ -45,6 +45,7 @@ use crate::durable_object::{
 pub struct WriteModel {
     pub labour_command_processor: LabourCommandProcessor,
     pub admin_command_processor: AdminCommandProcessor,
+    pub user_storage: UserStorage,
 }
 
 pub struct ReadModel {
@@ -84,9 +85,15 @@ impl AggregateServices {
 
         let admin_command_processor = AdminCommandProcessor::create(checkpoint_repository);
 
+        let user_storage = UserStorage::create(sql);
+        user_storage
+            .init_schema()
+            .context("Failed to init user storage")?;
+
         Ok(WriteModel {
             labour_command_processor,
             admin_command_processor,
+            user_storage,
         })
     }
 
