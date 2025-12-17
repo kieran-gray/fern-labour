@@ -1,6 +1,6 @@
-import { SubscriptionReadModel } from '@base/clients/labour_service_v2';
-import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
-import { useClerkUser } from '@base/shared-components/hooks/useClerkUser';
+import { SubscriptionReadModel } from '@base/clients/labour_service';
+import { useApiAuth } from '@base/hooks/useApiAuth';
+import { useClerkUser } from '@base/hooks/useClerkUser';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';

@@ -1,5 +1,5 @@
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useLabourHistoryV2, useLabourV2Client } from '@shared/hooks';
+import { useLabourHistoryV2, useLabourV2Client } from '@base/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconInfoCircle, IconX } from '@tabler/icons-react';

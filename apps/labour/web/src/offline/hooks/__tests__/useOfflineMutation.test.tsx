@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import React from 'react';
-import * as labourServiceModule from '@clients/labour_service';
-import * as apiAuthModule from '@shared/hooks/useApiAuth';
+import * as apiAuthModule from '@base/hooks/useApiAuth';
+import * as labourServiceModule from '@clients/labour_service/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { clearAllData } from '../../storage/database';
@@ -11,21 +11,59 @@ import { syncEngine } from '../../sync/syncEngine';
 import { useOfflineMutation, useOnlineMutation } from '../useOfflineMutation';
 
 // Use real storage/sync layers. Only mock auth and external API clients.
-jest.mock('@shared/hooks/useApiAuth');
-jest.mock('@clients/labour_service', () => ({
-  ContractionsService: {
-    startContraction: jest.fn().mockResolvedValue({ labour: {} }),
-    endContraction: jest.fn().mockResolvedValue({ labour: {} }),
-    updateContraction: jest.fn().mockResolvedValue({ labour: {} }),
-    deleteContraction: jest.fn().mockResolvedValue({}),
-  },
-  LabourService: {
-    planLabour: jest.fn().mockResolvedValue({ labour: {} }),
-    completeLabour: jest.fn().mockResolvedValue({}),
-  },
-  LabourUpdatesService: {
-    postLabourUpdate: jest.fn().mockResolvedValue({ labour_update: {} }),
-  },
+jest.mock('@base/hooks/useApiAuth');
+
+jest.mock('@clients/labour_service/client', () => ({
+  LabourServiceClient: jest.fn().mockImplementation(() => ({
+    startContraction: jest.fn(),
+    endContraction: jest.fn(),
+    updateContraction: jest.fn(),
+    deleteContraction: jest.fn(),
+    planLabour: jest.fn(),
+    completeLabour: jest.fn(),
+    postLabourUpdate: jest.fn(),
+  })),
+}));
+
+jest.mock('@base/hooks/useLabourClient', () => ({
+  useLabourV2Client: () => ({
+    startContraction: jest.fn(),
+    updateContraction: jest.fn(),
+    deleteContraction: jest.fn(),
+    getActiveLabour: jest.fn(),
+    getLabour: jest.fn(),
+    getLabourHistory: jest.fn(),
+    getContractions: jest.fn(),
+    getContractionById: jest.fn(),
+    getLabourUpdates: jest.fn(),
+    getLabourUpdateById: jest.fn(),
+    endContraction: jest.fn(),
+    updateLabourUpdateMessage: jest.fn(),
+    updateLabourUpdateType: jest.fn(),
+    postLabourUpdate: jest.fn(),
+    deleteLabourUpdate: jest.fn(),
+    planLabour: jest.fn(),
+    updateLabourPlan: jest.fn(),
+    beginLabour: jest.fn(),
+    completeLabour: jest.fn(),
+    deleteLabour: jest.fn(),
+    sendLabourInvite: jest.fn(),
+    getSubscriptionToken: jest.fn(),
+    getLabourSubscriptions: jest.fn(),
+    getUserSubscription: jest.fn(),
+    getSubscribedLabours: jest.fn(),
+    getUserSubscriptions: jest.fn(),
+    getUsers: jest.fn(),
+    requestAccess: jest.fn(),
+    unsubscribe: jest.fn(),
+    updateNotificationMethods: jest.fn(),
+    updateAccessLevel: jest.fn(),
+    approveSubscriber: jest.fn(),
+    removeSubscriber: jest.fn(),
+    blockSubscriber: jest.fn(),
+    unblockSubscriber: jest.fn(),
+    updateSubscriberRole: jest.fn(),
+  }),
 }));
 
 // Prevent background state updates in tests from useSyncEngine interval
@@ -46,20 +84,8 @@ jest.mock('../useSyncEngine', () => ({
   }),
 }));
 
-jest.mock('../useGuestMode', () => ({
-  useGuestMode: () => ({
-    isGuestMode: false,
-    guestProfile: null,
-    isLoading: false,
-    switchToGuestMode: async () => {},
-    upgradeToAuthenticatedMode: async () => {},
-    clearGuestData: async () => {},
-    exportGuestData: async () => ({}),
-  }),
-}));
-
 const mockUseApiAuth = apiAuthModule as jest.Mocked<typeof apiAuthModule>;
-const { ContractionsService: mockContractionsService } = labourServiceModule;
+const { LabourServiceClient: mockLabourServiceClient } = labourServiceModule;
 
 // Ensure navigator.onLine is controllable
 Object.defineProperty(navigator, 'onLine', { value: true, writable: true });
@@ -84,6 +110,15 @@ describe('useOfflineMutation (integration)', () => {
     );
 
     jest.clearAllMocks();
+    (labourServiceModule.LabourServiceClient as jest.Mock).mockImplementation(() => ({
+      startContraction: jest.fn().mockResolvedValue({ success: true, data: { labour: {} } }),
+      endContraction: jest.fn().mockResolvedValue({ success: true, data: { labour: {} } }),
+      updateContraction: jest.fn().mockResolvedValue({ success: true, data: { labour: {} } }),
+      deleteContraction: jest.fn().mockResolvedValue({ success: true, data: {} }),
+      planLabour: jest.fn().mockResolvedValue({ success: true, data: { labour: {} } }),
+      completeLabour: jest.fn().mockResolvedValue({ success: true, data: {} }),
+      postLabourUpdate: jest.fn().mockResolvedValue({ success: true, data: { labour_update: {} } }),
+    }));
     // Default to authenticated user (non-guest)
     mockUseApiAuth.useApiAuth.mockReturnValue({
       isAuthenticated: true,
@@ -190,45 +225,6 @@ describe('useOfflineMutation (integration)', () => {
     expect(mutationFn).not.toHaveBeenCalled();
   });
 
-  it('marks events as guest events in guest mode', async () => {
-    // Simulate guest (no user). To avoid provider initialization race,
-    // directly force guest mode for this test only.
-    mockUseApiAuth.useApiAuth.mockReturnValue({
-      isAuthenticated: false,
-      isLoading: false,
-      user: null,
-      accessToken: undefined,
-    } as any);
-    const guestModule = await import('../useGuestMode');
-    const gmSpy = jest.spyOn(guestModule, 'useGuestMode').mockReturnValue({
-      isGuestMode: true,
-      guestProfile: null,
-      isLoading: false,
-      switchToGuestMode: async () => {},
-      upgradeToAuthenticatedMode: async () => {},
-      clearGuestData: async () => {},
-      exportGuestData: async () => ({}),
-    });
-
-    const { result } = renderHook(
-      () =>
-        useOfflineMutation<any, Error, any>({
-          eventType: 'start_contraction',
-          getAggregateId: () => 'guest-labour-1',
-          mutationFn: async () => ({ ok: true }) as any,
-        }),
-      { wrapper }
-    );
-
-    await act(async () => {
-      await result.current.mutateAsync({ start_time: '2023-01-01T00:00:00Z' });
-    });
-
-    const events = await OutboxManager.getAllPendingEvents();
-    expect(events[0].isGuestEvent).toBe(1);
-    gmSpy.mockRestore();
-  });
-
   it('skipOutbox: does not queue event and calls mutation', async () => {
     const mutationFn = jest.fn().mockResolvedValue('ok');
 
@@ -310,7 +306,7 @@ describe('useOfflineMutation (integration)', () => {
       expect(remaining.length).toBe(0);
     });
 
-    expect(mockContractionsService.startContraction).toHaveBeenCalledWith({
+    expect(mockLabourServiceClient.startContraction).toHaveBeenCalledWith({
       requestBody: { start_time: '2023-01-01T00:00:00Z' },
     });
   });

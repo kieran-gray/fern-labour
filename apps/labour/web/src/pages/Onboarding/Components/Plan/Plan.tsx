@@ -1,6 +1,6 @@
-import { LabourReadModel } from '@base/clients/labour_service_v2';
+import { LabourReadModel } from '@base/clients/labour_service';
+import { useLabourV2Client, usePlanLabourV2, useUpdateLabourPlanV2 } from '@base/hooks';
 import { validateLabourName } from '@base/shared-components/utils';
-import { useLabourV2Client, usePlanLabourV2, useUpdateLabourPlanV2 } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowRight, IconCalendar, IconPencil, IconUpload } from '@tabler/icons-react';

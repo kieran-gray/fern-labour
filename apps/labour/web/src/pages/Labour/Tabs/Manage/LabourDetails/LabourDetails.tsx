@@ -1,5 +1,5 @@
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useLabourByIdV2, useLabourV2Client } from '@shared/hooks';
+import { useLabourByIdV2, useLabourV2Client } from '@base/hooks';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';

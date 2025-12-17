@@ -1,5 +1,5 @@
 import { useLabourSession } from '@base/contexts';
-import { useLabourV2Client, useSendLabourInviteV2 } from '@shared/hooks';
+import { useLabourV2Client, useSendLabourInviteV2 } from '@base/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { validateEmail } from '@shared/utils';

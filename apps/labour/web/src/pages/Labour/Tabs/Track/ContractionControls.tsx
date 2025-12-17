@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { ContractionReadModel } from '@clients/labour_service_v2/types';
+import { ContractionReadModel } from '@base/clients/labour_service/types';
 import { ActiveContractionControls } from './ActiveContractionControls';
 import StartContractionButton from './StartContractionButton';
 import { StopwatchHandle } from './Stopwatch/Stopwatch';

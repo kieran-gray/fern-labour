@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ContractionReadModel } from '@clients/labour_service_v2/types';
+import { ContractionReadModel } from '@base/clients/labour_service/types';
 import { formatTimeMilliseconds, formatTimeSeconds } from '@shared/utils';
 import { IconActivityHeartbeat } from '@tabler/icons-react';
 import { ScrollArea, Text } from '@mantine/core';

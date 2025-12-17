@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { LabourReadModel } from '@clients/labour_service_v2/types';
-import { useContractionsV2, useLabourV2Client } from '@shared/hooks';
+import { LabourReadModel } from '@base/clients/labour_service/types';
+import { useContractionsV2, useLabourV2Client } from '@base/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';

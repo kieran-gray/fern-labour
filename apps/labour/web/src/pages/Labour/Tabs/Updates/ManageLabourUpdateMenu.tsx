@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { LabourUpdateType } from '@base/clients/labour_service_v2';
+import { LabourUpdateType } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useLabourV2Client } from '@base/hooks';
 import {
   useDeleteLabourUpdateV2,
   useUpdateLabourUpdateMessageV2,
   useUpdateLabourUpdateTypeV2,
-} from '@base/shared-components/hooks/useLabourDataV2';
-import { useLabourV2Client } from '@shared/hooks';
+} from '@base/hooks/useLabourData';
 import { Error } from '@shared/Notifications';
 import { IconDots, IconPencil, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';

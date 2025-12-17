@@ -1,6 +1,6 @@
-import { LabourReadModel } from '@base/clients/labour_service_v2';
+import { LabourReadModel } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts';
-import { useContractionsV2, useLabourV2Client } from '@base/shared-components/hooks';
+import { useContractionsV2, useLabourV2Client } from '@base/hooks';
 import { createLabourStatistics } from '@labour/Tabs/Statistics/LabourStatistics';
 import { LabourStatisticsTabs } from '@labour/Tabs/Statistics/LabourStatisticsTabs';
 import image from '@labour/Tabs/Statistics/statistics.svg';

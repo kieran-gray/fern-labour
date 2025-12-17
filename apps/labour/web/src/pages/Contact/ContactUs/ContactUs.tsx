@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
-import { useSubmitContactForm } from '@base/shared-components/hooks/useContactData';
+import { useApiAuth } from '@base/hooks/useApiAuth';
+import { useSubmitContactForm } from '@base/hooks/useContactData';
 import { validateMessage } from '@base/shared-components/utils';
 import type { CreateContactMessageRequest } from '@clients/contact_service';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';

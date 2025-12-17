@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useState } from 'react';
-import { ContractionReadModel } from '@clients/labour_service_v2/types';
+import { ContractionReadModel } from '@base/clients/labour_service/types';
 import { Slider, Space, Text } from '@mantine/core';
 import EndContractionButton from './EndContractionButton';
 import Stopwatch, { StopwatchHandle } from './Stopwatch/Stopwatch';

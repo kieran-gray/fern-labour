@@ -1,4 +1,4 @@
-import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
+import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';

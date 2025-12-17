@@ -1,5 +1,5 @@
 import { useLabourSession } from '@base/contexts';
-import { useCreateCheckoutSessionV2, useLabourV2Client } from '@shared/hooks';
+import { useCreateCheckoutSessionV2, useLabourV2Client } from '@base/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconArrowUp } from '@tabler/icons-react';

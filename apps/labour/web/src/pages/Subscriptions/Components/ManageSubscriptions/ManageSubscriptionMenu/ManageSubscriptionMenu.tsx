@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLabourSession } from '@base/contexts';
-import { useLabourV2Client, useUnsubscribeV2 } from '@base/shared-components/hooks';
+import { useLabourV2Client, useUnsubscribeV2 } from '@base/hooks';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import { IconDots, IconUserMinus } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { LabourReadModel } from '@base/clients/labour_service_v2';
-import { useLabourUpdatesV2, useLabourV2Client } from '@base/shared-components/hooks';
+import { LabourReadModel } from '@base/clients/labour_service';
+import { useLabourUpdatesV2, useLabourV2Client } from '@base/hooks';
 import { LabourUpdate, LabourUpdateProps } from '@labour/Tabs/Updates/LabourUpdate';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';

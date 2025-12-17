@@ -1,4 +1,4 @@
-import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
+import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service';
 import { Space, Tabs } from '@mantine/core';
 import { filterContractions, LabourStatistics } from './LabourStatistics';
 import { LabourStatisticsChart } from './LabourStatisticsChart';

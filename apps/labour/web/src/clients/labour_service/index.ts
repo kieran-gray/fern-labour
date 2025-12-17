@@ -6,8 +6,8 @@
  * in packages/labour-shared/src/commands/
  */
 
-export { LabourServiceV2Client } from './client';
-export type { LabourServiceV2Config } from './client';
+export { LabourServiceClient as LabourServiceV2Client } from './client';
+export type { LabourServiceConfig as LabourServiceV2Config } from './client';
 
 export {
   SubscriberContactMethod,

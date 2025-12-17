@@ -2,22 +2,20 @@
 import 'fake-indexeddb/auto';
 
 import React from 'react';
-import * as labourServiceModule from '@clients/labour_service';
-import * as apiAuthModule from '@shared/hooks/useApiAuth';
+import * as apiAuthModule from '@base/hooks/useApiAuth';
+import * as labourServiceModule from '@clients/labour_service/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { SyncEngineProvider } from '../../../offline/hooks/SyncEngineProvider';
-import { GuestModeProvider } from '../../../offline/hooks/useGuestMode';
-import { clearAllData, db } from '../../../offline/storage/database';
-import { OutboxManager } from '../../../offline/storage/outbox';
+import { clearAllData, db } from '../../offline/storage/database';
+import { OutboxManager } from '../../offline/storage/outbox';
 import { queryKeys } from '../queryKeys';
 import {
-  useDeleteContraction,
-  useStartContraction,
-  useUpdateContraction,
-} from '../useContractionData';
+  useDeleteContractionV2,
+  useStartContractionV2,
+  useUpdateContractionV2,
+} from '../useLabourData';
 
-jest.mock('@shared/hooks/useApiAuth');
+jest.mock('@base/hooks/useApiAuth');
 jest.mock('@shared/Notifications', () => ({
   Error: { title: 'Error', color: 'red' },
   Success: { title: 'Success', color: 'green' },
@@ -28,7 +26,7 @@ jest.mock('@mantine/notifications', () => ({
   },
 }));
 jest.mock('@clients/labour_service', () => ({
-  ContractionsService: {
+  LabourServiceClient: {
     startContraction: jest.fn(),
     updateContraction: jest.fn(),
     deleteContraction: jest.fn(),
@@ -36,7 +34,7 @@ jest.mock('@clients/labour_service', () => ({
 }));
 
 const mockUseApiAuth = apiAuthModule as jest.Mocked<typeof apiAuthModule>;
-const { ContractionsService: mockContractionsService } = labourServiceModule;
+const { LabourServiceClient: mockLabourServiceClient } = labourServiceModule;
 
 describe('useContractionData mapping', () => {
   let queryClient: QueryClient;
@@ -48,15 +46,11 @@ describe('useContractionData mapping', () => {
       defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
     });
     wrapper = ({ children }) => (
-      <QueryClientProvider client={queryClient}>
-        <SyncEngineProvider>
-          <GuestModeProvider>{children}</GuestModeProvider>
-        </SyncEngineProvider>
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
     jest.clearAllMocks();
     mockUseApiAuth.useApiAuth.mockReturnValue({ user: { profile: { sub: 'user-abc' } } } as any);
-    mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
+    mockLabourServiceClient.startContraction.mockResolvedValue({ labour: {} });
     Object.defineProperty(navigator, 'onLine', { value: true, writable: true });
   });
 
@@ -65,7 +59,7 @@ describe('useContractionData mapping', () => {
   });
 
   it('records temp mapping on start mutate', async () => {
-    const { result } = renderHook(() => useStartContraction(), { wrapper });
+    const { result } = renderHook(() => useStartContractionV2(), { wrapper });
     const startTime = '2024-01-01T00:00:00Z';
 
     // Seed cache with current labour to enable optimistic path and mapping
@@ -101,7 +95,7 @@ describe('useContractionData mapping', () => {
   });
 
   it('prevents updating an in-progress contraction (authenticated)', async () => {
-    const { result: startHook } = renderHook(() => useUpdateContraction(), { wrapper });
+    const { result: startHook } = renderHook(() => useUpdateContractionV2(), { wrapper });
 
     const sub = 'user-abc';
     const labour = {
@@ -143,7 +137,7 @@ describe('useContractionData mapping', () => {
   });
 
   it('prevents deleting an in-progress contraction (authenticated)', async () => {
-    const { result } = renderHook(() => useDeleteContraction(), { wrapper });
+    const { result } = renderHook(() => useDeleteContractionV2(), { wrapper });
     const sub = 'user-abc';
     const labour = {
       id: 'labour-1',
@@ -183,7 +177,7 @@ describe('useContractionData mapping', () => {
   });
 
   it('allows updating a completed contraction (authenticated)', async () => {
-    const { result } = renderHook(() => useUpdateContraction(), { wrapper });
+    const { result } = renderHook(() => useUpdateContractionV2(), { wrapper });
     const sub = 'user-abc';
     const labour = {
       id: 'labour-1',
@@ -212,19 +206,19 @@ describe('useContractionData mapping', () => {
     } as any;
     queryClient.setQueryData(queryKeys.labour.user(sub), labour);
 
-    mockContractionsService.updateContraction.mockResolvedValue({ labour });
+    mockLabourServiceClient.updateContraction.mockResolvedValue({ labour });
 
     await act(async () => {
       await result.current.mutateAsync({ contraction_id: 'ended-1', intensity: 8 } as any);
     });
-    expect(mockContractionsService.updateContraction).toHaveBeenCalledTimes(1);
+    expect(mockLabourServiceClient.updateContraction).toHaveBeenCalledTimes(1);
     expect(
-      mockContractionsService.updateContraction.mock.calls[0][0].requestBody.contraction_id
+      mockLabourServiceClient.updateContraction.mock.calls[0][0].requestBody.contraction_id
     ).toBe('ended-1');
   });
 
   it('allows deleting a completed contraction (authenticated)', async () => {
-    const { result } = renderHook(() => useDeleteContraction(), { wrapper });
+    const { result } = renderHook(() => useDeleteContractionV2(), { wrapper });
     const sub = 'user-abc';
     const labour = {
       id: 'labour-1',
@@ -253,14 +247,14 @@ describe('useContractionData mapping', () => {
     } as any;
     queryClient.setQueryData(queryKeys.labour.user(sub), labour);
 
-    mockContractionsService.deleteContraction.mockResolvedValue({ labour });
+    mockLabourServiceClient.deleteContraction.mockResolvedValue({ labour });
 
     await act(async () => {
       await result.current.mutateAsync('ended-2');
     });
-    expect(mockContractionsService.deleteContraction).toHaveBeenCalledTimes(1);
+    expect(mockLabourServiceClient.deleteContraction).toHaveBeenCalledTimes(1);
     expect(
-      mockContractionsService.deleteContraction.mock.calls[0][0].requestBody.contraction_id
+      mockLabourServiceClient.deleteContraction.mock.calls[0][0].requestBody.contraction_id
     ).toBe('ended-2');
   });
 });

@@ -1,4 +1,4 @@
-import { ContractionReadModel } from '@base/clients/labour_service_v2';
+import { ContractionReadModel } from '@base/clients/labour_service';
 import { IconHourglassHigh, IconHourglassLow } from '@tabler/icons-react';
 import { Anchor, Button, List, Modal, Slider, Stack, Text, Title } from '@mantine/core';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';

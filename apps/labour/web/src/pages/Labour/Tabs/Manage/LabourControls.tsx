@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ContractionReadModel } from '@base/clients/labour_service_v2';
+import { ContractionReadModel } from '@base/clients/labour_service';
 import { Tabs } from '@mantine/core';
 import Complete from './Complete/Complete';
 import LabourDetails from './LabourDetails/LabourDetails';

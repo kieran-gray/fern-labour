@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LabourReadModel } from '@base/clients/labour_service_v2';
+import { LabourReadModel } from '@base/clients/labour_service';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { ActionIcon } from '@mantine/core';
 import { LabourUpdateControls } from './LabourUpdateControls';

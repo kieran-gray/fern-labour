@@ -3,7 +3,7 @@
 import 'fake-indexeddb/auto';
 
 // Get mocked services for test verification
-import * as labourServiceModule from '@clients/labour_service';
+import * as labourServiceModule from '@clients/labour_service/client';
 import { ContractionIdMapper } from '../../storage/contractionIdMap';
 import { OfflineDatabase } from '../../storage/database';
 import { OutboxManager } from '../../storage/outbox';
@@ -20,27 +20,19 @@ const setNetworkOnline = (isOnline: boolean) => {
 };
 
 // Mock the API clients - these are network calls we need to mock
-jest.mock('@clients/labour_service', () => ({
-  ContractionsService: {
+jest.mock('@clients/labour_service/client', () => ({
+  LabourServiceClient: {
     startContraction: jest.fn(),
     endContraction: jest.fn(),
     updateContraction: jest.fn(),
     deleteContraction: jest.fn(),
-  },
-  LabourService: {
     planLabour: jest.fn(),
     completeLabour: jest.fn(),
-  },
-  LabourUpdatesService: {
     postLabourUpdate: jest.fn(),
   },
 }));
 
-const {
-  ContractionsService: mockContractionsService,
-  LabourService: mockLabourService,
-  LabourUpdatesService: mockLabourUpdatesService,
-} = labourServiceModule;
+const { LabourServiceClient: mockLabourServiceClient } = labourServiceModule;
 
 describe('SyncEngine', () => {
   let testDb: OfflineDatabase;
@@ -57,14 +49,12 @@ describe('SyncEngine', () => {
       'rw',
       [
         testDb.outbox,
-        testDb.guestProfiles,
         testDb.sequences,
         // @ts-ignore - table exists from DB v2
         testDb.contractionIdMap,
       ],
       async () => {
         await testDb.outbox.clear();
-        await testDb.guestProfiles.clear();
         await testDb.sequences.clear();
         // @ts-ignore - table exists from DB v2
         await testDb.contractionIdMap.clear();
@@ -114,7 +104,7 @@ describe('SyncEngine', () => {
 
       // Add a failing event to trigger retry scheduling
       await OutboxManager.addEvent('labour-1', 'start_contraction', {});
-      mockContractionsService.startContraction.mockRejectedValue(new Error('Network error'));
+      mockLabourServiceClient.startContraction.mockRejectedValue(new Error('Network error'));
 
       await syncEngine.triggerSync();
 
@@ -137,11 +127,11 @@ describe('SyncEngine', () => {
       const payload = { start_time: '2023-01-01T00:00:00Z' };
       await OutboxManager.addEvent('labour-1', 'start_contraction', payload);
 
-      mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.startContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.startContraction).toHaveBeenCalledWith({
+      expect(mockLabourServiceClient.startContraction).toHaveBeenCalledWith({
         requestBody: payload,
       });
 
@@ -154,11 +144,11 @@ describe('SyncEngine', () => {
       const payload = { intensity: 8, end_time: '2023-01-01T00:01:00Z' };
       await OutboxManager.addEvent('labour-1', 'end_contraction', payload);
 
-      mockContractionsService.endContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.endContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.endContraction).toHaveBeenCalledWith({
+      expect(mockLabourServiceClient.endContraction).toHaveBeenCalledWith({
         requestBody: payload,
       });
     });
@@ -167,11 +157,11 @@ describe('SyncEngine', () => {
       const payload = { due_date: '2023-06-01', first_labour: true, labour_name: 'Test Labour' };
       await OutboxManager.addEvent('labour-1', 'plan_labour', payload);
 
-      mockLabourService.planLabour.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.planLabour.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockLabourService.planLabour).toHaveBeenCalledWith({
+      expect(mockLabourServiceClient.planLabour).toHaveBeenCalledWith({
         requestBody: payload,
       });
     });
@@ -180,11 +170,11 @@ describe('SyncEngine', () => {
       const payload = { end_time: '2023-01-01T10:00:00Z' };
       await OutboxManager.addEvent('labour-1', 'complete_labour', payload);
 
-      mockLabourService.completeLabour.mockResolvedValue(undefined);
+      mockLabourServiceClient.completeLabour.mockResolvedValue(undefined);
 
       await syncEngine.triggerSync();
 
-      expect(mockLabourService.completeLabour).toHaveBeenCalledWith({
+      expect(mockLabourServiceClient.completeLabour).toHaveBeenCalledWith({
         requestBody: payload,
       });
     });
@@ -193,11 +183,11 @@ describe('SyncEngine', () => {
       const payload = { contraction_id: 'contraction-1', intensity: 7 };
       await OutboxManager.addEvent('labour-1', 'update_contraction', payload);
 
-      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.updateContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.updateContraction).toHaveBeenCalledWith({
+      expect(mockLabourServiceClient.updateContraction).toHaveBeenCalledWith({
         requestBody: payload,
       });
     });
@@ -206,11 +196,11 @@ describe('SyncEngine', () => {
       const payload = { contraction_id: 'contraction-1' };
       await OutboxManager.addEvent('labour-1', 'delete_contraction', payload);
 
-      mockContractionsService.deleteContraction.mockResolvedValue(undefined);
+      mockLabourServiceClient.deleteContraction.mockResolvedValue(undefined);
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.deleteContraction).toHaveBeenCalledWith({
+      expect(mockLabourServiceClient.deleteContraction).toHaveBeenCalledWith({
         requestBody: payload,
       });
     });
@@ -242,16 +232,16 @@ describe('SyncEngine', () => {
       await OutboxManager.addEvent('labour-1', 'start_contraction', {
         start_time: '2023-01-01T00:00:00Z',
       });
-      mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.startContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.startContraction).toHaveBeenCalledWith({
+      expect(mockLabourServiceClient.startContraction).toHaveBeenCalledWith({
         requestBody: { start_time: '2023-01-01T00:00:00Z' },
       });
 
       // TODO: Verify idempotency header when API client supports it
-      // expect(mockContractionsService.startContraction).toHaveBeenCalledWith({
+      // expect(mockLabourServiceClient.startContraction).toHaveBeenCalledWith({
       //   headers: { 'X-Idempotency-Key': event.id },
       //   requestBody: { start_time: '2023-01-01T00:00:00Z' },
       // });
@@ -271,7 +261,7 @@ describe('SyncEngine', () => {
 
       const executionOrder: string[] = [];
 
-      mockLabourService.planLabour.mockImplementation(() => {
+      mockLabourServiceClient.planLabour.mockImplementation(() => {
         executionOrder.push('plan_labour');
         return Promise.resolve({ labour: {} });
       });
@@ -281,7 +271,7 @@ describe('SyncEngine', () => {
         return Promise.resolve({ labour_update: {} });
       });
 
-      mockContractionsService.startContraction.mockImplementation(() => {
+      mockLabourServiceClient.startContraction.mockImplementation(() => {
         executionOrder.push('start_contraction');
         return Promise.resolve({ labour: {} });
       });
@@ -295,11 +285,11 @@ describe('SyncEngine', () => {
       await OutboxManager.addEvent('labour-1', 'start_contraction', {});
       await OutboxManager.addEvent('labour-2', 'start_contraction', {});
 
-      mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.startContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.startContraction).toHaveBeenCalledTimes(2);
+      expect(mockLabourServiceClient.startContraction).toHaveBeenCalledTimes(2);
 
       const remainingEvents = await OutboxManager.getAllPendingEvents();
       expect(remainingEvents).toHaveLength(0);
@@ -322,14 +312,14 @@ describe('SyncEngine', () => {
       });
 
       // First event fails
-      mockContractionsService.startContraction.mockRejectedValue(new Error('API Error'));
-      mockContractionsService.endContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.startContraction.mockRejectedValue(new Error('API Error'));
+      mockLabourServiceClient.endContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
       // Only the first call attempted; second should not be called until retry succeeds
-      expect(mockContractionsService.startContraction).toHaveBeenCalledTimes(1);
-      expect(mockContractionsService.endContraction).not.toHaveBeenCalled();
+      expect(mockLabourServiceClient.startContraction).toHaveBeenCalledTimes(1);
+      expect(mockLabourServiceClient.endContraction).not.toHaveBeenCalled();
 
       const failed = await OutboxManager.getEventsByStatus('failed');
       expect(failed.map((e) => e.eventType)).toContain('start_contraction');
@@ -356,18 +346,18 @@ describe('SyncEngine', () => {
 
       let tStart = 0;
       let tEnd = 0;
-      mockContractionsService.startContraction.mockImplementation((_args: any) => {
+      mockLabourServiceClient.startContraction.mockImplementation((_args: any) => {
         tStart = Date.now();
         return Promise.resolve({ labour: {} });
       });
-      mockContractionsService.endContraction.mockImplementation((_args: any) => {
+      mockLabourServiceClient.endContraction.mockImplementation((_args: any) => {
         tEnd = Date.now();
         return Promise.resolve({ labour: {} });
       });
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.startContraction).toHaveBeenCalledTimes(1);
-      expect(mockContractionsService.endContraction).toHaveBeenCalledTimes(1);
+      expect(mockLabourServiceClient.startContraction).toHaveBeenCalledTimes(1);
+      expect(mockLabourServiceClient.endContraction).toHaveBeenCalledTimes(1);
       // Check there was a noticeable gap (>=20ms) between the two
       expect(tEnd - tStart).toBeGreaterThanOrEqual(20);
 
@@ -386,7 +376,7 @@ describe('SyncEngine', () => {
         start_time: '2023-01-01T00:00:00Z',
       });
 
-      mockContractionsService.startContraction.mockRejectedValue(new Error('API Error'));
+      mockLabourServiceClient.startContraction.mockRejectedValue(new Error('API Error'));
 
       await syncEngine.triggerSync();
 
@@ -402,7 +392,7 @@ describe('SyncEngine', () => {
         start_time: '2023-01-01T00:00:00Z',
       });
 
-      mockContractionsService.startContraction.mockRejectedValue(new Error('Network error'));
+      mockLabourServiceClient.startContraction.mockRejectedValue(new Error('Network error'));
 
       await syncEngine.triggerSync();
 
@@ -420,7 +410,7 @@ describe('SyncEngine', () => {
         await OutboxManager.markEventFailed(event.id);
       }
 
-      mockContractionsService.startContraction.mockRejectedValue(new Error('Still failing'));
+      mockLabourServiceClient.startContraction.mockRejectedValue(new Error('Still failing'));
 
       const retriableEvents = await OutboxManager.getRetriableEvents();
       expect(retriableEvents.map((e) => e.id)).not.toContain(event.id);
@@ -430,8 +420,8 @@ describe('SyncEngine', () => {
       await OutboxManager.addEvent('labour-1', 'plan_labour', { sequence: 1 });
       await OutboxManager.addEvent('labour-1', 'start_contraction', { sequence: 2 });
 
-      mockLabourService.planLabour.mockResolvedValue({ labour: {} });
-      mockContractionsService.startContraction.mockRejectedValue(new Error('Contraction failed'));
+      mockLabourServiceClient.planLabour.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.startContraction.mockRejectedValue(new Error('Contraction failed'));
 
       await syncEngine.triggerSync();
 
@@ -456,7 +446,7 @@ describe('SyncEngine', () => {
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.startContraction).not.toHaveBeenCalled();
+      expect(mockLabourServiceClient.startContraction).not.toHaveBeenCalled();
 
       const pendingEvents = await OutboxManager.getAllPendingEvents();
       expect(pendingEvents).toHaveLength(1);
@@ -481,7 +471,7 @@ describe('SyncEngine', () => {
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.startContraction).not.toHaveBeenCalled();
+      expect(mockLabourServiceClient.startContraction).not.toHaveBeenCalled();
     });
 
     it('should respond to network state changes', (done) => {
@@ -491,14 +481,14 @@ describe('SyncEngine', () => {
 
       // Add event while offline
       OutboxManager.addEvent('labour-1', 'start_contraction', {}).then(() => {
-        mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
+        mockLabourServiceClient.startContraction.mockResolvedValue({ labour: {} });
 
         // Go online
         setNetworkOnline(true);
 
         // Give sync time to trigger
         setTimeout(async () => {
-          expect(mockContractionsService.startContraction).toHaveBeenCalled();
+          expect(mockLabourServiceClient.startContraction).toHaveBeenCalled();
           done();
         }, 1200); // Account for 1s delay in network listener
       });
@@ -515,7 +505,7 @@ describe('SyncEngine', () => {
     it('should prevent concurrent sync of same aggregate', async () => {
       await OutboxManager.addEvent('labour-1', 'start_contraction', {});
 
-      mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.startContraction.mockResolvedValue({ labour: {} });
 
       // Start multiple syncs for same aggregate - should be serialized
       await Promise.all([
@@ -525,18 +515,18 @@ describe('SyncEngine', () => {
       ]);
 
       // Should only sync once due to concurrency protection
-      expect(mockContractionsService.startContraction).toHaveBeenCalledTimes(1);
+      expect(mockLabourServiceClient.startContraction).toHaveBeenCalledTimes(1);
     });
 
     it('should allow sync of different aggregates concurrently', async () => {
       await OutboxManager.addEvent('labour-1', 'start_contraction', {});
       await OutboxManager.addEvent('labour-2', 'start_contraction', {});
 
-      mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.startContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.startContraction).toHaveBeenCalledTimes(2);
+      expect(mockLabourServiceClient.startContraction).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -554,14 +544,11 @@ describe('SyncEngine', () => {
       const failedEvent = await OutboxManager.addEvent('labour-3', 'labour_update', {});
       await OutboxManager.markEventFailed(failedEvent.id);
 
-      await OutboxManager.addEvent('guest-labour', 'start_contraction', {}, true); // Guest event
-
       const status = await syncEngine.getSyncStatus();
 
-      expect(status.pending).toBe(2); // Including guest event
+      expect(status.pending).toBe(1);
       expect(status.syncing).toBe(1);
       expect(status.failed).toBe(1);
-      expect(status.guest).toBe(1);
       expect(status.isRunning).toBe(true);
       expect(status.isOnline).toBe(true);
       expect(status.activeSyncs).toBe(0);
@@ -574,13 +561,13 @@ describe('SyncEngine', () => {
       await OutboxManager.markEventFailed(event1.id);
       await OutboxManager.markEventFailed(event2.id);
 
-      mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
-      mockLabourService.planLabour.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.startContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.planLabour.mockResolvedValue({ labour: {} });
 
       await syncEngine.retryFailedEvents();
 
-      expect(mockContractionsService.startContraction).toHaveBeenCalled();
-      expect(mockLabourService.planLabour).toHaveBeenCalled();
+      expect(mockLabourServiceClient.startContraction).toHaveBeenCalled();
+      expect(mockLabourServiceClient.planLabour).toHaveBeenCalled();
 
       const failedEventsAfter = await OutboxManager.getEventsByStatus('failed');
       expect(failedEventsAfter).toHaveLength(0);
@@ -604,17 +591,17 @@ describe('SyncEngine', () => {
         intensity: 9,
       });
 
-      mockContractionsService.startContraction.mockResolvedValue({
+      mockLabourServiceClient.startContraction.mockResolvedValue({
         labour: {
           contractions: [{ id: 'real-abc', start_time: startTime }],
         },
       });
-      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.updateContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.updateContraction).toHaveBeenCalledTimes(1);
-      const arg = mockContractionsService.updateContraction.mock.calls[0][0];
+      expect(mockLabourServiceClient.updateContraction).toHaveBeenCalledTimes(1);
+      const arg = mockLabourServiceClient.updateContraction.mock.calls[0][0];
       expect(arg.requestBody.contraction_id).toBe('real-abc');
     });
 
@@ -631,17 +618,17 @@ describe('SyncEngine', () => {
       });
 
       // Server returns trimmed milliseconds and marks it active
-      mockContractionsService.startContraction.mockResolvedValue({
+      mockLabourServiceClient.startContraction.mockResolvedValue({
         labour: {
           contractions: [{ id: 'real-tol', start_time: '2023-01-01T00:00:00Z', is_active: true }],
         },
       } as any);
-      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} } as any);
+      mockLabourServiceClient.updateContraction.mockResolvedValue({ labour: {} } as any);
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.updateContraction).toHaveBeenCalledTimes(1);
-      const arg = mockContractionsService.updateContraction.mock.calls[0][0];
+      expect(mockLabourServiceClient.updateContraction).toHaveBeenCalledTimes(1);
+      const arg = mockLabourServiceClient.updateContraction.mock.calls[0][0];
       expect(arg.requestBody.contraction_id).toBe('real-tol');
     });
 
@@ -656,17 +643,17 @@ describe('SyncEngine', () => {
         contraction_id: tempId,
       });
 
-      mockContractionsService.startContraction.mockResolvedValue({
+      mockLabourServiceClient.startContraction.mockResolvedValue({
         labour: {
           contractions: [{ id: 'real-del-1', start_time: startTime }],
         },
       });
-      mockContractionsService.deleteContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.deleteContraction.mockResolvedValue({ labour: {} });
 
       await syncEngine.triggerSync();
 
-      expect(mockContractionsService.deleteContraction).toHaveBeenCalledTimes(1);
-      const arg = mockContractionsService.deleteContraction.mock.calls[0][0];
+      expect(mockLabourServiceClient.deleteContraction).toHaveBeenCalledTimes(1);
+      const arg = mockLabourServiceClient.deleteContraction.mock.calls[0][0];
       expect(arg.requestBody.contraction_id).toBe('real-del-1');
     });
 
@@ -676,10 +663,10 @@ describe('SyncEngine', () => {
         contraction_id: 'real-1',
         intensity: 4,
       });
-      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.updateContraction.mockResolvedValue({ labour: {} });
       await syncEngine.triggerSync();
-      expect(mockContractionsService.updateContraction).toHaveBeenCalledTimes(1);
-      const arg = mockContractionsService.updateContraction.mock.calls[0][0];
+      expect(mockLabourServiceClient.updateContraction).toHaveBeenCalledTimes(1);
+      const arg = mockLabourServiceClient.updateContraction.mock.calls[0][0];
       expect(arg.requestBody.contraction_id).toBe('real-1');
     });
 
@@ -690,58 +677,10 @@ describe('SyncEngine', () => {
         contraction_id: 'optimistic-x',
         intensity: 6,
       });
-      mockContractionsService.updateContraction.mockResolvedValue({ labour: {} });
+      mockLabourServiceClient.updateContraction.mockResolvedValue({ labour: {} });
       await syncEngine.triggerSync();
-      const arg = mockContractionsService.updateContraction.mock.calls[0][0];
+      const arg = mockLabourServiceClient.updateContraction.mock.calls[0][0];
       expect(arg.requestBody.contraction_id).toBe('optimistic-x');
-    });
-  });
-
-  describe('guest event handling', () => {
-    beforeEach(() => {
-      syncEngine.start();
-    });
-
-    it('should sync guest events like regular events', async () => {
-      await OutboxManager.addEvent(
-        'guest-labour',
-        'start_contraction',
-        { start_time: '2023-01-01T00:00:00Z' },
-        true
-      );
-
-      mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
-
-      await syncEngine.triggerSync();
-
-      expect(mockContractionsService.startContraction).toHaveBeenCalledWith({
-        requestBody: { start_time: '2023-01-01T00:00:00Z' },
-      });
-
-      // Guest events should be preserved after sync (not pruned)
-      const syncedEvents = await testDb.outbox.where('isGuestEvent').equals(1).toArray();
-      expect(syncedEvents).toHaveLength(1);
-      expect(syncedEvents[0].status).toBe('synced');
-    });
-
-    it('should handle mixed guest and regular events', async () => {
-      await OutboxManager.addEvent('labour-1', 'start_contraction', {}, false); // Regular
-      await OutboxManager.addEvent('guest-labour', 'start_contraction', {}, true); // Guest
-
-      mockContractionsService.startContraction.mockResolvedValue({ labour: {} });
-
-      await syncEngine.triggerSync();
-
-      expect(mockContractionsService.startContraction).toHaveBeenCalledTimes(2);
-
-      // Regular events should be pruned, guest events preserved
-      const allEvents = await testDb.outbox.toArray();
-      const guestEvents = allEvents.filter((e) => e.isGuestEvent === 1);
-      const regularEvents = allEvents.filter((e) => e.isGuestEvent === 0);
-
-      expect(guestEvents).toHaveLength(1);
-      expect(guestEvents[0].status).toBe('synced');
-      expect(regularEvents).toHaveLength(0); // Pruned
     });
   });
 });

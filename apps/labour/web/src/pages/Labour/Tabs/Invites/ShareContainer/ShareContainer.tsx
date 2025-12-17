@@ -1,6 +1,6 @@
 import { useLabourSession } from '@base/contexts';
-import { useSubscriptionTokenV2 } from '@base/shared-components/hooks/useLabourDataV2';
-import { useLabourV2Client } from '@shared/hooks';
+import { useLabourV2Client } from '@base/hooks';
+import { useSubscriptionTokenV2 } from '@base/hooks/useLabourData';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';

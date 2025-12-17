@@ -1,11 +1,8 @@
 import { ReactElement } from 'react';
-import { SubscriptionStatusReadModel } from '@base/clients/labour_service_v2/types';
+import { SubscriptionStatusReadModel } from '@base/clients/labour_service/types';
 import { useLabourSession } from '@base/contexts';
-import {
-  useUserSubscribedLaboursV2,
-  useUserSubscriptionsV2,
-} from '@base/shared-components/hooks/useLabourDataV2';
-import { useLabourV2Client } from '@shared/hooks';
+import { useLabourV2Client } from '@base/hooks';
+import { useUserSubscribedLaboursV2, useUserSubscriptionsV2 } from '@base/hooks/useLabourData';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconX } from '@tabler/icons-react';

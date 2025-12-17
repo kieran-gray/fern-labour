@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useCompleteLabourV2, useLabourV2Client } from '@base/hooks';
 import { GenericConfirmModal } from '@base/shared-components/GenericConfirmModal/GenericConfirmModal';
-import { useCompleteLabourV2, useLabourV2Client } from '@shared/hooks';
 import { IconConfetti } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tooltip } from '@mantine/core';

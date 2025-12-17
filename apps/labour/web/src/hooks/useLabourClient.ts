@@ -3,8 +3,8 @@
  */
 
 import { useMemo } from 'react';
+import { LabourServiceV2Client } from '@base/clients/labour_service';
 import { useAuth } from '@clerk/clerk-react';
-import { LabourServiceV2Client } from '@clients/labour_service_v2';
 
 export function useLabourV2Client() {
   const { getToken } = useAuth();

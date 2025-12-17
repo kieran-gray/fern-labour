@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
+import { useApiAuth } from '@base/hooks/useApiAuth';
 
 export enum SessionRole {
   Mother = 'mother',

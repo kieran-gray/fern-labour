@@ -1,5 +1,5 @@
+import { useCurrentLabourV2, useLabourV2Client } from '@base/hooks';
 import { NotFoundError } from '@base/lib/errors';
-import { useCurrentLabourV2, useLabourV2Client } from '@base/shared-components/hooks';
 import { AppShell } from '@shared/AppShell';
 import { PageLoading } from '@shared/PageLoading/PageLoading';
 import Plan from './Components/Plan/Plan';

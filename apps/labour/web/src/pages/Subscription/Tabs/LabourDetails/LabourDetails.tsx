@@ -1,4 +1,4 @@
-import { LabourReadModel } from '@base/clients/labour_service_v2';
+import { LabourReadModel } from '@base/clients/labour_service';
 import image from '@labour/Tabs/Manage/LabourDetails/Meditate.svg';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';

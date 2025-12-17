@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { useClerkUser } from '@base/hooks/useClerkUser';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
 import { RedirectToSignIn, useAuth } from '@clerk/clerk-react';
-import { useClerkUser } from './hooks/useClerkUser';
 import { PageLoading } from './PageLoading/PageLoading';
 
 interface ProtectedAppProps {

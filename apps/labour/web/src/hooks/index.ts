@@ -6,6 +6,6 @@ export { queryKeys } from './queryKeys';
 
 export { useSubmitContactForm } from './useContactData';
 export { useCreateCheckoutSessionV2 } from './usePaymentData';
-export { useLabourV2Client } from './useLabourV2Client';
+export { useLabourV2Client } from './useLabourClient';
 
-export * from './useLabourDataV2';
+export * from './useLabourData';

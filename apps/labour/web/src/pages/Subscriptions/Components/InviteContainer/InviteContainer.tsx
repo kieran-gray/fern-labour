@@ -1,6 +1,6 @@
+import { useApiAuth } from '@base/hooks';
 import { validateEmail } from '@base/shared-components/utils';
 import image from '@labour/Tabs/Invites/InviteContainer/invite.svg';
-import { useApiAuth } from '@shared/hooks';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconAt, IconSend } from '@tabler/icons-react';

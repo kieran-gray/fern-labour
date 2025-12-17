@@ -1,7 +1,7 @@
 import { RefObject } from 'react';
-import { ContractionReadModel } from '@base/clients/labour_service_v2';
+import { ContractionReadModel } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useLabourV2Client, useStartContractionV2 } from '@shared/hooks';
+import { useLabourV2Client, useStartContractionV2 } from '@base/hooks';
 import { IconHourglassLow } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
 import { StopwatchHandle } from './Stopwatch/Stopwatch';

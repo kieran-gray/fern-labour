@@ -1,7 +1,7 @@
-import { SubscriberContactMethod, SubscriptionReadModel } from '@base/clients/labour_service_v2';
+import { SubscriberContactMethod, SubscriptionReadModel } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts';
-import { useUpdateNotificationMethodsV2 } from '@base/shared-components/hooks/useLabourDataV2';
-import { useLabourV2Client } from '@shared/hooks';
+import { useLabourV2Client } from '@base/hooks';
+import { useUpdateNotificationMethodsV2 } from '@base/hooks/useLabourData';
 import { IconSelector, IconUpload } from '@tabler/icons-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button, Modal, MultiSelect } from '@mantine/core';

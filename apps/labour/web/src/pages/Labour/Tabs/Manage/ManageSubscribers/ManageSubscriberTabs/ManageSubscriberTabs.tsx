@@ -1,10 +1,7 @@
-import { SubscriptionReadModel, User } from '@base/clients/labour_service_v2/types';
+import { SubscriptionReadModel, User } from '@base/clients/labour_service/types';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import {
-  useLabourSubscriptionsV2,
-  useUsersV2,
-} from '@base/shared-components/hooks/useLabourDataV2';
-import { useLabourV2Client } from '@shared/hooks';
+import { useLabourV2Client } from '@base/hooks';
+import { useLabourSubscriptionsV2, useUsersV2 } from '@base/hooks/useLabourData';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconUserCheck, IconUserOff, IconUserQuestion } from '@tabler/icons-react';

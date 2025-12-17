@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useDeleteContractionV2, useLabourV2Client, useUpdateContractionV2 } from '@base/hooks';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { useDeleteContractionV2, useLabourV2Client, useUpdateContractionV2 } from '@shared/hooks';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';

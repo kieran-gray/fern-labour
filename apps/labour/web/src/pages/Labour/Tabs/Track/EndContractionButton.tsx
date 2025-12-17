@@ -1,5 +1,5 @@
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useEndContractionV2, useLabourV2Client } from '@shared/hooks';
+import { useEndContractionV2, useLabourV2Client } from '@base/hooks';
 import { IconHourglassHigh } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
 

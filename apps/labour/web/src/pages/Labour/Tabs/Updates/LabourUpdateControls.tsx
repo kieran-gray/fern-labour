@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
-import { LabourUpdateType } from '@base/clients/labour_service_v2';
+import { LabourUpdateType } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useLabourV2Client, usePostLabourUpdateV2 } from '@base/hooks';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
 import { useNetworkState } from '@base/offline/hooks';
-import { useLabourV2Client, usePostLabourUpdateV2 } from '@shared/hooks';
 import { IconPencil, IconSend, IconSpeakerphone, IconWifiOff } from '@tabler/icons-react';
 import { Button, SegmentedControl, Text, Textarea } from '@mantine/core';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';

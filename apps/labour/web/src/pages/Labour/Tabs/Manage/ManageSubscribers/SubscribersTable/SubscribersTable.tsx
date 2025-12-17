@@ -1,4 +1,4 @@
-import { SubscriptionReadModel } from '@base/clients/labour_service_v2/types';
+import { SubscriptionReadModel } from '@base/clients/labour_service/types';
 import { ImportantText } from '@base/shared-components/ImportantText/ImportantText';
 import { Avatar, Group, Table, Text } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';

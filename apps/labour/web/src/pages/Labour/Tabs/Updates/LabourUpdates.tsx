@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { LabourReadModel, LabourUpdateReadModel } from '@base/clients/labour_service_v2';
-import { useLabourUpdatesV2, useLabourV2Client } from '@base/shared-components/hooks';
-import { useApiAuth } from '@base/shared-components/hooks/useApiAuth';
+import { LabourReadModel, LabourUpdateReadModel } from '@base/clients/labour_service';
+import { useLabourUpdatesV2, useLabourV2Client } from '@base/hooks';
+import { useApiAuth } from '@base/hooks/useApiAuth';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';

@@ -1,4 +1,3 @@
-import { useLabourV2Client } from '@base/shared-components/hooks';
 import type {
   CompleteLabourPayload,
   DeleteContractionPayload,
@@ -7,7 +6,8 @@ import type {
   PostLabourUpdatePayload,
   StartContractionPayload,
   UpdateContractionPayload,
-} from '@clients/labour_service_v2';
+} from '@base/clients/labour_service';
+import { useLabourV2Client } from '@base/hooks/useLabourClient';
 import { OutboxEvent } from '../hooks';
 import { ContractionIdMapper } from '../storage/contractionIdMap';
 import { OutboxManager } from '../storage/outbox';

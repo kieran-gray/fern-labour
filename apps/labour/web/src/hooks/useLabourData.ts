@@ -3,8 +3,8 @@
  * Uses the new Cloudflare Workers API with CQRS pattern
  */
 
+import type { Cursor, LabourServiceV2Client, LabourUpdateType } from '@base/clients/labour_service';
 import { NotFoundError } from '@base/lib/errors';
-import type { Cursor, LabourServiceV2Client, LabourUpdateType } from '@clients/labour_service_v2';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
@@ -1122,7 +1122,7 @@ export function useUpdateNotificationMethodsV2(client: LabourServiceV2Client) {
       methods,
     }: {
       labourId: string;
-      methods: import('@clients/labour_service_v2').SubscriberContactMethod[];
+      methods: import('@base/clients/labour_service').SubscriberContactMethod[];
     }) => {
       const response = await client.updateNotificationMethods(labourId, methods);
 
@@ -1165,7 +1165,7 @@ export function useUpdateAccessLevelV2(client: LabourServiceV2Client) {
       accessLevel,
     }: {
       labourId: string;
-      accessLevel: import('@clients/labour_service_v2').SubscriberAccessLevel;
+      accessLevel: import('@base/clients/labour_service').SubscriberAccessLevel;
     }) => {
       const response = await client.updateAccessLevel(labourId, accessLevel);
 
@@ -1384,7 +1384,7 @@ export function useUpdateSubscriberRoleV2(client: LabourServiceV2Client) {
     }: {
       labourId: string;
       subscriptionId: string;
-      role: import('@clients/labour_service_v2').SubscriberRole;
+      role: import('@base/clients/labour_service').SubscriberRole;
     }) => {
       const response = await client.updateSubscriberRole(labourId, subscriptionId, role);
 

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useContractionsV2, useLabourV2Client } from '@base/hooks';
+import { useCurrentLabourV2 } from '@base/hooks/useLabourData';
 import { NotFoundError, PermissionDenied } from '@base/lib/errors';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
-import { useCurrentLabourV2 } from '@base/shared-components/hooks/useLabourDataV2';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
-import { useContractionsV2, useLabourV2Client } from '@shared/hooks';
 import { PageLoading } from '@shared/PageLoading/PageLoading';
 import {
   IconChartHistogram,

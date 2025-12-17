@@ -1,4 +1,4 @@
-import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service_v2';
+import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service';
 
 export const sortContractions = (contractions: ContractionReadModel[]): ContractionReadModel[] => {
   return contractions.sort((a, b) =>

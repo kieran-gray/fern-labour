@@ -1,4 +1,4 @@
-import { ContractionReadModel } from '@base/clients/labour_service_v2';
+import { ContractionReadModel } from '@base/clients/labour_service';
 
 interface ContractionFrequencyGaps {
   previous: number;

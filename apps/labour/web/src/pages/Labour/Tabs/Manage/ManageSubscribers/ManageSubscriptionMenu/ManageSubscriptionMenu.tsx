@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useLabourV2Client } from '@base/hooks';
 import {
   useApproveSubscriberV2,
   useBlockSubscriberV2,
   useRemoveSubscriberV2,
   useUnblockSubscriberV2,
-} from '@base/shared-components/hooks/useLabourDataV2';
+} from '@base/hooks/useLabourData';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { useLabourV2Client } from '@shared/hooks';
 import {
   IconBan,
   IconCheck,

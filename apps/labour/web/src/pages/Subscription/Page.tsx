@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useLabourSession } from '@base/contexts';
-import { useLabourV2Client } from '@base/shared-components/hooks';
-import {
-  useLabourByIdV2,
-  useUserSubscriptionV2,
-} from '@base/shared-components/hooks/useLabourDataV2';
+import { useLabourV2Client } from '@base/hooks';
+import { useLabourByIdV2, useUserSubscriptionV2 } from '@base/hooks/useLabourData';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
 import { PageLoading } from '@shared/PageLoading/PageLoading';

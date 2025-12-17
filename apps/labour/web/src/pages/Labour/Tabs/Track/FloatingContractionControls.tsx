@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ContractionReadModel } from '@clients/labour_service_v2/types';
+import { ContractionReadModel } from '@base/clients/labour_service/types';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { ActionIcon } from '@mantine/core';
 import { ContractionControls } from './ContractionControls';

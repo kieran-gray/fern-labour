@@ -1,7 +1,7 @@
 /**
- * Labour Service V2 Client
+ * Labour Service Client
  *
- * This client provides methods to interact with the V2 Cloudflare Workers API
+ * This client provides methods to interact with the Cloudflare Workers API
  * using the command pattern defined in the Rust backend.
  */
 
@@ -44,15 +44,15 @@ import type {
   UserQuery,
 } from './types';
 
-export interface LabourServiceV2Config {
+export interface LabourServiceConfig {
   baseUrl: string;
   getAccessToken?: () => string | null | Promise<string | null>;
 }
 
-export class LabourServiceV2Client {
-  private config: LabourServiceV2Config;
+export class LabourServiceClient {
+  private config: LabourServiceConfig;
 
-  constructor(config: LabourServiceV2Config) {
+  constructor(config: LabourServiceConfig) {
     this.config = config;
   }
 

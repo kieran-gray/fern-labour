@@ -1,6 +1,7 @@
 import { forwardRef, useState } from 'react';
 import { useLabourSession } from '@base/contexts';
 import { AppMode, useMode } from '@base/contexts/AppModeContext';
+import { useClerkUser } from '@base/hooks/useClerkUser';
 import { useClerk } from '@clerk/clerk-react';
 import {
   IconArrowLeft,
@@ -24,7 +25,6 @@ import {
   UnstyledButton,
   useMantineColorScheme,
 } from '@mantine/core';
-import { useClerkUser } from '../hooks/useClerkUser';
 import classes from './Header.module.css';
 
 interface UserButtonProps extends React.ComponentPropsWithoutRef<'button'> {
