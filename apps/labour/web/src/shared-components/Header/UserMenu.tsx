@@ -1,4 +1,5 @@
 import { forwardRef, useState } from 'react';
+import { useLabourSession } from '@base/contexts';
 import { AppMode, useMode } from '@base/contexts/AppModeContext';
 import { useClerk } from '@clerk/clerk-react';
 import {
@@ -25,7 +26,6 @@ import {
 } from '@mantine/core';
 import { useClerkUser } from '../hooks/useClerkUser';
 import classes from './Header.module.css';
-import { useLabourSession } from '@base/contexts';
 
 interface UserButtonProps extends React.ComponentPropsWithoutRef<'button'> {
   name: string;
