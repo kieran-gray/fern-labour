@@ -1,6 +1,0 @@
-from fern_labour_core.exceptions.application import ApplicationError
-
-
-class SubscriberInviteRateLimitExceeded(ApplicationError):
-    def __init__(self) -> None:
-        super().__init__("You have reached the maximum number of invites for today.")
