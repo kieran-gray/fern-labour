@@ -27,6 +27,7 @@ import { FloatingContractionControls } from './Tabs/Track/FloatingContractionCon
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import baseClasses from '@shared/shared-styles.module.css';
+import { useWebsocketConnection } from '@base/hooks/useWebsocketConnection';
 
 const TABS = [
   { id: 'details', label: 'Manage', icon: IconSettings },
@@ -47,6 +48,9 @@ export const LabourPage = () => {
   const [activeTab, setActiveTab] = useState<string | null>('track');
   const [isUpdateControlsExpanded, setIsUpdateControlsExpanded] = useState(true);
   const [isContractionControlsExpanded, setIsContractionControlsExpanded] = useState(true);
+
+  // Connect to websocket for real-time updates
+  useWebsocketConnection();
 
   const scrollMainToBottom = (smooth: boolean = true) => {
     const main = document.getElementById('app-main');

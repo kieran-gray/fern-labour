@@ -109,11 +109,11 @@ impl AuthServiceClient for FetcherAuthServiceClient {
         init.with_headers(headers);
         init.with_body(Some(body_bytes.into()));
 
-        // The 'https://quest-lock.com' bit of the URL below does nothing since we are calling the
+        // The 'https://fernlabour.com' bit of the URL below does nothing since we are calling the
         // service directly. It is required to be a valid URL though.
         let mut response = self
             .fetcher
-            .fetch("https://quest-lock.com/api/v1/auth/verify/", Some(init))
+            .fetch("https://fernlabour.com/api/v1/auth/verify/", Some(init))
             .await
             .map_err(|e| {
                 error!(error = ?e, "Auth service request failed");
@@ -171,7 +171,7 @@ impl AuthServiceClient for FetcherAuthServiceClient {
         let mut response = self
             .fetcher
             .fetch(
-                "https://quest-lock.com/api/v1/auth/authenticate/",
+                "https://fernlabour.com/api/v1/auth/authenticate/",
                 Some(init),
             )
             .await

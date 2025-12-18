@@ -53,7 +53,7 @@ impl DispatchClient for FetcherDispatchClient {
         &self,
         request: DispatchRequest,
     ) -> Result<Response, DispatchClientError> {
-        self.do_dispatch(request, "https://fern-labour.com/api/v1/dispatch-async")
+        self.do_dispatch(request, "https://fernlabour.com/api/v1/dispatch-async")
             .await
     }
 
@@ -62,7 +62,7 @@ impl DispatchClient for FetcherDispatchClient {
         request: DispatchRequest,
     ) -> Result<Option<String>, DispatchClientError> {
         let mut response = self
-            .do_dispatch(request, "https://fern-labour.com/api/v1/dispatch")
+            .do_dispatch(request, "https://fernlabour.com/api/v1/dispatch")
             .await?;
         match response.status_code() {
             200..=202 => {

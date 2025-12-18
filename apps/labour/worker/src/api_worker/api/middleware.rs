@@ -54,6 +54,53 @@ where
     handler(req, ctx, cors_context, user).await
 }
 
+pub async fn websocket_authenticated<F, Fut>(
+    handler: F,
+    req: Request,
+    ctx: RouteContext<AppState>,
+) -> Result<Response>
+where
+    F: Fn(Request, RouteContext<AppState>, CorsContext, User) -> Fut,
+    Fut: std::future::Future<Output = Result<Response>>,
+{
+    const PROTOCOL_HEADER: &str = "base64url.bearer.authorization.fernlabour.com.";
+
+    let cors_context = CorsContext::new(ctx.data.config.allowed_origins.clone(), &req);
+    if let Err(response) = cors_context.validate(&req) {
+        return Ok(response);
+    }
+
+    let user = if ctx.data.config.auth_enabled {
+        let Some(protocols) = req.headers().get("Sec-WebSocket-Protocol").ok().flatten() else {
+            let response = Response::error("Unauthorised: Not Authenticated".to_string(), 401)?;
+            return Ok(cors_context.add_to_response(response));
+        };
+
+        let Some(authorization) = protocols
+            .split(",")
+            .find(|proto| proto.starts_with(PROTOCOL_HEADER))
+            .and_then(|proto| proto.strip_prefix(PROTOCOL_HEADER))
+        else {
+            let response = Response::error("Unauthorised: Not Authenticated".to_string(), 401)?;
+            return Ok(cors_context.add_to_response(response));
+        };
+
+        match ctx.data.auth_service.authenticate(authorization).await {
+            Ok(user) => user,
+            Err(e) => {
+                info!(error = ?e, "User verification failed");
+                let response =
+                    Response::error("Unauthorised: User verification failed".to_string(), 404)?;
+                return Ok(cors_context.add_to_response(response));
+            }
+        }
+    } else {
+        User::internal("anonymous".to_string())
+    };
+
+    handler(req, ctx, cors_context, user).await
+}
+
 pub async fn public<F, Fut>(
     handler: F,
     req: Request,

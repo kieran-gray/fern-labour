@@ -74,7 +74,7 @@ impl GenerationClient for FetcherGenerationClient {
             notification_id,
             channel,
             template_data,
-            "https://fern-labour.com/api/v1/render-async",
+            "https://fernlabour.com/api/v1/render-async",
         )
         .await
     }
@@ -90,7 +90,7 @@ impl GenerationClient for FetcherGenerationClient {
                 notification_id,
                 channel,
                 template_data,
-                "https://fern-labour.com/api/v1/render",
+                "https://fernlabour.com/api/v1/render",
             )
             .await?;
         match response.status_code() {

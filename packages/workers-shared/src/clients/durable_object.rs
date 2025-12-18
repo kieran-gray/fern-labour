@@ -3,38 +3,34 @@ use fern_labour_event_sourcing_rs::{CommandEnvelope, CommandMetadata};
 use serde::Serialize;
 use tracing::error;
 use uuid::Uuid;
-use worker::{Headers, Method, ObjectNamespace, Request, RequestInit, Response};
+use worker::{Headers, Method, ObjectNamespace, Request, RequestInit, Response, Stub};
 
 use crate::clients::worker_clients::auth::User;
 
+const DURABLE_OBJECT_BASE_URL: &str = "https://durable.fernlabour.com";
+
+type Result<T> = std::result::Result<T, Error>;
+
 #[derive(Debug)]
-pub enum DurableObjectCQRSClientError {
+pub enum Error {
     StubError(String),
     SerializationError(String),
     RequestError(String),
     DurableObjectError(String),
 }
 
-impl std::fmt::Display for DurableObjectCQRSClientError {
+impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            DurableObjectCQRSClientError::StubError(msg) => {
-                write!(f, "Failed to get DO stub: {msg}")
-            }
-            DurableObjectCQRSClientError::SerializationError(msg) => {
-                write!(f, "Serialization error: {msg}")
-            }
-            DurableObjectCQRSClientError::RequestError(msg) => {
-                write!(f, "Request error: {msg}")
-            }
-            DurableObjectCQRSClientError::DurableObjectError(msg) => {
-                write!(f, "Durable Object error: {msg}")
-            }
+            Self::StubError(msg) => write!(f, "Failed to get DO stub: {msg}"),
+            Self::SerializationError(msg) => write!(f, "Serialization error: {msg}"),
+            Self::RequestError(msg) => write!(f, "Request error: {msg}"),
+            Self::DurableObjectError(msg) => write!(f, "Durable Object error: {msg}"),
         }
     }
 }
 
-impl std::error::Error for DurableObjectCQRSClientError {}
+impl std::error::Error for Error {}
 
 pub struct DurableObjectCQRSClient {
     namespace: ObjectNamespace,
@@ -45,99 +41,35 @@ impl DurableObjectCQRSClient {
         Self { namespace }
     }
 
-    fn create_headers_with_user(user: &User) -> Result<Headers, DurableObjectCQRSClientError> {
-        let headers = Headers::new();
-
-        let user_json = serde_json::to_string(user).map_err(|e| {
-            DurableObjectCQRSClientError::SerializationError(format!(
-                "Failed to serialize user: {}",
-                e
-            ))
-        })?;
-
-        headers
-            .set("X-User-Info", &user_json)
-            .map_err(|e| {
-                DurableObjectCQRSClientError::RequestError(format!(
-                    "Failed to set X-User-Info header: {}",
-                    e
-                ))
-            })?;
-
-        headers
-            .set("Content-Type", "application/json")
-            .map_err(|e| {
-                DurableObjectCQRSClientError::RequestError(format!(
-                    "Failed to set Content-Type header: {}",
-                    e
-                ))
-            })?;
-
-        Ok(headers)
-    }
-
     pub async fn command<C: Serialize>(
         &self,
         aggregate_id: Uuid,
         command: C,
         user: &User,
         url: &str,
-    ) -> Result<Response, DurableObjectCQRSClientError> {
-        let aggregate_stub = self
-            .namespace
-            .get_by_name(&aggregate_id.to_string())
-            .map_err(|e| {
-                error!(error = ?e, aggregate_id = %aggregate_id, "Failed to get DO stub");
-                DurableObjectCQRSClientError::StubError(format!(
-                    "Could not fetch aggregate stub: {e}"
-                ))
-            })?;
+    ) -> Result<Response> {
+        let envelope = self.create_command_envelope(aggregate_id, command, user);
+        let body = self.serialize(&envelope)?;
 
-        let correlation_id = Uuid::now_v7();
-        let metadata = CommandMetadata::new(
-            aggregate_id,
-            correlation_id,
-            correlation_id,
-            user.user_id.clone(),
-            Utc::now(),
-        );
+        let headers = self.create_headers_with_user(user)?;
 
-        let command_envelope = CommandEnvelope::new(metadata, command);
-
-        let body_string = serde_json::to_string(&command_envelope).map_err(|e| {
-            error!(error = ?e, "Failed to serialize command envelope");
-            DurableObjectCQRSClientError::SerializationError(format!(
-                "Failed to serialize request body: {e}"
-            ))
-        })?;
-
-        let headers = Self::create_headers_with_user(user)?;
-
-        let mut init = RequestInit::new();
-        init.with_method(Method::Post);
-        init.with_headers(headers);
-        init.with_body(Some(body_string.into()));
-
-        let request =
-            Request::new_with_init(&format!("https://durable.fern-labour.com{url}"), &init)
-                .map_err(|e| {
-                    error!(error = ?e, "Failed to create request");
-                    DurableObjectCQRSClientError::RequestError(format!(
-                        "Failed to create request: {e}"
-                    ))
-                })?;
-
-        let response = aggregate_stub
-            .fetch_with_request(request)
+        self.send_request(aggregate_id, url, Method::Post, headers, Some(body))
             .await
-            .map_err(|e| {
-                error!(error = ?e, aggregate_id = %aggregate_id, "DO fetch failed");
-                DurableObjectCQRSClientError::DurableObjectError(format!(
-                    "Durable Object responded with error: {e}"
-                ))
-            })?;
+    }
 
-        Ok(response)
+    pub async fn websocket_command(
+        &self,
+        aggregate_id: Uuid,
+        user: &User,
+        url: &str,
+    ) -> Result<Response> {
+        let headers = self.create_headers_with_user(user)?;
+        headers
+            .append("Upgrade", "websocket")
+            .map_err(|e| Error::RequestError(format!("Failed to set Upgrade header: {e}")))?;
+
+        self.send_request(aggregate_id, url, Method::Get, headers, None)
+            .await
     }
 
     pub async fn send_envelope<C: Serialize>(
@@ -146,95 +78,19 @@ impl DurableObjectCQRSClient {
         url: &str,
         envelope: CommandEnvelope<C>,
         user: &User,
-    ) -> Result<Response, DurableObjectCQRSClientError> {
-        let aggregate_stub = self
-            .namespace
-            .get_by_name(&aggregate_id.to_string())
-            .map_err(|e| {
-                error!(error = ?e, aggregate_id = %aggregate_id, "Failed to get DO stub");
-                DurableObjectCQRSClientError::StubError(format!(
-                    "Could not fetch aggregate stub: {e}"
-                ))
-            })?;
+    ) -> Result<Response> {
+        let body = self.serialize(&envelope)?;
+        let headers = self.create_headers_with_user(user)?;
 
-        let body_string = serde_json::to_string(&envelope).map_err(|e| {
-            error!(error = ?e, "Failed to serialize command envelope");
-            DurableObjectCQRSClientError::SerializationError(format!(
-                "Failed to serialize request body: {e}"
-            ))
-        })?;
-
-        let headers = Self::create_headers_with_user(user)?;
-
-        let mut init = RequestInit::new();
-        init.with_method(Method::Post);
-        init.with_headers(headers);
-        init.with_body(Some(body_string.into()));
-
-        let request =
-            Request::new_with_init(&format!("https://durable.fern-labour.com{url}"), &init)
-                .map_err(|e| {
-                    error!(error = ?e, "Failed to create request");
-                    DurableObjectCQRSClientError::RequestError(format!(
-                        "Failed to create request: {e}"
-                    ))
-                })?;
-
-        let response = aggregate_stub
-            .fetch_with_request(request)
+        self.send_request(aggregate_id, url, Method::Post, headers, Some(body))
             .await
-            .map_err(|e| {
-                error!(error = ?e, aggregate_id = %aggregate_id, "DO fetch failed");
-                DurableObjectCQRSClientError::DurableObjectError(format!(
-                    "Durable Object responded with error: {e}"
-                ))
-            })?;
-
-        Ok(response)
     }
 
-    pub async fn query(
-        &self,
-        aggregate_id: Uuid,
-        url: &str,
-        user: &User,
-    ) -> Result<Response, DurableObjectCQRSClientError> {
-        let aggregate_stub = self
-            .namespace
-            .get_by_name(&aggregate_id.to_string())
-            .map_err(|e| {
-                error!(error = ?e, aggregate_id = %aggregate_id, "Failed to get DO stub");
-                DurableObjectCQRSClientError::StubError(format!(
-                    "Could not fetch aggregate stub: {e}"
-                ))
-            })?;
+    pub async fn query(&self, aggregate_id: Uuid, url: &str, user: &User) -> Result<Response> {
+        let headers = self.create_headers_with_user(user)?;
 
-        let headers = Self::create_headers_with_user(user)?;
-
-        let mut init = RequestInit::new();
-        init.with_method(Method::Get);
-        init.with_headers(headers);
-
-        let request =
-            Request::new_with_init(&format!("https://durable.fern-labour.com{url}"), &init)
-                .map_err(|e| {
-                    error!(error = ?e, "Failed to create request");
-                    DurableObjectCQRSClientError::RequestError(format!(
-                        "Failed to create request: {e}"
-                    ))
-                })?;
-
-        let response = aggregate_stub
-            .fetch_with_request(request)
+        self.send_request(aggregate_id, url, Method::Get, headers, None)
             .await
-            .map_err(|e| {
-                error!(error = ?e, aggregate_id = %aggregate_id, "DO query failed");
-                DurableObjectCQRSClientError::DurableObjectError(format!(
-                    "Durable Object responded with error: {e}"
-                ))
-            })?;
-
-        Ok(response)
     }
 
     pub async fn query_with_body<Q: Serialize>(
@@ -243,50 +99,102 @@ impl DurableObjectCQRSClient {
         query: Q,
         user: &User,
         url: &str,
-    ) -> Result<Response, DurableObjectCQRSClientError> {
-        let aggregate_stub = self
-            .namespace
+    ) -> Result<Response> {
+        let body = self.serialize(&query)?;
+        let headers = self.create_headers_with_user(user)?;
+
+        self.send_request(aggregate_id, url, Method::Post, headers, Some(body))
+            .await
+    }
+
+    fn create_command_envelope<C>(
+        &self,
+        aggregate_id: Uuid,
+        command: C,
+        user: &User,
+    ) -> CommandEnvelope<C> {
+        let correlation_id = Uuid::now_v7();
+        let metadata = CommandMetadata::new(
+            aggregate_id,
+            correlation_id,
+            correlation_id,
+            user.user_id.clone(),
+            Utc::now(),
+        );
+        CommandEnvelope::new(metadata, command)
+    }
+
+    fn serialize<T: Serialize>(&self, value: &T) -> Result<String> {
+        serde_json::to_string(value).map_err(|e| {
+            error!(error = ?e, "Failed to serialize value");
+            Error::SerializationError(format!("Failed to serialize: {e}"))
+        })
+    }
+
+    fn create_headers_with_user(&self, user: &User) -> Result<Headers> {
+        let headers = Headers::new();
+
+        let user_json = serde_json::to_string(user)
+            .map_err(|e| Error::SerializationError(format!("Failed to serialize user: {e}")))?;
+
+        headers
+            .set("X-User-Info", &user_json)
+            .map_err(|e| Error::RequestError(format!("Failed to set X-User-Info header: {e}")))?;
+
+        headers
+            .set("Content-Type", "application/json")
+            .map_err(|e| Error::RequestError(format!("Failed to set Content-Type header: {e}")))?;
+
+        Ok(headers)
+    }
+
+    fn get_stub(&self, aggregate_id: Uuid) -> Result<Stub> {
+        self.namespace
             .get_by_name(&aggregate_id.to_string())
             .map_err(|e| {
                 error!(error = ?e, aggregate_id = %aggregate_id, "Failed to get DO stub");
-                DurableObjectCQRSClientError::StubError(format!(
-                    "Could not fetch aggregate stub: {e}"
-                ))
-            })?;
+                Error::StubError(format!("Could not fetch aggregate stub: {e}"))
+            })
+    }
 
-        let body_string = serde_json::to_string(&query).map_err(|e| {
-            error!(error = ?e, "Failed to serialize query");
-            DurableObjectCQRSClientError::SerializationError(format!(
-                "Failed to serialize request body: {e}"
-            ))
-        })?;
-
-        let headers = Self::create_headers_with_user(user)?;
-
+    fn build_request(
+        &self,
+        url: &str,
+        method: Method,
+        headers: Headers,
+        body: Option<String>,
+    ) -> Result<Request> {
         let mut init = RequestInit::new();
-        init.with_method(Method::Post);
-        init.with_headers(headers);
-        init.with_body(Some(body_string.into()));
+        init.with_method(method).with_headers(headers);
 
-        let request =
-            Request::new_with_init(&format!("https://durable.fern-labour.com{url}"), &init)
-                .map_err(|e| {
-                    error!(error = ?e, "Failed to create request");
-                    DurableObjectCQRSClientError::RequestError(format!(
-                        "Failed to create request: {e}"
-                    ))
-                })?;
+        if let Some(body_content) = body {
+            init.with_body(Some(body_content.into()));
+        }
 
-        let response = aggregate_stub
-            .fetch_with_request(request)
-            .await
-            .map_err(|e| {
-                error!(error = ?e, aggregate_id = %aggregate_id, "DO query failed");
-                DurableObjectCQRSClientError::DurableObjectError(format!(
-                    "Durable Object responded with error: {e}"
-                ))
-            })?;
+        let full_url = format!("{DURABLE_OBJECT_BASE_URL}{url}");
 
-        Ok(response)
+        Request::new_with_init(&full_url, &init).map_err(|e| {
+            error!(error = ?e, url = %full_url, "Failed to create request");
+            Error::RequestError(format!("Failed to create request: {e}"))
+        })
+    }
+
+    async fn send_request(
+        &self,
+        aggregate_id: Uuid,
+        url: &str,
+        method: Method,
+        headers: Headers,
+        body: Option<String>,
+    ) -> Result<Response> {
+        let stub = self.get_stub(aggregate_id)?;
+        let request = self.build_request(url, method, headers, body)?;
+
+        stub.fetch_with_request(request).await.map_err(|e| {
+            error!(error = ?e, aggregate_id = %aggregate_id, "DO fetch failed");
+            Error::DurableObjectError(format!("Durable Object responded with error: {e}"))
+        })
     }
 }
+
+pub type DurableObjectCQRSClientError = Error;
