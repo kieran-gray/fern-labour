@@ -44,7 +44,6 @@ export function StatusUpdates({ labour }: { labour: LabourReadModel }) {
           props = {
             ...baseProps,
             class: classes.privateNotePanel,
-            icon: '🌱',
             badgeColor: '#ff8f00',
             badgeText: 'Fern Labour',
             text: sharedLabourBegunMessage,
@@ -53,7 +52,6 @@ export function StatusUpdates({ labour }: { labour: LabourReadModel }) {
           props = {
             ...baseProps,
             class: classes.announcementPanel,
-            icon: '📣',
             badgeColor: 'var(--mantine-primary-color-6)',
             badgeText: data.labour_update_type.split('_')[0],
             text: data.message,
@@ -63,7 +61,6 @@ export function StatusUpdates({ labour }: { labour: LabourReadModel }) {
         props = {
           ...baseProps,
           class: classes.statusUpdatePanel,
-          icon: '💫',
           badgeColor: '#24968b',
           badgeText: data.labour_update_type.split('_')[0],
           text: data.message,

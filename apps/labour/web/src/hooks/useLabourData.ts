@@ -1080,8 +1080,8 @@ export function useUnsubscribeV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (labourId: string) => {
-      const response = await client.unsubscribe(labourId);
+    mutationFn: async ({ labourId, subscriptionId }: { labourId: string; subscriptionId: string }) => {
+      const response = await client.unsubscribe(labourId, subscriptionId);
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to unsubscribe');
@@ -1089,9 +1089,9 @@ export function useUnsubscribeV2(client: LabourServiceV2Client) {
 
       return response.data;
     },
-    onSuccess: (_, labourId) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(labourId),
+        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
       });
 
       notifications.show({
@@ -1119,12 +1119,14 @@ export function useUpdateNotificationMethodsV2(client: LabourServiceV2Client) {
   return useMutation({
     mutationFn: async ({
       labourId,
+      subscriptionId,
       methods,
     }: {
       labourId: string;
+      subscriptionId: string;
       methods: import('@base/clients/labour_service').SubscriberContactMethod[];
     }) => {
-      const response = await client.updateNotificationMethods(labourId, methods);
+      const response = await client.updateNotificationMethods(labourId, subscriptionId, methods);
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to update notification methods');
@@ -1162,12 +1164,14 @@ export function useUpdateAccessLevelV2(client: LabourServiceV2Client) {
   return useMutation({
     mutationFn: async ({
       labourId,
+      subscriptionId,
       accessLevel,
     }: {
       labourId: string;
+      subscriptionId: string;
       accessLevel: import('@base/clients/labour_service').SubscriberAccessLevel;
     }) => {
-      const response = await client.updateAccessLevel(labourId, accessLevel);
+      const response = await client.updateAccessLevel(labourId, subscriptionId, accessLevel);
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to update access level');

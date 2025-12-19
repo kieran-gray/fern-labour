@@ -24,9 +24,9 @@ export const ManageSubscribersTabs = () => {
     data: subscriptions,
     error,
   } = useLabourSubscriptionsV2(client, labourId!);
-  const { data: users = [] } = useUsersV2(client, labourId!);
+  const { isPending: usersPending, data: users = [] } = useUsersV2(client, labourId!);
 
-  if (isPending) {
+  if (isPending || usersPending) {
     return (
       <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
         <PageLoadingIcon />

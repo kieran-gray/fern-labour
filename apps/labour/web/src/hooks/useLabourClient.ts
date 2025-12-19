@@ -5,9 +5,11 @@
 import { useMemo } from 'react';
 import { LabourServiceV2Client } from '@base/clients/labour_service';
 import { useAuth } from '@clerk/clerk-react';
+import { useWebSocket } from '@base/contexts/WebsocketContext';
 
 export function useLabourV2Client() {
   const { getToken } = useAuth();
+  const websocket = useWebSocket();
 
   return useMemo(
     () =>
@@ -22,7 +24,11 @@ export function useLabourV2Client() {
             return null;
           }
         },
+        websocket: {
+          isConnected: websocket.isConnected,
+          sendCommand: websocket.sendCommand,
+        }
       }),
-    [getToken]
+    [getToken, websocket.isConnected, websocket.sendCommand]
   );
 }

@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use anyhow::{Context, Result};
 use async_trait::async_trait;
 use chrono::NaiveDateTime;
@@ -19,8 +17,8 @@ pub struct SqlEventStore {
 }
 
 impl SqlEventStore {
-    pub fn create(sql: SqlStorage) -> Rc<dyn EventStoreTrait> {
-        Rc::new(Self { sql })
+    pub fn create(sql: SqlStorage) -> SqlEventStore {
+        Self { sql }
     }
 }
 
@@ -101,5 +99,23 @@ impl EventStoreTrait for SqlEventStore {
             .context("Failed to deserialize event rows")?;
 
         Ok(rows)
+    }
+}
+
+impl SqlEventStore {
+    pub fn max_sequence(&self) -> Result<Option<i64>> {
+        #[derive(Deserialize)]
+        struct MaxSequenceResult {
+            max_seq: Option<i64>,
+        }
+
+        let result = self
+            .sql
+            .exec("SELECT MAX(sequence) as max_seq FROM events", None)
+            .context("Failed to query max sequence")?
+            .one::<MaxSequenceResult>()
+            .context("Failed to parse max sequence result")?;
+
+        Ok(result.max_seq)
     }
 }

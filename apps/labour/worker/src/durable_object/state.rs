@@ -1,9 +1,11 @@
+use std::rc::Rc;
+
 use anyhow::{Context, Result, anyhow};
 
 use worker::{Env, State};
 
 use fern_labour_event_sourcing_rs::{
-    AggregateRepository, AsyncProjector, CheckpointRepository, SyncProjector,
+    AggregateRepository, AsyncProjector, CheckpointRepository, EventStoreTrait, SyncProjector,
 };
 
 use crate::durable_object::{
@@ -34,7 +36,8 @@ use crate::durable_object::{
         },
     },
     security::token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator},
-    user_storage::UserStorage,
+    security::user_storage::UserStorage,
+    websocket::event_broadcaster::WebSocketEventBroadcaster,
     write_side::{
         application::{AdminCommandProcessor, command_processors::LabourCommandProcessor},
         domain::LabourEvent,
@@ -61,6 +64,7 @@ pub struct ReadModel {
 pub struct AsyncProcessors {
     pub async_projection_processor: AsyncProjectionProcessor,
     pub sync_projection_processor: SyncProjectionProcessor,
+    pub websocket_event_broadcaster: WebSocketEventBroadcaster,
 }
 
 pub struct AggregateServices {
@@ -72,7 +76,7 @@ pub struct AggregateServices {
 impl AggregateServices {
     fn build_write_model(state: &State) -> Result<WriteModel> {
         let sql = state.storage().sql();
-        let event_store = SqlEventStore::create(sql.clone());
+        let event_store: Rc<dyn EventStoreTrait> = Rc::new(SqlEventStore::create(sql.clone()));
         event_store
             .init_schema()
             .context("Event store initialization failed")?;
@@ -97,9 +101,13 @@ impl AggregateServices {
         })
     }
 
-    fn build_read_model(state: &State, env: &Env) -> Result<ReadModel> {
+    fn build_read_model(
+        state: &State,
+        env: &Env,
+        event_store: Rc<dyn EventStoreTrait>,
+    ) -> Result<ReadModel> {
         let sql = state.storage().sql();
-        let event_query = EventQuery::new(SqlEventStore::create(sql.clone()));
+        let event_query = EventQuery::new(event_store);
 
         let labour_repository = Box::new(SqlLabourRepository::create(sql.clone()));
         let labour_query = LabourReadModelQuery::create(labour_repository);
@@ -135,9 +143,11 @@ impl AggregateServices {
         })
     }
 
-    fn build_sync_projection_processor(state: &State) -> Result<SyncProjectionProcessor> {
+    fn build_sync_projection_processor(
+        state: &State,
+        event_store: Rc<dyn EventStoreTrait>,
+    ) -> Result<SyncProjectionProcessor> {
         let sql = state.storage().sql();
-        let event_store = SqlEventStore::create(sql.clone());
 
         let checkpoint_repository = Box::new(SqlCheckpointRepository::create(sql.clone()));
         checkpoint_repository.init_schema()?;
@@ -183,12 +193,9 @@ impl AggregateServices {
     }
 
     fn build_async_projection_processor(
-        state: &State,
         env: &Env,
+        event_store: Rc<dyn EventStoreTrait>,
     ) -> Result<AsyncProjectionProcessor> {
-        let sql = state.storage().sql();
-        let event_store = SqlEventStore::create(sql.clone());
-
         let binding = "READ_MODEL_DB";
         let db = env
             .d1(binding)
@@ -210,19 +217,31 @@ impl AggregateServices {
         Ok(AsyncProjectionProcessor::create(event_store, projectors))
     }
 
-    fn build_async_processors(state: &State, env: &Env) -> Result<AsyncProcessors> {
-        let async_projection_processor = Self::build_async_projection_processor(state, env)?;
-        let sync_projection_processor = Self::build_sync_projection_processor(state)?;
+    fn build_async_processors(
+        state: &State,
+        env: &Env,
+        event_store: Rc<dyn EventStoreTrait>,
+    ) -> Result<AsyncProcessors> {
+        let websocket_event_broadcaster = WebSocketEventBroadcaster::create(event_store.clone());
+        let async_projection_processor =
+            Self::build_async_projection_processor(env, event_store.clone())?;
+        let sync_projection_processor =
+            Self::build_sync_projection_processor(state, event_store.clone())?;
+
         Ok(AsyncProcessors {
             async_projection_processor,
             sync_projection_processor,
+            websocket_event_broadcaster,
         })
     }
 
     pub fn from_worker_state(state: &State, env: &Env) -> Result<Self> {
+        let sql = state.storage().sql();
+        let event_store: Rc<dyn EventStoreTrait> = Rc::new(SqlEventStore::create(sql));
+
         let write_model = Self::build_write_model(state)?;
-        let read_model = Self::build_read_model(state, env)?;
-        let async_processors = Self::build_async_processors(state, env)?;
+        let read_model = Self::build_read_model(state, env, event_store.clone())?;
+        let async_processors = Self::build_async_processors(state, env, event_store.clone())?;
 
         Ok(Self {
             write_model,

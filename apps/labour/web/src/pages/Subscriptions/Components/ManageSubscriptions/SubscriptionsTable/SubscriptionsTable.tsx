@@ -48,6 +48,10 @@ export function SubscriptionsTable() {
   const rows: ReactElement[] = [];
 
   data.forEach((subscription) => {
+    if (subscription.status !== 'SUBSCRIBED') {
+      return
+    }
+    
     const labour = labours?.find((l) => l.labour_id === subscription.labour_id);
     const motherName = labour?.mother_name || 'Unknown';
 
@@ -96,7 +100,7 @@ export function SubscriptionsTable() {
           </Button>
         </Table.Td>
         <Table.Td>
-          <ManageSubscriptionMenu labour_id={subscription.labour_id} />
+          <ManageSubscriptionMenu labourId={subscription.labour_id} subscriptionId={subscription.subscription_id} />
         </Table.Td>
       </Table.Tr>
     );

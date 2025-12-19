@@ -47,6 +47,10 @@ import type {
 export interface LabourServiceConfig {
   baseUrl: string;
   getAccessToken?: () => string | null | Promise<string | null>;
+  websocket?: {
+    isConnected: boolean;
+    sendCommand: (payload: any) => void;
+  }
 }
 
 export class LabourServiceClient {
@@ -72,6 +76,15 @@ export class LabourServiceClient {
   }
 
   private async sendCommand<T = void>(command: unknown): Promise<ApiResponse<T>> {
+    if (this.config.websocket?.isConnected) {
+      try {
+        this.config.websocket.sendCommand(command);
+        return { success: true };
+      } catch (error) {
+        console.warn('[Client] WebSocket command failed, falling back to HTTP', error);
+      }
+    }
+
     const headers = await this.getHeaders();
     const url = `${this.config.baseUrl}/api/v1/command`;
 
@@ -352,22 +365,24 @@ export class LabourServiceClient {
     return this.sendCommand({ type: 'Subscriber', payload: command });
   }
 
-  async unsubscribe(labourId: string): Promise<CommandResponse> {
+  async unsubscribe(labourId: string, subscriptionId: string): Promise<CommandResponse> {
     const command: SubscriberCommand = {
       type: 'Unsubscribe',
-      payload: { labour_id: labourId },
+      payload: { labour_id: labourId, subscription_id: subscriptionId },
     };
     return this.sendCommand({ type: 'Subscriber', payload: command });
   }
 
   async updateNotificationMethods(
     labourId: string,
+    subscriptionId: string,
     methods: SubscriberContactMethod[]
   ): Promise<CommandResponse> {
     const command: SubscriberCommand = {
       type: 'UpdateNotificationMethods',
       payload: {
         labour_id: labourId,
+        subscription_id: subscriptionId,
         notification_methods: methods,
       },
     };
@@ -376,12 +391,14 @@ export class LabourServiceClient {
 
   async updateAccessLevel(
     labourId: string,
+    subscriptionId: string,
     accessLevel: SubscriberAccessLevel
   ): Promise<CommandResponse> {
     const command: SubscriberCommand = {
       type: 'UpdateAccessLevel',
       payload: {
         labour_id: labourId,
+        subscription_id: subscriptionId,
         access_level: accessLevel,
       },
     };

@@ -6,7 +6,6 @@ export interface LabourUpdateProps {
   id: string;
   sentTime: string;
   class: string;
-  icon: string;
   badgeColor: string;
   badgeText: string;
   text: string;
@@ -20,7 +19,6 @@ export function LabourUpdate({ data }: { data: LabourUpdateProps }) {
     <div className={data.class}>
       <LoadingOverlay visible={data.id === 'placeholder'} />
       <Group>
-        <Text>{data.icon}</Text>
         <Badge visibleFrom="xs" variant="filled" size="md" radius="md" bg={data.badgeColor}>
           {data.badgeText}
         </Badge>

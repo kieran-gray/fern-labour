@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 
 use fern_labour_workers_shared::User;
 
-use crate::durable_object::user_storage::UserStorage;
+use crate::durable_object::security::user_storage::UserStorage;
 
 pub struct UserQuery {
     user_storage: UserStorage,

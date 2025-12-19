@@ -208,6 +208,7 @@ export type UnsubscribeCommand = {
   type: 'Unsubscribe';
   payload: {
     labour_id: string;
+    subscription_id: string;
   };
 };
 
@@ -215,6 +216,7 @@ export type UpdateNotificationMethodsCommand = {
   type: 'UpdateNotificationMethods';
   payload: {
     labour_id: string;
+    subscription_id: string;
     notification_methods: SubscriberContactMethod[];
   };
 };
@@ -223,6 +225,7 @@ export type UpdateAccessLevelCommand = {
   type: 'UpdateAccessLevel';
   payload: {
     labour_id: string;
+    subscription_id: string;
     access_level: SubscriberAccessLevel;
   };
 };

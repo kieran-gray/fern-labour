@@ -3,9 +3,7 @@ use tracing::error;
 use uuid::Uuid;
 use worker::{Request, Response, RouteContext};
 
-use crate::{
-    api_worker::AppState,
-};
+use crate::api_worker::AppState;
 
 pub async fn handle_websocket_connect(
     req: Request,
@@ -29,7 +27,8 @@ pub async fn handle_websocket_connect(
         return Ok(Response::empty()?.with_status(426));
     }
 
-    let response = ctx.data
+    let response = ctx
+        .data
         .do_client
         .websocket_command(labour_id, &user, "/websocket")
         .await

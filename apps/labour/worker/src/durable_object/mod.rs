@@ -3,19 +3,25 @@ pub mod exceptions;
 pub mod read_side;
 pub mod security;
 pub mod state;
-pub mod user_storage;
+pub mod websocket;
 pub mod write_side;
 
-use tracing::{error, info, warn};
+use fern_labour_workers_shared::User;
+use tracing::{error, info};
 use worker::{
     DurableObject, Env, Request, Response, Result, State, WebSocket, WebSocketIncomingMessage,
-    WebSocketPair, durable_object,
+    durable_object,
 };
 
 use crate::durable_object::{
-    api::{middleware::extract_auth_context, router::route_request},
+    api::router::route_request,
     exceptions::IntoWorkerResponse,
     state::AggregateServices,
+    websocket::{
+        middleware::extract_auth_context_from_websocket,
+        routes::{handle_websocket_command, upgrade_connection},
+        schemas::parse_websocket_message,
+    },
     write_side::infrastructure::alarm_manager::AlarmManager,
 };
 
@@ -45,15 +51,13 @@ impl DurableObject for LabourAggregate {
     }
 
     async fn fetch(&self, req: Request) -> Result<Response> {
-        if req.path().contains("/websocket") {
-            return self.handle_websocket_command(req).await;
+        if req.path() == "/websocket" {
+            return upgrade_connection(req, &self.state).await;
         }
 
         let result = route_request(req, &self.services).await?;
 
         if result.status_code() == 204 {
-            // Only run alarm for empty responses, so we only run it when handling a
-            // write-side command request.
             self.alarm_manager
                 .set_alarm(0)
                 .await
@@ -67,12 +71,29 @@ impl DurableObject for LabourAggregate {
         info!("Alarm triggered - processing async operations");
         let alarm_services = self.services.async_processors();
 
+        let sequence_before = alarm_services
+            .sync_projection_processor
+            .get_last_processed_sequence();
+
         let sync_result = alarm_services
             .sync_projection_processor
             .process_projections();
 
         if let Err(e) = sync_result {
             error!(error = %e, "Error in sync projection processing");
+        } else {
+            // TODO race condition for labour and subscription read models that project to D1
+            let sequence_after = alarm_services
+                .sync_projection_processor
+                .get_last_processed_sequence();
+
+            if sequence_after > sequence_before
+                && let Err(e) = alarm_services
+                    .websocket_event_broadcaster
+                    .broadcast_new_events(&self.state, sequence_before)
+            {
+                error!(error = %e, "Failed to broadcast events to WebSocket clients");
+            }
         }
 
         let async_result = alarm_services
@@ -94,57 +115,36 @@ impl DurableObject for LabourAggregate {
 
     async fn websocket_message(
         &self,
-        _ws: WebSocket,
+        ws: WebSocket,
         message: WebSocketIncomingMessage,
     ) -> Result<()> {
-        match message {
-            WebSocketIncomingMessage::String(str_data) => {
-                info!(str_data)
+        let command = parse_websocket_message(message)?;
+        let user: User = extract_auth_context_from_websocket(&ws)?;
+
+        info!(user_id = %user.user_id, command = ?command, "Processing command from WebSocket");
+        let result = handle_websocket_command(&self.services, command, user);
+
+        if let Err(e) = result {
+            error!(error = %e, "Command execution failed");
+        } else {
+            info!("Command executed successfully");
+
+            if let Err(e) = self.alarm_manager.set_alarm(0).await {
+                error!(error = %e, "Failed to set alarm after command");
             }
-            WebSocketIncomingMessage::Binary(binary_data) => {
-                dbg!("{:?}", binary_data);
-            }
-        };
+        }
+
         Ok(())
     }
 
     async fn websocket_close(
-            &self,
-            _ws: WebSocket,
-            _code: usize,
-            _reason: String,
-            _was_clean: bool,
-        ) -> Result<()> {
+        &self,
+        _ws: WebSocket,
+        _code: usize,
+        _reason: String,
+        _was_clean: bool,
+    ) -> Result<()> {
         info!("Client disconnected");
         Ok(())
-    }
-}
-
-impl LabourAggregate {
-    async fn handle_websocket_command(&self, req: Request) -> Result<Response> {
-        let user = extract_auth_context(&req)?;
-
-        info!("Connecting websocket for {}", user.user_id);
-
-        let WebSocketPair { client, server } = WebSocketPair::new()?;
-        self.state.accept_web_socket(&server);
-
-        server.serialize_attachment(&user).map_err(|e| {
-            warn!("{}", e);
-            worker::Error::RustError(
-                "Failure adding attachment to websocket connection".to_string(),
-            )
-        })?;
-
-        let events = self
-            .services
-            .read_model()
-            .event_query
-            .get_event_stream()
-            .map_err(|_| worker::Error::RustError("Failed to fetch event stream".to_string()))?;
-
-        server.send(&events).unwrap_or(());
-
-        Response::from_websocket(client)
     }
 }

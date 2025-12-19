@@ -138,4 +138,18 @@ impl SyncProjectionProcessor {
             error_count: 0,
         }
     }
+
+    pub fn get_last_processed_sequence(&self) -> i64 {
+        self.projectors
+            .keys()
+            .filter_map(|projector_name| {
+                self.checkpoint_repository
+                    .get_checkpoint(projector_name)
+                    .ok()
+                    .flatten()
+                    .map(|cp| cp.last_processed_sequence)
+            })
+            .min()
+            .unwrap_or(0)
+    }
 }
