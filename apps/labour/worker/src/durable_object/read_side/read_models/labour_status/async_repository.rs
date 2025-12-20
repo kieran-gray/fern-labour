@@ -216,7 +216,7 @@ impl LabourStatusRepositoryTrait for D1LabourStatusRepository {
         let result: Option<LabourStatusRow> = self
             .db
             .prepare(
-                "SELECT * FROM labour_status WHERE mother_id = ?1 AND current_phase != 'COMPLETED'",
+                "SELECT * FROM labour_status WHERE mother_id = ?1 AND current_phase != 'COMPLETE'",
             )
             .bind(&[user_id.to_string().into()])
             .context("Failed to prepare active labour query")?

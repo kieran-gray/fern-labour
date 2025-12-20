@@ -13,7 +13,7 @@ pub enum LabourEvent {
     LabourPlanned {
         labour_id: Uuid,
         mother_id: String,
-        mother_name: String,
+        mother_name: String, // TODO decide
         first_labour: bool,
         due_date: DateTime<Utc>,
         labour_name: Option<String>,
@@ -83,6 +83,11 @@ pub enum LabourEvent {
     LabourUpdateDeleted {
         labour_id: Uuid,
         labour_update_id: Uuid,
+    },
+    SubscriptionTokenSet {
+        labour_id: Uuid,
+        mother_id: String,
+        token: String,
     },
     SubscriberRequested {
         labour_id: Uuid,
@@ -199,6 +204,7 @@ impl Event for LabourEvent {
             LabourEvent::SubscriberBlocked { .. } => "SubscriberBlocked",
             LabourEvent::SubscriberUnblocked { .. } => "SubscriberUnblocked",
             LabourEvent::SubscriberRoleUpdated { .. } => "SubscriberRoleUpdated",
+            LabourEvent::SubscriptionTokenSet { .. } => "SubscriptionTokenSet",
         }
     }
 
@@ -231,6 +237,7 @@ impl Event for LabourEvent {
             LabourEvent::SubscriberBlocked { labour_id, .. } => *labour_id,
             LabourEvent::SubscriberUnblocked { labour_id, .. } => *labour_id,
             LabourEvent::SubscriberRoleUpdated { labour_id, .. } => *labour_id,
+            LabourEvent::SubscriptionTokenSet { labour_id, .. } => *labour_id,
         }
     }
 }

@@ -11,7 +11,7 @@ import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscrip
 import classes from './SubscriptionsTable.module.css';
 
 export function SubscriptionsTable() {
-  const { subscriptionId, setSubscriptionId, setLabourId } = useLabourSession();
+  const { subscriptionId, setSubscriptionId, setLabourId, clearSession } = useLabourSession();
 
   const client = useLabourV2Client();
   const { isPending, isError, data, error } = useUserSubscriptionsV2(client);
@@ -31,7 +31,7 @@ export function SubscriptionsTable() {
 
   const toggleSubscription = (subscription: SubscriptionStatusReadModel) => {
     if (subscriptionId === subscription.subscription_id) {
-      setSubscriptionId(null);
+      clearSession();
     } else {
       setSubscriptionId(subscription.subscription_id);
       setLabourId(subscription.labour_id);
@@ -49,9 +49,9 @@ export function SubscriptionsTable() {
 
   data.forEach((subscription) => {
     if (subscription.status !== 'SUBSCRIBED') {
-      return
+      return;
     }
-    
+
     const labour = labours?.find((l) => l.labour_id === subscription.labour_id);
     const motherName = labour?.mother_name || 'Unknown';
 
@@ -100,7 +100,10 @@ export function SubscriptionsTable() {
           </Button>
         </Table.Td>
         <Table.Td>
-          <ManageSubscriptionMenu labourId={subscription.labour_id} subscriptionId={subscription.subscription_id} />
+          <ManageSubscriptionMenu
+            labourId={subscription.labour_id}
+            subscriptionId={subscription.subscription_id}
+          />
         </Table.Td>
       </Table.Tr>
     );

@@ -72,7 +72,7 @@
       "services": [
         {
           "binding": "NOTIFICATION_SERVICE_API",
-          "service": "fern-labour-notifications-worker"
+          "service": "fern-labour-notifications-worker-dev"
         },
         {
           "binding": "AUTH_SERVICE_API",

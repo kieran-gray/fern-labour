@@ -4,8 +4,8 @@
 
 import { useMemo } from 'react';
 import { LabourServiceV2Client } from '@base/clients/labour_service';
-import { useAuth } from '@clerk/clerk-react';
 import { useWebSocket } from '@base/contexts/WebsocketContext';
+import { useAuth } from '@clerk/clerk-react';
 
 export function useLabourV2Client() {
   const { getToken } = useAuth();
@@ -27,7 +27,7 @@ export function useLabourV2Client() {
         websocket: {
           isConnected: websocket.isConnected,
           sendCommand: websocket.sendCommand,
-        }
+        },
       }),
     [getToken, websocket.isConnected, websocket.sendCommand]
   );

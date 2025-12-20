@@ -7,7 +7,11 @@ use fern_labour_notifications_shared::value_objects::{
 };
 use tracing::{debug, error};
 use uuid::Uuid;
-use worker::{Headers, Method, RequestInit, Response};
+use worker::Response;
+
+use crate::clients::request_utils::{
+    build_json_post_request, service_headers, StatusCodeCategory,
+};
 
 pub struct FetcherGenerationClient {
     fetcher: worker::Fetcher,
@@ -31,29 +35,8 @@ impl FetcherGenerationClient {
             template_data,
         };
 
-        let body_bytes = serde_json::to_vec(&request).map_err(|e| {
-            GenerationClientError::SerializationError(format!("Failed to serialize request: {e}"))
-        })?;
-
-        let headers = vec![
-            ("Content-Type", "application/json"),
-            ("X-Service-ID", "notification-service"),
-        ];
-
-        let worker_headers = Headers::new();
-        for (name, value) in headers {
-            worker_headers.set(name, value).map_err(|e| {
-                GenerationClientError::InternalError(format!(
-                    "Failed to set header {}: {}",
-                    name, e
-                ))
-            })?;
-        }
-
-        let mut init = RequestInit::new();
-        init.with_method(Method::Post);
-        init.with_headers(worker_headers);
-        init.with_body(Some(body_bytes.into()));
+        let (init, _) = build_json_post_request(&request, service_headers("notification-service"))
+            .map_err(GenerationClientError::SerializationError)?;
 
         self.fetcher.fetch(url, Some(init)).await.map_err(|e| {
             error!(error = ?e, "Generation service request failed");
@@ -93,24 +76,24 @@ impl GenerationClient for FetcherGenerationClient {
                 "https://fernlabour.com/api/v1/render",
             )
             .await?;
-        match response.status_code() {
-            200..=202 => {
+
+        let status = response.status_code();
+        match StatusCodeCategory::from_code(status) {
+            StatusCodeCategory::Success => {
                 debug!("Template rendered successfully");
                 let render_response: RenderResponse = response.json().await.map_err(|e| {
                     GenerationClientError::InternalError(format!("Failed to parse response: {e}"))
                 })?;
                 Ok(render_response.rendered_content)
             }
-            400..=499 => Err(GenerationClientError::RequestFailed(format!(
-                "Client error: {}",
-                response.status_code()
+            StatusCodeCategory::ClientError => Err(GenerationClientError::RequestFailed(format!(
+                "Client error: {status}"
             ))),
-            500..=599 => Err(GenerationClientError::InternalError(format!(
-                "Server error: {}",
-                response.status_code()
+            StatusCodeCategory::ServerError => Err(GenerationClientError::InternalError(format!(
+                "Server error: {status}"
             ))),
-            code => Err(GenerationClientError::RequestFailed(format!(
-                "Unexpected status: {code}"
+            StatusCodeCategory::Unknown => Err(GenerationClientError::RequestFailed(format!(
+                "Unexpected status: {status}"
             ))),
         }
     }

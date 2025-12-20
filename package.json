@@ -15,7 +15,7 @@
     "services/contact-service"
   ],
   "scripts": {
-    "dev": "concurrently -n labour,auth \"npm run dev --workspace=apps/labour/worker\" \"npm run dev --workspace=services/auth-service\"",
+    "dev": "concurrently -n labour,auth \"npm run dev --workspace=apps/labour/worker\"  \"npm run dev --workspace=services/auth-service\"",
     "build": "npm run build --workspaces --if-present",
     "build:dev": "npm run build:dev --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",

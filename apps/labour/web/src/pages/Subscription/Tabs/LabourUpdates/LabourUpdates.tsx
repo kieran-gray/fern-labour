@@ -67,7 +67,7 @@ export function StatusUpdates({ labour }: { labour: LabourReadModel }) {
         };
       }
       if (props != null) {
-        statusUpdateDisplay.push(<LabourUpdate data={props} />);
+        statusUpdateDisplay.push(<LabourUpdate key={data.labour_update_id} data={props} />);
       }
     });
     return statusUpdateDisplay;

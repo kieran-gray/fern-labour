@@ -3,7 +3,7 @@ import { QueryClient } from '@tanstack/react-query';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: Infinity,  // With websockets we can consider all queries to be up-to-date until invalidated by an event
+      staleTime: Infinity, // With websockets we can consider all queries to be up-to-date until invalidated by an event
       gcTime: 24 * 60 * 60 * 1000,
 
       retry: (failureCount, error: any) => {

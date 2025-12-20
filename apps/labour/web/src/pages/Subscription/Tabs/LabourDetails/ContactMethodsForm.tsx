@@ -38,6 +38,7 @@ export default function ContactMethodsForm({
   const handleUpdateContactMethods = (values: typeof form.values) => {
     const requestBody = {
       labourId: labourId!,
+      subscriptionId: subscription.subscription_id,
       methods: values.contactMethods,
     };
     mutation.mutate(requestBody, {

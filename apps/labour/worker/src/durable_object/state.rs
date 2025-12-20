@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use anyhow::{Context, Result, anyhow};
 
+use fern_labour_workers_shared::clients::FetcherNotificationClient;
 use worker::{Env, State};
 
 use fern_labour_event_sourcing_rs::{
@@ -28,20 +29,22 @@ use crate::durable_object::{
             subscription_status::{
                 D1SubscriptionStatusRepository, SubscriptionStatusReadModelProjector,
             },
+            subscription_token::{
+                SqlSubscriptionTokenRepository, SubscriptionTokenProjector, SubscriptionTokenQuery,
+            },
             subscriptions::{
-                SqlSubscriptionRepository, SubscriptionReadModelProjector,
-                SubscriptionReadModelQuery,
+                SqlSubscriptionRepository, SubscriptionQuery, SubscriptionReadModelProjector,
             },
             users::query::UserQuery,
         },
     },
-    security::token_generator::{SplitMix64TokenGenerator, SubscriptionTokenGenerator},
-    security::user_storage::UserStorage,
+    security::{token_generator::SplitMix64TokenGenerator, user_storage::UserStorage},
     websocket::event_broadcaster::WebSocketEventBroadcaster,
     write_side::{
-        application::{AdminCommandProcessor, command_processors::LabourCommandProcessor},
+        application::{AdminCommandProcessor, LabourCommandProcessor},
         domain::LabourEvent,
         infrastructure::SqlEventStore,
+        process_manager::{EffectLedger, LabourEffectExecutor, LabourEffectPolicy, ProcessManager},
     },
 };
 
@@ -57,8 +60,8 @@ pub struct ReadModel {
     pub labour_query: LabourReadModelQuery,
     pub contraction_query: ContractionReadModelQuery,
     pub labour_update_query: LabourUpdateReadModelQuery,
-    pub subscription_query: SubscriptionReadModelQuery,
-    pub subscription_token_generator: Box<dyn SubscriptionTokenGenerator>,
+    pub subscription_query: SubscriptionQuery,
+    pub subscription_token_query: SubscriptionTokenQuery,
 }
 
 pub struct AsyncProcessors {
@@ -67,10 +70,15 @@ pub struct AsyncProcessors {
     pub websocket_event_broadcaster: WebSocketEventBroadcaster,
 }
 
+pub struct ProcessManagement {
+    pub process_manager: ProcessManager<LabourEffectPolicy, LabourEffectExecutor>,
+}
+
 pub struct AggregateServices {
     write_model: WriteModel,
     read_model: ReadModel,
     async_processors: AsyncProcessors,
+    process_management: ProcessManagement,
 }
 
 impl AggregateServices {
@@ -101,11 +109,7 @@ impl AggregateServices {
         })
     }
 
-    fn build_read_model(
-        state: &State,
-        env: &Env,
-        event_store: Rc<dyn EventStoreTrait>,
-    ) -> Result<ReadModel> {
+    fn build_read_model(state: &State, event_store: Rc<dyn EventStoreTrait>) -> Result<ReadModel> {
         let sql = state.storage().sql();
         let event_query = EventQuery::new(event_store);
 
@@ -119,15 +123,10 @@ impl AggregateServices {
         let labour_update_query = LabourUpdateReadModelQuery::create(labour_update_repository);
 
         let subscription_repository = Box::new(SqlSubscriptionRepository::create(sql.clone()));
-        let subscription_query = SubscriptionReadModelQuery::create(subscription_repository);
+        let subscription_query = SubscriptionQuery::create(subscription_repository);
 
-        let subscription_token_salt: String = env
-            .var("SUBSCRIPTION_TOKEN_SALT")
-            .map_err(|e| anyhow!("Missing env binding: {e}"))?
-            .to_string();
-
-        let subscription_token_generator =
-            Box::new(SplitMix64TokenGenerator::create(subscription_token_salt));
+        let sub_token_repo = Box::new(SqlSubscriptionTokenRepository::create(sql.clone()));
+        let subscription_token_query = SubscriptionTokenQuery::create(sub_token_repo);
 
         let user_storage = UserStorage::create(sql);
         let user_query = UserQuery::new(user_storage);
@@ -139,7 +138,7 @@ impl AggregateServices {
             contraction_query,
             labour_update_query,
             subscription_query,
-            subscription_token_generator,
+            subscription_token_query,
         })
     }
 
@@ -178,11 +177,18 @@ impl AggregateServices {
             subscription_repository,
         ));
 
+        let sub_token_repo = Box::new(SqlSubscriptionTokenRepository::create(sql.clone()));
+        sub_token_repo.init_schema()?;
+
+        let subscription_token_projector =
+            Box::new(SubscriptionTokenProjector::create(sub_token_repo));
+
         let projectors: Vec<Box<dyn SyncProjector<LabourEvent>>> = vec![
             labour_projector,
             contraction_projector,
             labour_update_projector,
             subscription_projector,
+            subscription_token_projector,
         ];
 
         Ok(SyncProjectionProcessor::create(
@@ -235,18 +241,75 @@ impl AggregateServices {
         })
     }
 
+    fn build_process_management(
+        state: &State,
+        env: &Env,
+        event_store: Rc<dyn EventStoreTrait>,
+        command_processor: Rc<LabourCommandProcessor>,
+    ) -> Result<ProcessManagement> {
+        let sql = state.storage().sql();
+        let aggregate_id = state.id().to_string();
+
+        let ledger = EffectLedger::create(sql.clone(), aggregate_id.clone());
+        ledger
+            .init_schema()
+            .context("Failed to initialize effect ledger schema")?;
+
+        let policy = LabourEffectPolicy;
+
+        let base_url = env
+            .var("PUBLIC_URL")
+            .map(|v| v.to_string())
+            .unwrap_or_else(|_| "https://track.fernlabour.com".to_string());
+
+        let notification_fetcher = env
+            .service("NOTIFICATION_SERVICE_API")
+            .context("Missing binding NOTIFICATION_SERVICE_API")?;
+
+        let notification_client = Box::new(FetcherNotificationClient::create(notification_fetcher));
+
+        let subscription_token_salt: String = env
+            .var("SUBSCRIPTION_TOKEN_SALT")
+            .map_err(|e| anyhow!("Missing env binding: {e}"))?
+            .to_string();
+
+        let subscription_token_generator =
+            Box::new(SplitMix64TokenGenerator::create(subscription_token_salt));
+
+        let user_storage = UserStorage::create(sql);
+
+        let executor = LabourEffectExecutor::new(
+            user_storage,
+            notification_client,
+            command_processor,
+            subscription_token_generator,
+            base_url,
+        );
+
+        let process_manager =
+            ProcessManager::new(policy, ledger, executor, event_store, aggregate_id);
+
+        Ok(ProcessManagement { process_manager })
+    }
+
     pub fn from_worker_state(state: &State, env: &Env) -> Result<Self> {
         let sql = state.storage().sql();
         let event_store: Rc<dyn EventStoreTrait> = Rc::new(SqlEventStore::create(sql));
 
         let write_model = Self::build_write_model(state)?;
-        let read_model = Self::build_read_model(state, env, event_store.clone())?;
+
+        let command_processor = Rc::new(write_model.labour_command_processor.clone());
+
+        let read_model = Self::build_read_model(state, event_store.clone())?;
         let async_processors = Self::build_async_processors(state, env, event_store.clone())?;
+        let process_management =
+            Self::build_process_management(state, env, event_store.clone(), command_processor)?;
 
         Ok(Self {
             write_model,
             read_model,
             async_processors,
+            process_management,
         })
     }
 
@@ -260,5 +323,9 @@ impl AggregateServices {
 
     pub fn async_processors(&self) -> &AsyncProcessors {
         &self.async_processors
+    }
+
+    pub fn process_management(&self) -> &ProcessManagement {
+        &self.process_management
     }
 }

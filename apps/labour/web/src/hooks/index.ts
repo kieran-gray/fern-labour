@@ -2,7 +2,7 @@
  * Central exports for all custom data fetching hooks
  */
 export { useApiAuth } from './useApiAuth';
-export { queryKeys } from './queryKeys';
+export { queryKeysV2 } from './queryKeys';
 
 export { useSubmitContactForm } from './useContactData';
 export { useCreateCheckoutSessionV2 } from './usePaymentData';

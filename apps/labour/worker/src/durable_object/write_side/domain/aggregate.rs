@@ -11,17 +11,19 @@ use fern_labour_event_sourcing_rs::Aggregate;
 
 use crate::durable_object::write_side::domain::{
     LabourCommand, LabourError, LabourEvent,
-    entities::{contraction::Contraction, labour_update::LabourUpdate, subscription::Subscription},
+    entities::{
+        contraction::Contraction,
+        labour_update::{ANNOUNCEMENT_COOLDOWN_SECONDS, LabourUpdate},
+        subscription::Subscription,
+    },
 };
-
-// TODO move somewhere else
-const ANNOUNCEMENT_COOLDOWN_SECONDS: i64 = 10;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Labour {
     id: Uuid,
     mother_id: String,
     phase: LabourPhase,
+    subscription_token: Option<String>,
     contractions: Vec<Contraction>,
     labour_updates: Vec<LabourUpdate>,
     subscriptions: Vec<Subscription>,
@@ -30,6 +32,18 @@ pub struct Labour {
 }
 
 impl Labour {
+    pub fn mother_id(&self) -> &str {
+        &self.mother_id
+    }
+
+    pub fn subscriptions(&self) -> &[Subscription] {
+        &self.subscriptions
+    }
+
+    pub fn subscription_token(&self) -> Option<&String> {
+        self.subscription_token.as_ref()
+    }
+
     fn find_active_contraction(&self) -> Option<&Contraction> {
         self.contractions.iter().find(|c| c.is_active())
     }
@@ -71,6 +85,37 @@ impl Labour {
             .iter()
             .find(|s| s.id() == subscription_id)
     }
+
+    fn has_overlapping_contractions(
+        &self,
+        updated_contraction_id: Uuid,
+        start_time: Option<DateTime<Utc>>,
+        end_time: Option<DateTime<Utc>>,
+    ) -> bool {
+        if self.contractions.len() <= 1 {
+            return false;
+        }
+
+        let updated_contraction = match self.find_contraction(updated_contraction_id) {
+            Some(c) => c,
+            None => return false,
+        };
+
+        let new_start = start_time.unwrap_or(*updated_contraction.start_time());
+        let new_end = end_time.unwrap_or(*updated_contraction.end_time());
+
+        for contraction in &self.contractions {
+            if contraction.id() == updated_contraction_id || contraction.is_active() {
+                continue;
+            }
+
+            if new_start < *contraction.end_time() && *contraction.start_time() < new_end {
+                return true;
+            }
+        }
+
+        false
+    }
 }
 
 impl Aggregate for Labour {
@@ -106,20 +151,39 @@ impl Aggregate for Labour {
                 contraction_id,
                 start_time,
             } => {
-                let contraction =
-                    Contraction::start(*contraction_id, *labour_id, *start_time).unwrap();
-                self.contractions.push(contraction);
+                if let Ok(contraction) =
+                    Contraction::start(*contraction_id, *labour_id, *start_time)
+                {
+                    self.contractions.push(contraction);
+                }
             }
             LabourEvent::ContractionEnded {
                 end_time,
                 intensity,
                 ..
             } => {
-                let contraction = self.contractions.last_mut().expect("No contractions found");
-                contraction.end(*end_time, *intensity).unwrap();
+                if let Some(contraction) = self.contractions.last_mut() {
+                    contraction
+                        .end(*end_time, *intensity)
+                        .expect("Failed to end contraction");
+                }
             }
-            LabourEvent::ContractionUpdated { .. } => {
-                // TODO: skip CBA for now
+            LabourEvent::ContractionUpdated {
+                contraction_id,
+                start_time,
+                end_time,
+                intensity,
+                ..
+            } => {
+                if let Some(contraction) = self
+                    .contractions
+                    .iter_mut()
+                    .find(|c| c.id() == *contraction_id)
+                {
+                    contraction
+                        .update(*start_time, *end_time, *intensity)
+                        .expect("Failed to update contraction");
+                }
             }
             LabourEvent::ContractionDeleted { contraction_id, .. } => {
                 self.contractions.pop_if(|c| c.id() == *contraction_id);
@@ -142,11 +206,31 @@ impl Aggregate for Labour {
                 );
                 self.labour_updates.push(labour_update);
             }
-            LabourEvent::LabourUpdateMessageUpdated { .. } => {
-                // TODO
+            LabourEvent::LabourUpdateMessageUpdated {
+                labour_update_id,
+                message,
+                ..
+            } => {
+                if let Some(labour_update) = self
+                    .labour_updates
+                    .iter_mut()
+                    .find(|lu| lu.id() == *labour_update_id)
+                {
+                    labour_update.update_message(message.clone());
+                }
             }
-            LabourEvent::LabourUpdateTypeUpdated { .. } => {
-                // TODO
+            LabourEvent::LabourUpdateTypeUpdated {
+                labour_update_id,
+                labour_update_type,
+                ..
+            } => {
+                if let Some(labour_update) = self
+                    .labour_updates
+                    .iter_mut()
+                    .find(|lu| lu.id() == *labour_update_id)
+                {
+                    labour_update.update_type(labour_update_type.clone());
+                }
             }
             LabourEvent::LabourUpdateDeleted {
                 labour_update_id, ..
@@ -264,6 +348,9 @@ impl Aggregate for Labour {
                     subscription.update_role(role.clone());
                 }
             }
+            LabourEvent::SubscriptionTokenSet { token, .. } => {
+                self.subscription_token = Some(token.clone());
+            }
             LabourEvent::LabourPlanUpdated { .. }
             | LabourEvent::LabourInviteSent { .. }
             | LabourEvent::LabourDeleted { .. } => {}
@@ -327,7 +414,6 @@ impl Aggregate for Labour {
                         LabourPhase::EARLY.to_string(),
                     ));
                 }
-                // TODO: labour update would be better as a policy?
                 vec![
                     LabourEvent::LabourBegun {
                         labour_id,
@@ -503,7 +589,13 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                // TODO actual update validation logic to check for overlapping contractions etc.
+                if (start_time.is_some() || end_time.is_some())
+                    && labour.has_overlapping_contractions(contraction_id, start_time, end_time)
+                {
+                    return Err(LabourError::ValidationError(
+                        "Updated contraction would overlap with existing contractions".to_string(),
+                    ));
+                }
 
                 vec![LabourEvent::ContractionUpdated {
                     labour_id,
@@ -651,10 +743,16 @@ impl Aggregate for Labour {
                     labour_update_id,
                 }]
             }
+            LabourCommand::SetSubscriptionToken { labour_id, mother_id, token } => {
+                let Some(_) = state else {
+                    return Err(LabourError::NotFound);
+                };
+                vec![LabourEvent::SubscriptionTokenSet { labour_id, mother_id, token }]
+            }
             LabourCommand::RequestAccess {
                 labour_id,
                 subscriber_id,
-                token: _token, // TODO
+                token,
             } => {
                 let Some(labour) = state else {
                     return Err(LabourError::NotFound);
@@ -669,6 +767,18 @@ impl Aggregate for Labour {
                 if labour.phase == LabourPhase::COMPLETE {
                     return Err(LabourError::InvalidCommand(
                         "Cannot subscribe to completed labour".to_string(),
+                    ));
+                }
+
+                let Some(ref subscription_token) = labour.subscription_token else {
+                    return Err(LabourError::InvalidCommand(
+                        "Labour has no subscription token set".to_string(),
+                    ));
+                };
+
+                if &token != subscription_token {
+                    return Err(LabourError::InvalidCommand(
+                        "Incorrect subscription token".to_string(),
                     ));
                 }
 
@@ -918,6 +1028,7 @@ impl Aggregate for Labour {
                 id: *labour_id,
                 mother_id: mother_id.clone(),
                 phase: LabourPhase::PLANNED,
+                subscription_token: None,
                 contractions: vec![],
                 labour_updates: vec![],
                 subscriptions: vec![],

@@ -49,8 +49,8 @@ export interface LabourServiceConfig {
   getAccessToken?: () => string | null | Promise<string | null>;
   websocket?: {
     isConnected: boolean;
-    sendCommand: (payload: any) => void;
-  }
+    sendCommand: (payload: any) => Promise<{ data?: any; error?: string }>;
+  };
 }
 
 export class LabourServiceClient {
@@ -78,8 +78,19 @@ export class LabourServiceClient {
   private async sendCommand<T = void>(command: unknown): Promise<ApiResponse<T>> {
     if (this.config.websocket?.isConnected) {
       try {
-        this.config.websocket.sendCommand(command);
-        return { success: true };
+        const response = await this.config.websocket.sendCommand(command);
+
+        if (response.error) {
+          return {
+            success: false,
+            error: response.error,
+          };
+        }
+
+        return {
+          success: true,
+          data: response.data,
+        };
       } catch (error) {
         console.warn('[Client] WebSocket command failed, falling back to HTTP', error);
       }

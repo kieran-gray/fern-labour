@@ -23,7 +23,7 @@ export interface LabourSessionState {
 interface LabourSessionContextType extends LabourSessionState {
   setLabourId: (labourId: string | null) => void;
   setSubscriptionId: (subscriptionId: string | null) => void;
-  setRole: (role: SessionRole | null) => void;
+  setRole: (role: SessionRole | null) => void; // TODO
   startMotherSession: (labourId: string) => void;
   startSubscriberSession: (subscriptionId: string) => void;
   clearSession: () => void;

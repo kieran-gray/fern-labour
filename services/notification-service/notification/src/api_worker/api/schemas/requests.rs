@@ -1,28 +1,21 @@
-use std::{collections::HashMap, str::FromStr};
+use std::str::FromStr;
 
 use anyhow::{Context, Result};
+use fern_labour_notifications_shared::service_clients::notification::NotificationRequest;
 use fern_labour_notifications_shared::value_objects::{
-    NotificationChannel, NotificationDestination, NotificationPriority, NotificationTemplateData,
+    NotificationChannel, NotificationDestination,
 };
-use serde::{Deserialize, Serialize};
 use strum::VariantNames;
 use uuid::Uuid;
 
 use crate::durable_object::write_side::domain::NotificationCommand;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RequestNotificationDto {
-    pub channel: String,
-    pub destination: String,
-    pub template_data: NotificationTemplateData,
-    #[serde(default)]
-    pub metadata: Option<HashMap<String, String>>,
-    #[serde(default)]
-    pub priority: NotificationPriority,
+pub trait NotificationRequestExt {
+    fn try_into_domain(self, notification_id: Uuid) -> Result<NotificationCommand>;
 }
 
-impl RequestNotificationDto {
-    pub fn try_into_domain(self, notification_id: Uuid) -> Result<NotificationCommand> {
+impl NotificationRequestExt for NotificationRequest {
+    fn try_into_domain(self, notification_id: Uuid) -> Result<NotificationCommand> {
         let channel = NotificationChannel::from_str(&self.channel).with_context(|| {
             format!(
                 "Invalid notification channel: '{}'. Valid channels are: {}",
@@ -59,11 +52,19 @@ impl RequestNotificationDto {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
+    use fern_labour_notifications_shared::service_clients::notification::NotificationRequest;
+    use fern_labour_notifications_shared::value_objects::{
+        NotificationPriority, NotificationTemplateData,
+    };
+    use uuid::Uuid;
+
     use super::*;
 
     #[test]
     fn converts_valid_email_request() {
-        let dto = RequestNotificationDto {
+        let dto = NotificationRequest {
             channel: "EMAIL".to_string(),
             destination: "user@example.com".to_string(),
             template_data: NotificationTemplateData::ContactUs {
@@ -94,7 +95,7 @@ mod tests {
 
     #[test]
     fn returns_error_for_invalid_channel() {
-        let dto = RequestNotificationDto {
+        let dto = NotificationRequest {
             channel: "INVALID_CHANNEL".to_string(),
             destination: "test".to_string(),
             template_data: NotificationTemplateData::ContactUs {
@@ -113,7 +114,7 @@ mod tests {
 
     #[test]
     fn returns_error_for_invalid_email() {
-        let dto = RequestNotificationDto {
+        let dto = NotificationRequest {
             channel: "EMAIL".to_string(),
             destination: "not-an-email".to_string(),
             template_data: NotificationTemplateData::ContactUs {
@@ -135,7 +136,7 @@ mod tests {
         let mut metadata = HashMap::new();
         metadata.insert("key".to_string(), "value".to_string());
 
-        let dto = RequestNotificationDto {
+        let dto = NotificationRequest {
             channel: "EMAIL".to_string(),
             destination: "user@example.com".to_string(),
             template_data: NotificationTemplateData::ContactUs {

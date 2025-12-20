@@ -17,7 +17,7 @@ export default function CompleteLabourButton({
   const client = useLabourV2Client();
   const mutation = useCompleteLabourV2(client);
   const navigate = useNavigate();
-  const { labourId, setLabourId } = useLabourSession();
+  const { labourId, clearSession } = useLabourSession();
 
   const handleCompleteLabour = (labourNotes: string) => {
     const payload = {
@@ -25,7 +25,7 @@ export default function CompleteLabourButton({
       notes: labourNotes,
     };
     mutation.mutate(payload);
-    setLabourId(null);
+    clearSession();
     navigate('/completed');
   };
 

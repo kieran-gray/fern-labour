@@ -152,4 +152,12 @@ impl SyncProjectionProcessor {
             .min()
             .unwrap_or(0)
     }
+
+    pub fn has_unprocessed_events(&self) -> bool {
+        let last_processed = self.get_last_processed_sequence();
+        self.event_store
+            .events_since(last_processed, 1)
+            .map(|events| !events.is_empty())
+            .unwrap_or(false)
+    }
 }

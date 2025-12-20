@@ -3,6 +3,8 @@ use fern_labour_labour_shared::value_objects::LabourUpdateType;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+pub const ANNOUNCEMENT_COOLDOWN_SECONDS: i64 = 10;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LabourUpdate {
     id: Uuid,
@@ -44,5 +46,15 @@ impl LabourUpdate {
 
     pub fn sent_time(&self) -> &DateTime<Utc> {
         &self.sent_time
+    }
+
+    pub fn update_message(&mut self, message: String) {
+        self.message = message;
+        self.edited = true;
+    }
+
+    pub fn update_type(&mut self, labour_update_type: LabourUpdateType) {
+        self.labour_update_type = labour_update_type;
+        self.edited = true;
     }
 }

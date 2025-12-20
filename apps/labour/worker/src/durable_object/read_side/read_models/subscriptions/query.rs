@@ -8,7 +8,7 @@ use crate::durable_object::read_side::read_models::subscriptions::{
 };
 
 #[async_trait(?Send)]
-pub trait SubscriptionReadModelQueryHandler {
+pub trait SubscriptionQueryHandler {
     fn get(
         &self,
         limit: usize,
@@ -18,17 +18,17 @@ pub trait SubscriptionReadModelQueryHandler {
     fn get_user_subscription(&self, user_id: String) -> Result<SubscriptionReadModel>;
 }
 
-pub struct SubscriptionReadModelQuery {
+pub struct SubscriptionQuery {
     repository: Box<dyn SubscriptionRepositoryTrait>,
 }
 
-impl SubscriptionReadModelQuery {
+impl SubscriptionQuery {
     pub fn create(repository: Box<dyn SubscriptionRepositoryTrait>) -> Self {
         Self { repository }
     }
 }
 
-impl SubscriptionReadModelQueryHandler for SubscriptionReadModelQuery {
+impl SubscriptionQueryHandler for SubscriptionQuery {
     fn get(
         &self,
         limit: usize,

@@ -4,6 +4,7 @@ use fern_labour_workers_shared::User;
 
 use crate::durable_object::write_side::domain::{Labour, LabourCommand};
 
+#[derive(Clone)]
 pub struct LabourCommandProcessor {
     repository: AggregateRepository<Labour>,
 }

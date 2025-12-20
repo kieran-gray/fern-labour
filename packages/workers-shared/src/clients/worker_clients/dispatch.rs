@@ -3,7 +3,11 @@ use fern_labour_notifications_shared::service_clients::{
     DispatchClient, DispatchClientError, DispatchRequest, DispatchResponse,
 };
 use tracing::{debug, error};
-use worker::{Headers, Method, RequestInit, Response};
+use worker::Response;
+
+use crate::clients::request_utils::{
+    build_json_post_request, service_headers, StatusCodeCategory,
+};
 
 pub struct FetcherDispatchClient {
     fetcher: worker::Fetcher,
@@ -19,26 +23,8 @@ impl FetcherDispatchClient {
         request: DispatchRequest,
         url: &str,
     ) -> Result<Response, DispatchClientError> {
-        let body_bytes = serde_json::to_vec(&request).map_err(|e| {
-            DispatchClientError::SerializationError(format!("Failed to serialize request: {e}"))
-        })?;
-
-        let headers = vec![
-            ("Content-Type", "application/json"),
-            ("X-Service-ID", "notification-service"),
-        ];
-
-        let worker_headers = Headers::new();
-        for (name, value) in headers {
-            worker_headers.set(name, value).map_err(|e| {
-                DispatchClientError::InternalError(format!("Failed to set header {}: {}", name, e))
-            })?;
-        }
-
-        let mut init = RequestInit::new();
-        init.with_method(Method::Post);
-        init.with_headers(worker_headers);
-        init.with_body(Some(body_bytes.into()));
+        let (init, _) = build_json_post_request(&request, service_headers("notification-service"))
+            .map_err(DispatchClientError::SerializationError)?;
 
         self.fetcher.fetch(url, Some(init)).await.map_err(|e| {
             error!(error = ?e, "Dispatch service request failed");
@@ -64,24 +50,24 @@ impl DispatchClient for FetcherDispatchClient {
         let mut response = self
             .do_dispatch(request, "https://fernlabour.com/api/v1/dispatch")
             .await?;
-        match response.status_code() {
-            200..=202 => {
+
+        let status = response.status_code();
+        match StatusCodeCategory::from_code(status) {
+            StatusCodeCategory::Success => {
                 debug!("Notification dispatched successfully");
                 let dispatch_response: DispatchResponse = response.json().await.map_err(|e| {
                     DispatchClientError::InternalError(format!("Failed to parse response: {e}"))
                 })?;
                 Ok(dispatch_response.external_id)
             }
-            400..=499 => Err(DispatchClientError::RequestFailed(format!(
-                "Client error: {}",
-                response.status_code()
+            StatusCodeCategory::ClientError => Err(DispatchClientError::RequestFailed(format!(
+                "Client error: {status}"
             ))),
-            500..=599 => Err(DispatchClientError::InternalError(format!(
-                "Server error: {}",
-                response.status_code()
+            StatusCodeCategory::ServerError => Err(DispatchClientError::InternalError(format!(
+                "Server error: {status}"
             ))),
-            code => Err(DispatchClientError::RequestFailed(format!(
-                "Unexpected status: {code}"
+            StatusCodeCategory::Unknown => Err(DispatchClientError::RequestFailed(format!(
+                "Unexpected status: {status}"
             ))),
         }
     }

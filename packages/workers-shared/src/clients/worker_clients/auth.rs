@@ -2,7 +2,9 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::{debug, error};
-use worker::{Headers, Method, RequestInit};
+use worker::Response;
+
+use crate::clients::request_utils::build_json_post_request;
 
 #[derive(Debug)]
 pub enum AuthClientError {
@@ -84,6 +86,30 @@ impl FetcherAuthServiceClient {
             fetcher: Arc::new(fetcher),
         }
     }
+
+    async fn post_auth_request<T: Serialize>(
+        &self,
+        endpoint: &str,
+        body: &T,
+    ) -> Result<Response, AuthClientError> {
+        let (init, _) = build_json_post_request(body, vec![("Content-Type", "application/json")])
+            .map_err(AuthClientError::ParseError)?;
+
+        self.fetcher
+            .fetch(endpoint, Some(init))
+            .await
+            .map_err(|e| {
+                error!(error = ?e, endpoint, "Auth service request failed");
+                AuthClientError::RequestFailed(format!("Auth service request failed: {e}"))
+            })
+    }
+
+    fn handle_error_response(status: u16, error_response: ErrorResponse) -> AuthClientError {
+        match status {
+            401 => AuthClientError::Unauthorised(error_response.message),
+            _ => AuthClientError::RequestFailed(error_response.message),
+        }
+    }
 }
 
 #[async_trait(?Send)]
@@ -93,32 +119,11 @@ impl AuthServiceClient for FetcherAuthServiceClient {
             token: token.to_string(),
         };
 
-        let body_bytes = serde_json::to_vec(&body).map_err(|e| {
-            AuthClientError::ParseError(format!("Failed to serialize request: {e}"))
-        })?;
-
-        let headers = Headers::new();
-        headers
-            .set("Content-Type", "application/json")
-            .map_err(|e| {
-                AuthClientError::RequestFailed(format!("Failed to set Content-Type: {e}"))
-            })?;
-
-        let mut init = RequestInit::new();
-        init.with_method(Method::Post);
-        init.with_headers(headers);
-        init.with_body(Some(body_bytes.into()));
-
         // The 'https://fernlabour.com' bit of the URL below does nothing since we are calling the
         // service directly. It is required to be a valid URL though.
         let mut response = self
-            .fetcher
-            .fetch("https://fernlabour.com/api/v1/auth/verify/", Some(init))
-            .await
-            .map_err(|e| {
-                error!(error = ?e, "Auth service request failed");
-                AuthClientError::RequestFailed(format!("Auth service request failed: {e}"))
-            })?;
+            .post_auth_request("https://fernlabour.com/api/v1/auth/verify/", &body)
+            .await?;
 
         match response.status_code() {
             200 => {
@@ -130,19 +135,12 @@ impl AuthServiceClient for FetcherAuthServiceClient {
                 debug!(user_id = %verify_response.user_id, "Token verified via auth service");
                 Ok(verify_response.user_id)
             }
-            401 => {
-                let error_response: ErrorResponse =
-                    response.json().await.unwrap_or_else(|_| ErrorResponse {
-                        message: "Unauthorised".to_string(),
-                    });
-                Err(AuthClientError::Unauthorised(error_response.message))
-            }
             status => {
                 let error_response: ErrorResponse =
                     response.json().await.unwrap_or_else(|_| ErrorResponse {
-                        message: format!("Unexpected status: {}", status),
+                        message: format!("Unexpected status: {status}"),
                     });
-                Err(AuthClientError::RequestFailed(error_response.message))
+                Err(Self::handle_error_response(status, error_response))
             }
         }
     }
@@ -152,33 +150,9 @@ impl AuthServiceClient for FetcherAuthServiceClient {
             token: token.to_string(),
         };
 
-        let body_bytes = serde_json::to_vec(&body).map_err(|e| {
-            AuthClientError::ParseError(format!("Failed to serialize request: {e}"))
-        })?;
-
-        let headers = Headers::new();
-        headers
-            .set("Content-Type", "application/json")
-            .map_err(|e| {
-                AuthClientError::RequestFailed(format!("Failed to set Content-Type: {e}"))
-            })?;
-
-        let mut init = RequestInit::new();
-        init.with_method(Method::Post);
-        init.with_headers(headers);
-        init.with_body(Some(body_bytes.into()));
-
         let mut response = self
-            .fetcher
-            .fetch(
-                "https://fernlabour.com/api/v1/auth/authenticate/",
-                Some(init),
-            )
-            .await
-            .map_err(|e| {
-                error!(error = ?e, "Auth service authenticate request failed");
-                AuthClientError::RequestFailed(format!("Auth service request failed: {e}"))
-            })?;
+            .post_auth_request("https://fernlabour.com/api/v1/auth/authenticate/", &body)
+            .await?;
 
         match response.status_code() {
             200 => {
@@ -196,19 +170,12 @@ impl AuthServiceClient for FetcherAuthServiceClient {
                 );
                 Ok(auth_response.user)
             }
-            401 => {
-                let error_response: ErrorResponse =
-                    response.json().await.unwrap_or_else(|_| ErrorResponse {
-                        message: "Unauthorised".to_string(),
-                    });
-                Err(AuthClientError::Unauthorised(error_response.message))
-            }
             status => {
                 let error_response: ErrorResponse =
                     response.json().await.unwrap_or_else(|_| ErrorResponse {
-                        message: format!("Unexpected status: {}", status),
+                        message: format!("Unexpected status: {status}"),
                     });
-                Err(AuthClientError::RequestFailed(error_response.message))
+                Err(Self::handle_error_response(status, error_response))
             }
         }
     }

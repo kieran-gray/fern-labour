@@ -54,7 +54,7 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
   }
 
   const selectedContactMethods = subscription.contact_methods.map((method) => (
-    <Badge id={method} variant="filled" size="lg" color="var(--mantine-primary-color-4)">
+    <Badge key={method} variant="filled" size="lg" color="var(--mantine-primary-color-4)">
       {method}
     </Badge>
   ));

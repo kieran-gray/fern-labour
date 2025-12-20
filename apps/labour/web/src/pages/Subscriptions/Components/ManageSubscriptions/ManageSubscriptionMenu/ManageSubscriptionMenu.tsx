@@ -6,7 +6,13 @@ import { IconDots, IconUserMinus } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
 import baseClasses from '@shared/shared-styles.module.css';
 
-export function ManageSubscriptionMenu({ labourId, subscriptionId }: { labourId: string, subscriptionId: string }) {
+export function ManageSubscriptionMenu({
+  labourId,
+  subscriptionId,
+}: {
+  labourId: string;
+  subscriptionId: string;
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { setSubscriptionId } = useLabourSession();
 

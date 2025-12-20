@@ -30,6 +30,25 @@ impl Contraction {
         Ok(())
     }
 
+    pub fn update(
+        &mut self,
+        start_time: Option<DateTime<Utc>>,
+        end_time: Option<DateTime<Utc>>,
+        intensity: Option<u8>,
+    ) -> Result<()> {
+        let new_start = start_time.unwrap_or(*self.start_time());
+        let new_end = end_time.unwrap_or(*self.end_time());
+
+        let duration = Duration::create(new_start, new_end)?;
+        self.duration = duration;
+
+        if let Some(intensity_value) = intensity {
+            self.intensity = Some(intensity_value);
+        }
+
+        Ok(())
+    }
+
     pub fn id(&self) -> Uuid {
         self.id
     }

@@ -17,6 +17,7 @@ type LabourEvent = {
   LabourUpdateMessageUpdated?: { labour_id: string; labour_update_id: string };
   LabourUpdateTypeUpdated?: { labour_id: string; labour_update_id: string };
   LabourUpdateDeleted?: { labour_id: string; labour_update_id: string };
+  SubscriptionTokenSet?: { labour_id: string; };
   SubscriberRequested?: { labour_id: string; subscription_id: string };
   SubscriberUnsubscribed?: { labour_id: string; subscription_id: string };
   SubscriberNotificationMethodsUpdated?: { labour_id: string; subscription_id: string };
@@ -76,101 +77,71 @@ function getQueryKeysForEvent(event: LabourEvent): string[][] {
   }
 
   if (event.ContractionEnded) {
-    return [
-      ['contractions-v2', event.ContractionEnded.labour_id],
-    ];
+    return [['contractions-v2', event.ContractionEnded.labour_id]];
   }
 
   if (event.ContractionUpdated) {
-    return [
-      ['contractions-v2', event.ContractionUpdated.labour_id],
-    ];
+    return [['contractions-v2', event.ContractionUpdated.labour_id]];
   }
 
   if (event.ContractionDeleted) {
-    return [
-      ['contractions-v2', event.ContractionDeleted.labour_id],
-    ];
+    return [['contractions-v2', event.ContractionDeleted.labour_id]];
   }
 
   if (event.LabourUpdatePosted) {
-    return [
-      ['labour-updates-v2', event.LabourUpdatePosted.labour_id],
-    ];
+    return [['labour-updates-v2', event.LabourUpdatePosted.labour_id]];
   }
 
   if (event.LabourUpdateMessageUpdated) {
-    return [
-      ['labour-updates-v2', event.LabourUpdateMessageUpdated.labour_id],
-    ];
+    return [['labour-updates-v2', event.LabourUpdateMessageUpdated.labour_id]];
   }
 
   if (event.LabourUpdateTypeUpdated) {
-    return [
-      ['labour-updates-v2', event.LabourUpdateTypeUpdated.labour_id],
-    ];
+    return [['labour-updates-v2', event.LabourUpdateTypeUpdated.labour_id]];
   }
 
   if (event.LabourUpdateDeleted) {
-    return [
-      ['labour-updates-v2', event.LabourUpdateDeleted.labour_id],
-    ];
+    return [['labour-updates-v2', event.LabourUpdateDeleted.labour_id]];
   }
 
   if (event.SubscriberRequested) {
-    return [
-      ['subscriptions-v2'],
-    ];
+    return [['subscriptions-v2']];
   }
 
   if (event.SubscriberUnsubscribed) {
-    return [
-      ['subscriptions-v2'],
-    ];
+    return [['subscriptions-v2']];
   }
 
   if (event.SubscriberNotificationMethodsUpdated) {
-    return [
-      ['subscriptions-v2', event.SubscriberNotificationMethodsUpdated.labour_id],
-    ];
+    return [['subscriptions-v2', event.SubscriberNotificationMethodsUpdated.labour_id]];
   }
 
   if (event.SubscriberAccessLevelUpdated) {
-    return [
-      ['subscriptions-v2'],
-    ];
+    return [['subscriptions-v2']];
   }
 
   if (event.SubscriberApproved) {
-    return [
-      ['subscriptions-v2'],
-      ['users-v2', event.SubscriberApproved.labour_id],
-    ];
+    return [['subscriptions-v2'], ['users-v2', event.SubscriberApproved.labour_id]];
   }
 
   if (event.SubscriberRemoved) {
-    return [
-      ['subscriptions-v2'],
-      ['users-v2', event.SubscriberRemoved.labour_id],
-    ];
+    return [['subscriptions-v2'], ['users-v2', event.SubscriberRemoved.labour_id]];
   }
 
   if (event.SubscriberBlocked) {
-    return [
-      ['subscriptions-v2'],
-    ];
+    return [['subscriptions-v2']];
   }
 
   if (event.SubscriberUnblocked) {
-    return [
-      ['subscriptions-v2'],
-    ];
+    return [['subscriptions-v2']];
   }
 
   if (event.SubscriberRoleUpdated) {
-    return [
-      ['subscriptions-v2'],
-    ];
+    return [['subscriptions-v2']];
+  }
+
+  if (event.SubscriptionTokenSet) {
+    return [['subscription-token-v2']];
   }
 
   return [];
@@ -182,10 +153,7 @@ export function useWebSocketInvalidation() {
 
   useEffect(() => {
     const unsubscribe = subscribe((message) => {
-      const parsed =
-        typeof message === 'string'
-          ? JSON.parse(message)
-          : message;
+      const parsed = typeof message === 'string' ? JSON.parse(message) : message;
       const event = parsed as LabourEvent;
       const queryKeys = getQueryKeysForEvent(event);
 

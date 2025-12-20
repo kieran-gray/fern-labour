@@ -3,51 +3,50 @@
  * Provides consistent and type-safe query keys across the application
  */
 
-export const queryKeys = {
-  // Labour-related queries
+export const queryKeysV2 = {
   labour: {
-    all: ['labour'] as const,
-    user: (userId: string) => [...queryKeys.labour.all, userId] as const,
-    active: (userId: string) => [...queryKeys.labour.user(userId), 'active'] as const,
-    byId: (labourId: string) => [...queryKeys.labour.all, 'byId', labourId] as const,
-    history: (userId: string) => [...queryKeys.labour.all, 'history', userId] as const,
+    all: ['labour-v2'] as const,
+    byId: (labourId: string) => [...queryKeysV2.labour.all, labourId] as const,
+    history: (userId: string) => [...queryKeysV2.labour.all, 'history', userId] as const,
+    active: (userId: string) => [...queryKeysV2.labour.all, 'active', userId] as const,
   },
-
-  // Subscription-related queries
+  contractions: {
+    all: ['contractions-v2'] as const,
+    byLabour: (labourId: string) => [...queryKeysV2.contractions.all, labourId] as const,
+    paginated: (labourId: string, cursor: string | null) =>
+      [...queryKeysV2.contractions.byLabour(labourId), 'paginated', cursor] as const,
+    byId: (labourId: string, contractionId: string) =>
+      [...queryKeysV2.contractions.byLabour(labourId), contractionId] as const,
+  },
+  labourUpdates: {
+    all: ['labour-updates-v2'] as const,
+    byLabour: (labourId: string) => [...queryKeysV2.labourUpdates.all, labourId] as const,
+    paginated: (labourId: string, cursor: string | null) =>
+      [...queryKeysV2.labourUpdates.byLabour(labourId), 'paginated', cursor] as const,
+    byId: (labourId: string, labourUpdateId: string) =>
+      [...queryKeysV2.labourUpdates.byLabour(labourId), labourUpdateId] as const,
+  },
+  subscriptionToken: {
+    all: ['subscription-token-v2'] as const,
+    byLabour: (labourId: string) => [...queryKeysV2.subscriptionToken.all, labourId] as const,
+  },
   subscriptions: {
-    all: ['subscriptions'] as const,
-    subscriber: (userId: string) => [...queryKeys.subscriptions.all, 'subscriber', userId] as const,
-    labour: (userId: string) => [...queryKeys.subscriptions.all, 'labour', userId] as const,
-    byId: (subscriptionId: string, userId: string) =>
-      [...queryKeys.subscriptions.all, 'byId', subscriptionId, userId] as const,
+    all: ['subscriptions-v2'] as const,
+    byLabour: (labourId: string) => [...queryKeysV2.subscriptions.all, labourId] as const,
+    byUser: (userId: string) => [...queryKeysV2.subscriptions.all, userId] as const,
+    byLabourAndUser: (labourId: string, userId: string) =>
+      [...queryKeysV2.subscriptions.all, labourId, userId] as const,
+    paginated: (labourId: string, cursor: string | null) =>
+      [...queryKeysV2.subscriptions.byLabour(labourId), 'paginated', cursor] as const,
+    byId: (labourId: string, subscriptionId: string) =>
+      [...queryKeysV2.subscriptions.byLabour(labourId), subscriptionId] as const,
   },
-
-  // Birthing person queries
-  birthingPerson: {
-    all: ['birthingPerson'] as const,
-    user: (userId: string) => [...queryKeys.birthingPerson.all, userId] as const,
-  },
-
-  // Subscriber queries
-  subscriber: {
-    all: ['subscriber'] as const,
-    user: (userId: string) => [...queryKeys.subscriber.all, userId] as const,
-  },
-
-  // Token/auth queries
-  token: {
-    all: ['token'] as const,
-    user: (userId: string) => [...queryKeys.token.all, userId] as const,
-  },
-
-  // Contact form queries
-  contact: {
-    all: ['contact'] as const,
-    form: ['contact', 'form'] as const,
+  users: {
+    all: ['users-v2'] as const,
+    byLabour: (labourId: string) => [...queryKeysV2.users.all, labourId] as const,
   },
 } as const;
 
-// Type helpers for query key inference
-export type QueryKeys = typeof queryKeys;
-export type LabourKeys = typeof queryKeys.labour;
-export type SubscriptionKeys = typeof queryKeys.subscriptions;
+export type QueryKeys = typeof queryKeysV2;
+export type LabourKeys = typeof queryKeysV2.labour;
+export type SubscriptionKeys = typeof queryKeysV2.subscriptions;

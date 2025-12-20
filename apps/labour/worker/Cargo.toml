@@ -28,6 +28,7 @@ base64 = "0.22"
 fern-labour-event-sourcing-rs.workspace = true
 fern-labour-workers-shared.workspace = true
 fern-labour-labour-shared.workspace = true
+fern-labour-notifications-shared.workspace = true
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.2", features = ["js"] }

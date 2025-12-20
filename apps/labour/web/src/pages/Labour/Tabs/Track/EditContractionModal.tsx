@@ -69,10 +69,9 @@ export const EditContractionModal = ({
     const requestBody = {
       labourId: labourId!,
       contractionId,
-      start_time: new Date(startTime),
-      end_time: new Date(endTime),
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
       intensity: values.intensity != null ? values.intensity : contractionData!.intensity!,
-      contraction_id: contractionId,
     };
 
     updateMutation.mutate(requestBody, {

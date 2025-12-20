@@ -49,6 +49,10 @@ impl Subscription {
         &self.role
     }
 
+    pub fn contact_methods(&self) -> &[SubscriberContactMethod] {
+        &self.contact_methods
+    }
+
     pub fn request(&mut self) {
         self.status = SubscriberStatus::REQUESTED
     }

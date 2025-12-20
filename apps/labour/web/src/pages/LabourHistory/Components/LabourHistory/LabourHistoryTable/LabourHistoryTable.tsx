@@ -35,9 +35,7 @@ export function LabourHistoryTable() {
 
   const setLabour = async (newLabourId: string) => {
     clearSession();
-    if (labourId === newLabourId) {
-      setLabourId(null);
-    } else {
+    if (labourId !== newLabourId) {
       setLabourId(newLabourId);
       navigate(`/?labourId=${newLabourId}`);
     }

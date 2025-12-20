@@ -531,6 +531,7 @@ dependencies = [
  "chrono",
  "fern-labour-event-sourcing-rs",
  "fern-labour-labour-shared",
+ "fern-labour-notifications-shared",
  "fern-labour-workers-shared",
  "futures",
  "getrandom 0.2.16",

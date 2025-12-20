@@ -1,3 +1,4 @@
+use fern_labour_notifications_shared::service_clients::notification::NotificationRequest;
 use fern_labour_workers_shared::{CorsContext, clients::worker_clients::auth::User};
 use tracing::{error, info};
 use uuid::Uuid;
@@ -5,7 +6,7 @@ use worker::{Request, Response, RouteContext};
 
 use crate::api_worker::{
     AppState,
-    api::{exceptions::ApiError, schemas::requests::RequestNotificationDto},
+    api::{exceptions::ApiError, schemas::requests::NotificationRequestExt},
 };
 
 pub async fn handle_create_notification(
@@ -14,7 +15,7 @@ pub async fn handle_create_notification(
     cors_context: CorsContext,
     user: User,
 ) -> worker::Result<Response> {
-    let request_dto: RequestNotificationDto = match req.json().await {
+    let request_dto: NotificationRequest = match req.json().await {
         Ok(dto) => dto,
         Err(e) => {
             error!(user_id = %user.user_id, error = ?e, "Failed to parse request body");

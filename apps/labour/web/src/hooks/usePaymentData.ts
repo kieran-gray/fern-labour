@@ -2,7 +2,7 @@ import type { LabourServiceV2Client } from '@base/clients/labour_service';
 import { Error as ErrorNotification } from '@shared/Notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
-import { queryKeysV2 } from './useLabourData';
+import { queryKeysV2 } from './queryKeys';
 
 export function useCreateCheckoutSessionV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();

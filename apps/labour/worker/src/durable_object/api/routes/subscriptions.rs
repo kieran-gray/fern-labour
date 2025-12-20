@@ -7,9 +7,10 @@ use tracing::{error, info};
 use worker::{Request, Response};
 
 use crate::durable_object::{
-    api::router::RequestContext,
-    api::{ApiResult, utils::build_paginated_response},
-    read_side::read_models::subscriptions::SubscriptionReadModelQueryHandler,
+    api::{ApiResult, router::RequestContext, utils::build_paginated_response},
+    read_side::read_models::{
+        subscription_token::SubscriptionTokenQueryHandler, subscriptions::SubscriptionQueryHandler,
+    },
     write_side::domain::LabourCommand,
 };
 
@@ -97,11 +98,10 @@ pub async fn handle_subscription_query(
     let result = match query {
         SubscriptionQuery::GetSubscriptionToken { labour_id } => {
             info!(labour_id = %labour_id, user_id = %user.user_id, "Getting subscription token");
-            let token = ctx
-                .data
-                .read_model()
-                .subscription_token_generator
-                .generate(&user.user_id, &labour_id.to_string());
+            let token = match ctx.data.read_model().subscription_token_query.get() {
+                Ok(Some(token)) => token.token,
+                Ok(_) | Err(_) => return Response::error("No subcription token available", 400),
+            };
             ApiResult::from_json_result(Ok(serde_json::json!({ "token": token })))
         }
         SubscriptionQuery::GetLabourSubscriptions { labour_id } => {

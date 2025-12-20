@@ -103,11 +103,15 @@ pub enum LabourCommand {
         access_level: SubscriberAccessLevel,
     },
     // Subscription Commands
+    SetSubscriptionToken {
+        labour_id: Uuid,
+        mother_id: String,
+        token: String,
+    },
     ApproveSubscriber {
         labour_id: Uuid,
         subscription_id: Uuid,
     },
-    #[serde(rename = "RemoveSubscriber")]
     RemoveSubscriber {
         labour_id: Uuid,
         subscription_id: Uuid,
