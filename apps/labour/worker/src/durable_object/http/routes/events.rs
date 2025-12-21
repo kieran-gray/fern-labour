@@ -2,7 +2,7 @@ use fern_labour_workers_shared::User;
 use tracing::{error, info};
 use worker::{Request, Response};
 
-use crate::durable_object::{api::ApiResult, api::router::RequestContext};
+use crate::durable_object::{http::ApiResult, http::router::RequestContext};
 
 pub async fn handle_events_query(
     _req: Request,

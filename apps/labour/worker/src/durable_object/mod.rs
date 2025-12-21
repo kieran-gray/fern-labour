@@ -1,5 +1,6 @@
-pub mod api;
+pub mod acl;
 pub mod exceptions;
+pub mod http;
 pub mod read_side;
 pub mod security;
 pub mod state;
@@ -14,11 +15,16 @@ use worker::{
 };
 
 use crate::durable_object::{
-    api::router::route_request, read_side::query_handler::QueryHandler, state::AggregateServices, websocket::{
+    acl::CommandTranslator,
+    http::router::route_request,
+    read_side::query_handler::QueryHandler,
+    state::AggregateServices,
+    websocket::{
         middleware::extract_auth_context_from_websocket,
-        routes::{handle_websocket_command, upgrade_connection},
+        routes::upgrade_connection,
         schemas::{WebSocketRequest, parse_websocket_message},
-    }, write_side::infrastructure::alarm_manager::AlarmManager
+    },
+    write_side::infrastructure::alarm_manager::AlarmManager,
 };
 
 #[durable_object]
@@ -73,12 +79,22 @@ impl DurableObject for LabourAggregate {
 
         info!(user_id = %user.user_id, message = ?msg, "Processing message from WebSocket");
         let (success, data, error) = match msg.request {
-
             WebSocketRequest::Command { command } => {
-                match handle_websocket_command(&self.services, command, user) {
-                    Ok(()) => {
-                        self.alarm_manager.set_alarm(0).await.ok();
-                        (true, None, None)
+                match CommandTranslator::translate(command, &user) {
+                    Ok(domain_command) => {
+                        let result = self
+                            .services
+                            .write_model()
+                            .labour_command_processor
+                            .handle_command(domain_command, user);
+
+                        match result {
+                            Ok(()) => {
+                                self.alarm_manager.set_alarm(0).await.ok();
+                                (true, None, None)
+                            }
+                            Err(e) => (false, None, Some(e.to_string())),
+                        }
                     }
                     Err(e) => (false, None, Some(e.to_string())),
                 }

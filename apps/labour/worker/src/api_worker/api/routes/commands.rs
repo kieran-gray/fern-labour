@@ -24,13 +24,9 @@ pub async fn handle_command(
 
     let labour_id = command.labour_id();
 
-    let (url, command_payload) = match command {
+    let (url, command_payload) = match &command {
         ApiCommand::Admin(cmd) => ("/admin/command", serde_json::to_value(cmd)?),
-        ApiCommand::Labour(cmd) => ("/labour/command", serde_json::to_value(cmd)?),
-        ApiCommand::LabourUpdate(cmd) => ("/labour-update/command", serde_json::to_value(cmd)?),
-        ApiCommand::Contraction(cmd) => ("/contraction/command", serde_json::to_value(cmd)?),
-        ApiCommand::Subscriber(cmd) => ("/subscriber/command", serde_json::to_value(cmd)?),
-        ApiCommand::Subscription(cmd) => ("/subscription/command", serde_json::to_value(cmd)?),
+        _ => ("/api/command", serde_json::to_value(&command)?),
     };
 
     let mut do_response = ctx
@@ -53,8 +49,6 @@ pub async fn handle_command(
         response
     }
     .with_status(status);
-
-    dbg!("{:?}", new_response.status_code());
 
     Ok(cors_context.add_to_response(new_response))
 }

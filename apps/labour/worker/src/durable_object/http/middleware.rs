@@ -2,7 +2,7 @@ use fern_labour_workers_shared::clients::worker_clients::auth::User;
 use tracing::error;
 use worker::{Request, Response, Result};
 
-use crate::durable_object::api::router::RequestContext;
+use crate::durable_object::http::router::RequestContext;
 
 pub async fn with_auth_context<'a, F, Fut>(
     handler: F,

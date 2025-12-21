@@ -13,7 +13,7 @@ use super::read_models::{
     subscription_token::SubscriptionTokenQueryHandler, subscriptions::SubscriptionQueryHandler,
 };
 use crate::durable_object::{
-    api::utils::{build_paginated_response, decode_cursor},
+    http::utils::{build_paginated_response, decode_cursor},
     state::ReadModel,
 };
 
