@@ -760,14 +760,14 @@ export function useCompleteLabourV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, __) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labour.all,
-      });
-
       notifications.show({
         ...Success,
         title: 'Success',
         message: 'Labour completed successfully',
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.labour.all,
       });
     },
     onError: (error: Error) => {

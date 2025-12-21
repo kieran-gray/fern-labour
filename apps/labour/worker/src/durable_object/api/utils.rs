@@ -1,7 +1,9 @@
 use base64::{Engine, prelude::BASE64_URL_SAFE_NO_PAD};
-use fern_labour_event_sourcing_rs::{Cursor, PaginatedResponse};
+use chrono::{DateTime, Utc};
+use fern_labour_event_sourcing_rs::{Cursor as CursorTrait, DecodedCursor, PaginatedResponse};
+use fern_labour_labour_shared::Cursor;
 
-pub fn build_paginated_response<T: Cursor>(
+pub fn build_paginated_response<T: CursorTrait>(
     mut items: Vec<T>,
     limit: usize,
 ) -> PaginatedResponse<T> {
@@ -20,4 +22,13 @@ pub fn build_paginated_response<T: Cursor>(
         next_cursor,
         has_more,
     }
+}
+
+pub fn decode_cursor(cursor: Option<Cursor>) -> Option<DecodedCursor> {
+    cursor.map(|c| DecodedCursor {
+        last_id: c.id,
+        last_updated_at: DateTime::parse_from_rfc3339(&c.updated_at)
+            .map(|dt| dt.with_timezone(&Utc))
+            .unwrap_or_else(|_| Utc::now()),
+    })
 }

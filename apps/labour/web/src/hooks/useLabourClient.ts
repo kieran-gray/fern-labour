@@ -26,9 +26,9 @@ export function useLabourV2Client() {
         },
         websocket: {
           isConnected: websocket.isConnected,
-          sendCommand: websocket.sendCommand,
+          sendMessage: websocket.sendMessage,
         },
       }),
-    [getToken, websocket.isConnected, websocket.sendCommand]
+    [getToken, websocket.isConnected, websocket.sendMessage]
   );
 }

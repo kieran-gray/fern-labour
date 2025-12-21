@@ -4,7 +4,7 @@ import { useAuth } from '@clerk/clerk-react';
 
 interface WebSocketContextValue {
   isConnected: boolean;
-  sendCommand: (payload: any) => Promise<any>;
+  sendMessage: (message: { kind: 'Command' | 'Query'; payload: any }) => Promise<any>;
   subscribe: (callback: (message: any) => void) => () => void;
 }
 
@@ -56,7 +56,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
               if (message.error) {
                 pending.reject(new Error(message.error));
               } else {
-                pending.resolve(message);
+                pending.resolve({
+                  data: message.data,
+                  success: message.success,
+                });
               }
             }
           }
@@ -93,7 +96,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
   }, [labourId, getToken]);
 
-  const sendCommand = (payload: any): Promise<any> => {
+  const sendMessage = (message: { kind: 'Command' | 'Query'; payload: any }): Promise<any> => {
     return new Promise((resolve, reject) => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
         reject(new Error('WebSocket not connected'));
@@ -104,17 +107,18 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
       const timeout = setTimeout(() => {
         pendingCommandsRef.current.delete(correlationId);
-        reject(new Error('Command timeout - no response received'));
-      }, 2000);
+        reject(new Error('Message timeout - no response received'));
+      }, 5000);
 
       pendingCommandsRef.current.set(correlationId, { resolve, reject, timeout });
 
-      const commandWithId = {
-        ...payload,
+      const messageWithId = {
         correlation_id: correlationId,
+        kind: message.kind,
+        ...message.payload,
       };
 
-      wsRef.current.send(JSON.stringify(commandWithId));
+      wsRef.current.send(JSON.stringify(messageWithId));
     });
   };
 
@@ -126,7 +130,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <WebSocketContext.Provider value={{ isConnected, sendCommand, subscribe }}>
+    <WebSocketContext.Provider value={{ isConnected, sendMessage, subscribe }}>
       {children}
     </WebSocketContext.Provider>
   );

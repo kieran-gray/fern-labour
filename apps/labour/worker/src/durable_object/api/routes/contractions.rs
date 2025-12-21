@@ -1,14 +1,13 @@
-use chrono::DateTime;
-use fern_labour_event_sourcing_rs::{CommandEnvelope, DecodedCursor, PaginatedResponse};
-use fern_labour_labour_shared::{ContractionCommand, ContractionQuery};
+use fern_labour_event_sourcing_rs::CommandEnvelope;
+use fern_labour_labour_shared::{ApiQuery, ContractionCommand, ContractionQuery};
 use fern_labour_workers_shared::User;
 use tracing::{error, info};
 use worker::{Request, Response};
 
 use crate::durable_object::{
     api::router::RequestContext,
-    api::{ApiResult, utils::build_paginated_response},
-    read_side::read_models::contractions::ContractionReadModelQueryHandler,
+    api::ApiResult,
+    read_side::query_handler::QueryHandler,
     write_side::domain::LabourCommand,
 };
 
@@ -58,42 +57,8 @@ pub async fn handle_contraction_query(
 
     info!(query = ?query, auth_user_id = %user.user_id, "Processing contraction query");
 
-    let result = match query {
-        ContractionQuery::GetContractions {
-            labour_id,
-            limit,
-            cursor,
-        } => {
-            info!(labour_id = %labour_id, limit = %limit, "Getting contractions");
-            let decoded_cursor = cursor.map(|c| DecodedCursor {
-                last_id: c.id,
-                last_updated_at: DateTime::parse_from_rfc3339(&c.updated_at)
-                    .map(|dt| dt.with_timezone(&chrono::Utc))
-                    .unwrap_or_else(|_| chrono::Utc::now()),
-            });
-            ctx.data
-                .read_model()
-                .contraction_query
-                .get(limit + 1, decoded_cursor)
-                .map(|items| build_paginated_response(items, limit))
-        }
-        ContractionQuery::GetContractionById {
-            labour_id,
-            contraction_id,
-        } => {
-            info!(labour_id = %labour_id, contraction_id = %contraction_id, "Getting contraction by ID");
-            ctx.data
-                .read_model()
-                .contraction_query
-                .get_by_id(contraction_id)
-                .map(|c| vec![c])
-                .map(|items| PaginatedResponse {
-                    data: items,
-                    next_cursor: None,
-                    has_more: false,
-                })
-        }
-    };
+    let handler = QueryHandler::new(ctx.data.read_model());
+    let result = handler.handle(ApiQuery::Contraction(query), &user);
 
     if let Err(ref err) = result {
         error!("Query execution failed: {}", err);

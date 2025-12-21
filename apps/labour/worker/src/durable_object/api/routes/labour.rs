@@ -1,12 +1,12 @@
 use fern_labour_event_sourcing_rs::CommandEnvelope;
-use fern_labour_labour_shared::{LabourCommand as LabourAPICommand, LabourQuery};
+use fern_labour_labour_shared::{ApiQuery, LabourCommand as LabourAPICommand, LabourQuery};
 use fern_labour_workers_shared::User;
 use tracing::{error, info};
 use worker::{Request, Response};
 
 use crate::durable_object::{
-    api::ApiResult, api::router::RequestContext,
-    read_side::read_models::labour::LabourReadModelQueryHandler, write_side::domain::LabourCommand,
+    api::ApiResult, api::router::RequestContext, read_side::query_handler::QueryHandler,
+    write_side::domain::LabourCommand,
 };
 
 pub async fn handle_labour_domain_command(
@@ -88,12 +88,8 @@ pub async fn handle_labour_query(
 
     info!(query = ?query, auth_user_id = %user.user_id, "Processing labour query");
 
-    let result = match query {
-        LabourQuery::GetLabour { labour_id } => {
-            info!(labour_id = %labour_id, "Getting labour");
-            ctx.data.read_model().labour_query.get()
-        }
-    };
+    let handler = QueryHandler::new(ctx.data.read_model());
+    let result = handler.handle(ApiQuery::Labour(query), &user);
 
     if let Err(ref err) = result {
         error!("Query execution failed: {}", err);

@@ -10,5 +10,5 @@ pub use commands::{
 
 pub use queries::{
     api::ApiQuery, contraction::ContractionQuery, labour::LabourQuery,
-    labour_update::LabourUpdateQuery,
+    labour_update::LabourUpdateQuery, cursor::Cursor
 };

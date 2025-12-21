@@ -1,0 +1,139 @@
+use anyhow::Result;
+use fern_labour_event_sourcing_rs::PaginatedResponse;
+use fern_labour_labour_shared::{
+    ApiQuery, ContractionQuery, LabourQuery, LabourUpdateQuery,
+    queries::{subscription::SubscriptionQuery, user::UserQuery},
+};
+use fern_labour_workers_shared::User;
+use serde_json::Value;
+
+use super::read_models::{
+    contractions::ContractionReadModelQueryHandler, labour::LabourReadModelQueryHandler,
+    labour_updates::LabourUpdateReadModelQueryHandler,
+    subscription_token::SubscriptionTokenQueryHandler, subscriptions::SubscriptionQueryHandler,
+};
+use crate::durable_object::{
+    api::utils::{build_paginated_response, decode_cursor},
+    state::ReadModel,
+};
+
+pub struct QueryHandler<'a> {
+    read_model: &'a ReadModel,
+}
+
+impl<'a> QueryHandler<'a> {
+    pub fn new(read_model: &'a ReadModel) -> Self {
+        Self { read_model }
+    }
+
+    pub fn handle(&self, query: ApiQuery, user: &User) -> Result<Value> {
+        match query {
+            ApiQuery::Labour(q) => self.handle_labour(q),
+            ApiQuery::Contraction(q) => self.handle_contraction(q),
+            ApiQuery::LabourUpdate(q) => self.handle_labour_update(q),
+            ApiQuery::Subscription(q) => self.handle_subscription(q, user),
+            ApiQuery::User(q) => self.handle_user(q),
+        }
+    }
+
+    fn handle_labour(&self, query: LabourQuery) -> Result<Value> {
+        match query {
+            LabourQuery::GetLabour { .. } => {
+                let labour = self.read_model.labour_query.get()?;
+                Ok(serde_json::to_value(labour)?)
+            }
+        }
+    }
+
+    fn handle_contraction(&self, query: ContractionQuery) -> Result<Value> {
+        match query {
+            ContractionQuery::GetContractions { limit, cursor, .. } => {
+                let decoded = decode_cursor(cursor);
+                let items = self.read_model.contraction_query.get(limit + 1, decoded)?;
+                Ok(serde_json::to_value(build_paginated_response(
+                    items, limit,
+                ))?)
+            }
+            ContractionQuery::GetContractionById { contraction_id, .. } => {
+                let item = self
+                    .read_model
+                    .contraction_query
+                    .get_by_id(contraction_id)?;
+                Ok(serde_json::to_value(item)?)
+            }
+        }
+    }
+
+    fn handle_labour_update(&self, query: LabourUpdateQuery) -> Result<Value> {
+        match query {
+            LabourUpdateQuery::GetLabourUpdates { limit, cursor, .. } => {
+                let decoded_cursor = decode_cursor(cursor);
+                let response = self
+                    .read_model
+                    .labour_update_query
+                    .get(limit + 1, decoded_cursor)
+                    .map(|items| build_paginated_response(items, limit))?;
+                Ok(serde_json::to_value(response)?)
+            }
+            LabourUpdateQuery::GetLabourUpdateById {
+                labour_update_id, ..
+            } => {
+                let response = self
+                    .read_model
+                    .labour_update_query
+                    .get_by_id(labour_update_id)
+                    .map(|u| vec![u])
+                    .map(|items| PaginatedResponse {
+                        data: items,
+                        next_cursor: None,
+                        has_more: false,
+                    })?;
+                Ok(serde_json::to_value(response)?)
+            }
+        }
+    }
+
+    fn handle_subscription(&self, query: SubscriptionQuery, user: &User) -> Result<Value> {
+        match query {
+            SubscriptionQuery::GetSubscriptionToken { .. } => {
+                let token = match self.read_model.subscription_token_query.get() {
+                    Ok(Some(token)) => token.token,
+                    Ok(_) | Err(_) => {
+                        return Err(anyhow::anyhow!("No subcription token available"));
+                    }
+                };
+                Ok(serde_json::json!({ "token": token }))
+            }
+            SubscriptionQuery::GetLabourSubscriptions { .. } => {
+                let subscriptions = self
+                    .read_model
+                    .subscription_query
+                    .get(100, None) // TODO
+                    .map(|items| build_paginated_response(items, 100))?;
+
+                Ok(serde_json::to_value(subscriptions)?)
+            }
+            SubscriptionQuery::GetUserSubscription { .. } => {
+                let subscription = self
+                    .read_model
+                    .subscription_query
+                    .get_user_subscription(user.user_id.clone())?;
+
+                Ok(serde_json::to_value(subscription)?)
+            }
+        }
+    }
+
+    fn handle_user(&self, query: UserQuery) -> Result<Value> {
+        match query {
+            UserQuery::GetUser { user_id, .. } => {
+                let result = self.read_model.user_query.get_user_by_id(user_id)?;
+                Ok(serde_json::to_value(result)?)
+            }
+            UserQuery::GetUsers { .. } => {
+                let result = self.read_model.user_query.get_users()?;
+                Ok(serde_json::to_value(result)?)
+            }
+        }
+    }
+}

@@ -49,7 +49,10 @@ export interface LabourServiceConfig {
   getAccessToken?: () => string | null | Promise<string | null>;
   websocket?: {
     isConnected: boolean;
-    sendCommand: (payload: any) => Promise<{ data?: any; error?: string }>;
+    sendMessage: (message: {
+      kind: 'Command' | 'Query';
+      payload: any;
+    }) => Promise<{ data?: any; error?: string }>;
   };
 }
 
@@ -78,7 +81,10 @@ export class LabourServiceClient {
   private async sendCommand<T = void>(command: unknown): Promise<ApiResponse<T>> {
     if (this.config.websocket?.isConnected) {
       try {
-        const response = await this.config.websocket.sendCommand(command);
+        const response = await this.config.websocket.sendMessage({
+          kind: 'Command',
+          payload: command,
+        });
 
         if (response.error) {
           return {
@@ -481,6 +487,29 @@ export class LabourServiceClient {
   // Query Methods
 
   private async sendQuery<T>(query: unknown): Promise<QueryResponse<T>> {
+    if (this.config.websocket?.isConnected) {
+      try {
+        const response = await this.config.websocket.sendMessage({
+          kind: 'Query',
+          payload: query,
+        });
+
+        if (response.error) {
+          return {
+            success: false,
+            error: response.error,
+          };
+        }
+
+        return {
+          success: true,
+          data: response.data,
+        };
+      } catch (error) {
+        console.warn('[Client] WebSocket query failed, falling back to HTTP', error);
+      }
+    }
+
     const headers = await this.getHeaders();
     const url = `${this.config.baseUrl}/api/v1/query`;
 

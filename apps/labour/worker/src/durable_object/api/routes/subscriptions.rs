@@ -1,16 +1,14 @@
 use fern_labour_event_sourcing_rs::CommandEnvelope;
 use fern_labour_labour_shared::{
-    SubscriberCommand, SubscriptionCommand, queries::subscription::SubscriptionQuery,
+    ApiQuery, SubscriberCommand, SubscriptionCommand, queries::subscription::SubscriptionQuery,
 };
 use fern_labour_workers_shared::User;
 use tracing::{error, info};
 use worker::{Request, Response};
 
 use crate::durable_object::{
-    api::{ApiResult, router::RequestContext, utils::build_paginated_response},
-    read_side::read_models::{
-        subscription_token::SubscriptionTokenQueryHandler, subscriptions::SubscriptionQueryHandler,
-    },
+    api::{ApiResult, router::RequestContext},
+    read_side::query_handler::QueryHandler,
     write_side::domain::LabourCommand,
 };
 
@@ -95,35 +93,14 @@ pub async fn handle_subscription_query(
 
     info!(query = ?query, auth_user_id = %user.user_id, "Processing subscription query");
 
-    let result = match query {
-        SubscriptionQuery::GetSubscriptionToken { labour_id } => {
-            info!(labour_id = %labour_id, user_id = %user.user_id, "Getting subscription token");
-            let token = match ctx.data.read_model().subscription_token_query.get() {
-                Ok(Some(token)) => token.token,
-                Ok(_) | Err(_) => return Response::error("No subcription token available", 400),
-            };
-            ApiResult::from_json_result(Ok(serde_json::json!({ "token": token })))
-        }
-        SubscriptionQuery::GetLabourSubscriptions { labour_id } => {
-            info!(labour_id = %labour_id, user_id = %user.user_id, "Getting subscriptions");
-            let subscriptions = ctx
-                .data
-                .read_model()
-                .subscription_query
-                .get(100, None) // TODO
-                .map(|items| build_paginated_response(items, 100));
-            ApiResult::from_json_result(subscriptions)
-        }
-        SubscriptionQuery::GetUserSubscription { labour_id } => {
-            info!(labour_id = %labour_id, user_id = %user.user_id, "Getting subscriptions");
-            let subscription = ctx
-                .data
-                .read_model()
-                .subscription_query
-                .get_user_subscription(user.user_id);
-            ApiResult::from_json_result(subscription)
-        }
-    };
+    let handler = QueryHandler::new(ctx.data.read_model());
+    let result = handler.handle(ApiQuery::Subscription(query), &user);
 
-    Ok(result.into_response())
+    if let Err(ref err) = result {
+        error!("Query execution failed: {}", err);
+    } else {
+        info!("Query executed successfully");
+    }
+
+    Ok(ApiResult::from_json_result(result).into_response())
 }

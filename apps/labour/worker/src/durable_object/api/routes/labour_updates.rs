@@ -1,14 +1,13 @@
-use chrono::DateTime;
-use fern_labour_event_sourcing_rs::{CommandEnvelope, DecodedCursor, PaginatedResponse};
-use fern_labour_labour_shared::{LabourUpdateCommand, LabourUpdateQuery};
+use fern_labour_event_sourcing_rs::CommandEnvelope;
+use fern_labour_labour_shared::{ApiQuery, LabourUpdateCommand, LabourUpdateQuery};
 use fern_labour_workers_shared::User;
 use tracing::{error, info};
 use worker::{Request, Response};
 
 use crate::durable_object::{
     api::router::RequestContext,
-    api::{ApiResult, utils::build_paginated_response},
-    read_side::read_models::labour_updates::LabourUpdateReadModelQueryHandler,
+    api::ApiResult,
+    read_side::query_handler::QueryHandler,
     write_side::domain::LabourCommand,
 };
 
@@ -58,42 +57,8 @@ pub async fn handle_labour_update_query(
 
     info!(query = ?query, auth_user_id = %user.user_id, "Processing labour update query");
 
-    let result = match query {
-        LabourUpdateQuery::GetLabourUpdates {
-            labour_id,
-            limit,
-            cursor,
-        } => {
-            info!(labour_id = %labour_id, limit = %limit, "Getting labour updates");
-            let decoded_cursor = cursor.map(|c| DecodedCursor {
-                last_id: c.id,
-                last_updated_at: DateTime::parse_from_rfc3339(&c.updated_at)
-                    .map(|dt| dt.with_timezone(&chrono::Utc))
-                    .unwrap_or_else(|_| chrono::Utc::now()),
-            });
-            ctx.data
-                .read_model()
-                .labour_update_query
-                .get(limit + 1, decoded_cursor)
-                .map(|items| build_paginated_response(items, limit))
-        }
-        LabourUpdateQuery::GetLabourUpdateById {
-            labour_id,
-            labour_update_id,
-        } => {
-            info!(labour_id = %labour_id, labour_update_id = %labour_update_id, "Getting labour update by ID");
-            ctx.data
-                .read_model()
-                .labour_update_query
-                .get_by_id(labour_update_id)
-                .map(|u| vec![u])
-                .map(|items| PaginatedResponse {
-                    data: items,
-                    next_cursor: None,
-                    has_more: false,
-                })
-        }
-    };
+    let handler = QueryHandler::new(ctx.data.read_model());
+    let result = handler.handle(ApiQuery::LabourUpdate(query), &user);
 
     if let Err(ref err) = result {
         error!("Query execution failed: {}", err);

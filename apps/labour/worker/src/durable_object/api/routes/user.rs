@@ -1,9 +1,11 @@
-use fern_labour_labour_shared::queries::user::UserQuery;
+use fern_labour_labour_shared::{ApiQuery, queries::user::UserQuery};
 use fern_labour_workers_shared::User;
 use tracing::{error, info};
 use worker::{Request, Response};
 
-use crate::durable_object::{api::ApiResult, api::router::RequestContext};
+use crate::durable_object::{
+    api::ApiResult, api::router::RequestContext, read_side::query_handler::QueryHandler,
+};
 
 pub async fn handle_user_query(
     mut req: Request,
@@ -16,16 +18,8 @@ pub async fn handle_user_query(
 
     info!(query = ?query, auth_user_id = %user.user_id, "Processing user query");
 
-    let result = match query {
-        UserQuery::GetUser { labour_id, user_id } => {
-            info!(labour_id = %labour_id, user_id = %user_id, "Getting user");
-            ctx.data.read_model().user_query.get_user_by_id(user_id)
-        }
-        UserQuery::GetUsers { labour_id } => {
-            info!(labour_id = %labour_id, "Getting users");
-            ctx.data.read_model().user_query.get_users()
-        }
-    };
+    let handler = QueryHandler::new(ctx.data.read_model());
+    let result = handler.handle(ApiQuery::User(query), &user);
 
     if let Err(ref err) = result {
         error!("Query execution failed: {}", err);
