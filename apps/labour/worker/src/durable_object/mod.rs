@@ -1,4 +1,3 @@
-pub mod acl;
 pub mod exceptions;
 pub mod http;
 pub mod read_side;
@@ -15,7 +14,6 @@ use worker::{
 };
 
 use crate::durable_object::{
-    acl::CommandTranslator,
     http::router::route_request,
     read_side::query_handler::QueryHandler,
     state::AggregateServices,
@@ -24,7 +22,9 @@ use crate::durable_object::{
         routes::upgrade_connection,
         schemas::{WebSocketRequest, parse_websocket_message},
     },
-    write_side::infrastructure::alarm_manager::AlarmManager,
+    write_side::{
+        command_translator::CommandTranslator, infrastructure::alarm_manager::AlarmManager,
+    },
 };
 
 #[durable_object]

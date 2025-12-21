@@ -4,8 +4,8 @@ use tracing::{error, info};
 use worker::{Request, Response};
 
 use crate::durable_object::{
-    acl::CommandTranslator,
     http::{ApiResult, router::RequestContext},
+    write_side::command_translator::CommandTranslator,
 };
 
 pub async fn handle_command(
