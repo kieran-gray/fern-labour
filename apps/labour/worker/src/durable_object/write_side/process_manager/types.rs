@@ -39,7 +39,7 @@ pub enum Effect {
         labour_id: Uuid,
         mother_id: String,
         idempotency_key: IdempotencyKey,
-    }
+    },
 }
 
 impl Effect {
@@ -49,7 +49,9 @@ impl Effect {
             Effect::IssueCommand {
                 idempotency_key, ..
             } => idempotency_key,
-            Effect::GenerateSubscriptionToken { idempotency_key, .. } => idempotency_key,
+            Effect::GenerateSubscriptionToken {
+                idempotency_key, ..
+            } => idempotency_key,
         }
     }
 
@@ -93,10 +95,20 @@ pub enum NotificationContext {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum SubscriberNotification {
-    LabourStarted { labour_id: Uuid },
-    LabourCompleted { labour_id: Uuid, notes: Option<String> },
-    AnnouncementPosted { labour_id: Uuid, message: String },
-    SubscriptionApproved { labour_id: Uuid },
+    LabourStarted {
+        labour_id: Uuid,
+    },
+    LabourCompleted {
+        labour_id: Uuid,
+        notes: Option<String>,
+    },
+    AnnouncementPosted {
+        labour_id: Uuid,
+        message: String,
+    },
+    SubscriptionApproved {
+        labour_id: Uuid,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

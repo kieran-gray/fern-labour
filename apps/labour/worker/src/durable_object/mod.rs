@@ -115,7 +115,7 @@ impl DurableObject for LabourAggregate {
             "error": error,
         });
 
-        ws.send_with_str(&response.to_string()).ok();
+        ws.send_with_str(response.to_string()).ok();
         Ok(())
     }
 

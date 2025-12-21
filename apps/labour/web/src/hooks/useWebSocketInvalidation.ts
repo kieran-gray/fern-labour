@@ -17,7 +17,7 @@ type LabourEvent = {
   LabourUpdateMessageUpdated?: { labour_id: string; labour_update_id: string };
   LabourUpdateTypeUpdated?: { labour_id: string; labour_update_id: string };
   LabourUpdateDeleted?: { labour_id: string; labour_update_id: string };
-  SubscriptionTokenSet?: { labour_id: string; };
+  SubscriptionTokenSet?: { labour_id: string };
   SubscriberRequested?: { labour_id: string; subscription_id: string };
   SubscriberUnsubscribed?: { labour_id: string; subscription_id: string };
   SubscriberNotificationMethodsUpdated?: { labour_id: string; subscription_id: string };

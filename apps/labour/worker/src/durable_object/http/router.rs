@@ -4,11 +4,8 @@ use crate::durable_object::{
     http::{
         middleware::with_auth_context,
         routes::{
-            admin::handle_admin_command,
-            command::handle_command,
-            events::handle_events_query,
-            labour::handle_labour_domain_command,
-            query::handle_query,
+            admin::handle_admin_command, command::handle_command, events::handle_events_query,
+            labour::handle_labour_domain_command, query::handle_query,
         },
     },
     state::AggregateServices,

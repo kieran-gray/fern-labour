@@ -9,15 +9,11 @@ pub struct CommandTranslator;
 impl CommandTranslator {
     pub fn translate(command: ApiCommand, user: &User) -> Result<LabourCommand> {
         match command {
-            ApiCommand::Admin(_) => {
-                Err(anyhow!("Admin commands must use the admin endpoint"))
-            }
+            ApiCommand::Admin(_) => Err(anyhow!("Admin commands must use the admin endpoint")),
             ApiCommand::Labour(cmd) => Ok(LabourCommand::from(cmd)),
             ApiCommand::LabourUpdate(cmd) => Ok(LabourCommand::from(cmd)),
             ApiCommand::Contraction(cmd) => Ok(LabourCommand::from(cmd)),
-            ApiCommand::Subscriber(cmd) => {
-                Ok(LabourCommand::from((cmd, user.user_id.clone())))
-            }
+            ApiCommand::Subscriber(cmd) => Ok(LabourCommand::from((cmd, user.user_id.clone()))),
             ApiCommand::Subscription(cmd) => Ok(LabourCommand::from(cmd)),
         }
     }
@@ -26,8 +22,8 @@ impl CommandTranslator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use fern_labour_labour_shared::ContractionCommand;
     use chrono::Utc;
+    use fern_labour_labour_shared::ContractionCommand;
     use uuid::Uuid;
 
     fn test_user() -> User {
@@ -38,7 +34,7 @@ mod tests {
             email: Some("test@example.com".to_string()),
             phone_number: None,
             first_name: Some("Test".to_string()),
-            last_name: Some("User".to_string())
+            last_name: Some("User".to_string()),
         }
     }
 
@@ -51,14 +47,18 @@ mod tests {
 
         let result = CommandTranslator::translate(api_cmd, &test_user());
         assert!(result.is_ok());
-        assert!(matches!(result.unwrap(), LabourCommand::StartContraction { .. }));
+        assert!(matches!(
+            result.unwrap(),
+            LabourCommand::StartContraction { .. }
+        ));
     }
 
     #[test]
     fn rejects_admin_command() {
-        let api_cmd = ApiCommand::Admin(fern_labour_labour_shared::AdminCommand::RebuildReadModels {
-            aggregate_id: Uuid::now_v7(),
-        });
+        let api_cmd =
+            ApiCommand::Admin(fern_labour_labour_shared::AdminCommand::RebuildReadModels {
+                aggregate_id: Uuid::now_v7(),
+            });
 
         let result = CommandTranslator::translate(api_cmd, &test_user());
         assert!(result.is_err());

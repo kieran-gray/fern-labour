@@ -40,7 +40,7 @@ impl SubscriptionTokenProjector {
                 );
                 self.repository.overwrite(&token_read_model)
             }
-            _ => {Ok(())}
+            _ => Ok(()),
         }
     }
 }

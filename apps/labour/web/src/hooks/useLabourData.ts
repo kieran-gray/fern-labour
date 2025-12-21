@@ -8,8 +8,8 @@ import { NotFoundError } from '@base/lib/errors';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
-import { useApiAuth } from './useApiAuth';
 import { queryKeysV2 } from './queryKeys';
+import { useApiAuth } from './useApiAuth';
 
 // Helper function to decode cursor
 function decodeCursor(cursorString: string): Cursor {

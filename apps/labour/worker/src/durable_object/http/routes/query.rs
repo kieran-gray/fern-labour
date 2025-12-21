@@ -4,7 +4,7 @@ use tracing::{error, info};
 use worker::{Request, Response};
 
 use crate::durable_object::{
-    http::{router::RequestContext, ApiResult},
+    http::{ApiResult, router::RequestContext},
     read_side::query_handler::QueryHandler,
 };
 

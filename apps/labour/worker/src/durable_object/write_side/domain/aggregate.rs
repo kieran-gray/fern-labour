@@ -743,11 +743,19 @@ impl Aggregate for Labour {
                     labour_update_id,
                 }]
             }
-            LabourCommand::SetSubscriptionToken { labour_id, mother_id, token } => {
+            LabourCommand::SetSubscriptionToken {
+                labour_id,
+                mother_id,
+                token,
+            } => {
                 let Some(_) = state else {
                     return Err(LabourError::NotFound);
                 };
-                vec![LabourEvent::SubscriptionTokenSet { labour_id, mother_id, token }]
+                vec![LabourEvent::SubscriptionTokenSet {
+                    labour_id,
+                    mother_id,
+                    token,
+                }]
             }
             LabourCommand::RequestAccess {
                 labour_id,

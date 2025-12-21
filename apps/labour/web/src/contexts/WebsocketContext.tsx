@@ -19,7 +19,12 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const subscribersRef = useRef<Set<(message: any) => void>>(new Set());
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
   const currentLabourIdRef = useRef<string | null>(null);
-  const pendingCommandsRef = useRef<Map<string, { resolve: (value: any) => void; reject: (error: any) => void; timeout: NodeJS.Timeout }>>(new Map());
+  const pendingCommandsRef = useRef<
+    Map<
+      string,
+      { resolve: (value: any) => void; reject: (error: any) => void; timeout: NodeJS.Timeout }
+    >
+  >(new Map());
 
   useEffect(() => {
     if (!labourId) {

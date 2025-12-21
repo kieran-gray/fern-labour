@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use tracing::error;
 use worker::{Result, WebSocketIncomingMessage};
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "kind")]
 pub enum WebSocketRequest {
@@ -14,7 +13,7 @@ pub enum WebSocketRequest {
     Query {
         #[serde(flatten)]
         query: ApiQuery,
-    }
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

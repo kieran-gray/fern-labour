@@ -5,7 +5,9 @@ use worker::SqlStorage;
 
 use super::read_model::{SubscriptionTokenReadModel, SubscriptionTokenRow};
 
-pub trait SubscriptionTokenRepositoryTrait: SyncRepositoryTrait<SubscriptionTokenReadModel> {
+pub trait SubscriptionTokenRepositoryTrait:
+    SyncRepositoryTrait<SubscriptionTokenReadModel>
+{
     fn get_token(&self) -> Result<Option<SubscriptionTokenReadModel>>;
 }
 
