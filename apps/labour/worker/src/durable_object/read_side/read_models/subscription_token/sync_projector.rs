@@ -27,15 +27,11 @@ impl SubscriptionTokenProjector {
         let timestamp = metadata.timestamp;
 
         match event {
-            LabourEvent::SubscriptionTokenSet {
-                labour_id,
-                mother_id,
-                token,
-            } => {
+            LabourEvent::SubscriptionTokenSet(e) => {
                 let token_read_model = SubscriptionTokenReadModel::new(
-                    *labour_id,
-                    mother_id.clone(),
-                    token.clone(),
+                    e.labour_id,
+                    e.mother_id.clone(),
+                    e.token.clone(),
                     timestamp,
                 );
                 self.repository.overwrite(&token_read_model)

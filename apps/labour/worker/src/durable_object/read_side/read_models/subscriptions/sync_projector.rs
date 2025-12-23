@@ -29,121 +29,113 @@ impl SubscriptionReadModelProjector {
         let timestamp = metadata.timestamp;
 
         match event {
-            LabourEvent::SubscriberRequested {
-                labour_id,
-                subscriber_id,
-                subscription_id,
-            } => match self.repository.get_by_id(*subscription_id) {
-                Ok(mut existing_subscription) => {
-                    existing_subscription.status = SubscriberStatus::REQUESTED;
-                    existing_subscription.updated_at = timestamp;
-                    self.repository.upsert(&existing_subscription)
+            LabourEvent::SubscriberRequested(e) => {
+                match self.repository.get_by_id(e.subscription_id) {
+                    Ok(mut existing_subscription) => {
+                        existing_subscription.status = SubscriberStatus::REQUESTED;
+                        existing_subscription.updated_at = timestamp;
+                        self.repository.upsert(&existing_subscription)
+                    }
+                    Err(_) => {
+                        let subscription = SubscriptionReadModel::new(
+                            e.subscription_id,
+                            e.labour_id,
+                            e.subscriber_id.clone(),
+                            SubscriberRole::FRIENDS_AND_FAMILY,
+                            SubscriberStatus::REQUESTED,
+                            SubscriberAccessLevel::BASIC,
+                            vec![],
+                            timestamp,
+                        );
+                        self.repository.overwrite(&subscription)
+                    }
                 }
-                Err(_) => {
-                    let subscription = SubscriptionReadModel::new(
-                        *subscription_id,
-                        *labour_id,
-                        subscriber_id.clone(),
-                        SubscriberRole::FRIENDS_AND_FAMILY,
-                        SubscriberStatus::REQUESTED,
-                        SubscriberAccessLevel::BASIC,
-                        vec![],
-                        timestamp,
-                    );
-                    self.repository.overwrite(&subscription)
-                }
-            },
-            LabourEvent::SubscriberApproved {
-                subscription_id, ..
-            } => {
-                let mut subscription = self
-                    .repository
-                    .get_by_id(*subscription_id)
-                    .unwrap_or_else(|_| panic!("No subscription found with id: {subscription_id}"));
+            }
+            LabourEvent::SubscriberApproved(e) => {
+                let mut subscription =
+                    self.repository
+                        .get_by_id(e.subscription_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No subscription found with id: {}", e.subscription_id)
+                        });
                 subscription.status = SubscriberStatus::SUBSCRIBED;
                 subscription.updated_at = timestamp;
                 self.repository.upsert(&subscription)
             }
-            LabourEvent::SubscriberUnsubscribed {
-                subscription_id, ..
-            } => {
-                let mut subscription = self
-                    .repository
-                    .get_by_id(*subscription_id)
-                    .unwrap_or_else(|_| panic!("No subscription found with id: {subscription_id}"));
+            LabourEvent::SubscriberUnsubscribed(e) => {
+                let mut subscription =
+                    self.repository
+                        .get_by_id(e.subscription_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No subscription found with id: {}", e.subscription_id)
+                        });
                 subscription.status = SubscriberStatus::UNSUBSCRIBED;
                 subscription.updated_at = timestamp;
                 self.repository.upsert(&subscription)
             }
-            LabourEvent::SubscriberRemoved {
-                subscription_id, ..
-            } => {
-                let mut subscription = self
-                    .repository
-                    .get_by_id(*subscription_id)
-                    .unwrap_or_else(|_| panic!("No subscription found with id: {subscription_id}"));
+            LabourEvent::SubscriberRemoved(e) => {
+                let mut subscription =
+                    self.repository
+                        .get_by_id(e.subscription_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No subscription found with id: {}", e.subscription_id)
+                        });
                 subscription.status = SubscriberStatus::REMOVED;
                 subscription.updated_at = timestamp;
                 self.repository.upsert(&subscription)
             }
-            LabourEvent::SubscriberBlocked {
-                subscription_id, ..
-            } => {
-                let mut subscription = self
-                    .repository
-                    .get_by_id(*subscription_id)
-                    .unwrap_or_else(|_| panic!("No subscription found with id: {subscription_id}"));
+            LabourEvent::SubscriberBlocked(e) => {
+                let mut subscription =
+                    self.repository
+                        .get_by_id(e.subscription_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No subscription found with id: {}", e.subscription_id)
+                        });
                 subscription.status = SubscriberStatus::BLOCKED;
                 subscription.updated_at = timestamp;
                 self.repository.upsert(&subscription)
             }
-            LabourEvent::SubscriberUnblocked {
-                subscription_id, ..
-            } => {
-                let mut subscription = self
-                    .repository
-                    .get_by_id(*subscription_id)
-                    .unwrap_or_else(|_| panic!("No subscription found with id: {subscription_id}"));
+            LabourEvent::SubscriberUnblocked(e) => {
+                let mut subscription =
+                    self.repository
+                        .get_by_id(e.subscription_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No subscription found with id: {}", e.subscription_id)
+                        });
                 subscription.status = SubscriberStatus::REMOVED;
                 subscription.updated_at = timestamp;
                 self.repository.upsert(&subscription)
             }
-            LabourEvent::SubscriberRoleUpdated {
-                subscription_id,
-                role,
-                ..
-            } => {
-                let mut subscription = self
-                    .repository
-                    .get_by_id(*subscription_id)
-                    .unwrap_or_else(|_| panic!("No subscription found with id: {subscription_id}"));
-                subscription.role = role.clone();
+            LabourEvent::SubscriberRoleUpdated(e) => {
+                let mut subscription =
+                    self.repository
+                        .get_by_id(e.subscription_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No subscription found with id: {}", e.subscription_id)
+                        });
+                subscription.role = e.role.clone();
                 subscription.updated_at = timestamp;
                 self.repository.upsert(&subscription)
             }
-            LabourEvent::SubscriberAccessLevelUpdated {
-                subscription_id,
-                access_level,
-                ..
-            } => {
-                let mut subscription = self
-                    .repository
-                    .get_by_id(*subscription_id)
-                    .unwrap_or_else(|_| panic!("No subscription found with id: {subscription_id}"));
-                subscription.access_level = access_level.clone();
+            LabourEvent::SubscriberAccessLevelUpdated(e) => {
+                let mut subscription =
+                    self.repository
+                        .get_by_id(e.subscription_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No subscription found with id: {}", e.subscription_id)
+                        });
+                subscription.access_level = e.access_level.clone();
                 subscription.updated_at = timestamp;
                 self.repository.upsert(&subscription)
             }
-            LabourEvent::SubscriberNotificationMethodsUpdated {
-                subscription_id,
-                notification_methods,
-                ..
-            } => {
-                let mut subscription = self
-                    .repository
-                    .get_by_id(*subscription_id)
-                    .unwrap_or_else(|_| panic!("No subscription found with id: {subscription_id}"));
-                subscription.contact_methods = notification_methods.clone();
+            LabourEvent::SubscriberNotificationMethodsUpdated(e) => {
+                let mut subscription =
+                    self.repository
+                        .get_by_id(e.subscription_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No subscription found with id: {}", e.subscription_id)
+                        });
+                subscription.contact_methods = e.notification_methods.clone();
                 subscription.updated_at = timestamp;
                 self.repository.upsert(&subscription)
             }

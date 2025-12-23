@@ -61,3 +61,34 @@ impl<E: Event> EventEnvelope<E> {
 pub trait EventEnvelopeAdapter<E: Event> {
     fn to_envelope(&self) -> Result<EventEnvelope<E>>;
 }
+
+#[macro_export]
+macro_rules! impl_labour_event {
+    ($name:ident, $id_field:ident) => {
+        impl Event for $name {
+            fn aggregate_id(&self) -> Uuid {
+                self.$id_field
+            }
+            fn event_type(&self) -> &str {
+                stringify!($name)
+            }
+            fn event_version(&self) -> i64 {
+                1
+            }
+        }
+    };
+
+    ($name:ident, $id_field:ident, $version:expr) => {
+        impl Event for $name {
+            fn aggregate_id(&self) -> Uuid {
+                self.$id_field
+            }
+            fn event_type(&self) -> &str {
+                stringify!($name)
+            }
+            fn event_version(&self) -> i64 {
+                $version
+            }
+        }
+    };
+}

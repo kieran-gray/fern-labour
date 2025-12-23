@@ -26,58 +26,41 @@ impl LabourUpdateReadModelProjector {
         let timestamp = metadata.timestamp;
 
         match event {
-            LabourEvent::LabourUpdatePosted {
-                labour_id,
-                labour_update_id,
-                labour_update_type,
-                message,
-                application_generated,
-                sent_time,
-            } => {
+            LabourEvent::LabourUpdatePosted(e) => {
                 let labour_update = LabourUpdateReadModel::new(
-                    *labour_id,
-                    *labour_update_id,
-                    labour_update_type.clone(),
-                    message.clone(),
-                    *application_generated,
-                    *sent_time,
+                    e.labour_id,
+                    e.labour_update_id,
+                    e.labour_update_type.clone(),
+                    e.message.clone(),
+                    e.application_generated,
+                    e.sent_time,
                 );
                 self.repository.overwrite(&labour_update)
             }
-            LabourEvent::LabourUpdateMessageUpdated {
-                labour_update_id,
-                message,
-                ..
-            } => {
+            LabourEvent::LabourUpdateMessageUpdated(e) => {
                 let mut labour_update = self
                     .repository
-                    .get_by_id(*labour_update_id)
+                    .get_by_id(e.labour_update_id)
                     .unwrap_or_else(|_| {
-                        panic!("No labour_update found with id: {labour_update_id}")
+                        panic!("No labour_update found with id: {}", e.labour_update_id)
                     });
-                labour_update.message = message.clone();
+                labour_update.message = e.message.clone();
                 labour_update.edited = true;
                 labour_update.updated_at = timestamp;
                 self.repository.upsert(&labour_update)
             }
-            LabourEvent::LabourUpdateTypeUpdated {
-                labour_update_id,
-                labour_update_type,
-                ..
-            } => {
+            LabourEvent::LabourUpdateTypeUpdated(e) => {
                 let mut labour_update = self
                     .repository
-                    .get_by_id(*labour_update_id)
+                    .get_by_id(e.labour_update_id)
                     .unwrap_or_else(|_| {
-                        panic!("No labour_update found with id: {labour_update_id}")
+                        panic!("No labour_update found with id: {}", e.labour_update_id)
                     });
-                labour_update.labour_update_type = labour_update_type.clone();
+                labour_update.labour_update_type = e.labour_update_type.clone();
                 labour_update.updated_at = timestamp;
                 self.repository.upsert(&labour_update)
             }
-            LabourEvent::LabourUpdateDeleted {
-                labour_update_id, ..
-            } => self.repository.delete(*labour_update_id),
+            LabourEvent::LabourUpdateDeleted(e) => self.repository.delete(e.labour_update_id),
             _ => Ok(()),
         }
     }

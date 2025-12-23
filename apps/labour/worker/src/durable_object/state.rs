@@ -44,7 +44,7 @@ use crate::durable_object::{
         application::{AdminCommandProcessor, LabourCommandProcessor},
         domain::LabourEvent,
         infrastructure::SqlEventStore,
-        process_manager::{EffectLedger, LabourEffectExecutor, LabourEffectPolicy, ProcessManager},
+        process_manager::{EffectLedger, LabourEffectExecutor, ProcessManager},
     },
 };
 
@@ -71,7 +71,7 @@ pub struct AsyncProcessors {
 }
 
 pub struct ProcessManagement {
-    pub process_manager: ProcessManager<LabourEffectPolicy, LabourEffectExecutor>,
+    pub process_manager: ProcessManager<LabourEffectExecutor>,
 }
 
 pub struct AggregateServices {
@@ -248,14 +248,11 @@ impl AggregateServices {
         command_processor: Rc<LabourCommandProcessor>,
     ) -> Result<ProcessManagement> {
         let sql = state.storage().sql();
-        let aggregate_id = state.id().to_string();
 
-        let ledger = EffectLedger::create(sql.clone(), aggregate_id.clone());
+        let ledger = EffectLedger::create(sql.clone());
         ledger
             .init_schema()
             .context("Failed to initialize effect ledger schema")?;
-
-        let policy = LabourEffectPolicy;
 
         let base_url = env
             .var("PUBLIC_URL")
@@ -286,8 +283,7 @@ impl AggregateServices {
             base_url,
         );
 
-        let process_manager =
-            ProcessManager::new(policy, ledger, executor, event_store, aggregate_id);
+        let process_manager = ProcessManager::new(ledger, executor, event_store);
 
         Ok(ProcessManagement { process_manager })
     }

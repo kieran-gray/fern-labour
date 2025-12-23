@@ -33,43 +33,37 @@ impl LabourStatusReadModelProjector {
         let timestamp = metadata.timestamp;
 
         match event {
-            LabourEvent::LabourPlanned {
-                labour_id,
-                mother_id,
-                mother_name,
-                labour_name,
-                ..
-            } if model.is_none() => Some(LabourStatusReadModel::new(
-                *labour_id,
-                mother_id.clone(),
-                mother_name.clone(),
-                labour_name.clone(),
+            LabourEvent::LabourPlanned(e) if model.is_none() => Some(LabourStatusReadModel::new(
+                e.labour_id,
+                e.mother_id.clone(),
+                e.mother_name.clone(),
+                e.labour_name.clone(),
                 timestamp,
             )),
 
-            LabourEvent::LabourPlanUpdated { labour_name, .. } => {
+            LabourEvent::LabourPlanUpdated(e) => {
                 let mut labour = model?;
-                labour.labour_name = labour_name.clone();
+                labour.labour_name = e.labour_name.clone();
                 labour.updated_at = timestamp;
                 Some(labour)
             }
 
-            LabourEvent::LabourBegun { .. } => {
+            LabourEvent::LabourBegun(_) => {
                 let mut labour = model?;
                 labour.current_phase = LabourPhase::EARLY;
                 labour.updated_at = timestamp;
                 Some(labour)
             }
 
-            LabourEvent::LabourCompleted { .. } => {
+            LabourEvent::LabourCompleted(_) => {
                 let mut labour = model?;
                 labour.current_phase = LabourPhase::COMPLETE;
                 labour.updated_at = timestamp;
                 Some(labour)
             }
 
-            LabourEvent::LabourDeleted { labour_id } => {
-                if let Err(err) = self.repository.delete(*labour_id).await {
+            LabourEvent::LabourDeleted(e) => {
+                if let Err(err) = self.repository.delete(e.labour_id).await {
                     warn!("Failed to delete LabourStatusReadModel: {err}")
                 }
                 None

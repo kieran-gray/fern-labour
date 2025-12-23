@@ -3,7 +3,6 @@ pub mod commands;
 pub mod entities;
 pub mod events;
 pub mod exceptions;
-pub mod policies;
 
 pub use aggregate::*;
 pub use commands::*;

@@ -16,6 +16,15 @@ use crate::durable_object::write_side::domain::{
         labour_update::{ANNOUNCEMENT_COOLDOWN_SECONDS, LabourUpdate},
         subscription::Subscription,
     },
+    events::{
+        ContractionDeleted, ContractionEnded, ContractionStarted, ContractionUpdated, LabourBegun,
+        LabourCompleted, LabourDeleted, LabourInviteSent, LabourPlanUpdated, LabourPlanned,
+        LabourUpdateDeleted, LabourUpdateMessageUpdated, LabourUpdatePosted,
+        LabourUpdateTypeUpdated, SubscriberAccessLevelUpdated, SubscriberApproved,
+        SubscriberBlocked, SubscriberNotificationMethodsUpdated, SubscriberRemoved,
+        SubscriberRequested, SubscriberRoleUpdated, SubscriberUnblocked, SubscriberUnsubscribed,
+        SubscriptionTokenSet,
+    },
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -129,231 +138,173 @@ impl Aggregate for Labour {
 
     fn apply(&mut self, event: &Self::Event) {
         match event {
-            LabourEvent::LabourPlanned {
-                labour_id,
-                mother_id,
-                ..
-            } => {
-                self.id = *labour_id;
-                self.mother_id = mother_id.clone();
+            LabourEvent::LabourPlanned(e) => {
+                self.id = e.labour_id;
+                self.mother_id = e.mother_id.clone();
                 self.phase = LabourPhase::PLANNED;
             }
-            LabourEvent::LabourBegun { start_time, .. } => {
-                self.start_time = Some(*start_time);
+            LabourEvent::LabourBegun(e) => {
+                self.start_time = Some(e.start_time);
                 self.phase = LabourPhase::EARLY;
             }
-            LabourEvent::LabourCompleted { end_time, .. } => {
-                self.end_time = Some(*end_time);
+            LabourEvent::LabourCompleted(e) => {
+                self.end_time = Some(e.end_time);
                 self.phase = LabourPhase::COMPLETE;
             }
-            LabourEvent::ContractionStarted {
-                labour_id,
-                contraction_id,
-                start_time,
-            } => {
+            LabourEvent::ContractionStarted(e) => {
                 if let Ok(contraction) =
-                    Contraction::start(*contraction_id, *labour_id, *start_time)
+                    Contraction::start(e.contraction_id, e.labour_id, e.start_time)
                 {
                     self.contractions.push(contraction);
                 }
             }
-            LabourEvent::ContractionEnded {
-                end_time,
-                intensity,
-                ..
-            } => {
+            LabourEvent::ContractionEnded(e) => {
                 if let Some(contraction) = self.contractions.last_mut() {
                     contraction
-                        .end(*end_time, *intensity)
+                        .end(e.end_time, e.intensity)
                         .expect("Failed to end contraction");
                 }
             }
-            LabourEvent::ContractionUpdated {
-                contraction_id,
-                start_time,
-                end_time,
-                intensity,
-                ..
-            } => {
+            LabourEvent::ContractionUpdated(e) => {
                 if let Some(contraction) = self
                     .contractions
                     .iter_mut()
-                    .find(|c| c.id() == *contraction_id)
+                    .find(|c| c.id() == e.contraction_id)
                 {
                     contraction
-                        .update(*start_time, *end_time, *intensity)
+                        .update(e.start_time, e.end_time, e.intensity)
                         .expect("Failed to update contraction");
                 }
             }
-            LabourEvent::ContractionDeleted { contraction_id, .. } => {
-                self.contractions.pop_if(|c| c.id() == *contraction_id);
+            LabourEvent::ContractionDeleted(e) => {
+                self.contractions.pop_if(|c| c.id() == e.contraction_id);
             }
-            LabourEvent::LabourUpdatePosted {
-                labour_id,
-                labour_update_id,
-                labour_update_type,
-                message,
-                application_generated,
-                sent_time,
-            } => {
+            LabourEvent::LabourUpdatePosted(e) => {
                 let labour_update = LabourUpdate::create(
-                    *labour_id,
-                    *labour_update_id,
-                    labour_update_type.clone(),
-                    message.clone(),
-                    *sent_time,
-                    *application_generated,
+                    e.labour_id,
+                    e.labour_update_id,
+                    e.labour_update_type.clone(),
+                    e.message.clone(),
+                    e.sent_time,
+                    e.application_generated,
                 );
                 self.labour_updates.push(labour_update);
             }
-            LabourEvent::LabourUpdateMessageUpdated {
-                labour_update_id,
-                message,
-                ..
-            } => {
+            LabourEvent::LabourUpdateMessageUpdated(e) => {
                 if let Some(labour_update) = self
                     .labour_updates
                     .iter_mut()
-                    .find(|lu| lu.id() == *labour_update_id)
+                    .find(|lu| lu.id() == e.labour_update_id)
                 {
-                    labour_update.update_message(message.clone());
+                    labour_update.update_message(e.message.clone());
                 }
             }
-            LabourEvent::LabourUpdateTypeUpdated {
-                labour_update_id,
-                labour_update_type,
-                ..
-            } => {
+            LabourEvent::LabourUpdateTypeUpdated(e) => {
                 if let Some(labour_update) = self
                     .labour_updates
                     .iter_mut()
-                    .find(|lu| lu.id() == *labour_update_id)
+                    .find(|lu| lu.id() == e.labour_update_id)
                 {
-                    labour_update.update_type(labour_update_type.clone());
+                    labour_update.update_type(e.labour_update_type.clone());
                 }
             }
-            LabourEvent::LabourUpdateDeleted {
-                labour_update_id, ..
-            } => {
-                self.labour_updates.pop_if(|c| c.id() == *labour_update_id);
+            LabourEvent::LabourUpdateDeleted(e) => {
+                self.labour_updates.pop_if(|c| c.id() == e.labour_update_id);
             }
-            LabourEvent::SubscriberRequested {
-                labour_id,
-                subscriber_id,
-                subscription_id,
-            } => {
+            LabourEvent::SubscriberRequested(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
                     subscription.request();
                 } else {
-                    let subscription =
-                        Subscription::create(*subscription_id, *labour_id, subscriber_id.clone());
+                    let subscription = Subscription::create(
+                        e.subscription_id,
+                        e.labour_id,
+                        e.subscriber_id.clone(),
+                    );
                     self.subscriptions.push(subscription);
                 }
             }
-            LabourEvent::SubscriberUnsubscribed {
-                subscription_id, ..
-            } => {
+            LabourEvent::SubscriberUnsubscribed(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
                     subscription.unsubscribe();
                 }
             }
-            LabourEvent::SubscriberNotificationMethodsUpdated {
-                subscription_id,
-                notification_methods,
-                ..
-            } => {
+            LabourEvent::SubscriberNotificationMethodsUpdated(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
-                    subscription.update_notification_methods(notification_methods.clone());
+                    subscription.update_notification_methods(e.notification_methods.clone());
                 }
             }
-            LabourEvent::SubscriberAccessLevelUpdated {
-                subscription_id,
-                access_level,
-                ..
-            } => {
+            LabourEvent::SubscriberAccessLevelUpdated(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
-                    subscription.update_access_level(access_level.clone());
+                    subscription.update_access_level(e.access_level.clone());
                 }
             }
-            LabourEvent::SubscriberApproved {
-                subscription_id, ..
-            } => {
+            LabourEvent::SubscriberApproved(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
                     subscription.approve();
                 }
             }
-            LabourEvent::SubscriberRemoved {
-                subscription_id, ..
-            } => {
+            LabourEvent::SubscriberRemoved(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
                     subscription.remove();
                 }
             }
-            LabourEvent::SubscriberBlocked {
-                subscription_id, ..
-            } => {
+            LabourEvent::SubscriberBlocked(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
                     subscription.block();
                 }
             }
-            LabourEvent::SubscriberUnblocked {
-                subscription_id, ..
-            } => {
+            LabourEvent::SubscriberUnblocked(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
                     subscription.unblock();
                 }
             }
-            LabourEvent::SubscriberRoleUpdated {
-                subscription_id,
-                role,
-                ..
-            } => {
+            LabourEvent::SubscriberRoleUpdated(e) => {
                 if let Some(subscription) = self
                     .subscriptions
                     .iter_mut()
-                    .find(|s| s.id() == *subscription_id)
+                    .find(|s| s.id() == e.subscription_id)
                 {
-                    subscription.update_role(role.clone());
+                    subscription.update_role(e.role.clone());
                 }
             }
-            LabourEvent::SubscriptionTokenSet { token, .. } => {
-                self.subscription_token = Some(token.clone());
+            LabourEvent::SubscriptionTokenSet(e) => {
+                self.subscription_token = Some(e.token.clone());
             }
-            LabourEvent::LabourPlanUpdated { .. }
-            | LabourEvent::LabourInviteSent { .. }
-            | LabourEvent::LabourDeleted { .. } => {}
+            LabourEvent::LabourPlanUpdated(_)
+            | LabourEvent::LabourInviteSent(_)
+            | LabourEvent::LabourDeleted(_) => {}
         }
     }
 
@@ -377,14 +328,14 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::LabourPlanned {
+                vec![LabourEvent::LabourPlanned(LabourPlanned {
                     labour_id,
                     mother_id,
                     mother_name,
                     first_labour,
                     due_date,
                     labour_name,
-                }]
+                })]
             }
             LabourCommand::UpdateLabourPlan {
                 labour_id,
@@ -396,12 +347,12 @@ impl Aggregate for Labour {
                     return Err(LabourError::NotFound);
                 };
 
-                vec![LabourEvent::LabourPlanUpdated {
+                vec![LabourEvent::LabourPlanUpdated(LabourPlanUpdated {
                     labour_id,
                     first_labour,
                     due_date,
                     labour_name,
-                }]
+                })]
             }
             LabourCommand::BeginLabour { labour_id } => {
                 let Some(labour) = state else {
@@ -415,18 +366,18 @@ impl Aggregate for Labour {
                     ));
                 }
                 vec![
-                    LabourEvent::LabourBegun {
+                    LabourEvent::LabourBegun(LabourBegun {
                         labour_id,
                         start_time: Utc::now(),
-                    },
-                    LabourEvent::LabourUpdatePosted {
+                    }),
+                    LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
                         labour_id,
                         labour_update_id: Uuid::now_v7(),
                         labour_update_type: LabourUpdateType::PRIVATE_NOTE,
                         message: "labour_begun".to_string(),
                         application_generated: true,
                         sent_time: Utc::now(),
-                    },
+                    }),
                 ]
             }
             LabourCommand::CompleteLabour { labour_id, notes } => {
@@ -447,11 +398,11 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::LabourCompleted {
+                vec![LabourEvent::LabourCompleted(LabourCompleted {
                     labour_id,
                     notes,
                     end_time: Utc::now(),
-                }]
+                })]
             }
             LabourCommand::SendLabourInvite {
                 labour_id,
@@ -468,10 +419,10 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::LabourInviteSent {
+                vec![LabourEvent::LabourInviteSent(LabourInviteSent {
                     labour_id,
                     invite_email,
-                }]
+                })]
             }
             LabourCommand::DeleteLabour { labour_id } => {
                 let Some(labour) = state else {
@@ -484,7 +435,7 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::LabourDeleted { labour_id }]
+                vec![LabourEvent::LabourDeleted(LabourDeleted { labour_id })]
             }
             LabourCommand::StartContraction {
                 labour_id,
@@ -509,25 +460,25 @@ impl Aggregate for Labour {
                 let mut events = vec![];
 
                 if labour.phase == LabourPhase::PLANNED {
-                    events.push(LabourEvent::LabourBegun {
+                    events.push(LabourEvent::LabourBegun(LabourBegun {
                         labour_id,
                         start_time: Utc::now(),
-                    });
-                    events.push(LabourEvent::LabourUpdatePosted {
+                    }));
+                    events.push(LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
                         labour_id,
                         labour_update_id: Uuid::now_v7(),
                         labour_update_type: LabourUpdateType::PRIVATE_NOTE,
                         message: "labour_begun".to_string(),
                         application_generated: true,
                         sent_time: Utc::now(),
-                    })
+                    }))
                 }
 
-                events.push(LabourEvent::ContractionStarted {
+                events.push(LabourEvent::ContractionStarted(ContractionStarted {
                     labour_id,
                     contraction_id: Uuid::now_v7(),
                     start_time,
-                });
+                }));
 
                 events
             }
@@ -547,12 +498,12 @@ impl Aggregate for Labour {
                 }
 
                 match labour.find_active_contraction() {
-                    Some(contraction) => vec![LabourEvent::ContractionEnded {
+                    Some(contraction) => vec![LabourEvent::ContractionEnded(ContractionEnded {
                         labour_id,
                         contraction_id: contraction.id(),
                         end_time,
                         intensity,
-                    }],
+                    })],
                     None => {
                         return Err(LabourError::InvalidCommand(
                             "Labour does not have an active contraction".to_string(),
@@ -597,13 +548,13 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::ContractionUpdated {
+                vec![LabourEvent::ContractionUpdated(ContractionUpdated {
                     labour_id,
                     contraction_id,
                     start_time,
                     end_time,
                     intensity,
-                }]
+                })]
             }
             LabourCommand::DeleteContraction {
                 labour_id,
@@ -631,10 +582,10 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::ContractionDeleted {
+                vec![LabourEvent::ContractionDeleted(ContractionDeleted {
                     labour_id,
                     contraction_id,
-                }]
+                })]
             }
             LabourCommand::PostLabourUpdate {
                 labour_id,
@@ -653,14 +604,14 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::LabourUpdatePosted {
+                vec![LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
                     labour_id,
                     labour_update_id: Uuid::now_v7(),
                     labour_update_type,
                     message,
                     application_generated: false,
                     sent_time: Utc::now(),
-                }]
+                })]
             }
             LabourCommand::UpdateLabourUpdateType {
                 labour_id,
@@ -691,11 +642,13 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::LabourUpdateTypeUpdated {
-                    labour_id,
-                    labour_update_id,
-                    labour_update_type,
-                }]
+                vec![LabourEvent::LabourUpdateTypeUpdated(
+                    LabourUpdateTypeUpdated {
+                        labour_id,
+                        labour_update_id,
+                        labour_update_type,
+                    },
+                )]
             }
             LabourCommand::UpdateLabourUpdateMessage {
                 labour_id,
@@ -718,11 +671,13 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::LabourUpdateMessageUpdated {
-                    labour_id,
-                    labour_update_id,
-                    message,
-                }]
+                vec![LabourEvent::LabourUpdateMessageUpdated(
+                    LabourUpdateMessageUpdated {
+                        labour_id,
+                        labour_update_id,
+                        message,
+                    },
+                )]
             }
             LabourCommand::DeleteLabourUpdate {
                 labour_id,
@@ -738,10 +693,10 @@ impl Aggregate for Labour {
                     ));
                 };
 
-                vec![LabourEvent::LabourUpdateDeleted {
+                vec![LabourEvent::LabourUpdateDeleted(LabourUpdateDeleted {
                     labour_id,
                     labour_update_id,
-                }]
+                })]
             }
             LabourCommand::SetSubscriptionToken {
                 labour_id,
@@ -751,11 +706,11 @@ impl Aggregate for Labour {
                 let Some(_) = state else {
                     return Err(LabourError::NotFound);
                 };
-                vec![LabourEvent::SubscriptionTokenSet {
+                vec![LabourEvent::SubscriptionTokenSet(SubscriptionTokenSet {
                     labour_id,
                     mother_id,
                     token,
-                }]
+                })]
             }
             LabourCommand::RequestAccess {
                 labour_id,
@@ -806,17 +761,17 @@ impl Aggregate for Labour {
                             "Cannot subscribe to labour".to_string(),
                         ));
                     }
-                    events.push(LabourEvent::SubscriberRequested {
+                    events.push(LabourEvent::SubscriberRequested(SubscriberRequested {
                         labour_id,
                         subscriber_id,
                         subscription_id: subscription.id(),
-                    })
+                    }))
                 } else {
-                    events.push(LabourEvent::SubscriberRequested {
+                    events.push(LabourEvent::SubscriberRequested(SubscriberRequested {
                         labour_id,
                         subscriber_id,
                         subscription_id: Uuid::now_v7(),
-                    })
+                    }))
                 }
                 events
             }
@@ -840,10 +795,12 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::SubscriberUnsubscribed {
-                    labour_id,
-                    subscription_id,
-                }]
+                vec![LabourEvent::SubscriberUnsubscribed(
+                    SubscriberUnsubscribed {
+                        labour_id,
+                        subscription_id,
+                    },
+                )]
             }
             LabourCommand::UpdateNotificationMethods {
                 labour_id,
@@ -860,11 +817,13 @@ impl Aggregate for Labour {
                     ));
                 };
 
-                vec![LabourEvent::SubscriberNotificationMethodsUpdated {
-                    labour_id,
-                    subscription_id,
-                    notification_methods,
-                }]
+                vec![LabourEvent::SubscriberNotificationMethodsUpdated(
+                    SubscriberNotificationMethodsUpdated {
+                        labour_id,
+                        subscription_id,
+                        notification_methods,
+                    },
+                )]
             }
             LabourCommand::UpdateAccessLevel {
                 labour_id,
@@ -887,11 +846,13 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::SubscriberAccessLevelUpdated {
-                    labour_id,
-                    subscription_id,
-                    access_level,
-                }]
+                vec![LabourEvent::SubscriberAccessLevelUpdated(
+                    SubscriberAccessLevelUpdated {
+                        labour_id,
+                        subscription_id,
+                        access_level,
+                    },
+                )]
             }
             LabourCommand::ApproveSubscriber {
                 labour_id,
@@ -913,10 +874,10 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::SubscriberApproved {
+                vec![LabourEvent::SubscriberApproved(SubscriberApproved {
                     labour_id,
                     subscription_id,
-                }]
+                })]
             }
             LabourCommand::RemoveSubscriber {
                 labour_id,
@@ -940,10 +901,10 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::SubscriberRemoved {
+                vec![LabourEvent::SubscriberRemoved(SubscriberRemoved {
                     labour_id,
                     subscription_id,
-                }]
+                })]
             }
             LabourCommand::BlockSubscriber {
                 labour_id,
@@ -965,10 +926,10 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::SubscriberBlocked {
+                vec![LabourEvent::SubscriberBlocked(SubscriberBlocked {
                     labour_id,
                     subscription_id,
-                }]
+                })]
             }
             LabourCommand::UnblockSubscriber {
                 labour_id,
@@ -990,10 +951,10 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::SubscriberUnblocked {
+                vec![LabourEvent::SubscriberUnblocked(SubscriberUnblocked {
                     labour_id,
                     subscription_id,
-                }]
+                })]
             }
             LabourCommand::UpdateSubscriberRole {
                 labour_id,
@@ -1016,11 +977,11 @@ impl Aggregate for Labour {
                     ));
                 }
 
-                vec![LabourEvent::SubscriberRoleUpdated {
+                vec![LabourEvent::SubscriberRoleUpdated(SubscriberRoleUpdated {
                     labour_id,
                     subscription_id,
                     role,
-                }]
+                })]
             }
         };
         Ok(events)
@@ -1028,13 +989,9 @@ impl Aggregate for Labour {
 
     fn from_events(events: &[Self::Event]) -> Option<Self> {
         let mut notification = match events.first() {
-            Some(LabourEvent::LabourPlanned {
-                labour_id,
-                mother_id,
-                ..
-            }) => Labour {
-                id: *labour_id,
-                mother_id: mother_id.clone(),
+            Some(LabourEvent::LabourPlanned(e)) => Labour {
+                id: e.labour_id,
+                mother_id: e.mother_id.clone(),
                 phase: LabourPhase::PLANNED,
                 subscription_token: None,
                 contractions: vec![],

@@ -95,13 +95,10 @@ impl FetcherAuthServiceClient {
         let (init, _) = build_json_post_request(body, vec![("Content-Type", "application/json")])
             .map_err(AuthClientError::ParseError)?;
 
-        self.fetcher
-            .fetch(endpoint, Some(init))
-            .await
-            .map_err(|e| {
-                error!(error = ?e, endpoint, "Auth service request failed");
-                AuthClientError::RequestFailed(format!("Auth service request failed: {e}"))
-            })
+        self.fetcher.fetch(endpoint, Some(init)).await.map_err(|e| {
+            error!(error = ?e, endpoint, "Auth service request failed");
+            AuthClientError::RequestFailed(format!("Auth service request failed: {e}"))
+        })
     }
 
     fn handle_error_response(status: u16, error_response: ErrorResponse) -> AuthClientError {

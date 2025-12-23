@@ -2,43 +2,32 @@ use anyhow::{Context, Result};
 use std::rc::Rc;
 use tracing::{error, info};
 
-use fern_labour_event_sourcing_rs::{Aggregate, EventStoreTrait, StoredEvent};
+use fern_labour_event_sourcing_rs::{
+    Aggregate, EventStoreTrait, HasPolicies, PolicyContext, StoredEvent,
+};
 
 use crate::durable_object::write_side::{
     domain::{Labour, LabourEvent},
-    process_manager::{
-        executor::EffectExecutor, ledger::EffectLedger, policy::EffectPolicy, types::Effect,
-    },
+    process_manager::{executor::EffectExecutor, ledger::EffectLedger, types::Effect},
 };
 
-pub struct ProcessManager<P: EffectPolicy, E: EffectExecutor> {
-    policy: P,
+pub struct ProcessManager<E: EffectExecutor> {
     ledger: EffectLedger,
     executor: E,
     event_store: Rc<dyn EventStoreTrait>,
-    _aggregate_id: String,
 }
 
-impl<P, E> ProcessManager<P, E>
+impl<E> ProcessManager<E>
 where
-    P: EffectPolicy<Event = LabourEvent, AggregateState = Labour>,
     E: EffectExecutor,
 {
     const MAX_RETRY_ATTEMPTS: i64 = 6;
 
-    pub fn new(
-        policy: P,
-        ledger: EffectLedger,
-        executor: E,
-        event_store: Rc<dyn EventStoreTrait>,
-        aggregate_id: String,
-    ) -> Self {
+    pub fn new(ledger: EffectLedger, executor: E, event_store: Rc<dyn EventStoreTrait>) -> Self {
         Self {
-            policy,
             ledger,
             executor,
             event_store,
-            _aggregate_id: aggregate_id,
         }
     }
 
@@ -83,9 +72,17 @@ where
             };
             let event = LabourEvent::from_stored_event(stored);
 
-            let effects = self
-                .policy
-                .determine_effects(&event, sequence, &aggregate_state);
+            let ctx = PolicyContext::new(&aggregate_state, sequence);
+            let effects = match &event {
+                LabourEvent::LabourPlanned(e) => e.apply_policies(&ctx),
+                LabourEvent::LabourBegun(e) => e.apply_policies(&ctx),
+                LabourEvent::LabourCompleted(e) => e.apply_policies(&ctx),
+                LabourEvent::LabourUpdatePosted(e) => e.apply_policies(&ctx),
+                LabourEvent::SubscriberApproved(e) => e.apply_policies(&ctx),
+                LabourEvent::SubscriberRequested(e) => e.apply_policies(&ctx),
+                LabourEvent::LabourInviteSent(e) => e.apply_policies(&ctx),
+                _ => vec![],
+            };
 
             if !effects.is_empty() {
                 info!(

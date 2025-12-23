@@ -38,66 +38,47 @@ impl LabourReadModelProjector {
         let timestamp = metadata.timestamp;
 
         match event {
-            LabourEvent::LabourPlanned {
-                labour_id,
-                mother_id,
-                mother_name,
-                first_labour,
-                due_date,
-                labour_name,
-            } if model.is_none() => Some(LabourReadModel::new(
-                *labour_id,
-                mother_id.clone(),
-                mother_name.clone(),
-                *first_labour,
-                *due_date,
-                labour_name.clone(),
+            LabourEvent::LabourPlanned(e) if model.is_none() => Some(LabourReadModel::new(
+                e.labour_id,
+                e.mother_id.clone(),
+                e.mother_name.clone(),
+                e.first_labour,
+                e.due_date,
+                e.labour_name.clone(),
                 timestamp,
             )),
 
-            LabourEvent::LabourPlanUpdated {
-                labour_id,
-                first_labour,
-                due_date,
-                labour_name,
-            } => {
+            LabourEvent::LabourPlanUpdated(e) => {
                 let mut labour = match model {
                     Some(model) => model,
-                    None => self.fetch_labour(*labour_id),
+                    None => self.fetch_labour(e.labour_id),
                 };
 
-                labour.first_labour = *first_labour;
-                labour.due_date = *due_date;
-                labour.labour_name = labour_name.clone();
+                labour.first_labour = e.first_labour;
+                labour.due_date = e.due_date;
+                labour.labour_name = e.labour_name.clone();
                 Some(labour)
             }
 
-            LabourEvent::LabourBegun {
-                labour_id,
-                start_time,
-            } => {
+            LabourEvent::LabourBegun(e) => {
                 let mut labour = match model {
                     Some(model) => model,
-                    None => self.fetch_labour(*labour_id),
+                    None => self.fetch_labour(e.labour_id),
                 };
 
-                labour.start_time = Some(*start_time);
+                labour.start_time = Some(e.start_time);
                 labour.current_phase = LabourPhase::EARLY;
                 Some(labour)
             }
 
-            LabourEvent::LabourCompleted {
-                labour_id,
-                notes,
-                end_time,
-            } => {
+            LabourEvent::LabourCompleted(e) => {
                 let mut labour = match model {
                     Some(model) => model,
-                    None => self.fetch_labour(*labour_id),
+                    None => self.fetch_labour(e.labour_id),
                 };
 
-                labour.end_time = Some(*end_time);
-                labour.notes = notes.clone();
+                labour.end_time = Some(e.end_time);
+                labour.notes = e.notes.clone();
                 labour.current_phase = LabourPhase::COMPLETE;
                 Some(labour)
             }

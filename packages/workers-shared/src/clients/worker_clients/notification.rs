@@ -54,12 +54,12 @@ impl NotificationClient for FetcherNotificationClient {
         let status = response.status_code();
         match StatusCodeCategory::from_code(status) {
             StatusCodeCategory::Success => Ok(()),
-            StatusCodeCategory::ClientError => Err(NotificationClientError::RequestFailed(format!(
-                "Client error: {status}"
-            ))),
-            StatusCodeCategory::ServerError => Err(NotificationClientError::InternalError(format!(
-                "Server error: {status}"
-            ))),
+            StatusCodeCategory::ClientError => Err(NotificationClientError::RequestFailed(
+                format!("Client error: {status}"),
+            )),
+            StatusCodeCategory::ServerError => Err(NotificationClientError::InternalError(
+                format!("Server error: {status}"),
+            )),
             StatusCodeCategory::Unknown => Err(NotificationClientError::RequestFailed(format!(
                 "Unexpected status: {status}"
             ))),

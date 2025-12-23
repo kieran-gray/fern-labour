@@ -8,7 +8,6 @@ use super::types::Effect;
 #[derive(Debug, Clone, Deserialize)]
 pub struct EffectRecord {
     pub effect_id: String,
-    pub aggregate_id: String,
     pub event_sequence: i64,
     pub effect_type: String,
     pub effect_payload: String,
@@ -22,19 +21,18 @@ pub struct EffectRecord {
 
 pub struct EffectLedger {
     sql: SqlStorage,
-    aggregate_id: String,
 }
 
 impl EffectLedger {
-    pub fn create(sql: SqlStorage, aggregate_id: String) -> Self {
-        Self { sql, aggregate_id }
+    pub fn create(sql: SqlStorage) -> Self {
+        Self { sql }
     }
 
     pub fn init_schema(&self) -> Result<()> {
         self.sql
             .exec(
                 "CREATE TABLE IF NOT EXISTS process_manager_state (
-                    aggregate_id TEXT PRIMARY KEY,
+                    id INTEGER PRIMARY KEY,
                     last_processed_sequence INTEGER NOT NULL DEFAULT 0,
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )",
@@ -46,7 +44,6 @@ impl EffectLedger {
             .exec(
                 "CREATE TABLE IF NOT EXISTS pending_effects (
                     effect_id TEXT PRIMARY KEY,
-                    aggregate_id TEXT NOT NULL,
                     event_sequence INTEGER NOT NULL,
                     effect_type TEXT NOT NULL,
                     effect_payload TEXT NOT NULL,
@@ -64,7 +61,7 @@ impl EffectLedger {
         self.sql
             .exec(
                 "CREATE INDEX IF NOT EXISTS idx_pending_effects_status
-                 ON pending_effects(aggregate_id, status)",
+                 ON pending_effects(status)",
                 None,
             )
             .context("Failed to create index on pending_effects")?;
@@ -81,8 +78,8 @@ impl EffectLedger {
         let result: Option<Row> = self
             .sql
             .exec(
-                "SELECT last_processed_sequence FROM process_manager_state WHERE aggregate_id = ?1",
-                Some(vec![self.aggregate_id.clone().into()]),
+                "SELECT last_processed_sequence FROM process_manager_state",
+                None,
             )
             .context("Failed to get last processed sequence")?
             .to_array::<Row>()?
@@ -103,11 +100,10 @@ impl EffectLedger {
             self.sql
                 .exec(
                     "INSERT OR IGNORE INTO pending_effects
-                     (effect_id, aggregate_id, event_sequence, effect_type, effect_payload, idempotency_key)
-                     VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+                     (effect_id, event_sequence, effect_type, effect_payload, idempotency_key)
+                     VALUES (?1, ?2, ?3, ?4, ?5)",
                     Some(vec![
                         effect_id.into(),
-                        self.aggregate_id.clone().into(),
                         sequence.into(),
                         effect.effect_type().into(),
                         effect_payload.into(),
@@ -119,12 +115,12 @@ impl EffectLedger {
 
         self.sql
             .exec(
-                "INSERT INTO process_manager_state (aggregate_id, last_processed_sequence)
-                 VALUES (?1, ?2)
-                 ON CONFLICT(aggregate_id) DO UPDATE SET
-                    last_processed_sequence = ?2,
+                "INSERT INTO process_manager_state (id, last_processed_sequence)
+                 VALUES (1, ?1)
+                 ON CONFLICT(id) DO UPDATE SET
+                    last_processed_sequence = ?1,
                     updated_at = CURRENT_TIMESTAMP",
-                Some(vec![self.aggregate_id.clone().into(), sequence.into()]),
+                Some(vec![sequence.into()]),
             )
             .context("Failed to update last_processed_sequence")?;
 
@@ -135,11 +131,10 @@ impl EffectLedger {
         self.sql
             .exec(
                 "SELECT * FROM pending_effects
-                 WHERE aggregate_id = ?1
-                   AND status IN ('PENDING', 'DISPATCHED')
-                   AND attempts < ?2
+                 WHERE status IN ('PENDING', 'DISPATCHED')
+                   AND attempts < ?1
                  ORDER BY created_at ASC",
-                Some(vec![self.aggregate_id.clone().into(), max_attempts.into()]),
+                Some(vec![max_attempts.into()]),
             )
             .context("Failed to query pending effects")?
             .to_array()
@@ -193,10 +188,9 @@ impl EffectLedger {
             .sql
             .exec(
                 "SELECT COUNT(*) as count FROM pending_effects
-                 WHERE aggregate_id = ?1
-                   AND status IN ('PENDING', 'DISPATCHED')
-                   AND attempts < ?2",
-                Some(vec![self.aggregate_id.clone().into(), max_attempts.into()]),
+                 WHERE status IN ('PENDING', 'DISPATCHED')
+                   AND attempts < ?1",
+                Some(vec![max_attempts.into()]),
             )
             .context("Failed to check for pending effects")?
             .one()

@@ -27,63 +27,50 @@ impl ContractionReadModelProjector {
         let timestamp = metadata.timestamp;
 
         match event {
-            LabourEvent::ContractionStarted {
-                labour_id,
-                contraction_id,
-                start_time,
-            } => {
+            LabourEvent::ContractionStarted(e) => {
                 let contraction = ContractionReadModel::new(
-                    *labour_id,
-                    *contraction_id,
-                    Duration::create(*start_time, *start_time)?,
+                    e.labour_id,
+                    e.contraction_id,
+                    Duration::create(e.start_time, e.start_time)?,
                     None,
                     timestamp,
                 );
                 self.repository.overwrite(&contraction)
             }
-            LabourEvent::ContractionEnded {
-                contraction_id,
-                end_time,
-                intensity,
-                ..
-            } => {
-                let mut contraction = self
-                    .repository
-                    .get_by_id(*contraction_id)
-                    .unwrap_or_else(|_| panic!("No contraction found with id: {contraction_id}"));
-                let duration = Duration::create(*contraction.duration.start_time(), *end_time)?;
+            LabourEvent::ContractionEnded(e) => {
+                let mut contraction =
+                    self.repository
+                        .get_by_id(e.contraction_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No contraction found with id: {}", e.contraction_id)
+                        });
+                let duration = Duration::create(*contraction.duration.start_time(), e.end_time)?;
                 contraction.duration_seconds = duration.duration_seconds();
                 contraction.duration = duration;
-                contraction.intensity = Some(*intensity);
+                contraction.intensity = Some(e.intensity);
                 contraction.updated_at = timestamp;
                 self.repository.upsert(&contraction)
             }
-            LabourEvent::ContractionDeleted { contraction_id, .. } => {
-                self.repository.delete(*contraction_id)
-            }
-            LabourEvent::ContractionUpdated {
-                contraction_id,
-                start_time,
-                end_time,
-                intensity,
-                ..
-            } => {
-                let mut contraction = self
-                    .repository
-                    .get_by_id(*contraction_id)
-                    .unwrap_or_else(|_| panic!("No contraction found with id: {contraction_id}"));
-                let new_start_time = match start_time {
-                    Some(start_time) => start_time,
-                    None => contraction.duration.start_time(),
+            LabourEvent::ContractionDeleted(e) => self.repository.delete(e.contraction_id),
+            LabourEvent::ContractionUpdated(e) => {
+                let mut contraction =
+                    self.repository
+                        .get_by_id(e.contraction_id)
+                        .unwrap_or_else(|_| {
+                            panic!("No contraction found with id: {}", e.contraction_id)
+                        });
+                let new_start_time = match &e.start_time {
+                    Some(start_time) => *start_time,
+                    None => *contraction.duration.start_time(),
                 };
-                let new_end_time = match end_time {
-                    Some(end_time) => end_time,
-                    None => contraction.duration.end_time(),
+                let new_end_time = match &e.end_time {
+                    Some(end_time) => *end_time,
+                    None => *contraction.duration.end_time(),
                 };
-                let duration = Duration::create(*new_start_time, *new_end_time)?;
+                let duration = Duration::create(new_start_time, new_end_time)?;
                 contraction.duration_seconds = duration.duration_seconds();
                 contraction.duration = duration;
-                contraction.intensity = *intensity;
+                contraction.intensity = e.intensity;
                 self.repository.upsert(&contraction)
             }
             _ => Ok(()),

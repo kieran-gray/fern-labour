@@ -33,43 +33,41 @@ impl SubscriptionStatusReadModelProjector {
         let timestamp = metadata.timestamp;
 
         match event {
-            LabourEvent::SubscriberRequested {
-                labour_id,
-                subscriber_id,
-                subscription_id,
-            } if model.is_none() => Some(SubscriptionStatusReadModel::new(
-                *labour_id,
-                *subscription_id,
-                subscriber_id.clone(),
-                SubscriberStatus::REQUESTED,
-                timestamp,
-            )),
+            LabourEvent::SubscriberRequested(e) if model.is_none() => {
+                Some(SubscriptionStatusReadModel::new(
+                    e.labour_id,
+                    e.subscription_id,
+                    e.subscriber_id.clone(),
+                    SubscriberStatus::REQUESTED,
+                    timestamp,
+                ))
+            }
 
-            LabourEvent::SubscriberApproved { .. } => {
+            LabourEvent::SubscriberApproved(_) => {
                 let mut subscription = model?;
                 subscription.status = SubscriberStatus::SUBSCRIBED;
                 Some(subscription)
             }
 
-            LabourEvent::SubscriberRemoved { .. } => {
+            LabourEvent::SubscriberRemoved(_) => {
                 let mut subscription = model?;
                 subscription.status = SubscriberStatus::REMOVED;
                 Some(subscription)
             }
 
-            LabourEvent::SubscriberBlocked { .. } => {
+            LabourEvent::SubscriberBlocked(_) => {
                 let mut subscription = model?;
                 subscription.status = SubscriberStatus::BLOCKED;
                 Some(subscription)
             }
 
-            LabourEvent::SubscriberUnblocked { .. } => {
+            LabourEvent::SubscriberUnblocked(_) => {
                 let mut subscription = model?;
                 subscription.status = SubscriberStatus::REMOVED;
                 Some(subscription)
             }
 
-            LabourEvent::SubscriberUnsubscribed { .. } => {
+            LabourEvent::SubscriberUnsubscribed(_) => {
                 let mut subscription = model?;
                 subscription.status = SubscriberStatus::UNSUBSCRIBED;
                 Some(subscription)

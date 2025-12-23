@@ -5,9 +5,7 @@ use fern_labour_notifications_shared::service_clients::{
 use tracing::{debug, error};
 use worker::Response;
 
-use crate::clients::request_utils::{
-    build_json_post_request, service_headers, StatusCodeCategory,
-};
+use crate::clients::request_utils::{StatusCodeCategory, build_json_post_request, service_headers};
 
 pub struct FetcherDispatchClient {
     fetcher: worker::Fetcher,

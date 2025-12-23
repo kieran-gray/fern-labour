@@ -5,8 +5,13 @@ use uuid::Uuid;
 #[serde(tag = "type", content = "payload")]
 pub enum UserQuery {
     #[serde(rename = "GetUser")]
-    GetUser { labour_id: Uuid, user_id: String },
-    GetUsers { labour_id: Uuid }
+    GetUser {
+        labour_id: Uuid,
+        user_id: String,
+    },
+    GetUsers {
+        labour_id: Uuid,
+    },
 }
 
 impl UserQuery {

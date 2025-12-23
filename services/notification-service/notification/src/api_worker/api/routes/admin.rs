@@ -49,12 +49,7 @@ pub async fn handle_admin_command(
         AdminApiCommand::Internal(command) => ctx
             .data
             .do_client
-            .command(
-                notification_id,
-                command,
-                &user,
-                "/notification/command",
-            )
+            .command(notification_id, command, &user, "/notification/command")
             .await
             .map_err(|e| format!("Failed to send internal command to DO: {e}"))?,
     };

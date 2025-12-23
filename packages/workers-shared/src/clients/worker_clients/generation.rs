@@ -9,9 +9,7 @@ use tracing::{debug, error};
 use uuid::Uuid;
 use worker::Response;
 
-use crate::clients::request_utils::{
-    build_json_post_request, service_headers, StatusCodeCategory,
-};
+use crate::clients::request_utils::{StatusCodeCategory, build_json_post_request, service_headers};
 
 pub struct FetcherGenerationClient {
     fetcher: worker::Fetcher,

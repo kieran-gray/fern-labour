@@ -13,7 +13,7 @@ pub enum SubscriptionQuery {
     },
     GetUserSubscription {
         labour_id: Uuid,
-    }
+    },
 }
 
 impl SubscriptionQuery {

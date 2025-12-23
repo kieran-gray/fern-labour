@@ -1,7 +1,10 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{ContractionQuery, LabourQuery, LabourUpdateQuery, queries::{subscription::SubscriptionQuery, user::UserQuery}};
+use crate::{
+    ContractionQuery, LabourQuery, LabourUpdateQuery,
+    queries::{subscription::SubscriptionQuery, user::UserQuery},
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "payload")]
