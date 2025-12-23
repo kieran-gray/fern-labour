@@ -4,7 +4,6 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "payload")]
 pub enum AdminCommand {
-    #[serde(rename = "RebuildReadModels")]
     RebuildReadModels { aggregate_id: Uuid },
 }
 

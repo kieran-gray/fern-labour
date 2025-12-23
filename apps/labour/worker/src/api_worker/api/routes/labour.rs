@@ -1,3 +1,4 @@
+use fern_labour_labour_shared::{ApiCommand, LabourCommand};
 use fern_labour_workers_shared::{CorsContext, clients::worker_clients::auth::User};
 use serde::Serialize;
 use tracing::{error, info};
@@ -35,12 +36,18 @@ pub async fn handle_plan_labour(
     };
 
     let labour_id = Uuid::now_v7();
-
-    let domain_command = request_dto.into_domain(labour_id, &user);
+    let command = ApiCommand::Labour(LabourCommand::PlanLabour {
+        labour_id,
+        mother_id: user.user_id.clone(),
+        mother_name: user.name.clone().unwrap_or_else(|| "unknown".to_string()),
+        first_labour: request_dto.first_labour,
+        due_date: request_dto.due_date,
+        labour_name: request_dto.labour_name,
+    });
 
     ctx.data
         .do_client
-        .command(labour_id, domain_command, &user, "/labour/domain")
+        .send_raw_command(labour_id, command, &user, "/api/command")
         .await
         .map_err(|e| format!("Failed to send command to labour aggregate: {e}"))?;
 

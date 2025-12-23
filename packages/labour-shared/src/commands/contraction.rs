@@ -5,20 +5,15 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "payload")]
 pub enum ContractionCommand {
-    #[serde(rename = "StartContraction")]
     StartContraction {
         labour_id: Uuid,
         start_time: DateTime<Utc>,
     },
-
-    #[serde(rename = "EndContraction")]
     EndContraction {
         labour_id: Uuid,
         end_time: DateTime<Utc>,
         intensity: u8,
     },
-
-    #[serde(rename = "UpdateContraction")]
     UpdateContraction {
         labour_id: Uuid,
         contraction_id: Uuid,
@@ -26,8 +21,6 @@ pub enum ContractionCommand {
         end_time: Option<DateTime<Utc>>,
         intensity: Option<u8>,
     },
-
-    #[serde(rename = "DeleteContraction")]
     DeleteContraction {
         labour_id: Uuid,
         contraction_id: Uuid,

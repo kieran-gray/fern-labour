@@ -57,6 +57,21 @@ impl DurableObjectCQRSClient {
             .await
     }
 
+    pub async fn send_raw_command<C: Serialize>(
+        &self,
+        aggregate_id: Uuid,
+        command: C,
+        user: &User,
+        url: &str,
+    ) -> Result<Response> {
+        let body = self.serialize(&command)?;
+
+        let headers = self.create_headers_with_user(user)?;
+
+        self.send_request(aggregate_id, url, Method::Post, headers, Some(body))
+            .await
+    }
+
     pub async fn websocket_command(
         &self,
         aggregate_id: Uuid,

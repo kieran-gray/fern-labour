@@ -1,13 +1,11 @@
-use anyhow::Result;
 use chrono::{DateTime, Utc};
 use fern_labour_labour_shared::{
     ContractionCommand, LabourUpdateCommand, SubscriberCommand, SubscriptionCommand,
-    commands::labour::{LabourCommand as LabourApiCommand, PublicCommand},
+    commands::labour::LabourCommand as LabourApiCommand,
     value_objects::{
         LabourUpdateType, SubscriberAccessLevel, SubscriberContactMethod, SubscriberRole,
     },
 };
-use fern_labour_workers_shared::User;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -131,29 +129,24 @@ pub enum LabourCommand {
     },
 }
 
-impl TryFrom<(PublicCommand, Uuid, User)> for LabourCommand {
-    type Error = anyhow::Error;
-    fn try_from((command, labour_id, user): (PublicCommand, Uuid, User)) -> Result<Self> {
-        match command {
-            PublicCommand::PlanLabour {
-                first_labour,
-                due_date,
-                labour_name,
-            } => Ok(LabourCommand::PlanLabour {
-                labour_id,
-                mother_id: user.user_id,
-                mother_name: user.name.unwrap_or_default(),
-                first_labour,
-                due_date,
-                labour_name,
-            }),
-        }
-    }
-}
-
 impl From<LabourApiCommand> for LabourCommand {
     fn from(cmd: LabourApiCommand) -> Self {
         match cmd {
+            LabourApiCommand::PlanLabour {
+                labour_id,
+                mother_id,
+                mother_name,
+                first_labour,
+                due_date,
+                labour_name,
+            } => LabourCommand::PlanLabour {
+                labour_id,
+                mother_id,
+                mother_name,
+                first_labour,
+                due_date,
+                labour_name,
+            },
             LabourApiCommand::UpdateLabourPlan {
                 labour_id,
                 first_labour,

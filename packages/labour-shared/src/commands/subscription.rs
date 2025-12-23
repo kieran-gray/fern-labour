@@ -6,31 +6,26 @@ use crate::value_objects::SubscriberRole;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "payload")]
 pub enum SubscriptionCommand {
-    #[serde(rename = "ApproveSubscriber")]
     ApproveSubscriber {
         labour_id: Uuid,
         subscription_id: Uuid,
     },
 
-    #[serde(rename = "RemoveSubscriber")]
     RemoveSubscriber {
         labour_id: Uuid,
         subscription_id: Uuid,
     },
 
-    #[serde(rename = "BlockSubscriber")]
     BlockSubscriber {
         labour_id: Uuid,
         subscription_id: Uuid,
     },
 
-    #[serde(rename = "UnblockSubscriber")]
     UnblockSubscriber {
         labour_id: Uuid,
         subscription_id: Uuid,
     },
 
-    #[serde(rename = "UpdateSubscriberRole")]
     UpdateSubscriberRole {
         labour_id: Uuid,
         subscription_id: Uuid,
