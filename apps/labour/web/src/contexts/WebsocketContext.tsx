@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useLabourSession } from '@base/contexts';
 import { useAuth } from '@clerk/clerk-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface WebSocketContextValue {
   isConnected: boolean;
@@ -14,6 +15,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const { getToken } = useAuth();
   const { labourId } = useLabourSession();
   const [isConnected, setIsConnected] = useState(false);
+  const queryClient = useQueryClient();
 
   const wsRef = useRef<WebSocket | null>(null);
   const subscribersRef = useRef<Set<(message: any) => void>>(new Set());
@@ -47,6 +49,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
           console.log('[WebSocket] Connected');
           setIsConnected(true);
           wsRef.current = ws;
+          queryClient.invalidateQueries();
         };
 
         ws.onmessage = (event) => {

@@ -40,7 +40,7 @@ export const SubscriptionPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string | null>('details');
 
-  const { labourId, subscriptionId, setSubscriptionId } = useLabourSession();
+  const { labourId, subscriptionId, clearSession } = useLabourSession();
 
   if (!subscriptionId) {
     navigate('/subscriptions');
@@ -88,8 +88,11 @@ export const SubscriptionPage = () => {
   }
 
   if (isError || isLabourError) {
-    if (error?.message.includes('not found') || labourError?.message.includes('not found')) {
-      setSubscriptionId('');
+    if (
+      error?.message.includes('Authorization') ||
+      labourError?.message.includes('Authorization')
+    ) {
+      clearSession();
       navigate('/');
     }
     return (

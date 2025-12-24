@@ -14,7 +14,7 @@ export function ManageSubscriptionMenu({
   subscriptionId: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { setSubscriptionId } = useLabourSession();
+  const { clearSession } = useLabourSession();
 
   const client = useLabourV2Client();
   const unsubscribeMutation = useUnsubscribeV2(client);
@@ -22,7 +22,7 @@ export function ManageSubscriptionMenu({
   const handleConfirm = async () => {
     setIsModalOpen(false);
     await unsubscribeMutation.mutateAsync({ labourId, subscriptionId });
-    setSubscriptionId('');
+    clearSession();
   };
 
   const handleCancel = () => {

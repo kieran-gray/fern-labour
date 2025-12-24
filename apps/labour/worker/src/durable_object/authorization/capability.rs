@@ -43,10 +43,13 @@ pub fn capabilities_for(principal: &Principal) -> HashSet<Capability> {
                     Capability::ExecuteLabourCommand,
                     Capability::ReadLabour,
                     Capability::ManageOwnSubscription,
+                    Capability::ReadOwnSubscription,
                 ]),
-                SubscriberRole::FRIENDS_AND_FAMILY => {
-                    HashSet::from([Capability::ReadLabour, Capability::ManageOwnSubscription])
-                }
+                SubscriberRole::FRIENDS_AND_FAMILY => HashSet::from([
+                    Capability::ReadLabour,
+                    Capability::ManageOwnSubscription,
+                    Capability::ReadOwnSubscription,
+                ]),
             }
         }
 

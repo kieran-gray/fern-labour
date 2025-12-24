@@ -942,6 +942,7 @@ export function useUserSubscribedLaboursV2(client: LabourServiceV2Client) {
     },
     enabled: !!user?.sub,
     retry: 0,
+    staleTime: 0,
   });
 }
 
@@ -961,6 +962,7 @@ export function useUserSubscriptionsV2(client: LabourServiceV2Client) {
     },
     enabled: !!user?.sub,
     retry: 0,
+    staleTime: 0,
   });
 }
 

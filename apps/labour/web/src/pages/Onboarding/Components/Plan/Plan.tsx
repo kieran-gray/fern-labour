@@ -1,4 +1,5 @@
 import { LabourReadModel } from '@base/clients/labour_service';
+import { useLabourSession } from '@base/contexts';
 import { useLabourV2Client, usePlanLabourV2, useUpdateLabourPlanV2 } from '@base/hooks';
 import { validateLabourName } from '@base/shared-components/utils';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
@@ -11,7 +12,6 @@ import { useForm } from '@mantine/form';
 import image from './plan.svg';
 import classes from './Plan.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
-import { useLabourSession } from '@base/contexts';
 
 export default function Plan({ labour }: { labour: LabourReadModel | undefined }) {
   const navigate = useNavigate();

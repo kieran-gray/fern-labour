@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use fern_labour_labour_shared::value_objects::subscriber::status::SubscriberStatus;
+
 use crate::durable_object::{
     authorization::{
         Action, Capability, DenyReason, Principal, capabilities_for, required_capability,
@@ -38,10 +40,13 @@ impl Authorizer {
                         .subscriptions()
                         .iter()
                         .find(|s| s.subscriber_id() == user_id);
-                    if let Some(sub) = target_subscription
-                        && sub.subscriber_id() != user_id
-                    {
-                        return Err(DenyReason::CannotTargetOthers);
+                    if let Some(sub) = target_subscription {
+                        if sub.subscriber_id() != user_id {
+                            return Err(DenyReason::CannotTargetOthers);
+                        }
+                        if *sub.status() != SubscriberStatus::SUBSCRIBED {
+                            return Err(DenyReason::Unassociated);
+                        }
                     }
                 }
                 Self::check_permissions(&granted, &required)
