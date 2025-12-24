@@ -28,7 +28,7 @@ impl IdempotencyKey {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub enum Effect {
     SendNotification(NotificationIntent),
     IssueCommand {

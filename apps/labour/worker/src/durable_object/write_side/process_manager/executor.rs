@@ -13,7 +13,7 @@ use std::rc::Rc;
 
 use crate::durable_object::write_side::{
     application::command_processors::LabourCommandProcessor,
-    domain::LabourCommand,
+    domain::{LabourCommand, commands::subscription::SetSubscriptionToken},
     infrastructure::{SubscriptionTokenGenerator, UserStore},
     process_manager::types::*,
 };
@@ -294,11 +294,11 @@ impl EffectExecutor for LabourEffectExecutor {
                 let token = self
                     .token_generator
                     .generate(mother_id, &labour_id.to_string());
-                let command = LabourCommand::SetSubscriptionToken {
+                let command = LabourCommand::SetSubscriptionToken(SetSubscriptionToken {
                     labour_id: *labour_id,
                     mother_id: mother_id.clone(),
                     token,
-                };
+                });
                 let system_user = User::internal("process-manager");
                 self.command_processor
                     .handle_command(command, system_user)

@@ -2,7 +2,10 @@ use fern_labour_event_sourcing_rs::{HasPolicies, PolicyContext, PolicyFn};
 use fern_labour_labour_shared::value_objects::subscriber::status::SubscriberStatus;
 
 use crate::durable_object::write_side::{
-    domain::{Labour, LabourCommand, events::LabourBegun},
+    domain::{
+        Labour, LabourCommand, commands::labour_update::PostApplicationLabourUpdate,
+        events::LabourBegun,
+    },
     process_manager::types::{
         Effect, IdempotencyKey, NotificationContext, NotificationIntent, SubscriberNotification,
     },
@@ -65,9 +68,9 @@ fn post_application_generated_labour_begun_message(
             ctx.sequence,
             "application_labour_update",
         ),
-        command: LabourCommand::PostApplicationLabourUpdate {
+        command: LabourCommand::PostApplicationLabourUpdate(PostApplicationLabourUpdate {
             labour_id: event.labour_id,
             message: "labour_begun".to_string(),
-        },
+        }),
     }]
 }

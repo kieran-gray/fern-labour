@@ -14,13 +14,15 @@ pub struct PlanLabourDTO {
 
 impl PlanLabourDTO {
     pub fn into_domain(self, labour_id: Uuid, user: &User) -> LabourCommand {
-        LabourCommand::PlanLabour {
+        use crate::durable_object::write_side::domain::commands::labour::PlanLabour;
+
+        LabourCommand::PlanLabour(PlanLabour {
             labour_id,
             mother_id: user.user_id.clone(),
             mother_name: user.name.clone().unwrap_or_default(),
             first_labour: self.first_labour,
             due_date: self.due_date,
             labour_name: self.labour_name,
-        }
+        })
     }
 }

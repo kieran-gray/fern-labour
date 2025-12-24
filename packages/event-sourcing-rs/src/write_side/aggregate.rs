@@ -1,8 +1,6 @@
-use std::fmt::Debug;
-
-pub trait Aggregate: Sized + Debug + Clone {
-    type Event: Clone + Debug;
-    type Command: Debug;
+pub trait Aggregate: Sized + Clone {
+    type Event: Clone;
+    type Command;
     type Error: std::error::Error;
 
     fn aggregate_id(&self) -> String;

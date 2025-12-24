@@ -1,136 +1,60 @@
-use chrono::{DateTime, Utc};
+pub mod contraction;
+pub mod labour;
+pub mod labour_update;
+pub mod subscriber;
+pub mod subscription;
+
 use fern_labour_labour_shared::{
     ContractionCommand, LabourUpdateCommand, SubscriberCommand, SubscriptionCommand,
     commands::labour::LabourCommand as LabourApiCommand,
-    value_objects::{
-        LabourUpdateType, SubscriberAccessLevel, SubscriberContactMethod, SubscriberRole,
-    },
 };
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
+
+use contraction::{DeleteContraction, EndContraction, StartContraction, UpdateContraction};
+use labour::{
+    BeginLabour, CompleteLabour, DeleteLabour, PlanLabour, SendLabourInvite, UpdateLabourPlan,
+};
+use labour_update::{
+    DeleteLabourUpdate, PostApplicationLabourUpdate, PostLabourUpdate, UpdateLabourUpdateMessage,
+    UpdateLabourUpdateType,
+};
+use subscriber::{RequestAccess, Unsubscribe, UpdateAccessLevel, UpdateNotificationMethods};
+use subscription::{
+    ApproveSubscriber, BlockSubscriber, RemoveSubscriber, SetSubscriptionToken, UnblockSubscriber,
+    UpdateSubscriberRole,
+};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum LabourCommand {
-    PlanLabour {
-        labour_id: Uuid,
-        mother_id: String,
-        mother_name: String,
-        first_labour: bool,
-        due_date: DateTime<Utc>,
-        labour_name: Option<String>,
-    },
-    UpdateLabourPlan {
-        labour_id: Uuid,
-        first_labour: bool,
-        due_date: DateTime<Utc>,
-        labour_name: Option<String>,
-    },
-    BeginLabour {
-        labour_id: Uuid,
-    },
-    CompleteLabour {
-        labour_id: Uuid,
-        notes: Option<String>,
-    },
-    SendLabourInvite {
-        labour_id: Uuid,
-        invite_email: String,
-    },
-    DeleteLabour {
-        labour_id: Uuid,
-    },
+    PlanLabour(PlanLabour),
+    UpdateLabourPlan(UpdateLabourPlan),
+    BeginLabour(BeginLabour),
+    CompleteLabour(CompleteLabour),
+    SendLabourInvite(SendLabourInvite),
+    DeleteLabour(DeleteLabour),
     // Contraction Commands
-    StartContraction {
-        labour_id: Uuid,
-        start_time: DateTime<Utc>,
-    },
-    EndContraction {
-        labour_id: Uuid,
-        end_time: DateTime<Utc>,
-        intensity: u8,
-    },
-    UpdateContraction {
-        labour_id: Uuid,
-        contraction_id: Uuid,
-        start_time: Option<DateTime<Utc>>,
-        end_time: Option<DateTime<Utc>>,
-        intensity: Option<u8>,
-    },
-    DeleteContraction {
-        labour_id: Uuid,
-        contraction_id: Uuid,
-    },
+    StartContraction(StartContraction),
+    EndContraction(EndContraction),
+    UpdateContraction(UpdateContraction),
+    DeleteContraction(DeleteContraction),
     // Labour Update Commands
-    PostLabourUpdate {
-        labour_id: Uuid,
-        labour_update_type: LabourUpdateType,
-        message: String,
-    },
-    PostApplicationLabourUpdate {
-        labour_id: Uuid,
-        message: String,
-    },
-    UpdateLabourUpdateMessage {
-        labour_id: Uuid,
-        labour_update_id: Uuid,
-        message: String,
-    },
-    UpdateLabourUpdateType {
-        labour_id: Uuid,
-        labour_update_id: Uuid,
-        labour_update_type: LabourUpdateType,
-    },
-    DeleteLabourUpdate {
-        labour_id: Uuid,
-        labour_update_id: Uuid,
-    },
+    PostLabourUpdate(PostLabourUpdate),
+    PostApplicationLabourUpdate(PostApplicationLabourUpdate),
+    UpdateLabourUpdateMessage(UpdateLabourUpdateMessage),
+    UpdateLabourUpdateType(UpdateLabourUpdateType),
+    DeleteLabourUpdate(DeleteLabourUpdate),
     // Subscriber Commands
-    RequestAccess {
-        labour_id: Uuid,
-        subscriber_id: String,
-        token: String,
-    },
-    Unsubscribe {
-        labour_id: Uuid,
-        subscription_id: Uuid,
-    },
-    UpdateNotificationMethods {
-        labour_id: Uuid,
-        subscription_id: Uuid,
-        notification_methods: Vec<SubscriberContactMethod>,
-    },
-    UpdateAccessLevel {
-        labour_id: Uuid,
-        subscription_id: Uuid,
-        access_level: SubscriberAccessLevel,
-    },
+    RequestAccess(RequestAccess),
+    Unsubscribe(Unsubscribe),
+    UpdateNotificationMethods(UpdateNotificationMethods),
+    UpdateAccessLevel(UpdateAccessLevel),
     // Subscription Commands
-    SetSubscriptionToken {
-        labour_id: Uuid,
-        mother_id: String,
-        token: String,
-    },
-    ApproveSubscriber {
-        labour_id: Uuid,
-        subscription_id: Uuid,
-    },
-    RemoveSubscriber {
-        labour_id: Uuid,
-        subscription_id: Uuid,
-    },
-    BlockSubscriber {
-        labour_id: Uuid,
-        subscription_id: Uuid,
-    },
-    UnblockSubscriber {
-        labour_id: Uuid,
-        subscription_id: Uuid,
-    },
-    UpdateSubscriberRole {
-        labour_id: Uuid,
-        subscription_id: Uuid,
-        role: SubscriberRole,
-    },
+    SetSubscriptionToken(SetSubscriptionToken),
+    ApproveSubscriber(ApproveSubscriber),
+    RemoveSubscriber(RemoveSubscriber),
+    BlockSubscriber(BlockSubscriber),
+    UnblockSubscriber(UnblockSubscriber),
+    UpdateSubscriberRole(UpdateSubscriberRole),
 }
 
 impl From<LabourApiCommand> for LabourCommand {
@@ -143,38 +67,40 @@ impl From<LabourApiCommand> for LabourCommand {
                 first_labour,
                 due_date,
                 labour_name,
-            } => LabourCommand::PlanLabour {
+            } => LabourCommand::PlanLabour(PlanLabour {
                 labour_id,
                 mother_id,
                 mother_name,
                 first_labour,
                 due_date,
                 labour_name,
-            },
+            }),
             LabourApiCommand::UpdateLabourPlan {
                 labour_id,
                 first_labour,
                 due_date,
                 labour_name,
-            } => LabourCommand::UpdateLabourPlan {
+            } => LabourCommand::UpdateLabourPlan(UpdateLabourPlan {
                 labour_id,
                 first_labour,
                 due_date,
                 labour_name,
-            },
-            LabourApiCommand::BeginLabour { labour_id } => LabourCommand::BeginLabour { labour_id },
+            }),
+            LabourApiCommand::BeginLabour { labour_id } => {
+                LabourCommand::BeginLabour(BeginLabour { labour_id })
+            }
             LabourApiCommand::CompleteLabour { labour_id, notes } => {
-                LabourCommand::CompleteLabour { labour_id, notes }
+                LabourCommand::CompleteLabour(CompleteLabour { labour_id, notes })
             }
             LabourApiCommand::SendLabourInvite {
                 labour_id,
                 invite_email,
-            } => LabourCommand::SendLabourInvite {
+            } => LabourCommand::SendLabourInvite(SendLabourInvite {
                 labour_id,
                 invite_email,
-            },
+            }),
             LabourApiCommand::DeleteLabour { labour_id } => {
-                LabourCommand::DeleteLabour { labour_id }
+                LabourCommand::DeleteLabour(DeleteLabour { labour_id })
             }
         }
     }
@@ -186,39 +112,39 @@ impl From<ContractionCommand> for LabourCommand {
             ContractionCommand::StartContraction {
                 labour_id,
                 start_time,
-            } => LabourCommand::StartContraction {
+            } => LabourCommand::StartContraction(StartContraction {
                 labour_id,
                 start_time,
-            },
+            }),
             ContractionCommand::EndContraction {
                 labour_id,
                 end_time,
                 intensity,
-            } => LabourCommand::EndContraction {
+            } => LabourCommand::EndContraction(EndContraction {
                 labour_id,
                 end_time,
                 intensity,
-            },
+            }),
             ContractionCommand::UpdateContraction {
                 labour_id,
                 contraction_id,
                 start_time,
                 end_time,
                 intensity,
-            } => LabourCommand::UpdateContraction {
+            } => LabourCommand::UpdateContraction(UpdateContraction {
                 labour_id,
                 contraction_id,
                 start_time,
                 end_time,
                 intensity,
-            },
+            }),
             ContractionCommand::DeleteContraction {
                 labour_id,
                 contraction_id,
-            } => LabourCommand::DeleteContraction {
+            } => LabourCommand::DeleteContraction(DeleteContraction {
                 labour_id,
                 contraction_id,
-            },
+            }),
         }
     }
 }
@@ -230,36 +156,36 @@ impl From<LabourUpdateCommand> for LabourCommand {
                 labour_id,
                 labour_update_type,
                 message,
-            } => LabourCommand::PostLabourUpdate {
+            } => LabourCommand::PostLabourUpdate(PostLabourUpdate {
                 labour_id,
                 labour_update_type,
                 message,
-            },
+            }),
             LabourUpdateCommand::UpdateLabourUpdateMessage {
                 labour_id,
                 labour_update_id,
                 message,
-            } => LabourCommand::UpdateLabourUpdateMessage {
+            } => LabourCommand::UpdateLabourUpdateMessage(UpdateLabourUpdateMessage {
                 labour_id,
                 labour_update_id,
                 message,
-            },
+            }),
             LabourUpdateCommand::UpdateLabourUpdateType {
                 labour_id,
                 labour_update_id,
                 labour_update_type,
-            } => LabourCommand::UpdateLabourUpdateType {
+            } => LabourCommand::UpdateLabourUpdateType(UpdateLabourUpdateType {
                 labour_id,
                 labour_update_id,
                 labour_update_type,
-            },
+            }),
             LabourUpdateCommand::DeleteLabourUpdate {
                 labour_id,
                 labour_update_id,
-            } => LabourCommand::DeleteLabourUpdate {
+            } => LabourCommand::DeleteLabourUpdate(DeleteLabourUpdate {
                 labour_id,
                 labour_update_id,
-            },
+            }),
         }
     }
 }
@@ -267,36 +193,38 @@ impl From<LabourUpdateCommand> for LabourCommand {
 impl From<(SubscriberCommand, String)> for LabourCommand {
     fn from((cmd, subscriber_id): (SubscriberCommand, String)) -> Self {
         match cmd {
-            SubscriberCommand::RequestAccess { labour_id, token } => LabourCommand::RequestAccess {
-                labour_id,
-                subscriber_id,
-                token,
-            },
+            SubscriberCommand::RequestAccess { labour_id, token } => {
+                LabourCommand::RequestAccess(RequestAccess {
+                    labour_id,
+                    subscriber_id,
+                    token,
+                })
+            }
             SubscriberCommand::Unsubscribe {
                 labour_id,
                 subscription_id,
-            } => LabourCommand::Unsubscribe {
+            } => LabourCommand::Unsubscribe(Unsubscribe {
                 labour_id,
                 subscription_id,
-            },
+            }),
             SubscriberCommand::UpdateAccessLevel {
                 labour_id,
                 access_level,
                 subscription_id,
-            } => LabourCommand::UpdateAccessLevel {
+            } => LabourCommand::UpdateAccessLevel(UpdateAccessLevel {
                 labour_id,
                 subscription_id,
                 access_level,
-            },
+            }),
             SubscriberCommand::UpdateNotificationMethods {
                 labour_id,
                 subscription_id,
                 notification_methods,
-            } => LabourCommand::UpdateNotificationMethods {
+            } => LabourCommand::UpdateNotificationMethods(UpdateNotificationMethods {
                 labour_id,
                 subscription_id,
                 notification_methods,
-            },
+            }),
         }
     }
 }
@@ -307,40 +235,40 @@ impl From<SubscriptionCommand> for LabourCommand {
             SubscriptionCommand::ApproveSubscriber {
                 labour_id,
                 subscription_id,
-            } => LabourCommand::ApproveSubscriber {
+            } => LabourCommand::ApproveSubscriber(ApproveSubscriber {
                 labour_id,
                 subscription_id,
-            },
+            }),
             SubscriptionCommand::BlockSubscriber {
                 labour_id,
                 subscription_id,
-            } => LabourCommand::BlockSubscriber {
+            } => LabourCommand::BlockSubscriber(BlockSubscriber {
                 labour_id,
                 subscription_id,
-            },
+            }),
             SubscriptionCommand::RemoveSubscriber {
                 labour_id,
                 subscription_id,
-            } => LabourCommand::RemoveSubscriber {
+            } => LabourCommand::RemoveSubscriber(RemoveSubscriber {
                 labour_id,
                 subscription_id,
-            },
+            }),
             SubscriptionCommand::UnblockSubscriber {
                 labour_id,
                 subscription_id,
-            } => LabourCommand::UnblockSubscriber {
+            } => LabourCommand::UnblockSubscriber(UnblockSubscriber {
                 labour_id,
                 subscription_id,
-            },
+            }),
             SubscriptionCommand::UpdateSubscriberRole {
                 labour_id,
                 subscription_id,
                 role,
-            } => LabourCommand::UpdateSubscriberRole {
+            } => LabourCommand::UpdateSubscriberRole(UpdateSubscriberRole {
                 labour_id,
                 subscription_id,
                 role,
-            },
+            }),
         }
     }
 }

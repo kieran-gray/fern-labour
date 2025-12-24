@@ -49,7 +49,7 @@ mod tests {
         assert!(result.is_ok());
         assert!(matches!(
             result.unwrap(),
-            LabourCommand::StartContraction { .. }
+            LabourCommand::StartContraction(..)
         ));
     }
 

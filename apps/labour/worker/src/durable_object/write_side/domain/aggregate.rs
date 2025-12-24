@@ -1,9 +1,7 @@
 use std::fmt::Debug;
 
 use chrono::{DateTime, Duration, Utc};
-use fern_labour_labour_shared::value_objects::{
-    LabourPhase, LabourUpdateType, subscriber::status::SubscriberStatus,
-};
+use fern_labour_labour_shared::value_objects::{LabourPhase, LabourUpdateType};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -11,19 +9,11 @@ use fern_labour_event_sourcing_rs::Aggregate;
 
 use crate::durable_object::write_side::domain::{
     LabourCommand, LabourError, LabourEvent,
+    command_handlers::*,
     entities::{
         contraction::Contraction,
         labour_update::{ANNOUNCEMENT_COOLDOWN_SECONDS, LabourUpdate},
         subscription::Subscription,
-    },
-    events::{
-        ContractionDeleted, ContractionEnded, ContractionStarted, ContractionUpdated, LabourBegun,
-        LabourCompleted, LabourDeleted, LabourInviteSent, LabourPlanUpdated, LabourPlanned,
-        LabourUpdateDeleted, LabourUpdateMessageUpdated, LabourUpdatePosted,
-        LabourUpdateTypeUpdated, SubscriberAccessLevelUpdated, SubscriberApproved,
-        SubscriberBlocked, SubscriberNotificationMethodsUpdated, SubscriberRemoved,
-        SubscriberRequested, SubscriberRoleUpdated, SubscriberUnblocked, SubscriberUnsubscribed,
-        SubscriptionTokenSet,
     },
 };
 
@@ -45,6 +35,10 @@ impl Labour {
         &self.mother_id
     }
 
+    pub fn phase(&self) -> &LabourPhase {
+        &self.phase
+    }
+
     pub fn subscriptions(&self) -> &[Subscription] {
         &self.subscriptions
     }
@@ -53,28 +47,28 @@ impl Labour {
         self.subscription_token.as_ref()
     }
 
-    fn find_active_contraction(&self) -> Option<&Contraction> {
+    pub fn find_active_contraction(&self) -> Option<&Contraction> {
         self.contractions.iter().find(|c| c.is_active())
     }
 
-    fn find_contraction(&self, contraction_id: Uuid) -> Option<&Contraction> {
+    pub fn find_contraction(&self, contraction_id: Uuid) -> Option<&Contraction> {
         self.contractions.iter().find(|c| c.id() == contraction_id)
     }
 
-    fn find_labour_update(&self, labour_update_id: Uuid) -> Option<&LabourUpdate> {
+    pub fn find_labour_update(&self, labour_update_id: Uuid) -> Option<&LabourUpdate> {
         self.labour_updates
             .iter()
             .find(|lu| lu.id() == labour_update_id)
     }
 
-    fn find_last_announcement(&self) -> Option<&LabourUpdate> {
+    pub fn find_last_announcement(&self) -> Option<&LabourUpdate> {
         self.labour_updates
             .iter()
             .filter(|lu| lu.labour_update_type() == &LabourUpdateType::ANNOUNCEMENT)
             .max_by_key(|lu| lu.sent_time())
     }
 
-    fn can_send_announcement(&self) -> bool {
+    pub fn can_send_announcement(&self) -> bool {
         match self.find_last_announcement() {
             None => true,
             Some(last) => {
@@ -83,19 +77,22 @@ impl Labour {
         }
     }
 
-    fn find_subscription_from_subscriber_id(&self, subscriber_id: &str) -> Option<&Subscription> {
+    pub fn find_subscription_from_subscriber_id(
+        &self,
+        subscriber_id: &str,
+    ) -> Option<&Subscription> {
         self.subscriptions
             .iter()
             .find(|s| s.subscriber_id() == subscriber_id)
     }
 
-    fn find_subscription(&self, subscription_id: Uuid) -> Option<&Subscription> {
+    pub fn find_subscription(&self, subscription_id: Uuid) -> Option<&Subscription> {
         self.subscriptions
             .iter()
             .find(|s| s.id() == subscription_id)
     }
 
-    fn has_overlapping_contractions(
+    pub fn has_overlapping_contractions(
         &self,
         updated_contraction_id: Uuid,
         start_time: Option<DateTime<Utc>>,
@@ -312,683 +309,50 @@ impl Aggregate for Labour {
         state: Option<&Self>,
         command: Self::Command,
     ) -> std::result::Result<Vec<Self::Event>, Self::Error> {
-        let events = match command {
-            LabourCommand::PlanLabour {
-                labour_id,
-                mother_id,
-                first_labour,
-                due_date,
-                labour_name,
-                mother_name,
-            } => {
-                if let Some(labour) = state {
-                    return Err(LabourError::InvalidStateTransition(
-                        labour.phase.to_string(),
-                        LabourPhase::PLANNED.to_string(),
-                    ));
-                }
+        match command {
+            // Labour commands
+            LabourCommand::PlanLabour(cmd) => handle_plan_labour(state, cmd),
+            LabourCommand::UpdateLabourPlan(cmd) => handle_update_labour_plan(state, cmd),
+            LabourCommand::BeginLabour(cmd) => handle_begin_labour(state, cmd),
+            LabourCommand::CompleteLabour(cmd) => handle_complete_labour(state, cmd),
+            LabourCommand::SendLabourInvite(cmd) => handle_send_labour_invite(state, cmd),
+            LabourCommand::DeleteLabour(cmd) => handle_delete_labour(state, cmd),
 
-                vec![LabourEvent::LabourPlanned(LabourPlanned {
-                    labour_id,
-                    mother_id,
-                    mother_name,
-                    first_labour,
-                    due_date,
-                    labour_name,
-                })]
+            // Contraction commands
+            LabourCommand::StartContraction(cmd) => handle_start_contraction(state, cmd),
+            LabourCommand::EndContraction(cmd) => handle_end_contraction(state, cmd),
+            LabourCommand::UpdateContraction(cmd) => handle_update_contraction(state, cmd),
+            LabourCommand::DeleteContraction(cmd) => handle_delete_contraction(state, cmd),
+
+            // Labour update commands
+            LabourCommand::PostLabourUpdate(cmd) => handle_post_labour_update(state, cmd),
+            LabourCommand::PostApplicationLabourUpdate(cmd) => {
+                handle_post_application_labour_update(state, cmd)
             }
-            LabourCommand::UpdateLabourPlan {
-                labour_id,
-                first_labour,
-                due_date,
-                labour_name,
-            } => {
-                if state.is_none() {
-                    return Err(LabourError::NotFound);
-                };
-
-                vec![LabourEvent::LabourPlanUpdated(LabourPlanUpdated {
-                    labour_id,
-                    first_labour,
-                    due_date,
-                    labour_name,
-                })]
+            LabourCommand::UpdateLabourUpdateType(cmd) => {
+                handle_update_labour_update_type(state, cmd)
             }
-            LabourCommand::BeginLabour { labour_id } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if labour.phase != LabourPhase::PLANNED {
-                    return Err(LabourError::InvalidStateTransition(
-                        labour.phase.to_string(),
-                        LabourPhase::EARLY.to_string(),
-                    ));
-                }
-                vec![LabourEvent::LabourBegun(LabourBegun {
-                    labour_id,
-                    start_time: Utc::now(),
-                })]
+            LabourCommand::UpdateLabourUpdateMessage(cmd) => {
+                handle_update_labour_update_message(state, cmd)
             }
-            LabourCommand::CompleteLabour { labour_id, notes } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
+            LabourCommand::DeleteLabourUpdate(cmd) => handle_delete_labour_update(state, cmd),
 
-                if labour.phase == LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidStateTransition(
-                        labour.phase.to_string(),
-                        LabourPhase::COMPLETE.to_string(),
-                    ));
-                }
-
-                if labour.find_active_contraction().is_some() {
-                    return Err(LabourError::ValidationError(
-                        "Cannot complete labour with active contraction".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::LabourCompleted(LabourCompleted {
-                    labour_id,
-                    notes,
-                    end_time: Utc::now(),
-                })]
+            // Subscriber commands
+            LabourCommand::RequestAccess(cmd) => handle_request_access(state, cmd),
+            LabourCommand::Unsubscribe(cmd) => handle_unsubscribe(state, cmd),
+            LabourCommand::UpdateNotificationMethods(cmd) => {
+                handle_update_notification_methods(state, cmd)
             }
-            LabourCommand::SendLabourInvite {
-                labour_id,
-                invite_email,
-            } => {
-                // TODO rate limiting checks per invite_email
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
+            LabourCommand::UpdateAccessLevel(cmd) => handle_update_access_level(state, cmd),
 
-                if labour.phase == LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot invite to completed labour".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::LabourInviteSent(LabourInviteSent {
-                    labour_id,
-                    invite_email,
-                })]
-            }
-            LabourCommand::DeleteLabour { labour_id } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if labour.phase != LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot delete active labour".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::LabourDeleted(LabourDeleted { labour_id })]
-            }
-            LabourCommand::StartContraction {
-                labour_id,
-                start_time,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if labour.phase == LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot start contraction in completed labour".to_string(),
-                    ));
-                }
-
-                if labour.find_active_contraction().is_some() {
-                    return Err(LabourError::InvalidCommand(
-                        "Labour already has a contraction in progress".to_string(),
-                    ));
-                }
-
-                let mut events = vec![];
-
-                if labour.phase == LabourPhase::PLANNED {
-                    events.push(LabourEvent::LabourBegun(LabourBegun {
-                        labour_id,
-                        start_time: Utc::now(),
-                    }));
-                    events.push(LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
-                        labour_id,
-                        labour_update_id: Uuid::now_v7(),
-                        labour_update_type: LabourUpdateType::PRIVATE_NOTE,
-                        message: "labour_begun".to_string(),
-                        application_generated: true,
-                        sent_time: Utc::now(),
-                    }))
-                }
-
-                events.push(LabourEvent::ContractionStarted(ContractionStarted {
-                    labour_id,
-                    contraction_id: Uuid::now_v7(),
-                    start_time,
-                }));
-
-                events
-            }
-            LabourCommand::EndContraction {
-                labour_id,
-                end_time,
-                intensity,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if labour.phase == LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot start contraction in completed labour".to_string(),
-                    ));
-                }
-
-                match labour.find_active_contraction() {
-                    Some(contraction) => vec![LabourEvent::ContractionEnded(ContractionEnded {
-                        labour_id,
-                        contraction_id: contraction.id(),
-                        end_time,
-                        intensity,
-                    })],
-                    None => {
-                        return Err(LabourError::InvalidCommand(
-                            "Labour does not have an active contraction".to_string(),
-                        ));
-                    }
-                }
-            }
-            LabourCommand::UpdateContraction {
-                labour_id,
-                contraction_id,
-                start_time,
-                end_time,
-                intensity,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if labour.phase == LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot update contraction in completed labour".to_string(),
-                    ));
-                }
-
-                let Some(contraction) = labour.find_contraction(contraction_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Contraction not found".to_string(),
-                    ));
-                };
-
-                if contraction.is_active() {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot update active contraction".to_string(),
-                    ));
-                }
-
-                if (start_time.is_some() || end_time.is_some())
-                    && labour.has_overlapping_contractions(contraction_id, start_time, end_time)
-                {
-                    return Err(LabourError::ValidationError(
-                        "Updated contraction would overlap with existing contractions".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::ContractionUpdated(ContractionUpdated {
-                    labour_id,
-                    contraction_id,
-                    start_time,
-                    end_time,
-                    intensity,
-                })]
-            }
-            LabourCommand::DeleteContraction {
-                labour_id,
-                contraction_id,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if labour.phase == LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot delete contraction in completed labour".to_string(),
-                    ));
-                }
-
-                let Some(contraction) = labour.find_contraction(contraction_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Contraction not found".to_string(),
-                    ));
-                };
-
-                if contraction.is_active() {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot delete active contraction".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::ContractionDeleted(ContractionDeleted {
-                    labour_id,
-                    contraction_id,
-                })]
-            }
-            LabourCommand::PostLabourUpdate {
-                labour_id,
-                labour_update_type,
-                message,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if labour_update_type == LabourUpdateType::ANNOUNCEMENT
-                    && !labour.can_send_announcement()
-                {
-                    return Err(LabourError::InvalidCommand(
-                        "Too soon since last announcement".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
-                    labour_id,
-                    labour_update_id: Uuid::now_v7(),
-                    labour_update_type,
-                    message,
-                    application_generated: false,
-                    sent_time: Utc::now(),
-                })]
-            }
-            LabourCommand::PostApplicationLabourUpdate { labour_id, message } => {
-                if state.is_none() {
-                    return Err(LabourError::NotFound);
-                };
-
-                vec![LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
-                    labour_id,
-                    labour_update_id: Uuid::now_v7(),
-                    labour_update_type: LabourUpdateType::PRIVATE_NOTE,
-                    message,
-                    application_generated: true,
-                    sent_time: Utc::now(),
-                })]
-            }
-            LabourCommand::UpdateLabourUpdateType {
-                labour_id,
-                labour_update_id,
-                labour_update_type,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(labour_update) = labour.find_labour_update(labour_update_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Labour update not found".to_string(),
-                    ));
-                };
-
-                if labour_update.labour_update_type() == &LabourUpdateType::ANNOUNCEMENT {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot update an announcement".to_string(),
-                    ));
-                }
-
-                if labour_update_type == LabourUpdateType::ANNOUNCEMENT
-                    && !labour.can_send_announcement()
-                {
-                    return Err(LabourError::InvalidCommand(
-                        "Too soon since last announcement".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::LabourUpdateTypeUpdated(
-                    LabourUpdateTypeUpdated {
-                        labour_id,
-                        labour_update_id,
-                        labour_update_type,
-                    },
-                )]
-            }
-            LabourCommand::UpdateLabourUpdateMessage {
-                labour_id,
-                labour_update_id,
-                message,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(labour_update) = labour.find_labour_update(labour_update_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Labour update not found".to_string(),
-                    ));
-                };
-
-                if labour_update.labour_update_type() == &LabourUpdateType::ANNOUNCEMENT {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot update an announcement".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::LabourUpdateMessageUpdated(
-                    LabourUpdateMessageUpdated {
-                        labour_id,
-                        labour_update_id,
-                        message,
-                    },
-                )]
-            }
-            LabourCommand::DeleteLabourUpdate {
-                labour_id,
-                labour_update_id,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(_) = labour.find_labour_update(labour_update_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Labour update not found".to_string(),
-                    ));
-                };
-
-                vec![LabourEvent::LabourUpdateDeleted(LabourUpdateDeleted {
-                    labour_id,
-                    labour_update_id,
-                })]
-            }
-            LabourCommand::SetSubscriptionToken {
-                labour_id,
-                mother_id,
-                token,
-            } => {
-                let Some(_) = state else {
-                    return Err(LabourError::NotFound);
-                };
-                vec![LabourEvent::SubscriptionTokenSet(SubscriptionTokenSet {
-                    labour_id,
-                    mother_id,
-                    token,
-                })]
-            }
-            LabourCommand::RequestAccess {
-                labour_id,
-                subscriber_id,
-                token,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if subscriber_id == labour.mother_id {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot subscribe to own labour".to_string(),
-                    ));
-                }
-
-                if labour.phase == LabourPhase::COMPLETE {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot subscribe to completed labour".to_string(),
-                    ));
-                }
-
-                let Some(ref subscription_token) = labour.subscription_token else {
-                    return Err(LabourError::InvalidCommand(
-                        "Labour has no subscription token set".to_string(),
-                    ));
-                };
-
-                if &token != subscription_token {
-                    return Err(LabourError::InvalidCommand(
-                        "Incorrect subscription token".to_string(),
-                    ));
-                }
-
-                let mut events = vec![];
-
-                if let Some(subscription) =
-                    labour.find_subscription_from_subscriber_id(&subscriber_id)
-                {
-                    if [
-                        SubscriberStatus::BLOCKED,
-                        SubscriberStatus::SUBSCRIBED,
-                        SubscriberStatus::REQUESTED,
-                    ]
-                    .contains(subscription.status())
-                    {
-                        return Err(LabourError::InvalidCommand(
-                            "Cannot subscribe to labour".to_string(),
-                        ));
-                    }
-                    events.push(LabourEvent::SubscriberRequested(SubscriberRequested {
-                        labour_id,
-                        subscriber_id,
-                        subscription_id: subscription.id(),
-                    }))
-                } else {
-                    events.push(LabourEvent::SubscriberRequested(SubscriberRequested {
-                        labour_id,
-                        subscriber_id,
-                        subscription_id: Uuid::now_v7(),
-                    }))
-                }
-                events
-            }
-            LabourCommand::Unsubscribe {
-                labour_id,
-                subscription_id,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(subscription) = labour.find_subscription(subscription_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription not found".to_string(),
-                    ));
-                };
-
-                if subscription.status() != &SubscriberStatus::SUBSCRIBED {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot unsubscribe from labour".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::SubscriberUnsubscribed(
-                    SubscriberUnsubscribed {
-                        labour_id,
-                        subscription_id,
-                    },
-                )]
-            }
-            LabourCommand::UpdateNotificationMethods {
-                labour_id,
-                subscription_id,
-                notification_methods,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                if labour.find_subscription(subscription_id).is_none() {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription not found".to_string(),
-                    ));
-                };
-
-                vec![LabourEvent::SubscriberNotificationMethodsUpdated(
-                    SubscriberNotificationMethodsUpdated {
-                        labour_id,
-                        subscription_id,
-                        notification_methods,
-                    },
-                )]
-            }
-            LabourCommand::UpdateAccessLevel {
-                labour_id,
-                subscription_id,
-                access_level,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(subscription) = labour.find_subscription(subscription_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription not found".to_string(),
-                    ));
-                };
-
-                if subscription.access_level() == &access_level {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription already has access level".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::SubscriberAccessLevelUpdated(
-                    SubscriberAccessLevelUpdated {
-                        labour_id,
-                        subscription_id,
-                        access_level,
-                    },
-                )]
-            }
-            LabourCommand::ApproveSubscriber {
-                labour_id,
-                subscription_id,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(subscription) = labour.find_subscription(subscription_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription not found".to_string(),
-                    ));
-                };
-
-                if subscription.status() != &SubscriberStatus::REQUESTED {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription is not in REQUESTED state".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::SubscriberApproved(SubscriberApproved {
-                    labour_id,
-                    subscription_id,
-                })]
-            }
-            LabourCommand::RemoveSubscriber {
-                labour_id,
-                subscription_id,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(subscription) = labour.find_subscription(subscription_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription not found".to_string(),
-                    ));
-                };
-
-                if [SubscriberStatus::BLOCKED, SubscriberStatus::REMOVED]
-                    .contains(subscription.status())
-                {
-                    return Err(LabourError::InvalidCommand(
-                        "Cannot remove subscriber".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::SubscriberRemoved(SubscriberRemoved {
-                    labour_id,
-                    subscription_id,
-                })]
-            }
-            LabourCommand::BlockSubscriber {
-                labour_id,
-                subscription_id,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(subscription) = labour.find_subscription(subscription_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription not found".to_string(),
-                    ));
-                };
-
-                if subscription.status() == &SubscriberStatus::BLOCKED {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscriber is already blocked".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::SubscriberBlocked(SubscriberBlocked {
-                    labour_id,
-                    subscription_id,
-                })]
-            }
-            LabourCommand::UnblockSubscriber {
-                labour_id,
-                subscription_id,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(subscription) = labour.find_subscription(subscription_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription not found".to_string(),
-                    ));
-                };
-
-                if subscription.status() != &SubscriberStatus::BLOCKED {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscriber is not blocked".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::SubscriberUnblocked(SubscriberUnblocked {
-                    labour_id,
-                    subscription_id,
-                })]
-            }
-            LabourCommand::UpdateSubscriberRole {
-                labour_id,
-                subscription_id,
-                role,
-            } => {
-                let Some(labour) = state else {
-                    return Err(LabourError::NotFound);
-                };
-
-                let Some(subscription) = labour.find_subscription(subscription_id) else {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscription not found".to_string(),
-                    ));
-                };
-
-                if &role == subscription.role() {
-                    return Err(LabourError::InvalidCommand(
-                        "Subscriber already has role".to_string(),
-                    ));
-                }
-
-                vec![LabourEvent::SubscriberRoleUpdated(SubscriberRoleUpdated {
-                    labour_id,
-                    subscription_id,
-                    role,
-                })]
-            }
-        };
-        Ok(events)
+            // Subscription commands
+            LabourCommand::SetSubscriptionToken(cmd) => handle_set_subscription_token(state, cmd),
+            LabourCommand::ApproveSubscriber(cmd) => handle_approve_subscriber(state, cmd),
+            LabourCommand::RemoveSubscriber(cmd) => handle_remove_subscriber(state, cmd),
+            LabourCommand::BlockSubscriber(cmd) => handle_block_subscriber(state, cmd),
+            LabourCommand::UnblockSubscriber(cmd) => handle_unblock_subscriber(state, cmd),
+            LabourCommand::UpdateSubscriberRole(cmd) => handle_update_subscriber_role(state, cmd),
+        }
     }
 
     fn from_events(events: &[Self::Event]) -> Option<Self> {

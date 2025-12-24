@@ -6,7 +6,7 @@ use fern_labour_labour_shared::value_objects::{
 
 use crate::durable_object::{
     authorization::{Action, Principal, QueryAction},
-    write_side::domain::{LabourCommand},
+    write_side::domain::LabourCommand,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -15,6 +15,7 @@ pub enum Capability {
     ManageLabour,
     ExecuteLabourCommand,
     ReadLabour,
+    UpdateSubscriptionAccessLevel,
     ManageOwnSubscription,
     ManageLabourSubscriptions,
     ManageSubscriptionToken,
@@ -52,6 +53,7 @@ pub fn capabilities_for(principal: &Principal) -> HashSet<Capability> {
         Principal::Internal => HashSet::from([
             Capability::PostApplicationLabourUpdates,
             Capability::ManageSubscriptionToken,
+            Capability::UpdateSubscriptionAccessLevel,
         ]),
 
         Principal::Unassociated => HashSet::new(),
@@ -61,38 +63,39 @@ pub fn capabilities_for(principal: &Principal) -> HashSet<Capability> {
 pub fn required_capability(action: &Action) -> Capability {
     match action {
         Action::Command(cmd) => match cmd {
-            LabourCommand::PlanLabour { .. }
-            | LabourCommand::DeleteLabour { .. }
-            | LabourCommand::SendLabourInvite { .. } => Capability::ManageLabour,
+            LabourCommand::PlanLabour(..)
+            | LabourCommand::DeleteLabour(..)
+            | LabourCommand::SendLabourInvite(..) => Capability::ManageLabour,
 
-            LabourCommand::UpdateLabourPlan { .. }
-            | LabourCommand::BeginLabour { .. }
-            | LabourCommand::CompleteLabour { .. }
-            | LabourCommand::StartContraction { .. }
-            | LabourCommand::EndContraction { .. }
-            | LabourCommand::UpdateContraction { .. }
-            | LabourCommand::DeleteContraction { .. }
-            | LabourCommand::PostLabourUpdate { .. }
-            | LabourCommand::UpdateLabourUpdateMessage { .. }
-            | LabourCommand::UpdateLabourUpdateType { .. }
-            | LabourCommand::DeleteLabourUpdate { .. } => Capability::ExecuteLabourCommand,
+            LabourCommand::UpdateLabourPlan(..)
+            | LabourCommand::BeginLabour(..)
+            | LabourCommand::CompleteLabour(..)
+            | LabourCommand::StartContraction(..)
+            | LabourCommand::EndContraction(..)
+            | LabourCommand::UpdateContraction(..)
+            | LabourCommand::DeleteContraction(..)
+            | LabourCommand::PostLabourUpdate(..)
+            | LabourCommand::UpdateLabourUpdateMessage(..)
+            | LabourCommand::UpdateLabourUpdateType(..)
+            | LabourCommand::DeleteLabourUpdate(..) => Capability::ExecuteLabourCommand,
 
-            LabourCommand::PostApplicationLabourUpdate { .. } => {
+            LabourCommand::PostApplicationLabourUpdate(..) => {
                 Capability::PostApplicationLabourUpdates
             }
 
-            LabourCommand::RequestAccess { .. }
-            | LabourCommand::Unsubscribe { .. }
-            | LabourCommand::UpdateNotificationMethods { .. }
-            | LabourCommand::UpdateAccessLevel { .. } => Capability::ManageOwnSubscription,
+            LabourCommand::RequestAccess(..)
+            | LabourCommand::Unsubscribe(..)
+            | LabourCommand::UpdateNotificationMethods(..) => Capability::ManageOwnSubscription,
 
-            LabourCommand::SetSubscriptionToken { .. } => Capability::ManageSubscriptionToken,
+            LabourCommand::UpdateAccessLevel(..) => Capability::UpdateSubscriptionAccessLevel,
 
-            LabourCommand::ApproveSubscriber { .. }
-            | LabourCommand::RemoveSubscriber { .. }
-            | LabourCommand::BlockSubscriber { .. }
-            | LabourCommand::UnblockSubscriber { .. }
-            | LabourCommand::UpdateSubscriberRole { .. } => Capability::ManageLabourSubscriptions,
+            LabourCommand::SetSubscriptionToken(..) => Capability::ManageSubscriptionToken,
+
+            LabourCommand::ApproveSubscriber(..)
+            | LabourCommand::RemoveSubscriber(..)
+            | LabourCommand::BlockSubscriber(..)
+            | LabourCommand::UnblockSubscriber(..)
+            | LabourCommand::UpdateSubscriberRole(..) => Capability::ManageLabourSubscriptions,
         },
 
         Action::Query(q) => match q {
