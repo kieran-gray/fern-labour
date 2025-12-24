@@ -4,7 +4,7 @@ use fern_labour_labour_shared::value_objects::SubscriberContactMethod;
 use crate::durable_object::write_side::{
     domain::{Labour, events::SubscriberRequested},
     process_manager::types::{
-        Effect, IdempotencyKey, LabourOwnerNotification, NotificationContext, NotificationIntent,
+        Effect, IdempotencyKey, MotherNotification, NotificationContext, NotificationIntent,
     },
 };
 
@@ -27,10 +27,10 @@ fn notify_mother_on_subscriber_request(
             &mother_id,
             "subscriber_requested",
         ),
-        context: NotificationContext::LabourOwner {
+        context: NotificationContext::Mother {
             recipient_user_id: mother_id,
             channel: SubscriberContactMethod::EMAIL,
-            notification: LabourOwnerNotification::SubscriberRequested {
+            notification: MotherNotification::SubscriberRequested {
                 labour_id: event.labour_id,
                 subscription_id: event.subscription_id,
                 requester_user_id: event.subscriber_id.clone(),

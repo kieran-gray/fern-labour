@@ -48,7 +48,7 @@ where
             }
         }
     } else {
-        User::internal("anonymous".to_string())
+        User::internal("notification")
     };
 
     handler(req, ctx, cors_context, user).await

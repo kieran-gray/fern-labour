@@ -47,9 +47,9 @@ pub struct User {
 }
 
 impl User {
-    pub fn internal(user_id: String) -> Self {
+    pub fn internal(user_id: &str) -> Self {
         Self {
-            user_id,
+            user_id: format!("fern-labour-internal-{user_id}"),
             issuer: "internal".to_string(),
             email: None,
             phone_number: None,

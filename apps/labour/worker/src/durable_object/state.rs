@@ -38,12 +38,11 @@ use crate::durable_object::{
             users::query::UserQuery,
         },
     },
-    security::{token_generator::SplitMix64TokenGenerator, user_storage::UserStorage},
     websocket::event_broadcaster::WebSocketEventBroadcaster,
     write_side::{
         application::{AdminCommandProcessor, LabourCommandProcessor},
-        domain::LabourEvent,
-        infrastructure::SqlEventStore,
+        domain::{Labour, LabourEvent},
+        infrastructure::{SplitMix64TokenGenerator, SqlEventStore, UserStore},
         process_manager::{EffectLedger, LabourEffectExecutor, ProcessManager},
     },
 };
@@ -51,10 +50,11 @@ use crate::durable_object::{
 pub struct WriteModel {
     pub labour_command_processor: LabourCommandProcessor,
     pub admin_command_processor: AdminCommandProcessor,
-    pub user_storage: UserStorage,
+    pub user_store: UserStore,
 }
 
 pub struct ReadModel {
+    pub repository: AggregateRepository<Labour>,
     pub event_query: EventQuery,
     pub user_query: UserQuery,
     pub labour_query: LabourReadModelQuery,
@@ -97,7 +97,7 @@ impl AggregateServices {
 
         let admin_command_processor = AdminCommandProcessor::create(checkpoint_repository);
 
-        let user_storage = UserStorage::create(sql);
+        let user_storage = UserStore::create(sql);
         user_storage
             .init_schema()
             .context("Failed to init user storage")?;
@@ -105,13 +105,14 @@ impl AggregateServices {
         Ok(WriteModel {
             labour_command_processor,
             admin_command_processor,
-            user_storage,
+            user_store: user_storage,
         })
     }
 
     fn build_read_model(state: &State, event_store: Rc<dyn EventStoreTrait>) -> Result<ReadModel> {
         let sql = state.storage().sql();
-        let event_query = EventQuery::new(event_store);
+        let event_query = EventQuery::new(event_store.clone());
+        let repository = AggregateRepository::new(event_store.clone());
 
         let labour_repository = Box::new(SqlLabourRepository::create(sql.clone()));
         let labour_query = LabourReadModelQuery::create(labour_repository);
@@ -128,10 +129,11 @@ impl AggregateServices {
         let sub_token_repo = Box::new(SqlSubscriptionTokenRepository::create(sql.clone()));
         let subscription_token_query = SubscriptionTokenQuery::create(sub_token_repo);
 
-        let user_storage = UserStorage::create(sql);
+        let user_storage = UserStore::create(sql);
         let user_query = UserQuery::new(user_storage);
 
         Ok(ReadModel {
+            repository,
             event_query,
             user_query,
             labour_query,
@@ -273,7 +275,7 @@ impl AggregateServices {
         let subscription_token_generator =
             Box::new(SplitMix64TokenGenerator::create(subscription_token_salt));
 
-        let user_storage = UserStorage::create(sql);
+        let user_storage = UserStore::create(sql);
 
         let executor = LabourEffectExecutor::new(
             user_storage,

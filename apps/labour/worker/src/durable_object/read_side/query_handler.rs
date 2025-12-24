@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use fern_labour_event_sourcing_rs::PaginatedResponse;
 use fern_labour_labour_shared::{
     ApiQuery, ContractionQuery, LabourQuery, LabourUpdateQuery,
@@ -13,20 +13,53 @@ use super::read_models::{
     subscription_token::SubscriptionTokenQueryHandler, subscriptions::SubscriptionQueryHandler,
 };
 use crate::durable_object::{
+    authorization::{Action, Authorizer, QueryAction, resolve_principal},
     http::utils::{build_paginated_response, decode_cursor},
     state::ReadModel,
 };
 
 pub struct QueryHandler<'a> {
     read_model: &'a ReadModel,
+    authorizer: Authorizer,
 }
 
 impl<'a> QueryHandler<'a> {
     pub fn new(read_model: &'a ReadModel) -> Self {
-        Self { read_model }
+        Self {
+            read_model,
+            authorizer: Authorizer::new(),
+        }
     }
 
     pub fn handle(&self, query: ApiQuery, user: &User) -> Result<Value> {
+        let aggregate = self.read_model.repository.load()?;
+
+        let action = match &query {
+            ApiQuery::Labour(_) => Action::Query(QueryAction::GetLabour),
+            ApiQuery::Contraction(_) => Action::Query(QueryAction::GetContractions),
+            ApiQuery::LabourUpdate(_) => Action::Query(QueryAction::GetLabourUpdates),
+            ApiQuery::Subscription(sq) => match sq {
+                SubscriptionQuery::GetSubscriptionToken { .. } => {
+                    Action::Query(QueryAction::GetSubscriptionToken)
+                }
+                SubscriptionQuery::GetLabourSubscriptions { .. } => {
+                    Action::Query(QueryAction::GetLabourSubscriptions)
+                }
+                SubscriptionQuery::GetUserSubscription { .. } => {
+                    Action::Query(QueryAction::GetUserSubscription)
+                }
+            },
+            ApiQuery::User(uq) => match uq {
+                UserQuery::GetUser { .. } => Action::Query(QueryAction::GetUser),
+                UserQuery::GetUsers { .. } => Action::Query(QueryAction::GetUsers),
+            },
+        };
+
+        let principal = resolve_principal(user, aggregate.as_ref());
+        self.authorizer
+            .authorize(&principal, &action, aggregate.as_ref())
+            .map_err(|e| anyhow!("Authorization failed: {}", e))?;
+
         match query {
             ApiQuery::Labour(q) => self.handle_labour(q),
             ApiQuery::Contraction(q) => self.handle_contraction(q),

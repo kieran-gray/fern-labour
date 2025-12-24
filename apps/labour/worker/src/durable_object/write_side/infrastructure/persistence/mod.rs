@@ -1,2 +1,2 @@
 pub mod event_store;
-pub mod policy_application_tracker;
+pub mod user_store;

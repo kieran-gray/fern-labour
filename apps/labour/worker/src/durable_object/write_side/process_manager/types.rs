@@ -80,10 +80,10 @@ pub enum NotificationContext {
         sender_id: String,
         notification: SubscriberNotification,
     },
-    LabourOwner {
+    Mother {
         recipient_user_id: String,
         channel: SubscriberContactMethod,
-        notification: LabourOwnerNotification,
+        notification: MotherNotification,
     },
     Email {
         email: String,
@@ -95,7 +95,7 @@ pub enum NotificationContext {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum SubscriberNotification {
-    LabourStarted {
+    LabourBegun {
         labour_id: Uuid,
     },
     LabourCompleted {
@@ -113,7 +113,7 @@ pub enum SubscriberNotification {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
-pub enum LabourOwnerNotification {
+pub enum MotherNotification {
     SubscriberRequested {
         labour_id: Uuid,
         subscription_id: Uuid,

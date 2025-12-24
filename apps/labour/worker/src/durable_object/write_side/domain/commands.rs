@@ -66,6 +66,10 @@ pub enum LabourCommand {
         labour_update_type: LabourUpdateType,
         message: String,
     },
+    PostApplicationLabourUpdate {
+        labour_id: Uuid,
+        message: String,
+    },
     UpdateLabourUpdateMessage {
         labour_id: Uuid,
         labour_update_id: Uuid,

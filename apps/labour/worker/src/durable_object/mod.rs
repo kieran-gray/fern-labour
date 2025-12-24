@@ -1,7 +1,7 @@
+pub mod authorization;
 pub mod exceptions;
 pub mod http;
 pub mod read_side;
-pub mod security;
 pub mod state;
 pub mod websocket;
 pub mod write_side;

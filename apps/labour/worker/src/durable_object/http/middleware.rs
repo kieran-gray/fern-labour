@@ -18,7 +18,7 @@ where
     if let Err(e) = ctx
         .data
         .write_model()
-        .user_storage
+        .user_store
         .save_user_if_not_exists(&user)
     {
         error!(error = %e, user_id = %user.user_id, "Failed to save user");

@@ -3,7 +3,7 @@ use fern_labour_workers_shared::clients::worker_clients::auth::User;
 use serde::{Deserialize, Serialize};
 use worker::SqlStorage;
 
-pub struct UserStorage {
+pub struct UserStore {
     sql: SqlStorage,
 }
 
@@ -32,7 +32,7 @@ impl From<UserRow> for User {
     }
 }
 
-impl UserStorage {
+impl UserStore {
     pub fn create(sql: SqlStorage) -> Self {
         Self { sql }
     }

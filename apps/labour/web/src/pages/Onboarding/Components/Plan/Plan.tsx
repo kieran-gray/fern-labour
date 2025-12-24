@@ -11,9 +11,11 @@ import { useForm } from '@mantine/form';
 import image from './plan.svg';
 import classes from './Plan.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
+import { useLabourSession } from '@base/contexts';
 
 export default function Plan({ labour }: { labour: LabourReadModel | undefined }) {
   const navigate = useNavigate();
+  const { startMotherSession } = useLabourSession();
   const client = useLabourV2Client();
   const planLabourMutation = usePlanLabourV2(client);
   const updateLabourMutation = useUpdateLabourPlanV2(client);
@@ -61,7 +63,8 @@ export default function Plan({ labour }: { labour: LabourReadModel | undefined }
           labourName,
         },
         {
-          onSuccess: () => {
+          onSuccess: (data) => {
+            startMotherSession(data.labour_id);
             setTimeout(() => navigate('/'), 100);
           },
         }

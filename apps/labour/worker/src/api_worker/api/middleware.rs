@@ -48,7 +48,7 @@ where
             }
         }
     } else {
-        User::internal("anonymous".to_string())
+        User::internal("labour")
     };
 
     handler(req, ctx, cors_context, user).await
@@ -95,7 +95,7 @@ where
             }
         }
     } else {
-        User::internal("anonymous".to_string())
+        User::internal("labour")
     };
 
     handler(req, ctx, cors_context, user).await

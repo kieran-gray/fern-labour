@@ -11,12 +11,11 @@ use fern_labour_notifications_shared::{
 use fern_labour_workers_shared::User;
 use std::rc::Rc;
 
-use crate::durable_object::{
-    security::{token_generator::SubscriptionTokenGenerator, user_storage::UserStorage},
-    write_side::{
-        application::command_processors::LabourCommandProcessor, domain::LabourCommand,
-        process_manager::types::*,
-    },
+use crate::durable_object::write_side::{
+    application::command_processors::LabourCommandProcessor,
+    domain::LabourCommand,
+    infrastructure::{SubscriptionTokenGenerator, UserStore},
+    process_manager::types::*,
 };
 
 #[async_trait(?Send)]
@@ -25,7 +24,7 @@ pub trait EffectExecutor {
 }
 
 pub struct LabourEffectExecutor {
-    user_storage: UserStorage,
+    user_storage: UserStore,
     notification_client: Box<dyn NotificationClient>,
     command_processor: Rc<LabourCommandProcessor>,
     token_generator: Box<dyn SubscriptionTokenGenerator>,
@@ -34,7 +33,7 @@ pub struct LabourEffectExecutor {
 
 impl LabourEffectExecutor {
     pub fn new(
-        user_storage: UserStorage,
+        user_storage: UserStore,
         notification_client: Box<dyn NotificationClient>,
         command_processor: Rc<LabourCommandProcessor>,
         token_generator: Box<dyn SubscriptionTokenGenerator>,
@@ -103,7 +102,7 @@ impl LabourEffectExecutor {
                 )
                 .await
             }
-            NotificationContext::LabourOwner {
+            NotificationContext::Mother {
                 recipient_user_id,
                 channel,
                 notification,
@@ -145,7 +144,7 @@ impl LabourEffectExecutor {
             .unwrap_or_else(|| Self::extract_first_name(&sender_name));
 
         let template_data = match notification {
-            SubscriberNotification::LabourStarted { .. } => {
+            SubscriberNotification::LabourBegun { .. } => {
                 NotificationTemplateData::LabourBegunData {
                     birthing_person_name: sender_name,
                     birthing_person_first_name: sender_first_name,
@@ -205,7 +204,7 @@ impl LabourEffectExecutor {
         &self,
         recipient_user_id: &str,
         channel: &SubscriberContactMethod,
-        notification: &LabourOwnerNotification,
+        notification: &MotherNotification,
     ) -> Result<()> {
         let recipient = self.get_user(recipient_user_id)?;
         let destination = Self::get_user_destination(&recipient, channel)?;
@@ -216,7 +215,7 @@ impl LabourEffectExecutor {
             .unwrap_or_else(|| "there".to_string());
 
         let template_data = match notification {
-            LabourOwnerNotification::SubscriberRequested {
+            MotherNotification::SubscriberRequested {
                 requester_user_id, ..
             } => {
                 let requester = self.get_user(requester_user_id)?;
@@ -281,7 +280,7 @@ impl EffectExecutor for LabourEffectExecutor {
         match effect {
             Effect::SendNotification(intent) => self.send_notification(intent).await,
             Effect::IssueCommand { command, .. } => {
-                let system_user = User::internal("process-manager".to_string());
+                let system_user = User::internal("process-manager");
                 self.command_processor
                     .handle_command(command.clone(), system_user)
                     .context("Failed to handle internal command")?;
@@ -300,7 +299,7 @@ impl EffectExecutor for LabourEffectExecutor {
                     mother_id: mother_id.clone(),
                     token,
                 };
-                let system_user = User::internal("process-manager".to_string());
+                let system_user = User::internal("process-manager");
                 self.command_processor
                     .handle_command(command, system_user)
                     .context("Failed to handle internal command")?;

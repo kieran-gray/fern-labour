@@ -365,20 +365,10 @@ impl Aggregate for Labour {
                         LabourPhase::EARLY.to_string(),
                     ));
                 }
-                vec![
-                    LabourEvent::LabourBegun(LabourBegun {
-                        labour_id,
-                        start_time: Utc::now(),
-                    }),
-                    LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
-                        labour_id,
-                        labour_update_id: Uuid::now_v7(),
-                        labour_update_type: LabourUpdateType::PRIVATE_NOTE,
-                        message: "labour_begun".to_string(),
-                        application_generated: true,
-                        sent_time: Utc::now(),
-                    }),
-                ]
+                vec![LabourEvent::LabourBegun(LabourBegun {
+                    labour_id,
+                    start_time: Utc::now(),
+                })]
             }
             LabourCommand::CompleteLabour { labour_id, notes } => {
                 let Some(labour) = state else {
@@ -610,6 +600,20 @@ impl Aggregate for Labour {
                     labour_update_type,
                     message,
                     application_generated: false,
+                    sent_time: Utc::now(),
+                })]
+            }
+            LabourCommand::PostApplicationLabourUpdate { labour_id, message } => {
+                if state.is_none() {
+                    return Err(LabourError::NotFound);
+                };
+
+                vec![LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
+                    labour_id,
+                    labour_update_id: Uuid::now_v7(),
+                    labour_update_type: LabourUpdateType::PRIVATE_NOTE,
+                    message,
+                    application_generated: true,
                     sent_time: Utc::now(),
                 })]
             }

@@ -2,14 +2,14 @@ use anyhow::{Context, Result};
 
 use fern_labour_workers_shared::User;
 
-use crate::durable_object::security::user_storage::UserStorage;
+use crate::durable_object::write_side::infrastructure::UserStore;
 
 pub struct UserQuery {
-    user_storage: UserStorage,
+    user_storage: UserStore,
 }
 
 impl UserQuery {
-    pub fn new(user_storage: UserStorage) -> Self {
+    pub fn new(user_storage: UserStore) -> Self {
         Self { user_storage }
     }
 
