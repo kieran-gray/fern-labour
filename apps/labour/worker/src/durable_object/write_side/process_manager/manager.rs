@@ -81,6 +81,7 @@ where
                 LabourEvent::SubscriberApproved(e) => e.apply_policies(&ctx),
                 LabourEvent::SubscriberRequested(e) => e.apply_policies(&ctx),
                 LabourEvent::LabourInviteSent(e) => e.apply_policies(&ctx),
+                LabourEvent::LabourUpdateTypeUpdated(e) => e.apply_policies(&ctx),
                 _ => vec![],
             };
 

@@ -84,10 +84,9 @@ mod tests {
         authorization::{QueryAction, resolve_principal},
         write_side::domain::commands::{
             contraction::StartContraction,
-            labour::BeginLabour,
-            labour::PlanLabour,
+            labour::{BeginLabour, PlanLabour},
             labour_update::{PostApplicationLabourUpdate, PostLabourUpdate},
-            subscriber::{RequestAccess, Unsubscribe},
+            subscriber::{RequestAccess, Unsubscribe, UpdateAccessLevel},
             subscription::{ApproveSubscriber, SetSubscriptionToken, UpdateSubscriberRole},
         },
     };
@@ -96,7 +95,7 @@ mod tests {
     use chrono::Utc;
     use fern_labour_event_sourcing_rs::Aggregate;
     use fern_labour_labour_shared::value_objects::{
-        SubscriberRole, subscriber::status::SubscriberStatus,
+        SubscriberAccessLevel, SubscriberRole, subscriber::status::SubscriberStatus,
     };
     use fern_labour_workers_shared::User;
     use uuid::Uuid;
@@ -143,7 +142,7 @@ mod tests {
         // Set subscription token
         let token = "test-token".to_string();
         let set_token_cmd = LabourCommand::SetSubscriptionToken(SetSubscriptionToken {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             mother_id: mother_id.to_string(),
             token: token.clone(),
         });
@@ -154,7 +153,7 @@ mod tests {
 
         // Request access
         let request_cmd = LabourCommand::RequestAccess(RequestAccess {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             subscriber_id: subscriber_id.to_string(),
             token,
         });
@@ -169,7 +168,7 @@ mod tests {
         // Approve if status should be SUBSCRIBED
         if status == SubscriberStatus::SUBSCRIBED {
             let approve_cmd = LabourCommand::ApproveSubscriber(ApproveSubscriber {
-                labour_id: Uuid::now_v7(),
+                labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
                 subscription_id,
             });
             let events = Labour::handle_command(Some(&aggregate), approve_cmd).unwrap();
@@ -180,7 +179,7 @@ mod tests {
             // Update role if needed
             if role != SubscriberRole::FRIENDS_AND_FAMILY {
                 let update_role_cmd = LabourCommand::UpdateSubscriberRole(UpdateSubscriberRole {
-                    labour_id: Uuid::now_v7(),
+                    labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
                     subscription_id,
                     role,
                 });
@@ -206,7 +205,7 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         let action = Action::Command(LabourCommand::BeginLabour(BeginLabour {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
         }));
 
         assert!(
@@ -223,7 +222,7 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             start_time: Utc::now(),
         }));
 
@@ -241,7 +240,7 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         let action = Action::Command(LabourCommand::PostLabourUpdate(PostLabourUpdate {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             labour_update_type:
                 fern_labour_labour_shared::value_objects::LabourUpdateType::STATUS_UPDATE,
             message: "Test update".to_string(),
@@ -267,7 +266,7 @@ mod tests {
 
         let subscription_id = aggregate.subscriptions()[0].id();
         let action = Action::Command(LabourCommand::ApproveSubscriber(ApproveSubscriber {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             subscription_id,
         }));
 
@@ -286,7 +285,7 @@ mod tests {
 
         // Mother shouldn't be able to unsubscribe (she's not a subscriber)
         let action = Action::Command(LabourCommand::Unsubscribe(Unsubscribe {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             subscription_id: Uuid::now_v7(),
         }));
 
@@ -339,7 +338,7 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             start_time: Utc::now(),
         }));
 
@@ -402,7 +401,7 @@ mod tests {
 
         let subscription_id = aggregate.subscriptions()[0].id();
         let action = Action::Command(LabourCommand::ApproveSubscriber(ApproveSubscriber {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             subscription_id,
         }));
 
@@ -451,7 +450,7 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             start_time: Utc::now(),
         }));
 
@@ -478,7 +477,7 @@ mod tests {
 
         let subscription_id = aggregate.subscriptions()[0].id();
         let action = Action::Command(LabourCommand::Unsubscribe(Unsubscribe {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             subscription_id,
         }));
 
@@ -502,7 +501,7 @@ mod tests {
 
         // Try to unsubscribe a different subscription
         let action = Action::Command(LabourCommand::Unsubscribe(Unsubscribe {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             subscription_id: Uuid::now_v7(), // Different ID
         }));
 
@@ -548,7 +547,7 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             start_time: Utc::now(),
         }));
 
@@ -608,7 +607,7 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         let action = Action::Command(LabourCommand::BeginLabour(BeginLabour {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
         }));
 
         let result = auth.authorize(&principal, &action, Some(&aggregate));
@@ -623,7 +622,7 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         let action = Action::Command(LabourCommand::RequestAccess(RequestAccess {
-            labour_id: Uuid::now_v7(),
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
             subscriber_id: "stranger".to_string(),
             token: "test-token".to_string(),
         }));
@@ -655,7 +654,7 @@ mod tests {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // Internal Tests
+    // Internal User Tests
     // ═══════════════════════════════════════════════════════════════
 
     #[test]
@@ -694,6 +693,50 @@ mod tests {
             auth.authorize(&principal, &action, Some(&aggregate))
                 .is_ok()
         );
+    }
+
+    #[test]
+    fn internal_user_can_update_subscription_access_level() {
+        let auth = Authorizer::new();
+        let user = create_test_user("fern-labour-internal-user-1");
+        let aggregate = create_aggregate_with_subscriber(
+            "mother-1",
+            "partner-1",
+            SubscriberRole::BIRTH_PARTNER,
+            SubscriberStatus::SUBSCRIBED,
+        );
+        let principal = resolve_principal(&user, Some(&aggregate));
+
+        let subscription_id = aggregate.subscriptions()[0].id();
+        let action = Action::Command(LabourCommand::UpdateAccessLevel(UpdateAccessLevel {
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
+            subscription_id,
+            access_level: SubscriberAccessLevel::SUPPORTER,
+        }));
+        assert!(
+            auth.authorize(&principal, &action, Some(&aggregate))
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn internal_user_cannot_execute_labour_command() {
+        let auth = Authorizer::new();
+        let user = create_test_user("fern-labour-internal-user-1");
+        let aggregate = create_test_aggregate("mother-1");
+        let principal = resolve_principal(&user, Some(&aggregate));
+
+        let action = Action::Command(LabourCommand::StartContraction(StartContraction {
+            labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
+            start_time: Utc::now(),
+        }));
+        let result = auth.authorize(&principal, &action, Some(&aggregate));
+        assert!(matches!(
+            result,
+            Err(DenyReason::MissingCapability(
+                Capability::ExecuteLabourCommand
+            ))
+        ));
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -736,5 +779,14 @@ mod tests {
         let principal = resolve_principal(&user, Some(&aggregate));
 
         assert_eq!(principal, Principal::Unassociated);
+    }
+
+    #[test]
+    fn resolve_principal_identifies_internal() {
+        let user = create_test_user("fern-labour-internal");
+        let aggregate = create_test_aggregate("mother-1");
+        let principal = resolve_principal(&user, Some(&aggregate));
+
+        assert_eq!(principal, Principal::Internal);
     }
 }

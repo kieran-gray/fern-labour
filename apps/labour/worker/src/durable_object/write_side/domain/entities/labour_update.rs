@@ -40,12 +40,20 @@ impl LabourUpdate {
         self.id
     }
 
+    pub fn message(&self) -> &str {
+        &self.message
+    }
+
     pub fn labour_update_type(&self) -> &LabourUpdateType {
         &self.labour_update_type
     }
 
     pub fn sent_time(&self) -> &DateTime<Utc> {
         &self.sent_time
+    }
+
+    pub fn application_generated(&self) -> bool {
+        self.application_generated
     }
 
     pub fn update_message(&mut self, message: String) {
