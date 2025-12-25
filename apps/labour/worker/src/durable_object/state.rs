@@ -285,7 +285,9 @@ impl AggregateServices {
             base_url,
         );
 
-        let process_manager = ProcessManager::new(ledger, executor, event_store);
+        let labour_repository = AggregateRepository::<Labour>::new(event_store.clone());
+
+        let process_manager = ProcessManager::new(ledger, executor, event_store, labour_repository);
 
         Ok(ProcessManagement { process_manager })
     }

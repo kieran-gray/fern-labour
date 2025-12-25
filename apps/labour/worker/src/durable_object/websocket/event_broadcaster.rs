@@ -14,6 +14,9 @@ impl WebSocketEventBroadcaster {
     }
 
     pub fn broadcast_new_events(&self, state: &State, since_sequence: i64) -> anyhow::Result<()> {
+        // TODO: not all websocket clients need or should receive all domain events.
+        // They should be filtered by permissions and even potentially have info redacted.
+
         let new_events = self.event_store.events_since(since_sequence, 100)?;
 
         if new_events.is_empty() {

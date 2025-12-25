@@ -1,9 +1,9 @@
 use anyhow::{Context, Result};
 use std::rc::Rc;
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
 use fern_labour_event_sourcing_rs::{
-    Aggregate, EventStoreTrait, HasPolicies, PolicyContext, StoredEvent,
+    AggregateRepository, EventStoreTrait, HasPolicies, PolicyContext, StoredEvent,
 };
 
 use crate::durable_object::write_side::{
@@ -15,6 +15,7 @@ pub struct ProcessManager<E: EffectExecutor> {
     ledger: EffectLedger,
     executor: E,
     event_store: Rc<dyn EventStoreTrait>,
+    aggregate_repository: AggregateRepository<Labour>,
 }
 
 impl<E> ProcessManager<E>
@@ -23,11 +24,17 @@ where
 {
     const MAX_RETRY_ATTEMPTS: i64 = 6;
 
-    pub fn new(ledger: EffectLedger, executor: E, event_store: Rc<dyn EventStoreTrait>) -> Self {
+    pub fn new(
+        ledger: EffectLedger,
+        executor: E,
+        event_store: Rc<dyn EventStoreTrait>,
+        aggregate_repository: AggregateRepository<Labour>,
+    ) -> Self {
         Self {
             ledger,
             executor,
             event_store,
+            aggregate_repository,
         }
     }
 
@@ -42,25 +49,10 @@ where
             return Ok(());
         }
 
-        let all_events = self
-            .event_store
-            .load()
-            .context("Failed to load all events")?;
-        let all_labour_events: Vec<LabourEvent> = all_events
-            .iter()
-            .map(|row| {
-                let stored = StoredEvent {
-                    aggregate_id: row.aggregate_id.clone(),
-                    event_type: row.event_type.clone(),
-                    event_data: row.event_data.clone(),
-                    event_version: row.event_version,
-                };
-                LabourEvent::from_stored_event(stored)
-            })
-            .collect();
-
-        let aggregate_state = Labour::from_events(&all_labour_events)
-            .context("Failed to build aggregate state from events")?; // TODO use repo instead?
+        let Ok(Some(aggregate_state)) = self.aggregate_repository.load() else {
+            warn!("Failed to load aggregate state");
+            return Ok(());
+        };
 
         for event_row in events {
             let sequence = event_row.sequence;

@@ -145,7 +145,6 @@ impl DurableObject for LabourAggregate {
         if let Err(ref e) = sync_result {
             error!(error = %e, "Error in sync projection processing");
         } else {
-            // TODO race condition for labour and subscription read models that project to D1
             let sequence_after = alarm_services
                 .sync_projection_processor
                 .get_last_processed_sequence();
