@@ -7,6 +7,7 @@ import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { IconBook } from '@tabler/icons-react';
 import { ActionIcon, Image, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { AlertContainer } from './Alerts';
 import { ContractionControls } from './ContractionControls';
 import ContractionTimelineCustom from './ContractionTimelineCustom';
 import { ContractionsHelpModal } from './HelpModal';
@@ -83,6 +84,10 @@ export function Contractions({ labour }: { labour: LabourReadModel }) {
             </Stack>
             <div className={baseClasses.flexColumnEnd}>
               <Stack align="stretch" justify="flex-end">
+                <AlertContainer
+                  contractions={sortedContractions}
+                  firstLabour={labour.first_labour}
+                />
                 {/* Desktop controls - only show on larger screens */}
                 <div className={classes.desktopControls}>
                   <ContractionControls

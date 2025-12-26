@@ -1,18 +1,11 @@
-import { useState } from 'react';
 import { IconPhone } from '@tabler/icons-react';
 import { Alert } from '@mantine/core';
 
-export function CallMidwifeAlert() {
-  const [showCallMidwifeAlert, setShowCallMidwifeAlert] = useState(true);
+type CallMidwifeAlertProps = {
+  onClose: () => void;
+};
 
-  const handleCallMidwifeAlertDismiss = () => {
-    setShowCallMidwifeAlert(false);
-  };
-
-  if (!showCallMidwifeAlert) {
-    return;
-  }
-
+export function CallMidwifeAlert({ onClose }: CallMidwifeAlertProps) {
   return (
     <Alert
       variant="light"
@@ -21,7 +14,7 @@ export function CallMidwifeAlert() {
       withCloseButton
       title="Time to call your midwife"
       icon={<IconPhone />}
-      onClose={handleCallMidwifeAlertDismiss}
+      onClose={onClose}
     >
       We think that you should call the midwife urgently, we suggest this because either:
       <br />- one of your contractions lasted longer than 2 minutes

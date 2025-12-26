@@ -1,18 +1,11 @@
-import { useState } from 'react';
 import { IconAmbulance } from '@tabler/icons-react';
 import { Alert } from '@mantine/core';
 
-export function GoToHospitalAlert() {
-  const [showGoToHospitalAlert, setShowGoToHospitalAlert] = useState(true);
+type GoToHospitalAlertProps = {
+  onClose: () => void;
+};
 
-  const handleGoToHospitalAlertDismiss = () => {
-    setShowGoToHospitalAlert(false);
-  };
-
-  if (!showGoToHospitalAlert) {
-    return;
-  }
-
+export function GoToHospitalAlert({ onClose }: GoToHospitalAlertProps) {
   return (
     <Alert
       variant="light"
@@ -21,7 +14,7 @@ export function GoToHospitalAlert() {
       withCloseButton
       title="Time to go to the hospital"
       icon={<IconAmbulance />}
-      onClose={handleGoToHospitalAlertDismiss}
+      onClose={onClose}
     >
       Your contractions are regular and strong, which means your labour is well underway.
       <br />

@@ -1,18 +1,11 @@
-import { useState } from 'react';
 import { IconBackpack } from '@tabler/icons-react';
 import { Alert } from '@mantine/core';
 
-export function PrepareForHospitalAlert() {
-  const [showPrepareForHospitalAlert, setShowPrepareForHospitalAlert] = useState(true);
+type PrepareForHospitalAlertProps = {
+  onClose: () => void;
+};
 
-  const handlePrepareForHospitalAlertDismiss = () => {
-    setShowPrepareForHospitalAlert(false);
-  };
-
-  if (!showPrepareForHospitalAlert) {
-    return;
-  }
-
+export function PrepareForHospitalAlert({ onClose }: PrepareForHospitalAlertProps) {
   return (
     <Alert
       variant="light"
@@ -21,7 +14,7 @@ export function PrepareForHospitalAlert() {
       withCloseButton
       title="Prepare to go to the hospital"
       icon={<IconBackpack />}
-      onClose={handlePrepareForHospitalAlertDismiss}
+      onClose={onClose}
     >
       Your contractions are becoming more consistent.
       <br />

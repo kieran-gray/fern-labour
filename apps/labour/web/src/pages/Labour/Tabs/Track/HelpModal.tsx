@@ -218,15 +218,15 @@ export const ContractionsHelpModal = ({
             withPadding
           >
             <List.Item>
-              It’s time to start preparing to go to the hospital
+              It's time to start preparing to go to the hospital
               <div style={{ marginTop: 6 }}>
-                <PrepareForHospitalAlert />
+                <PrepareForHospitalAlert onClose={() => {}} />
               </div>
             </List.Item>
             <List.Item>
-              It’s time to go to the hospital
+              It's time to go to the hospital
               <div style={{ marginTop: 6 }}>
-                <GoToHospitalAlert />
+                <GoToHospitalAlert onClose={() => {}} />
               </div>
             </List.Item>
           </List>
@@ -334,7 +334,7 @@ export const ContractionsHelpModal = ({
           <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
             The app will alert you if you should call based on the final two points above.
           </Text>
-          <CallMidwifeAlert />
+          <CallMidwifeAlert onClose={() => {}} />
           <Anchor
             href="https://www.nhs.uk/pregnancy/labour-and-birth/what-happens/the-stages-of-labour-and-birth/"
             target="_blank"
