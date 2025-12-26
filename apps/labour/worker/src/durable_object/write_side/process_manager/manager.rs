@@ -67,7 +67,6 @@ where
             let ctx = PolicyContext::new(&aggregate_state, sequence);
             let effects = match &event {
                 LabourEvent::LabourPlanned(e) => e.apply_policies(&ctx),
-                LabourEvent::LabourBegun(e) => e.apply_policies(&ctx),
                 LabourEvent::LabourCompleted(e) => e.apply_policies(&ctx),
                 LabourEvent::LabourUpdatePosted(e) => e.apply_policies(&ctx),
                 LabourEvent::SubscriberApproved(e) => e.apply_policies(&ctx),

@@ -1,4 +1,3 @@
-pub mod for_labour_begun;
 pub mod for_labour_completed;
 pub mod for_labour_invite_sent;
 pub mod for_labour_planned;

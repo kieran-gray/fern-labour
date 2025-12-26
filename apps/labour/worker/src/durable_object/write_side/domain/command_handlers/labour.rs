@@ -1,14 +1,16 @@
 use chrono::Utc;
-use fern_labour_labour_shared::value_objects::LabourPhase;
+use fern_labour_labour_shared::value_objects::{LabourPhase, LabourUpdateType};
+use uuid::Uuid;
 
 use crate::durable_object::write_side::domain::{
     Labour, LabourError, LabourEvent,
     commands::labour::{
-        BeginLabour, CompleteLabour, DeleteLabour, PlanLabour, SendLabourInvite, UpdateLabourPlan,
+        AdvanceLabourPhase, BeginLabour, CompleteLabour, DeleteLabour, PlanLabour,
+        SendLabourInvite, UpdateLabourPlan,
     },
     events::{
-        LabourBegun, LabourCompleted, LabourDeleted, LabourInviteSent, LabourPlanUpdated,
-        LabourPlanned,
+        LabourBegun, LabourCompleted, LabourDeleted, LabourInviteSent, LabourPhaseChanged,
+        LabourPlanUpdated, LabourPlanned, LabourUpdatePosted,
     },
 };
 
@@ -23,14 +25,20 @@ pub fn handle_plan_labour(
         ));
     }
 
-    Ok(vec![LabourEvent::LabourPlanned(LabourPlanned {
-        labour_id: cmd.labour_id,
-        mother_id: cmd.mother_id,
-        mother_name: cmd.mother_name,
-        first_labour: cmd.first_labour,
-        due_date: cmd.due_date,
-        labour_name: cmd.labour_name,
-    })])
+    Ok(vec![
+        LabourEvent::LabourPlanned(LabourPlanned {
+            labour_id: cmd.labour_id,
+            mother_id: cmd.mother_id,
+            mother_name: cmd.mother_name,
+            first_labour: cmd.first_labour,
+            due_date: cmd.due_date,
+            labour_name: cmd.labour_name,
+        }),
+        LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+            labour_id: cmd.labour_id,
+            labour_phase: LabourPhase::PLANNED,
+        }),
+    ])
 }
 
 pub fn handle_update_labour_plan(
@@ -65,10 +73,27 @@ pub fn handle_begin_labour(
             LabourPhase::EARLY.to_string(),
         ));
     }
-    Ok(vec![LabourEvent::LabourBegun(LabourBegun {
-        labour_id: cmd.labour_id,
-        start_time: Utc::now(),
-    })])
+
+    let now = Utc::now();
+
+    Ok(vec![
+        LabourEvent::LabourBegun(LabourBegun {
+            labour_id: cmd.labour_id,
+            start_time: now,
+        }),
+        LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+            labour_id: cmd.labour_id,
+            labour_phase: LabourPhase::EARLY,
+        }),
+        LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
+            labour_id: cmd.labour_id,
+            labour_update_id: Uuid::now_v7(),
+            labour_update_type: LabourUpdateType::PRIVATE_NOTE,
+            message: "labour_begun".to_string(),
+            application_generated: true,
+            sent_time: now,
+        }),
+    ])
 }
 
 pub fn handle_complete_labour(
@@ -94,11 +119,17 @@ pub fn handle_complete_labour(
         ));
     }
 
-    Ok(vec![LabourEvent::LabourCompleted(LabourCompleted {
-        labour_id: cmd.labour_id,
-        notes: cmd.notes,
-        end_time: Utc::now(),
-    })])
+    Ok(vec![
+        LabourEvent::LabourCompleted(LabourCompleted {
+            labour_id: cmd.labour_id,
+            notes: cmd.notes,
+            end_time: Utc::now(),
+        }),
+        LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+            labour_id: cmd.labour_id,
+            labour_phase: LabourPhase::COMPLETE,
+        }),
+    ])
 }
 
 pub fn handle_send_labour_invite(
@@ -142,5 +173,34 @@ pub fn handle_delete_labour(
 
     Ok(vec![LabourEvent::LabourDeleted(LabourDeleted {
         labour_id: cmd.labour_id,
+    })])
+}
+
+pub fn handle_advance_labour_phase(
+    state: Option<&Labour>,
+    cmd: AdvanceLabourPhase,
+) -> Result<Vec<LabourEvent>, LabourError> {
+    let Some(labour) = state else {
+        return Err(LabourError::NotFound);
+    };
+
+    let current_phase = labour.phase();
+
+    if current_phase == &LabourPhase::COMPLETE {
+        return Err(LabourError::InvalidCommand(
+            "Cannot advance from Completed state".to_string(),
+        ));
+    }
+
+    if current_phase == &cmd.labour_phase {
+        return Err(LabourError::InvalidCommand(format!(
+            "Cannot advance labour phase to {}, phase is already {}.",
+            cmd.labour_phase, current_phase
+        )));
+    }
+
+    Ok(vec![LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+        labour_id: cmd.labour_id,
+        labour_phase: cmd.labour_phase,
     })])
 }

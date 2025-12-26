@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use fern_labour_event_sourcing_rs::{Event, impl_labour_event};
+use fern_labour_labour_shared::value_objects::LabourPhase;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -45,9 +46,16 @@ pub struct LabourDeleted {
     pub labour_id: Uuid,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct LabourPhaseChanged {
+    pub labour_id: Uuid,
+    pub labour_phase: LabourPhase,
+}
+
 impl_labour_event!(LabourPlanned, labour_id);
 impl_labour_event!(LabourPlanUpdated, labour_id);
 impl_labour_event!(LabourBegun, labour_id);
 impl_labour_event!(LabourCompleted, labour_id);
 impl_labour_event!(LabourInviteSent, labour_id);
 impl_labour_event!(LabourDeleted, labour_id);
+impl_labour_event!(LabourPhaseChanged, labour_id);

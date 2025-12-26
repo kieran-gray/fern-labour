@@ -1,4 +1,5 @@
 use chrono::Utc;
+use fern_labour_event_sourcing_rs::Aggregate;
 use fern_labour_labour_shared::value_objects::LabourPhase;
 use uuid::Uuid;
 
@@ -9,7 +10,9 @@ use crate::durable_object::write_side::domain::{
     },
     events::{
         ContractionDeleted, ContractionEnded, ContractionStarted, ContractionUpdated, LabourBegun,
+        LabourPhaseChanged,
     },
+    services::LabourPhaseProgression,
 };
 
 pub fn handle_start_contraction(
@@ -62,21 +65,36 @@ pub fn handle_end_contraction(
 
     if labour.phase() == &LabourPhase::COMPLETE {
         return Err(LabourError::InvalidCommand(
-            "Cannot start contraction in completed labour".to_string(),
+            "Cannot end contraction in completed labour".to_string(),
         ));
     }
 
-    match labour.find_active_contraction() {
-        Some(contraction) => Ok(vec![LabourEvent::ContractionEnded(ContractionEnded {
-            labour_id: cmd.labour_id,
-            contraction_id: contraction.id(),
-            end_time: cmd.end_time,
-            intensity: cmd.intensity,
-        })]),
-        None => Err(LabourError::InvalidCommand(
+    let Some(contraction) = labour.find_active_contraction() else {
+        return Err(LabourError::InvalidCommand(
             "Labour does not have an active contraction".to_string(),
-        )),
+        ));
+    };
+
+    let contraction_ended = LabourEvent::ContractionEnded(ContractionEnded {
+        labour_id: cmd.labour_id,
+        contraction_id: contraction.id(),
+        end_time: cmd.end_time,
+        intensity: cmd.intensity,
+    });
+
+    let mut updated_labour = labour.clone();
+    updated_labour.apply(&contraction_ended);
+
+    let mut events = vec![contraction_ended];
+
+    if let Some(new_phase) = LabourPhaseProgression::evaluate(&updated_labour) {
+        events.push(LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+            labour_id: cmd.labour_id,
+            labour_phase: new_phase,
+        }));
     }
+
+    Ok(events)
 }
 
 pub fn handle_update_contraction(
@@ -113,13 +131,29 @@ pub fn handle_update_contraction(
         ));
     }
 
-    Ok(vec![LabourEvent::ContractionUpdated(ContractionUpdated {
+    let contraction_updated = LabourEvent::ContractionUpdated(ContractionUpdated {
         labour_id: cmd.labour_id,
         contraction_id: cmd.contraction_id,
         start_time: cmd.start_time,
         end_time: cmd.end_time,
         intensity: cmd.intensity,
-    })])
+    });
+
+    let mut events = vec![contraction_updated.clone()];
+
+    if cmd.intensity.is_some() || cmd.start_time.is_some() || cmd.end_time.is_some() {
+        let mut updated_labour = labour.clone();
+        updated_labour.apply(&contraction_updated);
+
+        if let Some(new_phase) = LabourPhaseProgression::evaluate(&updated_labour) {
+            events.push(LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+                labour_id: cmd.labour_id,
+                labour_phase: new_phase,
+            }));
+        }
+    }
+
+    Ok(events)
 }
 
 pub fn handle_delete_contraction(

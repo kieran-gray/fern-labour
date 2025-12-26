@@ -528,10 +528,7 @@ mod tests {
 
         let action = Action::Query(QueryAction::GetLabour);
         let result = auth.authorize(&principal, &action, Some(&aggregate));
-        assert!(matches!(
-            result,
-            Err(DenyReason::MissingCapability(Capability::ReadLabour))
-        ));
+        assert_eq!(result, Err(DenyReason::Unassociated));
     }
 
     #[test]
@@ -552,12 +549,7 @@ mod tests {
         }));
 
         let result = auth.authorize(&principal, &action, Some(&aggregate));
-        assert!(matches!(
-            result,
-            Err(DenyReason::MissingCapability(
-                Capability::ExecuteLabourCommand
-            ))
-        ));
+        assert_eq!(result, Err(DenyReason::Unassociated));
     }
 
     #[test]

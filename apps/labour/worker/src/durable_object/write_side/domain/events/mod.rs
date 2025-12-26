@@ -23,6 +23,7 @@ pub enum LabourEvent {
     LabourCompleted(LabourCompleted),
     LabourInviteSent(LabourInviteSent),
     LabourDeleted(LabourDeleted),
+    LabourPhaseChanged(LabourPhaseChanged),
 
     ContractionStarted(ContractionStarted),
     ContractionEnded(ContractionEnded),
@@ -115,6 +116,7 @@ delegate_event_impl!(
     LabourUpdatePosted,
     LabourUpdateMessageUpdated,
     LabourUpdateTypeUpdated,
+    LabourPhaseChanged,
     SubscriptionTokenSet,
     SubscriberApproved,
     SubscriberBlocked,

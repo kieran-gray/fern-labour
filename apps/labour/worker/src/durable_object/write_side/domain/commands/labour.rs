@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use fern_labour_labour_shared::value_objects::LabourPhase;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -40,4 +41,10 @@ pub struct SendLabourInvite {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct DeleteLabour {
     pub labour_id: Uuid,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct AdvanceLabourPhase {
+    pub labour_id: Uuid,
+    pub labour_phase: LabourPhase,
 }

@@ -24,6 +24,8 @@ use subscription::{
     UpdateSubscriberRole,
 };
 
+use crate::durable_object::write_side::domain::commands::labour::AdvanceLabourPhase;
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum LabourCommand {
     PlanLabour(PlanLabour),
@@ -32,6 +34,7 @@ pub enum LabourCommand {
     CompleteLabour(CompleteLabour),
     SendLabourInvite(SendLabourInvite),
     DeleteLabour(DeleteLabour),
+    AdvanceLabourPhase(AdvanceLabourPhase),
     // Contraction Commands
     StartContraction(StartContraction),
     EndContraction(EndContraction),

@@ -4,6 +4,7 @@ pub mod commands;
 pub mod entities;
 pub mod events;
 pub mod exceptions;
+pub mod services;
 
 pub use aggregate::*;
 pub use commands::LabourCommand;

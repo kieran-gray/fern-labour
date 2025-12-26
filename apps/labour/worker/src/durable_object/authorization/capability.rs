@@ -11,6 +11,7 @@ use crate::durable_object::{
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Capability {
+    AdvanceLabourPhase,
     PostApplicationLabourUpdates,
     ManageLabour,
     ExecuteLabourCommand,
@@ -26,6 +27,7 @@ pub enum Capability {
 pub fn capabilities_for(principal: &Principal) -> HashSet<Capability> {
     match principal {
         Principal::Mother => HashSet::from([
+            Capability::AdvanceLabourPhase,
             Capability::ManageLabour,
             Capability::ExecuteLabourCommand,
             Capability::ReadLabour,
@@ -54,6 +56,7 @@ pub fn capabilities_for(principal: &Principal) -> HashSet<Capability> {
         }
 
         Principal::Internal => HashSet::from([
+            Capability::AdvanceLabourPhase,
             Capability::PostApplicationLabourUpdates,
             Capability::ManageSubscriptionToken,
             Capability::UpdateSubscriptionAccessLevel,
@@ -81,6 +84,8 @@ pub fn required_capability(action: &Action) -> Capability {
             | LabourCommand::UpdateLabourUpdateMessage(..)
             | LabourCommand::UpdateLabourUpdateType(..)
             | LabourCommand::DeleteLabourUpdate(..) => Capability::ExecuteLabourCommand,
+
+            LabourCommand::AdvanceLabourPhase(..) => Capability::AdvanceLabourPhase,
 
             LabourCommand::PostApplicationLabourUpdate(..) => {
                 Capability::PostApplicationLabourUpdates

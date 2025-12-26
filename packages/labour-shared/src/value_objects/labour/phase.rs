@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::cmp::Eq;
+use std::cmp::{Eq, Ordering};
 use strum::{EnumString, VariantNames};
 
 #[derive(Debug, Clone, Deserialize, Serialize, EnumString, VariantNames, PartialEq, Hash, Eq)]
@@ -17,6 +17,31 @@ pub enum LabourPhase {
     PUSHING,
     #[strum(serialize = "COMPLETE", serialize = "complete")]
     COMPLETE,
+}
+
+impl LabourPhase {
+    fn ordinal(&self) -> u8 {
+        match self {
+            LabourPhase::PLANNED => 0,
+            LabourPhase::EARLY => 1,
+            LabourPhase::ACTIVE => 2,
+            LabourPhase::TRANSITION => 3,
+            LabourPhase::PUSHING => 4,
+            LabourPhase::COMPLETE => 5,
+        }
+    }
+}
+
+impl PartialOrd for LabourPhase {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for LabourPhase {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.ordinal().cmp(&other.ordinal())
+    }
 }
 
 impl std::fmt::Display for LabourPhase {

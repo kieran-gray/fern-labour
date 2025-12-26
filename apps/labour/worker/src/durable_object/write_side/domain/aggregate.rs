@@ -47,6 +47,10 @@ impl Labour {
         self.subscription_token.as_ref()
     }
 
+    pub fn contractions(&self) -> &[Contraction] {
+        &self.contractions
+    }
+
     pub fn find_active_contraction(&self) -> Option<&Contraction> {
         self.contractions.iter().find(|c| c.is_active())
     }
@@ -142,11 +146,12 @@ impl Aggregate for Labour {
             }
             LabourEvent::LabourBegun(e) => {
                 self.start_time = Some(e.start_time);
-                self.phase = LabourPhase::EARLY;
             }
             LabourEvent::LabourCompleted(e) => {
                 self.end_time = Some(e.end_time);
-                self.phase = LabourPhase::COMPLETE;
+            }
+            LabourEvent::LabourPhaseChanged(e) => {
+                self.phase = e.labour_phase.clone();
             }
             LabourEvent::ContractionStarted(e) => {
                 if let Ok(contraction) =
@@ -317,6 +322,7 @@ impl Aggregate for Labour {
             LabourCommand::CompleteLabour(cmd) => handle_complete_labour(state, cmd),
             LabourCommand::SendLabourInvite(cmd) => handle_send_labour_invite(state, cmd),
             LabourCommand::DeleteLabour(cmd) => handle_delete_labour(state, cmd),
+            LabourCommand::AdvanceLabourPhase(cmd) => handle_advance_labour_phase(state, cmd),
 
             // Contraction commands
             LabourCommand::StartContraction(cmd) => handle_start_contraction(state, cmd),
@@ -376,5 +382,522 @@ impl Aggregate for Labour {
         }
 
         Some(notification)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::durable_object::write_side::domain::{
+        commands::{
+            contraction::{EndContraction, StartContraction},
+            labour::{BeginLabour, CompleteLabour, PlanLabour},
+        },
+        events::*,
+    };
+    use chrono::TimeZone;
+
+    struct AggregateTestHarness {
+        events: Vec<LabourEvent>,
+    }
+
+    impl AggregateTestHarness {
+        fn given(events: Vec<LabourEvent>) -> Self {
+            Self { events }
+        }
+
+        fn given_no_events() -> Self {
+            Self { events: vec![] }
+        }
+
+        fn state(&self) -> Option<Labour> {
+            if self.events.is_empty() {
+                None
+            } else {
+                Labour::from_events(&self.events)
+            }
+        }
+
+        fn when(&self, command: LabourCommand) -> Result<Vec<LabourEvent>, LabourError> {
+            Labour::handle_command(self.state().as_ref(), command)
+        }
+    }
+
+    fn labour_id() -> Uuid {
+        Uuid::parse_str("00000000-0000-0000-0000-000000000001").unwrap()
+    }
+
+    fn plan_labour_cmd() -> LabourCommand {
+        LabourCommand::PlanLabour(PlanLabour {
+            labour_id: labour_id(),
+            mother_id: "mother_123".to_string(),
+            mother_name: "Test Mother".to_string(),
+            first_labour: true,
+            due_date: Utc::now(),
+            labour_name: Some("Baby Smith".to_string()),
+        })
+    }
+
+    fn planned_labour_events() -> Vec<LabourEvent> {
+        vec![
+            LabourEvent::LabourPlanned(LabourPlanned {
+                labour_id: labour_id(),
+                mother_id: "mother_123".to_string(),
+                mother_name: "Test Mother".to_string(),
+                first_labour: true,
+                due_date: Utc::now(),
+                labour_name: Some("Baby Smith".to_string()),
+            }),
+            LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+                labour_id: labour_id(),
+                labour_phase: LabourPhase::PLANNED,
+            }),
+        ]
+    }
+
+    fn begun_labour_events() -> Vec<LabourEvent> {
+        let mut events = planned_labour_events();
+        events.extend(vec![
+            LabourEvent::LabourBegun(LabourBegun {
+                labour_id: labour_id(),
+                start_time: Utc::now(),
+            }),
+            LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+                labour_id: labour_id(),
+                labour_phase: LabourPhase::EARLY,
+            }),
+            LabourEvent::LabourUpdatePosted(LabourUpdatePosted {
+                labour_id: labour_id(),
+                labour_update_id: Uuid::now_v7(),
+                labour_update_type: LabourUpdateType::PRIVATE_NOTE,
+                message: "labour_begun".to_string(),
+                application_generated: true,
+                sent_time: Utc::now(),
+            }),
+        ]);
+        events
+    }
+
+    fn contraction_events(count: usize, duration_mins: f64, intensity: u8) -> Vec<LabourEvent> {
+        let base_time = Utc.with_ymd_and_hms(2024, 1, 1, 12, 0, 0).unwrap();
+        let mut events = vec![];
+
+        for i in 0..count {
+            let contraction_id = Uuid::now_v7();
+            let start = base_time + chrono::Duration::minutes(i as i64 * 10);
+            let end = start + chrono::Duration::seconds((duration_mins * 60.0) as i64);
+
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id,
+                start_time: start,
+            }));
+            events.push(LabourEvent::ContractionEnded(ContractionEnded {
+                labour_id: labour_id(),
+                contraction_id,
+                end_time: end,
+                intensity,
+            }));
+        }
+        events
+    }
+
+    mod plan_labour {
+        use super::*;
+
+        #[test]
+        fn given_no_aggregate_when_plan_labour_then_labour_planned_and_phase_set() {
+            // Given
+            let harness = AggregateTestHarness::given_no_events();
+
+            // When
+            let result = harness.when(plan_labour_cmd());
+
+            // Then
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 2);
+            assert!(matches!(events[0], LabourEvent::LabourPlanned(_)));
+            assert!(matches!(
+                &events[1],
+                LabourEvent::LabourPhaseChanged(e) if e.labour_phase == LabourPhase::PLANNED
+            ));
+        }
+
+        #[test]
+        fn given_existing_labour_when_plan_labour_then_error() {
+            // Given
+            let harness = AggregateTestHarness::given(planned_labour_events());
+
+            // When
+            let result = harness.when(plan_labour_cmd());
+
+            // Then
+            assert!(matches!(result, Err(LabourError::InvalidStateTransition(_, _))));
+        }
+    }
+
+    mod begin_labour {
+        use super::*;
+
+        #[test]
+        fn given_planned_labour_when_begin_then_begun_phase_changed_and_update_posted() {
+            // Given
+            let harness = AggregateTestHarness::given(planned_labour_events());
+
+            // When
+            let result = harness.when(LabourCommand::BeginLabour(BeginLabour {
+                labour_id: labour_id(),
+            }));
+
+            // Then
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 3);
+            assert!(matches!(events[0], LabourEvent::LabourBegun(_)));
+            assert!(matches!(
+                &events[1],
+                LabourEvent::LabourPhaseChanged(e) if e.labour_phase == LabourPhase::EARLY
+            ));
+            assert!(matches!(
+                &events[2],
+                LabourEvent::LabourUpdatePosted(e) if e.message == "labour_begun" && e.application_generated
+            ));
+        }
+
+        #[test]
+        fn given_already_begun_labour_when_begin_then_error() {
+            // Given
+            let harness = AggregateTestHarness::given(begun_labour_events());
+
+            // When
+            let result = harness.when(LabourCommand::BeginLabour(BeginLabour {
+                labour_id: labour_id(),
+            }));
+
+            // Then
+            assert!(matches!(result, Err(LabourError::InvalidStateTransition(_, _))));
+        }
+    }
+
+    mod complete_labour {
+        use super::*;
+
+        #[test]
+        fn given_begun_labour_when_complete_then_completed_and_phase_changed() {
+            // Given
+            let harness = AggregateTestHarness::given(begun_labour_events());
+
+            // When
+            let result = harness.when(LabourCommand::CompleteLabour(CompleteLabour {
+                labour_id: labour_id(),
+                notes: Some("Healthy baby!".to_string()),
+            }));
+
+            // Then
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 2);
+            assert!(matches!(
+                &events[0],
+                LabourEvent::LabourCompleted(e) if e.notes == Some("Healthy baby!".to_string())
+            ));
+            assert!(matches!(
+                &events[1],
+                LabourEvent::LabourPhaseChanged(e) if e.labour_phase == LabourPhase::COMPLETE
+            ));
+        }
+
+        #[test]
+        fn given_active_contraction_when_complete_then_error() {
+            // Given - labour with an active (not ended) contraction
+            let mut events = begun_labour_events();
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When
+            let result = harness.when(LabourCommand::CompleteLabour(CompleteLabour {
+                labour_id: labour_id(),
+                notes: None,
+            }));
+
+            // Then
+            assert!(matches!(result, Err(LabourError::ValidationError(_))));
+        }
+    }
+
+    mod contractions {
+        use super::*;
+
+        #[test]
+        fn given_begun_labour_when_start_contraction_then_contraction_started() {
+            // Given
+            let harness = AggregateTestHarness::given(begun_labour_events());
+
+            // When
+            let result = harness.when(LabourCommand::StartContraction(StartContraction {
+                labour_id: labour_id(),
+                start_time: Utc::now(),
+            }));
+
+            // Then
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 1);
+            assert!(matches!(events[0], LabourEvent::ContractionStarted(_)));
+        }
+
+        #[test]
+        fn given_planned_labour_when_start_contraction_then_labour_begun_automatically() {
+            // Given - labour in PLANNED phase
+            let harness = AggregateTestHarness::given(planned_labour_events());
+
+            // When
+            let result = harness.when(LabourCommand::StartContraction(StartContraction {
+                labour_id: labour_id(),
+                start_time: Utc::now(),
+            }));
+
+            // Then - should emit LabourBegun before ContractionStarted
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 2);
+            assert!(matches!(events[0], LabourEvent::LabourBegun(_)));
+            assert!(matches!(events[1], LabourEvent::ContractionStarted(_)));
+        }
+
+        #[test]
+        fn given_active_contraction_when_start_another_then_error() {
+            // Given
+            let mut events = begun_labour_events();
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When
+            let result = harness.when(LabourCommand::StartContraction(StartContraction {
+                labour_id: labour_id(),
+                start_time: Utc::now(),
+            }));
+
+            // Then
+            assert!(matches!(result, Err(LabourError::InvalidCommand(_))));
+        }
+    }
+
+    mod phase_progression {
+        use super::*;
+
+        #[test]
+        fn given_early_labour_with_low_intensity_when_end_contraction_then_no_phase_change() {
+            // Given - labour with 4 completed contractions below ACTIVE threshold
+            let mut events = begun_labour_events();
+            events.extend(contraction_events(4, 0.5, 5)); // intensity 5, duration 0.5 min
+            // Add an active contraction
+            let active_contraction_id = Uuid::now_v7();
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: active_contraction_id,
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When - end the contraction with low intensity
+            let result = harness.when(LabourCommand::EndContraction(EndContraction {
+                labour_id: labour_id(),
+                end_time: Utc::now(),
+                intensity: 5,
+            }));
+
+            // Then - only ContractionEnded, no phase change
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 1);
+            assert!(matches!(events[0], LabourEvent::ContractionEnded(_)));
+        }
+
+        #[test]
+        fn given_early_labour_when_contractions_meet_active_threshold_then_phase_advances() {
+            // Given - labour with 4 completed contractions meeting ACTIVE threshold
+            let mut events = begun_labour_events();
+            events.extend(contraction_events(4, 1.0, 7)); // intensity 7, duration 1.0 min
+            // Add an active contraction
+            let active_contraction_id = Uuid::now_v7();
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: active_contraction_id,
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When - end the contraction meeting ACTIVE threshold
+            let result = harness.when(LabourCommand::EndContraction(EndContraction {
+                labour_id: labour_id(),
+                end_time: Utc::now() + chrono::Duration::minutes(1),
+                intensity: 7,
+            }));
+
+            // Then - ContractionEnded AND LabourPhaseChanged to ACTIVE
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 2);
+            assert!(matches!(events[0], LabourEvent::ContractionEnded(_)));
+            assert!(matches!(
+                &events[1],
+                LabourEvent::LabourPhaseChanged(e) if e.labour_phase == LabourPhase::ACTIVE
+            ));
+        }
+
+        #[test]
+        fn given_early_labour_when_contractions_meet_transition_threshold_then_phase_advances_to_transition(
+        ) {
+            // Given - labour with 4 completed contractions meeting TRANSITION threshold
+            let mut events = begun_labour_events();
+            events.extend(contraction_events(4, 1.5, 8)); // intensity 8, duration 1.5 min
+            // Add an active contraction
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When - end the contraction meeting TRANSITION threshold
+            let result = harness.when(LabourCommand::EndContraction(EndContraction {
+                labour_id: labour_id(),
+                end_time: Utc::now() + chrono::Duration::seconds(90),
+                intensity: 8,
+            }));
+
+            // Then - advances directly to TRANSITION (skips ACTIVE)
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 2);
+            assert!(matches!(
+                &events[1],
+                LabourEvent::LabourPhaseChanged(e) if e.labour_phase == LabourPhase::TRANSITION
+            ));
+        }
+
+        #[test]
+        fn given_active_labour_when_high_contractions_then_advances_to_transition() {
+            // Given - labour already in ACTIVE phase
+            let mut events = begun_labour_events();
+            events.push(LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+                labour_id: labour_id(),
+                labour_phase: LabourPhase::ACTIVE,
+            }));
+            events.extend(contraction_events(4, 1.5, 8));
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When
+            let result = harness.when(LabourCommand::EndContraction(EndContraction {
+                labour_id: labour_id(),
+                end_time: Utc::now() + chrono::Duration::seconds(90),
+                intensity: 9,
+            }));
+
+            // Then - advances to TRANSITION
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 2);
+            assert!(matches!(
+                &events[1],
+                LabourEvent::LabourPhaseChanged(e) if e.labour_phase == LabourPhase::TRANSITION
+            ));
+        }
+
+        #[test]
+        fn given_transition_phase_when_contractions_still_high_then_no_phase_change() {
+            // Given - labour already in TRANSITION phase (highest non-complete phase)
+            let mut events = begun_labour_events();
+            events.push(LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+                labour_id: labour_id(),
+                labour_phase: LabourPhase::TRANSITION,
+            }));
+            events.extend(contraction_events(4, 2.0, 9));
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When
+            let result = harness.when(LabourCommand::EndContraction(EndContraction {
+                labour_id: labour_id(),
+                end_time: Utc::now() + chrono::Duration::minutes(2),
+                intensity: 9,
+            }));
+
+            // Then - only ContractionEnded, no phase change (already at TRANSITION)
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 1);
+            assert!(matches!(events[0], LabourEvent::ContractionEnded(_)));
+        }
+
+        #[test]
+        fn given_transition_phase_when_contractions_drop_to_active_level_then_no_downgrade() {
+            // Given - labour in TRANSITION phase, but recent contractions only meet ACTIVE threshold
+            let mut events = begun_labour_events();
+            events.push(LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+                labour_id: labour_id(),
+                labour_phase: LabourPhase::TRANSITION,
+            }));
+            // Add contractions that only meet ACTIVE threshold (intensity 6-7, duration 1.0 min)
+            events.extend(contraction_events(4, 1.0, 6));
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When - end contraction at ACTIVE level (below TRANSITION threshold)
+            let result = harness.when(LabourCommand::EndContraction(EndContraction {
+                labour_id: labour_id(),
+                end_time: Utc::now() + chrono::Duration::minutes(1),
+                intensity: 6,
+            }));
+
+            // Then - phase stays at TRANSITION, no downgrade to ACTIVE
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 1);
+            assert!(matches!(events[0], LabourEvent::ContractionEnded(_)));
+            // Verify no LabourPhaseChanged event (monotonic - never goes backwards)
+        }
+
+        #[test]
+        fn given_active_phase_when_contractions_drop_below_threshold_then_no_downgrade() {
+            // Given - labour in ACTIVE phase, but recent contractions drop below all thresholds
+            let mut events = begun_labour_events();
+            events.push(LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+                labour_id: labour_id(),
+                labour_phase: LabourPhase::ACTIVE,
+            }));
+            // Add contractions below ACTIVE threshold (intensity 4, duration 0.5 min)
+            events.extend(contraction_events(4, 0.5, 4));
+            events.push(LabourEvent::ContractionStarted(ContractionStarted {
+                labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
+                start_time: Utc::now(),
+            }));
+            let harness = AggregateTestHarness::given(events);
+
+            // When - end contraction below all thresholds
+            let result = harness.when(LabourCommand::EndContraction(EndContraction {
+                labour_id: labour_id(),
+                end_time: Utc::now() + chrono::Duration::seconds(30),
+                intensity: 4,
+            }));
+
+            // Then - phase stays at ACTIVE, no downgrade to EARLY
+            let events = result.expect("should succeed");
+            assert_eq!(events.len(), 1);
+            assert!(matches!(events[0], LabourEvent::ContractionEnded(_)));
+        }
     }
 }

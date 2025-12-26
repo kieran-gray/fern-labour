@@ -64,4 +64,12 @@ impl Contraction {
     pub fn end_time(&self) -> &DateTime<Utc> {
         self.duration.end_time()
     }
+
+    pub fn intensity(&self) -> Option<u8> {
+        self.intensity
+    }
+
+    pub fn duration_minutes(&self) -> f64 {
+        self.duration.duration_minutes()
+    }
 }
