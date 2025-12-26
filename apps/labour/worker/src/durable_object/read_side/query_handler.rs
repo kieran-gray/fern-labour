@@ -32,7 +32,7 @@ impl<'a> QueryHandler<'a> {
     }
 
     pub fn handle(&self, query: ApiQuery, user: &User) -> Result<Value> {
-        let aggregate = self.read_model.repository.load()?;
+        let aggregate = self.read_model.aggregate_repository.load()?;
 
         let action = match &query {
             ApiQuery::Labour(_) => Action::Query(QueryAction::GetLabour),

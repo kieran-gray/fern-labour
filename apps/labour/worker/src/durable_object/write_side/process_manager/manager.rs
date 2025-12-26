@@ -3,7 +3,7 @@ use std::rc::Rc;
 use tracing::{error, info, warn};
 
 use fern_labour_event_sourcing_rs::{
-    AggregateRepository, EventStoreTrait, HasPolicies, PolicyContext, StoredEvent,
+    AggregateRepositoryTrait, EventStoreTrait, HasPolicies, PolicyContext, StoredEvent,
 };
 
 use crate::durable_object::write_side::{
@@ -15,7 +15,7 @@ pub struct ProcessManager<E: EffectExecutor> {
     ledger: EffectLedger,
     executor: E,
     event_store: Rc<dyn EventStoreTrait>,
-    aggregate_repository: AggregateRepository<Labour>,
+    aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
 }
 
 impl<E> ProcessManager<E>
@@ -28,7 +28,7 @@ where
         ledger: EffectLedger,
         executor: E,
         event_store: Rc<dyn EventStoreTrait>,
-        aggregate_repository: AggregateRepository<Labour>,
+        aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
     ) -> Self {
         Self {
             ledger,

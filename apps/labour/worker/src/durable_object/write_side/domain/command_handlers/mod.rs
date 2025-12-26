@@ -10,8 +10,8 @@ pub use contraction::{
 };
 
 pub use labour::{
-    handle_begin_labour, handle_complete_labour, handle_delete_labour, handle_plan_labour,
-    handle_send_labour_invite, handle_update_labour_plan, handle_advance_labour_phase,
+    handle_advance_labour_phase, handle_begin_labour, handle_complete_labour, handle_delete_labour,
+    handle_plan_labour, handle_send_labour_invite, handle_update_labour_plan,
 };
 
 pub use labour_update::{

@@ -1,5 +1,6 @@
 pub mod aggregate;
 pub mod aggregate_repository;
+pub mod cache;
 pub mod command;
 pub mod command_handler;
 pub mod event;
@@ -9,6 +10,7 @@ pub mod policy;
 
 pub use aggregate::*;
 pub use aggregate_repository::*;
+pub use cache::*;
 pub use command::*;
 pub use command_handler::*;
 pub use event::*;

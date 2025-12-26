@@ -114,7 +114,7 @@ impl AggregateServices {
             .init_schema()
             .context("Event store initialization failed")?;
 
-        let repository = AggregateRepository::new(event_store.clone());
+        let repository = Box::new(AggregateRepository::new(event_store.clone()));
         let notification_command_processor = NotificationCommandProcessor::new(repository);
 
         let admin_command_processor = AdminCommandProcessor::create();
@@ -155,7 +155,7 @@ impl AggregateServices {
         let service_command_processor =
             ServiceCommandProcessor::create(command_bus, generation_client, dispatch_client);
 
-        let repository = AggregateRepository::new(event_store.clone());
+        let repository = Box::new(AggregateRepository::new(event_store.clone()));
         let notification_command_processor = NotificationCommandProcessor::new(repository);
 
         let event_processor = EventReactionProcessor::create(

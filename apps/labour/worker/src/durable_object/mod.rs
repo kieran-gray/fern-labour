@@ -77,7 +77,7 @@ impl DurableObject for LabourAggregate {
         let msg = parse_websocket_message(message)?;
         let user: User = extract_auth_context_from_websocket(&ws)?;
 
-        info!(user_id = %user.user_id, message = ?msg, "Processing message from WebSocket");
+        info!(user_id = %user.user_id, "Processing message from WebSocket");
         let (success, data, error) = match msg.request {
             WebSocketRequest::Command { command } => {
                 match CommandTranslator::translate(command, &user) {

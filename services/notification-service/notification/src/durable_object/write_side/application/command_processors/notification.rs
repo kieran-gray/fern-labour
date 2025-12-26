@@ -1,14 +1,14 @@
 use anyhow::{Result, anyhow};
-use fern_labour_event_sourcing_rs::{Aggregate, AggregateRepository};
+use fern_labour_event_sourcing_rs::{Aggregate, AggregateRepositoryTrait};
 
 use crate::durable_object::write_side::domain::{Notification, NotificationCommand};
 
 pub struct NotificationCommandProcessor {
-    repository: AggregateRepository<Notification>,
+    repository: Box<dyn AggregateRepositoryTrait<Notification>>,
 }
 
 impl NotificationCommandProcessor {
-    pub fn new(repository: AggregateRepository<Notification>) -> Self {
+    pub fn new(repository: Box<dyn AggregateRepositoryTrait<Notification>>) -> Self {
         Self { repository }
     }
 
@@ -22,7 +22,7 @@ impl NotificationCommandProcessor {
             return Ok(());
         }
 
-        self.repository.save(&events, user_id)?;
+        self.repository.save(aggregate.as_ref(), &events, user_id)?;
         Ok(())
     }
 }

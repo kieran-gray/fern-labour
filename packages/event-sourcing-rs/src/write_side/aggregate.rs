@@ -1,4 +1,6 @@
-pub trait Aggregate: Sized + Clone {
+use serde::{Serialize, de::DeserializeOwned};
+
+pub trait Aggregate: Sized + Clone + Serialize + DeserializeOwned {
     type Event: Clone;
     type Command;
     type Error: std::error::Error;

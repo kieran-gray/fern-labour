@@ -2,7 +2,7 @@ use fern_labour_labour_shared::value_objects::LabourPhase;
 
 use crate::durable_object::write_side::domain::Labour;
 
-const RECENT_CONTRACTION_COUNT: usize = 5;
+const RECENT_CONTRACTION_COUNT: usize = 3;
 const TRANSITION_INTENSITY_THRESHOLD: f64 = 8.0;
 const TRANSITION_DURATION_THRESHOLD_MINS: f64 = 1.5;
 const ACTIVE_INTENSITY_THRESHOLD: f64 = 6.0;
@@ -37,7 +37,7 @@ impl LabourPhaseProgression {
             .take(RECENT_CONTRACTION_COUNT)
             .collect();
 
-        if recent.is_empty() {
+        if recent.len() < RECENT_CONTRACTION_COUNT {
             return None;
         }
 

@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use anyhow::{Context, Result};
-use fern_labour_event_sourcing_rs::{AggregateRepository, EventStoreTrait, StoredEventRow};
+use fern_labour_event_sourcing_rs::{AggregateRepository, AggregateRepositoryTrait, EventStoreTrait, StoredEventRow};
 use fern_labour_notifications_shared::ServiceCommand;
 use tracing::{debug, error, info};
 
@@ -20,7 +20,7 @@ const MAX_RETRIES: i64 = 3;
 
 pub struct EventReactionProcessor {
     event_store: Rc<dyn EventStoreTrait>,
-    repository: AggregateRepository<Notification>,
+    repository: Box<dyn AggregateRepositoryTrait<Notification>>,
     policy_application_tracker: PolicyApplicationTracker,
     policy_engine: PolicyEngine,
     notification_command_processor: NotificationCommandProcessor,
@@ -86,7 +86,7 @@ impl EventReactionProcessor {
         notification_command_processor: NotificationCommandProcessor,
         service_command_processor: ServiceCommandProcessor,
     ) -> Self {
-        let repository = AggregateRepository::new(event_store.clone());
+        let repository = Box::new(AggregateRepository::new(event_store.clone()));
 
         Self {
             event_store,

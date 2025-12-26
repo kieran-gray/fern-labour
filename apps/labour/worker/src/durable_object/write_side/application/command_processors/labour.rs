@@ -1,5 +1,7 @@
+use std::rc::Rc;
+
 use anyhow::{Result, anyhow};
-use fern_labour_event_sourcing_rs::{Aggregate, AggregateRepository};
+use fern_labour_event_sourcing_rs::{Aggregate, AggregateRepositoryTrait};
 use fern_labour_workers_shared::User;
 
 use crate::durable_object::{
@@ -9,12 +11,12 @@ use crate::durable_object::{
 
 #[derive(Clone)]
 pub struct LabourCommandProcessor {
-    repository: AggregateRepository<Labour>,
+    repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
     authorizer: Authorizer,
 }
 
 impl LabourCommandProcessor {
-    pub fn new(repository: AggregateRepository<Labour>) -> Self {
+    pub fn new(repository: Rc<dyn AggregateRepositoryTrait<Labour>>) -> Self {
         Self {
             repository,
             authorizer: Authorizer::new(),
@@ -38,7 +40,18 @@ impl LabourCommandProcessor {
             return Ok(());
         }
 
-        self.repository.save(&events, user.user_id)?;
+        let updated_aggregate = match aggregate {
+            Some(mut labour) => {
+                for event in &events {
+                    labour.apply(event);
+                }
+                Some(labour)
+            }
+            None => Labour::from_events(&events),
+        };
+
+        self.repository
+            .save(updated_aggregate.as_ref(), &events, user.user_id)?;
 
         Ok(())
     }

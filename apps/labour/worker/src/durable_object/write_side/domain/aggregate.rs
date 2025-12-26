@@ -532,7 +532,10 @@ mod tests {
             let result = harness.when(plan_labour_cmd());
 
             // Then
-            assert!(matches!(result, Err(LabourError::InvalidStateTransition(_, _))));
+            assert!(matches!(
+                result,
+                Err(LabourError::InvalidStateTransition(_, _))
+            ));
         }
     }
 
@@ -574,7 +577,10 @@ mod tests {
             }));
 
             // Then
-            assert!(matches!(result, Err(LabourError::InvalidStateTransition(_, _))));
+            assert!(matches!(
+                result,
+                Err(LabourError::InvalidStateTransition(_, _))
+            ));
         }
     }
 
@@ -749,8 +755,8 @@ mod tests {
         }
 
         #[test]
-        fn given_early_labour_when_contractions_meet_transition_threshold_then_phase_advances_to_transition(
-        ) {
+        fn given_early_labour_when_contractions_meet_transition_threshold_then_phase_advances_to_transition()
+         {
             // Given - labour with 4 completed contractions meeting TRANSITION threshold
             let mut events = begun_labour_events();
             events.extend(contraction_events(4, 1.5, 8)); // intensity 8, duration 1.5 min

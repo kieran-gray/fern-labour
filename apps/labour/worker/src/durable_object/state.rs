@@ -6,7 +6,8 @@ use fern_labour_workers_shared::clients::FetcherNotificationClient;
 use worker::{Env, State};
 
 use fern_labour_event_sourcing_rs::{
-    AggregateRepository, AsyncProjector, CheckpointRepository, EventStoreTrait, SyncProjector,
+    AggregateRepositoryTrait, AsyncProjector, CacheTrait, CachedAggregateRepository,
+    CheckpointRepository, EventStoreTrait, SyncProjector,
 };
 
 use crate::durable_object::{
@@ -42,7 +43,7 @@ use crate::durable_object::{
     write_side::{
         application::{AdminCommandProcessor, LabourCommandProcessor},
         domain::{Labour, LabourEvent},
-        infrastructure::{SplitMix64TokenGenerator, SqlEventStore, UserStore},
+        infrastructure::{SplitMix64TokenGenerator, SqlCache, SqlEventStore, UserStore},
         process_manager::{EffectLedger, LabourEffectExecutor, ProcessManager},
     },
 };
@@ -54,7 +55,7 @@ pub struct WriteModel {
 }
 
 pub struct ReadModel {
-    pub repository: AggregateRepository<Labour>,
+    pub aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
     pub event_query: EventQuery,
     pub user_query: UserQuery,
     pub labour_query: LabourReadModelQuery,
@@ -82,15 +83,12 @@ pub struct AggregateServices {
 }
 
 impl AggregateServices {
-    fn build_write_model(state: &State) -> Result<WriteModel> {
+    fn build_write_model(
+        state: &State,
+        aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
+    ) -> Result<WriteModel> {
         let sql = state.storage().sql();
-        let event_store: Rc<dyn EventStoreTrait> = Rc::new(SqlEventStore::create(sql.clone()));
-        event_store
-            .init_schema()
-            .context("Event store initialization failed")?;
-
-        let repository = AggregateRepository::new(event_store.clone());
-        let labour_command_processor = LabourCommandProcessor::new(repository);
+        let labour_command_processor = LabourCommandProcessor::new(aggregate_repository);
 
         let checkpoint_repository = Box::new(SqlCheckpointRepository::create(sql.clone()));
         checkpoint_repository.init_schema()?;
@@ -109,10 +107,12 @@ impl AggregateServices {
         })
     }
 
-    fn build_read_model(state: &State, event_store: Rc<dyn EventStoreTrait>) -> Result<ReadModel> {
+    fn build_read_model(
+        state: &State,
+        aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
+    ) -> Result<ReadModel> {
         let sql = state.storage().sql();
-        let event_query = EventQuery::new(event_store.clone());
-        let repository = AggregateRepository::new(event_store.clone());
+        let event_query = EventQuery::new(aggregate_repository.clone());
 
         let labour_repository = Box::new(SqlLabourRepository::create(sql.clone()));
         let labour_query = LabourReadModelQuery::create(labour_repository);
@@ -133,7 +133,7 @@ impl AggregateServices {
         let user_query = UserQuery::new(user_storage);
 
         Ok(ReadModel {
-            repository,
+            aggregate_repository,
             event_query,
             user_query,
             labour_query,
@@ -247,6 +247,7 @@ impl AggregateServices {
         state: &State,
         env: &Env,
         event_store: Rc<dyn EventStoreTrait>,
+        aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
         command_processor: Rc<LabourCommandProcessor>,
     ) -> Result<ProcessManagement> {
         let sql = state.storage().sql();
@@ -285,25 +286,46 @@ impl AggregateServices {
             base_url,
         );
 
-        let labour_repository = AggregateRepository::<Labour>::new(event_store.clone());
-
-        let process_manager = ProcessManager::new(ledger, executor, event_store, labour_repository);
+        let process_manager =
+            ProcessManager::new(ledger, executor, event_store, aggregate_repository);
 
         Ok(ProcessManagement { process_manager })
     }
 
+    const AGGREGATE_CACHE_KEY: &'static str = "aggregate:labour";
+
     pub fn from_worker_state(state: &State, env: &Env) -> Result<Self> {
         let sql = state.storage().sql();
-        let event_store: Rc<dyn EventStoreTrait> = Rc::new(SqlEventStore::create(sql));
 
-        let write_model = Self::build_write_model(state)?;
+        let event_store: Rc<dyn EventStoreTrait> = Rc::new(SqlEventStore::create(sql.clone()));
+        event_store
+            .init_schema()
+            .context("Event store initialization failed")?;
+
+        let cache = SqlCache::new(sql.clone());
+        cache.init_schema().context("Cache initialization failed")?;
+        let cache: Rc<dyn CacheTrait> = Rc::new(cache);
+
+        let aggregate_repository = Rc::new(CachedAggregateRepository::new(
+            event_store.clone(),
+            cache,
+            Self::AGGREGATE_CACHE_KEY.to_string(),
+        ));
+
+        let write_model = Self::build_write_model(state, aggregate_repository.clone())?;
 
         let command_processor = Rc::new(write_model.labour_command_processor.clone());
 
-        let read_model = Self::build_read_model(state, event_store.clone())?;
+        let read_model =
+            Self::build_read_model(state, aggregate_repository.clone())?;
         let async_processors = Self::build_async_processors(state, env, event_store.clone())?;
-        let process_management =
-            Self::build_process_management(state, env, event_store.clone(), command_processor)?;
+        let process_management = Self::build_process_management(
+            state,
+            env,
+            event_store.clone(),
+            aggregate_repository.clone(),
+            command_processor,
+        )?;
 
         Ok(Self {
             write_model,
