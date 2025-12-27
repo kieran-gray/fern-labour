@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use anyhow::{Context, Result, anyhow};
-use tracing::{error, info};
+use tracing::{debug, error};
 
 use fern_labour_event_sourcing_rs::{
     CheckpointRepository, CheckpointStatus, EventEnvelopeAdapter, EventStoreTrait,
@@ -40,7 +40,7 @@ impl SyncProjectionProcessor {
     }
 
     pub fn process_projections(&self) -> Result<()> {
-        info!("Starting checkpoint-based projection processing");
+        debug!("Starting checkpoint-based projection processing");
 
         for (projector_name, projector) in &self.projectors {
             if let Err(e) = self.process_single_projector(projector_name, projector.as_ref()) {
@@ -67,7 +67,7 @@ impl SyncProjectionProcessor {
 
         let last_sequence = checkpoint.last_processed_sequence;
 
-        info!(
+        debug!(
             projector = %projector_name,
             last_sequence = last_sequence,
             "Processing projector from checkpoint"
@@ -79,7 +79,7 @@ impl SyncProjectionProcessor {
             .context("Failed to fetch events since checkpoint")?;
 
         if stored_events.is_empty() {
-            info!(
+            debug!(
                 projector = %projector_name,
                 "No new events to process"
             );
@@ -92,7 +92,7 @@ impl SyncProjectionProcessor {
             .collect::<Result<Vec<_>>>()?;
 
         let event_count = envelopes.len();
-        info!(
+        debug!(
             projector = %projector_name,
             event_count = event_count,
             "Processing events"
@@ -117,7 +117,7 @@ impl SyncProjectionProcessor {
             .update_checkpoint(&new_checkpoint)
             .context("Failed to update checkpoint")?;
 
-        info!(
+        debug!(
             projector = %projector_name,
             events_processed = event_count,
             new_sequence = new_checkpoint.last_processed_sequence,

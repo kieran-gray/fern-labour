@@ -2,7 +2,7 @@ use std::{collections::HashMap, rc::Rc};
 
 use anyhow::{Context, Result, anyhow};
 use futures::future::try_join_all;
-use tracing::info;
+use tracing::{debug, info};
 
 use fern_labour_event_sourcing_rs::{
     AsyncProjector, EventEnvelope, EventEnvelopeAdapter, EventStoreTrait,
@@ -31,7 +31,7 @@ impl AsyncProjectionProcessor {
     }
 
     pub async fn process_projections(&self) -> Result<()> {
-        info!("Starting projection processing");
+        debug!("Starting projection processing");
 
         let stored_events = self
             .event_store
@@ -39,7 +39,7 @@ impl AsyncProjectionProcessor {
             .context("Failed to load events from store")?;
 
         if stored_events.is_empty() {
-            info!("No events to project");
+            debug!("No events to project");
             return Ok(());
         }
 
@@ -49,7 +49,7 @@ impl AsyncProjectionProcessor {
             .collect::<Result<Vec<_>>>()?;
 
         let event_count = envelopes.len();
-        info!(
+        debug!(
             event_count = event_count,
             "Processing events through projectors"
         );

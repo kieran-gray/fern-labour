@@ -316,8 +316,7 @@ impl AggregateServices {
 
         let command_processor = Rc::new(write_model.labour_command_processor.clone());
 
-        let read_model =
-            Self::build_read_model(state, aggregate_repository.clone())?;
+        let read_model = Self::build_read_model(state, aggregate_repository.clone())?;
         let async_processors = Self::build_async_processors(state, env, event_store.clone())?;
         let process_management = Self::build_process_management(
             state,

@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use fern_labour_event_sourcing_rs::EventStoreTrait;
-use tracing::{info, warn};
+use tracing::{debug, warn};
 use worker::State;
 
 pub struct WebSocketEventBroadcaster {
@@ -25,7 +25,7 @@ impl WebSocketEventBroadcaster {
 
         let websockets = state.get_websockets();
 
-        info!(
+        debug!(
             "Broadcasting {} new events to {} connected clients",
             new_events.len(),
             websockets.len()

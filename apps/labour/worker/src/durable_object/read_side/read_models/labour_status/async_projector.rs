@@ -1,7 +1,7 @@
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use fern_labour_labour_shared::value_objects::LabourPhase;
-use tracing::{info, warn};
+use tracing::warn;
 
 use fern_labour_event_sourcing_rs::{AsyncProjector, AsyncRepositoryTrait, EventEnvelope};
 
@@ -94,13 +94,6 @@ impl AsyncProjector<LabourEvent> for LabourStatusReadModelProjector {
                 .overwrite(&model)
                 .await
                 .map_err(|err| anyhow!("Failed to persist LabourStatusReadModel: {err}"))?;
-
-            info!(
-                projector = %self.name,
-                labour_id = %model.labour_id,
-                events_processed = events.len(),
-                "Persisted read model after batch processing"
-            );
         }
 
         Ok(())

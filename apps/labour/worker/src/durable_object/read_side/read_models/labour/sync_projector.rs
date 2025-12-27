@@ -1,6 +1,5 @@
 use anyhow::{Result, anyhow};
 use fern_labour_labour_shared::value_objects::LabourPhase;
-use tracing::info;
 
 use fern_labour_event_sourcing_rs::{EventEnvelope, SyncProjector, SyncRepositoryTrait};
 use uuid::Uuid;
@@ -106,13 +105,6 @@ impl SyncProjector<LabourEvent> for LabourReadModelProjector {
             self.repository
                 .overwrite(&model)
                 .map_err(|err| anyhow!("Failed to persist LabourReadModel: {err}"))?;
-
-            info!(
-                projector = %self.name,
-                labour_id = %model.labour_id,
-                events_processed = events.len(),
-                "Persisted read model after batch processing"
-            );
         }
 
         Ok(())

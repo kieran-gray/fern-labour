@@ -131,7 +131,7 @@ impl DurableObject for LabourAggregate {
     }
 
     async fn alarm(&self) -> Result<Response> {
-        info!("Alarm triggered - processing async operations");
+        info!("Alarm triggered");
         let alarm_services = self.services.async_processors();
 
         let sequence_before = alarm_services

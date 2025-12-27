@@ -10,6 +10,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { queryKeysV2 } from './queryKeys';
 import { useApiAuth } from './useApiAuth';
+import { useWebSocket } from '@base/contexts/WebsocketContext';
 
 // Helper function to decode cursor
 function decodeCursor(cursorString: string): Cursor {
@@ -266,6 +267,7 @@ export function useLabourUpdateByIdV2(
  */
 export function useStartContractionV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({ labourId, startTime }: { labourId: string; startTime: Date }) => {
@@ -278,11 +280,16 @@ export function useStartContractionV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, __) => {
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.contractions.all,
+        });
+      }
+    },
+    onError: (error: Error) => {
       queryClient.invalidateQueries({
         queryKey: queryKeysV2.contractions.all,
       });
-    },
-    onError: (error: Error) => {
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
@@ -297,6 +304,7 @@ export function useStartContractionV2(client: LabourServiceV2Client) {
  */
 export function useEndContractionV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -317,11 +325,16 @@ export function useEndContractionV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, __) => {
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.contractions.all,
+        });
+      }
+    },
+    onError: (error: Error) => {
       queryClient.invalidateQueries({
         queryKey: queryKeysV2.contractions.all,
       });
-    },
-    onError: (error: Error) => {
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
@@ -336,6 +349,7 @@ export function useEndContractionV2(client: LabourServiceV2Client) {
  */
 export function useUpdateContractionV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async (params: {
@@ -354,9 +368,11 @@ export function useUpdateContractionV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.contractions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.contractions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -379,6 +395,7 @@ export function useUpdateContractionV2(client: LabourServiceV2Client) {
  */
 export function useDeleteContractionV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -397,9 +414,11 @@ export function useDeleteContractionV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.contractions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.contractions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -422,6 +441,7 @@ export function useDeleteContractionV2(client: LabourServiceV2Client) {
  */
 export function useUpdateLabourUpdateMessageV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -442,9 +462,11 @@ export function useUpdateLabourUpdateMessageV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -467,6 +489,7 @@ export function useUpdateLabourUpdateMessageV2(client: LabourServiceV2Client) {
  */
 export function useUpdateLabourUpdateTypeV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -491,9 +514,11 @@ export function useUpdateLabourUpdateTypeV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -516,6 +541,7 @@ export function useUpdateLabourUpdateTypeV2(client: LabourServiceV2Client) {
  */
 export function usePostLabourUpdateV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -536,9 +562,11 @@ export function usePostLabourUpdateV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -561,6 +589,7 @@ export function usePostLabourUpdateV2(client: LabourServiceV2Client) {
  */
 export function useDeleteLabourUpdateV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -579,9 +608,11 @@ export function useDeleteLabourUpdateV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -659,6 +690,7 @@ export function usePlanLabourV2(client: LabourServiceV2Client) {
  */
 export function useUpdateLabourPlanV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -686,9 +718,11 @@ export function useUpdateLabourPlanV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labour.byId(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.labour.byId(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -711,6 +745,7 @@ export function useUpdateLabourPlanV2(client: LabourServiceV2Client) {
  */
 export function useBeginLabourV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async (labourId: string) => {
@@ -723,9 +758,11 @@ export function useBeginLabourV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, labourId) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labour.byId(labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.labour.byId(labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -748,6 +785,7 @@ export function useBeginLabourV2(client: LabourServiceV2Client) {
  */
 export function useCompleteLabourV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({ labourId, notes }: { labourId: string; notes: string }) => {
@@ -766,9 +804,11 @@ export function useCompleteLabourV2(client: LabourServiceV2Client) {
         message: 'Labour completed successfully',
       });
 
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labour.all,
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.labour.all,
+        });
+      }
     },
     onError: (error: Error) => {
       notifications.show({
@@ -785,6 +825,7 @@ export function useCompleteLabourV2(client: LabourServiceV2Client) {
  */
 export function useDeleteLabourV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async (labourId: string) => {
@@ -797,15 +838,15 @@ export function useDeleteLabourV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, labourId) => {
-      // Remove from cache
-      queryClient.removeQueries({
-        queryKey: queryKeysV2.labour.byId(labourId),
-      });
+      if (!isConnected) {
+        queryClient.removeQueries({
+          queryKey: queryKeysV2.labour.byId(labourId),
+        });
 
-      // Invalidate all labour queries
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labour.all,
-      });
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.labour.all,
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -999,6 +1040,7 @@ export function useUsersV2(client: LabourServiceV2Client, labourId: string | nul
  */
 export function useRequestAccessV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({ labourId, token }: { labourId: string; token: string }) => {
@@ -1011,9 +1053,11 @@ export function useRequestAccessV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -1036,6 +1080,7 @@ export function useRequestAccessV2(client: LabourServiceV2Client) {
  */
 export function useUnsubscribeV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -1054,9 +1099,11 @@ export function useUnsubscribeV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -1079,6 +1126,7 @@ export function useUnsubscribeV2(client: LabourServiceV2Client) {
  */
 export function useUpdateNotificationMethodsV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -1099,9 +1147,11 @@ export function useUpdateNotificationMethodsV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -1124,6 +1174,7 @@ export function useUpdateNotificationMethodsV2(client: LabourServiceV2Client) {
  */
 export function useUpdateAccessLevelV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -1144,9 +1195,11 @@ export function useUpdateAccessLevelV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -1171,6 +1224,7 @@ export function useUpdateAccessLevelV2(client: LabourServiceV2Client) {
  */
 export function useApproveSubscriberV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -1189,9 +1243,11 @@ export function useApproveSubscriberV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -1214,6 +1270,7 @@ export function useApproveSubscriberV2(client: LabourServiceV2Client) {
  */
 export function useRemoveSubscriberV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -1232,9 +1289,11 @@ export function useRemoveSubscriberV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -1257,6 +1316,7 @@ export function useRemoveSubscriberV2(client: LabourServiceV2Client) {
  */
 export function useBlockSubscriberV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -1275,9 +1335,11 @@ export function useBlockSubscriberV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -1300,6 +1362,7 @@ export function useBlockSubscriberV2(client: LabourServiceV2Client) {
  */
 export function useUnblockSubscriberV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -1318,9 +1381,11 @@ export function useUnblockSubscriberV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,
@@ -1343,6 +1408,7 @@ export function useUnblockSubscriberV2(client: LabourServiceV2Client) {
  */
 export function useUpdateSubscriberRoleV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
+  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
@@ -1363,9 +1429,11 @@ export function useUpdateSubscriberRoleV2(client: LabourServiceV2Client) {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
-      });
+      if (!isConnected) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+        });
+      }
 
       notifications.show({
         ...Success,

@@ -12,7 +12,7 @@ pub fn setup_observability() {
         .with_ansi(false)
         .with_timer(UtcTime::rfc_3339())
         .with_writer(MakeConsoleWriter)
-        .with_filter(EnvFilter::new("debug"));
+        .with_filter(EnvFilter::new("info"));
 
     let perf_layer = performance_layer().with_details_from_fields(Pretty::default());
 
