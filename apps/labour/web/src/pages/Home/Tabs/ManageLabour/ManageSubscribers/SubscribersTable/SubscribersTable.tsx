@@ -2,6 +2,7 @@ import { SubscriptionReadModel } from '@base/clients/labour_service/types';
 import { ImportantText } from '@base/shared-components/ImportantText/ImportantText';
 import { Avatar, Group, Table, Text } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
+import { RoleBadge } from './RoleBadge';
 import classes from './SubscribersTable.module.css';
 
 export function SubscribersTable({
@@ -31,17 +32,14 @@ export function SubscribersTable({
           </Group>
         </Table.Td>
         <Table.Td>
-          <>
-            <Text fz="sm" visibleFrom="xs" fw={500} className={classes.cropText}>
-              {subscription.status}
-            </Text>
-            <Text fz="xs" hiddenFrom="xs" fw={500} className={classes.cropText}>
-              {subscription.status}
-            </Text>
-          </>
+          <RoleBadge role={subscription.role} />
         </Table.Td>
         <Table.Td>
-          <ManageSubscriptionMenu subscriptionId={subscription.subscription_id} status={status} />
+          <ManageSubscriptionMenu
+            subscriptionId={subscription.subscription_id}
+            status={status}
+            currentRole={subscription.role}
+          />
         </Table.Td>
       </Table.Tr>
     );
@@ -54,7 +52,7 @@ export function SubscribersTable({
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Subscriber</Table.Th>
-              <Table.Th>Status</Table.Th>
+              <Table.Th>Role</Table.Th>
               <Table.Th>Manage</Table.Th>
             </Table.Tr>
           </Table.Thead>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SubscriberRole } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useLabourV2Client } from '@base/hooks';
 import {
@@ -14,19 +15,24 @@ import {
   IconCircleCheck,
   IconCircleMinus,
   IconDots,
+  IconSwitchHorizontal,
   IconX,
 } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
+import { ChangeRoleModal } from './ChangeRoleModal';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageSubscriptionMenu({
   subscriptionId,
   status,
+  currentRole,
 }: {
   subscriptionId: string;
   status: string;
+  currentRole?: SubscriberRole;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [action, setAction] = useState('');
   const { labourId } = useLabourSession();
 
@@ -47,6 +53,13 @@ export function ManageSubscriptionMenu({
     } else if (action === 'block') {
       blockSubscriberMutation.mutate({ labourId: labourId!, subscriptionId });
     }
+  };
+
+  const handleRoleChange = async (newRole: SubscriberRole) => {
+    setIsRoleModalOpen(false);
+    await client.updateSubscriberRole(labourId!, subscriptionId, newRole);
+    // Refresh the data to show updated role
+    window.location.reload();
   };
 
   return (
@@ -82,16 +95,25 @@ export function ManageSubscriptionMenu({
             </>
           )}
           {status === 'subscribed' && (
-            <Menu.Item
-              className={baseClasses.actionMenuDanger}
-              leftSection={<IconCircleMinus size={20} stroke={1.5} />}
-              onClick={() => {
-                setAction('remove');
-                setIsModalOpen(true);
-              }}
-            >
-              Remove
-            </Menu.Item>
+            <>
+              <Menu.Item
+                className={baseClasses.actionMenuDefault}
+                leftSection={<IconSwitchHorizontal size={20} stroke={1.5} />}
+                onClick={() => setIsRoleModalOpen(true)}
+              >
+                Change Role
+              </Menu.Item>
+              <Menu.Item
+                className={baseClasses.actionMenuDanger}
+                leftSection={<IconCircleMinus size={20} stroke={1.5} />}
+                onClick={() => {
+                  setAction('remove');
+                  setIsModalOpen(true);
+                }}
+              >
+                Remove
+              </Menu.Item>
+            </>
           )}
           {status !== 'blocked' && (
             <Menu.Item
@@ -127,6 +149,14 @@ export function ManageSubscriptionMenu({
         onCancel={handleCancel}
         isDangerous
       />
+      {currentRole && (
+        <ChangeRoleModal
+          isOpen={isRoleModalOpen}
+          currentRole={currentRole}
+          onConfirm={handleRoleChange}
+          onCancel={() => setIsRoleModalOpen(false)}
+        />
+      )}
     </>
   );
 }

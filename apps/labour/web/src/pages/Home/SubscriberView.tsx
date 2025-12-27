@@ -17,7 +17,7 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
-import { Center, Space } from '@mantine/core';
+import { Space } from '@mantine/core';
 import { PayWall } from './components/Paywall/PayWall';
 import { PendingApprovalView } from './PendingApprovalView';
 import Gifts from './Tabs/Gifts/Gifts';
@@ -211,9 +211,16 @@ export const SubscriberView = () => {
     <div {...swipeHandlers}>
       <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
         <div className={baseClasses.flexPageColumn}>
-          <Center style={{ flexDirection: 'column' }}>
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
             {renderTabPanel(activeTab || 'subscriptions')}
-          </Center>
+          </div>
         </div>
       </AppShell>
     </div>

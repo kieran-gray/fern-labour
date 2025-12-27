@@ -59,7 +59,7 @@
   .modalText {
     color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-1));
     line-height: 1;
-    font-weight: 700;
+    font-weight: 600;
     margin-bottom: var(--mantine-spacing-md);
     font-size: var(--mantine-font-size-lg);
   }
