@@ -5,7 +5,6 @@ import {
   SubscriberRole,
 } from '@base/clients/labour_service';
 import { useLabourUpdatesV2, useLabourV2Client } from '@base/hooks';
-import { useApiAuth } from '@base/hooks/useApiAuth';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -37,6 +36,16 @@ const MESSAGES = {
   OWNER_DESCRIPTION_COMPLETED:
     'Here you can see the updates you made during your labour experience.',
   OWNER_EMPTY_STATE: "You haven't posted any updates yet.",
+  BIRTH_PARTNER_LABOUR_BEGUN: (firstName: string) =>
+    `You're now tracking ${firstName}'s contractions! Use the announce button on this message to let subscribers know that labour has started!`,
+  BIRTH_PARTNER_TITLE_ACTIVE: (firstName: string) => `Share an update about ${firstName}`,
+  BIRTH_PARTNER_TITLE_COMPLETED: (firstName: string) => `${firstName}'s labour updates`,
+  BIRTH_PARTNER_DESCRIPTION_ACTIVE: (firstName: string) =>
+    `Share updates here to let subscribers know how ${firstName} is getting on. Click the book icon above for more info.`,
+  BIRTH_PARTNER_DESCRIPTION_COMPLETED: (firstName: string) =>
+    `Here you can see the updates you made during ${firstName}'s labour experience.`,
+  BIRTH_PARTNER_EMPTY_STATE: (firstName: string) =>
+    `You haven't posted any updates about ${firstName} yet.`,
   SUBSCRIBER_TITLE: (possessiveName: string) => `${possessiveName} status updates`,
   SUBSCRIBER_DESCRIPTION_ACTIVE: (firstName: string) =>
     `Curious about how things are going? ${firstName} can update her status here, giving you a glimpse into her progress. Check in regularly to stay informed without needing to reach out directly.`,
@@ -70,7 +79,7 @@ const mapLabourUpdateToProps = (
           badgeColor: '#ff8f00',
           badgeText: 'Fern Labour',
           text: sharedLabourBegunMessage,
-          visibility: isSubscriberView ? '' : '📡 Broadcast to subscribers',
+          visibility: isSubscriberView ? '' : 'Broadcast to subscribers',
           showMenu: false,
           showFooter: !isSubscriberView,
         };
@@ -83,7 +92,7 @@ const mapLabourUpdateToProps = (
           : 'var(--mantine-color-pink-6)',
         badgeText: update.labour_update_type.split('_')[0],
         text: update.message,
-        visibility: isSubscriberView ? '' : '📡 Broadcast to subscribers',
+        visibility: isSubscriberView ? '' : 'Broadcast to subscribers',
         showMenu: false,
         showFooter: !isSubscriberView,
       };
@@ -95,7 +104,7 @@ const mapLabourUpdateToProps = (
         badgeColor: '#24968b',
         badgeText: update.labour_update_type.split('_')[0],
         text: update.message,
-        visibility: isSubscriberView ? '' : '👁️ Visible to subscribers',
+        visibility: isSubscriberView ? '' : 'Visible to subscribers',
         showMenu: isSubscriberView ? false : !completed,
         showFooter: !isSubscriberView,
       };
@@ -107,7 +116,7 @@ const mapLabourUpdateToProps = (
         badgeColor: '#ff8f00',
         badgeText: 'Fern Labour',
         text: privateLabourBegunMessage,
-        visibility: isSubscriberView ? '' : '🔒 Only visible to you',
+        visibility: isSubscriberView ? '' : 'Only visible to you',
         showMenu: isSubscriberView ? false : !completed,
         showFooter: !isSubscriberView,
       };
@@ -121,9 +130,9 @@ export function LabourUpdates({
 }: LabourUpdatesProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
-  const { user } = useApiAuth();
 
-  const canSendUpdates = !isSubscriberView || subscriberRole === SubscriberRole.BIRTH_PARTNER;
+  const isOwnerView = !isSubscriberView || subscriberRole === SubscriberRole.BIRTH_PARTNER;
+  const isBirthPartner = isSubscriberView && subscriberRole === SubscriberRole.BIRTH_PARTNER;
 
   const client = useLabourV2Client();
   const { data: labourUpdatesData } = useLabourUpdatesV2(client, labour.labour_id, 20);
@@ -132,15 +141,17 @@ export function LabourUpdates({
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
   });
 
-  const firstName = isSubscriberView ? labour.mother_name.split(' ')[0] : user?.given_name || '';
+  const motherFirstName = labour.mother_name.split(' ')[0];
   const completed = labour.end_time != null;
 
   const sharedLabourBegunMessage = useMemo(
-    () => MESSAGES.SHARED_LABOUR_BEGUN(firstName),
-    [firstName]
+    () => MESSAGES.SHARED_LABOUR_BEGUN(motherFirstName),
+    [motherFirstName]
   );
 
-  const privateLabourBegunMessage = MESSAGES.PRIVATE_LABOUR_BEGUN;
+  const privateLabourBegunMessage = isBirthPartner
+    ? MESSAGES.BIRTH_PARTNER_LABOUR_BEGUN(motherFirstName)
+    : MESSAGES.PRIVATE_LABOUR_BEGUN;
 
   const scrollToBottom = useCallback((smooth: boolean = false) => {
     setTimeout(() => {
@@ -159,14 +170,13 @@ export function LabourUpdates({
   }, []);
 
   const labourUpdateDisplay = useMemo(() => {
-    // Filter out private notes for subscribers
-    const filteredUpdates = isSubscriberView
-      ? labourUpdates.filter(
+    const filteredUpdates = isOwnerView
+      ? labourUpdates
+      : labourUpdates.filter(
           (update) =>
             update.labour_update_type === 'ANNOUNCEMENT' ||
             update.labour_update_type === 'STATUS_UPDATE'
-        )
-      : labourUpdates;
+        );
 
     return filteredUpdates.map((data) => {
       return (
@@ -176,19 +186,13 @@ export function LabourUpdates({
             sharedLabourBegunMessage,
             privateLabourBegunMessage,
             completed,
-            isSubscriberView
+            !isOwnerView
           )}
           key={data.labour_update_id}
         />
       );
     });
-  }, [
-    labourUpdates,
-    sharedLabourBegunMessage,
-    privateLabourBegunMessage,
-    completed,
-    isSubscriberView,
-  ]);
+  }, [labourUpdates, sharedLabourBegunMessage, privateLabourBegunMessage, completed, isOwnerView]);
 
   const prevLengthRef = useRef(labourUpdates.length);
 
@@ -205,86 +209,41 @@ export function LabourUpdates({
     prevLengthRef.current = currentLength;
   }, [labourUpdates.length, scrollToBottom]);
 
-  const title = isSubscriberView
-    ? MESSAGES.SUBSCRIBER_TITLE(pluraliseName(firstName))
-    : completed
-      ? MESSAGES.OWNER_TITLE_COMPLETED
-      : MESSAGES.OWNER_TITLE_ACTIVE;
-
-  const description = isSubscriberView
+  const title = !isSubscriberView
     ? completed
-      ? MESSAGES.SUBSCRIBER_DESCRIPTION_COMPLETED(firstName)
-      : MESSAGES.SUBSCRIBER_DESCRIPTION_ACTIVE(firstName)
-    : completed
-      ? MESSAGES.OWNER_DESCRIPTION_COMPLETED
-      : MESSAGES.OWNER_DESCRIPTION_ACTIVE;
+      ? MESSAGES.OWNER_TITLE_COMPLETED
+      : MESSAGES.OWNER_TITLE_ACTIVE
+    : isBirthPartner
+      ? completed
+        ? MESSAGES.BIRTH_PARTNER_TITLE_COMPLETED(motherFirstName)
+        : MESSAGES.BIRTH_PARTNER_TITLE_ACTIVE(motherFirstName)
+      : MESSAGES.SUBSCRIBER_TITLE(pluraliseName(motherFirstName));
 
-  const emptyStateMessage = isSubscriberView
-    ? MESSAGES.SUBSCRIBER_EMPTY_STATE(firstName)
-    : MESSAGES.OWNER_EMPTY_STATE;
+  const description = !isSubscriberView
+    ? completed
+      ? MESSAGES.OWNER_DESCRIPTION_COMPLETED
+      : MESSAGES.OWNER_DESCRIPTION_ACTIVE
+    : isBirthPartner
+      ? completed
+        ? MESSAGES.BIRTH_PARTNER_DESCRIPTION_COMPLETED(motherFirstName)
+        : MESSAGES.BIRTH_PARTNER_DESCRIPTION_ACTIVE(motherFirstName)
+      : completed
+        ? MESSAGES.SUBSCRIBER_DESCRIPTION_COMPLETED(motherFirstName)
+        : MESSAGES.SUBSCRIBER_DESCRIPTION_ACTIVE(motherFirstName);
+
+  const emptyStateMessage = !isSubscriberView
+    ? MESSAGES.OWNER_EMPTY_STATE
+    : isBirthPartner
+      ? MESSAGES.BIRTH_PARTNER_EMPTY_STATE(motherFirstName)
+      : MESSAGES.SUBSCRIBER_EMPTY_STATE(motherFirstName);
 
   const hasUpdates = labourUpdateDisplay.length > 0;
-  const showOwnerEmptyState = !hasUpdates && !completed && !isSubscriberView;
+  const showOwnerEmptyState = !hasUpdates && !completed && isOwnerView;
 
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        {isSubscriberView ? (
-          <>
-            {canSendUpdates ? (
-              <>
-                <div className={classes.titleRow}>
-                  <div className={classes.title} style={{ paddingBottom: 0 }}>
-                    <ResponsiveTitle title={title} />
-                  </div>
-                  <ActionIcon radius="xl" variant="light" size="xl" onClick={open}>
-                    <IconBook />
-                  </ActionIcon>
-                  <LabourUpdatesHelpModal close={close} opened={opened} />
-                </div>
-                <div className={baseClasses.inner} style={{ paddingTop: 0, paddingBottom: 0 }}>
-                  <div className={classes.content}>
-                    <ResponsiveDescription description={description} marginTop={0} />
-                    {hasUpdates && (
-                      <ScrollArea.Autosize
-                        mt={20}
-                        mah="calc(100dvh - 370px)"
-                        viewportRef={viewport}
-                      >
-                        <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
-                      </ScrollArea.Autosize>
-                    )}
-                    {!hasUpdates && <ImportantText message={emptyStateMessage} />}
-                    {/* Desktop controls - Birth Partners can send updates */}
-                    <div className={classes.desktopControls}>
-                      {!completed && <LabourUpdateControls />}
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={baseClasses.inner}>
-                  <div className={classes.content}>
-                    <ResponsiveTitle title={title} />
-                    <ResponsiveDescription description={description} marginTop={10} />
-                    <Space h="lg" />
-                    {hasUpdates ? (
-                      <>
-                        <ScrollArea.Autosize mah="calc(100dvh - 390px)" viewportRef={viewport}>
-                          <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
-                        </ScrollArea.Autosize>
-                        <Space h="lg" />
-                      </>
-                    ) : (
-                      <ImportantText message={emptyStateMessage} />
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </>
-        ) : (
+        {isOwnerView ? (
           <>
             <div className={classes.titleRow}>
               <div className={classes.title} style={{ paddingBottom: 0 }}>
@@ -316,6 +275,26 @@ export function LabourUpdates({
                 <div className={classes.desktopControls}>
                   {!completed && <LabourUpdateControls />}
                 </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={baseClasses.inner}>
+              <div className={classes.content}>
+                <ResponsiveTitle title={title} />
+                <ResponsiveDescription description={description} marginTop={10} />
+                <Space h="lg" />
+                {hasUpdates ? (
+                  <>
+                    <ScrollArea.Autosize mah="calc(100dvh - 390px)" viewportRef={viewport}>
+                      <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
+                    </ScrollArea.Autosize>
+                    <Space h="lg" />
+                  </>
+                ) : (
+                  <ImportantText message={emptyStateMessage} />
+                )}
               </div>
             </div>
           </>

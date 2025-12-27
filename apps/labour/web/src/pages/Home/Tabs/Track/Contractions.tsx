@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { LabourReadModel } from '@base/clients/labour_service/types';
+import { LabourReadModel, SubscriberRole } from '@base/clients/labour_service/types';
 import { useContractionsV2, useLabourV2Client } from '@base/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
@@ -15,10 +15,39 @@ import image from './Track.svg';
 import classes from './Contractions.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
-export function Contractions({ labour }: { labour: LabourReadModel }) {
+interface ContractionsProps {
+  labour: LabourReadModel;
+  isSubscriberView?: boolean;
+  subscriberRole?: SubscriberRole;
+}
+
+const MESSAGES = {
+  OWNER_TITLE: 'Track your contractions',
+  OWNER_DESCRIPTION_ACTIVE:
+    'Track your contractions here. Simply press the button below to start a new contraction. Click the book icon above for more info.',
+  OWNER_DESCRIPTION_COMPLETED:
+    "Here's a record of your contractions during labour. All contraction data is preserved for your reference.",
+  OWNER_EMPTY_STATE: "You haven't logged any contractions yet",
+  BIRTH_PARTNER_TITLE: (firstName: string) => `Track ${firstName}'s contractions`,
+  BIRTH_PARTNER_DESCRIPTION_ACTIVE: (firstName: string) =>
+    `Track ${firstName}'s contractions here. Simply press the button below to start a new contraction. Click the book icon above for more info.`,
+  BIRTH_PARTNER_DESCRIPTION_COMPLETED: (firstName: string) =>
+    `Here's a record of ${firstName}'s contractions during labour. All contraction data is preserved for your reference.`,
+  BIRTH_PARTNER_EMPTY_STATE: (firstName: string) =>
+    `You haven't logged any contractions for ${firstName} yet`,
+};
+
+export function Contractions({
+  labour,
+  isSubscriberView = false,
+  subscriberRole,
+}: ContractionsProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const client = useLabourV2Client();
   const { data: contractionsData } = useContractionsV2(client, labour.labour_id, 20);
+
+  const isBirthPartner = isSubscriberView && subscriberRole === SubscriberRole.BIRTH_PARTNER;
+  const motherFirstName = labour.mother_name.split(' ')[0];
 
   const contractions = contractionsData?.data || [];
 
@@ -37,17 +66,29 @@ export function Contractions({ labour }: { labour: LabourReadModel }) {
   const activeContraction = contractions.find(
     (contraction) => contraction.duration.start_time === contraction.duration.end_time
   );
-  const activeDescription =
-    'Track your contractions here. Simply press the button below to start a new contraction. Click the book icon above for more info.';
-  const completedDescription =
-    "Here's a record of your contractions during labour. All contraction data is preserved for your reference.";
+
+  const title = isBirthPartner
+    ? MESSAGES.BIRTH_PARTNER_TITLE(motherFirstName)
+    : MESSAGES.OWNER_TITLE;
+
+  const activeDescription = isBirthPartner
+    ? MESSAGES.BIRTH_PARTNER_DESCRIPTION_ACTIVE(motherFirstName)
+    : MESSAGES.OWNER_DESCRIPTION_ACTIVE;
+
+  const completedDescription = isBirthPartner
+    ? MESSAGES.BIRTH_PARTNER_DESCRIPTION_COMPLETED(motherFirstName)
+    : MESSAGES.OWNER_DESCRIPTION_COMPLETED;
+
+  const emptyStateMessage = isBirthPartner
+    ? MESSAGES.BIRTH_PARTNER_EMPTY_STATE(motherFirstName)
+    : MESSAGES.OWNER_EMPTY_STATE;
 
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={classes.titleRow}>
           <div className={classes.title} style={{ paddingBottom: 0 }}>
-            <ResponsiveTitle title="Track your contractions" />
+            <ResponsiveTitle title={title} />
           </div>
           <ActionIcon radius="xl" variant="light" size="xl" onClick={open}>
             <IconBook />
@@ -78,7 +119,7 @@ export function Contractions({ labour }: { labour: LabourReadModel }) {
                   <div className={classes.imageFlexRow}>
                     <Image src={image} className={classes.image} />
                   </div>
-                  <ImportantText message="You haven't logged any contractions yet" />
+                  <ImportantText message={emptyStateMessage} />
                 </div>
               )}
             </Stack>

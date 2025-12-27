@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { SubscriberRole } from '@base/clients/labour_service';
-import { getRoleLabel } from '../SubscribersTable/RoleBadge';
 import { IconHeart, IconUsers } from '@tabler/icons-react';
 import { Button, Modal, Radio, Space, Stack, Text } from '@mantine/core';
+import { getRoleLabel } from '../SubscribersTable/RoleBadge';
 import classes from '@shared/Modal.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
@@ -13,7 +13,12 @@ interface ChangeRoleModalProps {
   onCancel: () => void;
 }
 
-export function ChangeRoleModal({ isOpen, currentRole, onConfirm, onCancel }: ChangeRoleModalProps) {
+export function ChangeRoleModal({
+  isOpen,
+  currentRole,
+  onConfirm,
+  onCancel,
+}: ChangeRoleModalProps) {
   const [selectedRole, setSelectedRole] = useState<SubscriberRole>(currentRole);
 
   const handleConfirm = () => {
@@ -39,7 +44,10 @@ export function ChangeRoleModal({ isOpen, currentRole, onConfirm, onCancel }: Ch
       <Text className={classes.modalText}>Select the new role for this subscriber:</Text>
       <Space h="md" />
 
-      <Radio.Group value={selectedRole} onChange={(value) => setSelectedRole(value as SubscriberRole)}>
+      <Radio.Group
+        value={selectedRole}
+        onChange={(value) => setSelectedRole(value as SubscriberRole)}
+      >
         <Stack gap="md">
           <Radio
             value={SubscriberRole.BIRTH_PARTNER}
@@ -54,7 +62,6 @@ export function ChangeRoleModal({ isOpen, currentRole, onConfirm, onCancel }: Ch
                 Can send updates, track contractions, and view statistics
               </Text>
             }
-
           />
           <Radio
             value={SubscriberRole.FRIENDS_AND_FAMILY}
