@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { SubscriberRole } from '@base/clients/labour_service';
 import { SubscriberSessionState, useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useLabourV2Client } from '@base/hooks';
 import { useLabourByIdV2, useUserSubscriptionV2 } from '@base/hooks/useLabourData';
@@ -11,6 +12,7 @@ import {
   IconMessage,
   IconPencil,
   IconShoppingBag,
+  IconStopwatch,
   IconUsers,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
@@ -19,19 +21,27 @@ import { Center, Space } from '@mantine/core';
 import { PayWall } from './components/Paywall/PayWall';
 import { PendingApprovalView } from './PendingApprovalView';
 import Gifts from './Tabs/Gifts/Gifts';
-import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import ContactMethods from './Tabs/SubscriptionDetails/ContactMethods';
 import LabourDetailsView from './Tabs/SubscriptionDetails/LabourDetails';
 import { ManageSubscriptions } from './Tabs/Subscriptions/ManageSubscriptions/ManageSubscriptions';
 import { InviteContainer } from './Tabs/Subscriptions/SubscriberInviteByEmail/InviteContainer';
+import { Contractions } from './Tabs/Track/Contractions';
+import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import baseClasses from '@shared/shared-styles.module.css';
 
-const FULL_TABS = [
+const BIRTH_PARTNER_TABS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
   { id: 'details', label: 'Details', icon: IconPencil },
   { id: 'updates', label: 'Updates', icon: IconMessage },
+  { id: 'track', label: 'Track', icon: IconStopwatch },
   { id: 'stats', label: 'Stats', icon: IconChartHistogram },
+] as const;
+
+const FRIENDS_AND_FAMILY_TABS = [
+  { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
+  { id: 'details', label: 'Details', icon: IconPencil },
+  { id: 'updates', label: 'Updates', icon: IconMessage },
   { id: 'gifts', label: 'Gifts', icon: IconShoppingBag },
 ] as const;
 
@@ -39,9 +49,15 @@ const LIMITED_TABS = [{ id: 'subscriptions', label: 'Subscriptions', icon: IconU
 
 export const SubscriberView = () => {
   const navigate = useNavigate();
-  const { labourId, subscriberState, clearSubscription, clearSession } = useLabourSession();
+  const { labourId, subscriberState, subscriberRole, clearSubscription, clearSession } =
+    useLabourSession();
 
-  const TABS = subscriberState === SubscriberSessionState.Active ? FULL_TABS : LIMITED_TABS;
+  const TABS =
+    subscriberState === SubscriberSessionState.Active
+      ? subscriberRole === SubscriberRole.BIRTH_PARTNER
+        ? BIRTH_PARTNER_TABS
+        : FRIENDS_AND_FAMILY_TABS
+      : LIMITED_TABS;
   const tabOrder = TABS.map((tab) => tab.id);
 
   const [activeTab, setActiveTab] = useState<string | null>('subscriptions');
@@ -163,6 +179,11 @@ export const SubscriberView = () => {
             )}
           </>
         );
+      case 'track':
+        if (!labour) {
+          return <ErrorContainer message="Select a subscription to track contractions" />;
+        }
+        return <Contractions labour={labour} />;
       case 'stats':
         if (!labour) {
           return <ErrorContainer message="Select a subscription to view statistics" />;
@@ -172,7 +193,13 @@ export const SubscriberView = () => {
         if (!labour) {
           return <ErrorContainer message="Select a subscription to view updates" />;
         }
-        return <LabourUpdates labour={labour} isSubscriberView />;
+        return (
+          <LabourUpdates
+            labour={labour}
+            isSubscriberView
+            subscriberRole={subscriberRole || undefined}
+          />
+        );
       case 'gifts':
         return <Gifts birthingPersonName={motherFirstName || ''} />;
       default:

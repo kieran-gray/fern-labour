@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { LabourReadModel, LabourUpdateReadModel } from '@base/clients/labour_service';
+import {
+  LabourReadModel,
+  LabourUpdateReadModel,
+  SubscriberRole,
+} from '@base/clients/labour_service';
 import { useLabourUpdatesV2, useLabourV2Client } from '@base/hooks';
 import { useApiAuth } from '@base/hooks/useApiAuth';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
@@ -19,6 +23,7 @@ import baseClasses from '@shared/shared-styles.module.css';
 interface LabourUpdatesProps {
   labour: LabourReadModel;
   isSubscriberView?: boolean;
+  subscriberRole?: SubscriberRole;
 }
 
 const MESSAGES = {
@@ -109,10 +114,16 @@ const mapLabourUpdateToProps = (
   }
 };
 
-export function LabourUpdates({ labour, isSubscriberView = false }: LabourUpdatesProps) {
+export function LabourUpdates({
+  labour,
+  isSubscriberView = false,
+  subscriberRole,
+}: LabourUpdatesProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
   const { user } = useApiAuth();
+
+  const canSendUpdates = !isSubscriberView || subscriberRole === SubscriberRole.BIRTH_PARTNER;
 
   const client = useLabourV2Client();
   const { data: labourUpdatesData } = useLabourUpdatesV2(client, labour.labour_id, 20);
@@ -220,23 +231,58 @@ export function LabourUpdates({ labour, isSubscriberView = false }: LabourUpdate
       <div className={baseClasses.body}>
         {isSubscriberView ? (
           <>
-            <div className={baseClasses.inner}>
-              <div className={classes.content}>
-                <ResponsiveTitle title={title} />
-                <ResponsiveDescription description={description} marginTop={10} />
-                <Space h="lg" />
-                {hasUpdates ? (
-                  <>
-                    <ScrollArea.Autosize mah="calc(100dvh - 390px)" viewportRef={viewport}>
-                      <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
-                    </ScrollArea.Autosize>
+            {canSendUpdates ? (
+              <>
+                <div className={classes.titleRow}>
+                  <div className={classes.title} style={{ paddingBottom: 0 }}>
+                    <ResponsiveTitle title={title} />
+                  </div>
+                  <ActionIcon radius="xl" variant="light" size="xl" onClick={open}>
+                    <IconBook />
+                  </ActionIcon>
+                  <LabourUpdatesHelpModal close={close} opened={opened} />
+                </div>
+                <div className={baseClasses.inner} style={{ paddingTop: 0, paddingBottom: 0 }}>
+                  <div className={classes.content}>
+                    <ResponsiveDescription description={description} marginTop={0} />
+                    {hasUpdates && (
+                      <ScrollArea.Autosize
+                        mt={20}
+                        mah="calc(100dvh - 370px)"
+                        viewportRef={viewport}
+                      >
+                        <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
+                      </ScrollArea.Autosize>
+                    )}
+                    {!hasUpdates && <ImportantText message={emptyStateMessage} />}
+                    {/* Desktop controls - Birth Partners can send updates */}
+                    <div className={classes.desktopControls}>
+                      {!completed && <LabourUpdateControls />}
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={baseClasses.inner}>
+                  <div className={classes.content}>
+                    <ResponsiveTitle title={title} />
+                    <ResponsiveDescription description={description} marginTop={10} />
                     <Space h="lg" />
-                  </>
-                ) : (
-                  <ImportantText message={emptyStateMessage} />
-                )}
-              </div>
-            </div>
+                    {hasUpdates ? (
+                      <>
+                        <ScrollArea.Autosize mah="calc(100dvh - 390px)" viewportRef={viewport}>
+                          <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
+                        </ScrollArea.Autosize>
+                        <Space h="lg" />
+                      </>
+                    ) : (
+                      <ImportantText message={emptyStateMessage} />
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <>

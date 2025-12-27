@@ -30,11 +30,14 @@ export function SubscriptionsTable() {
     return <ImportantText message={error.message} />;
   }
 
-  const toggleSubscription = (sub: SubscriptionStatusReadModel) => {
+  const toggleSubscription = async (sub: SubscriptionStatusReadModel) => {
     if (selectedSubscriptionId === sub.subscription_id) {
       clearSubscription();
     } else {
-      selectSubscription(sub);
+      const fullSubscription = await client.getUserSubscription(sub.labour_id);
+      if (fullSubscription.success && fullSubscription.data) {
+        selectSubscription(fullSubscription.data);
+      }
     }
   };
   const toggleButtonIcon = (subId: string) => {

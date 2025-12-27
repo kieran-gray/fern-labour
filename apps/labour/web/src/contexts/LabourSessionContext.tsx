@@ -1,5 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { SubscriberStatus, SubscriptionStatusReadModel } from '@base/clients/labour_service/types';
+import {
+  SubscriberRole,
+  SubscriberStatus,
+  SubscriptionReadModel,
+} from '@base/clients/labour_service/types';
 import { useApiAuth } from '@base/hooks/useApiAuth';
 
 export enum AppMode {
@@ -15,18 +19,19 @@ export enum SubscriberSessionState {
 
 export interface LabourSessionState {
   labourId: string | null;
-  subscription: SubscriptionStatusReadModel | null;
+  subscription: SubscriptionReadModel | null;
   mode: AppMode | null;
 }
 
 interface LabourSessionContextType extends LabourSessionState {
   canViewLabour: boolean;
   subscriberState: SubscriberSessionState;
+  subscriberRole: SubscriberRole | null;
 
   setLabourId: (labourId: string | null) => void;
   setMode: (mode: AppMode | null) => void;
-  selectSubscription: (subscription: SubscriptionStatusReadModel) => void;
-  updateSubscription: (subscription: SubscriptionStatusReadModel) => void;
+  selectSubscription: (subscription: SubscriptionReadModel) => void;
+  updateSubscription: (subscription: SubscriptionReadModel) => void;
   clearSubscription: () => void;
   clearSession: () => void;
 }
@@ -46,7 +51,7 @@ export const LabourSessionProvider: React.FC<{ children: React.ReactNode }> = ({
     return localStorage.getItem(`${userId}:labourId`) || null;
   });
 
-  const [subscription, setSubscriptionState] = useState<SubscriptionStatusReadModel | null>(() => {
+  const [subscription, setSubscriptionState] = useState<SubscriptionReadModel | null>(() => {
     const stored = localStorage.getItem(`${userId}:subscription`);
     if (stored) {
       try {
@@ -93,6 +98,10 @@ export const LabourSessionProvider: React.FC<{ children: React.ReactNode }> = ({
     return SubscriberSessionState.NoSelection;
   }, [subscription]);
 
+  const subscriberRole = useMemo((): SubscriberRole | null => {
+    return subscription?.role || null;
+  }, [subscription]);
+
   const canViewLabour = useMemo((): boolean => {
     if (mode === AppMode.Birth) {
       return labourId !== null;
@@ -116,12 +125,12 @@ export const LabourSessionProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  const selectSubscription = useCallback((sub: SubscriptionStatusReadModel) => {
+  const selectSubscription = useCallback((sub: SubscriptionReadModel) => {
     setSubscriptionState(sub);
     setLabourIdState(sub.labour_id);
   }, []);
 
-  const updateSubscription = useCallback((sub: SubscriptionStatusReadModel) => {
+  const updateSubscription = useCallback((sub: SubscriptionReadModel) => {
     setSubscriptionState(sub);
   }, []);
 
@@ -142,6 +151,7 @@ export const LabourSessionProvider: React.FC<{ children: React.ReactNode }> = ({
     mode,
     canViewLabour,
     subscriberState,
+    subscriberRole,
     setLabourId,
     setMode,
     selectSubscription,
