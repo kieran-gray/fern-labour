@@ -4,13 +4,13 @@
  */
 
 import type { Cursor, LabourServiceV2Client, LabourUpdateType } from '@base/clients/labour_service';
+import { useWebSocket } from '@base/contexts/WebsocketContext';
 import { NotFoundError } from '@base/lib/errors';
 import { Error as ErrorNotification, Success } from '@shared/Notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { queryKeysV2 } from './queryKeys';
 import { useApiAuth } from './useApiAuth';
-import { useWebSocket } from '@base/contexts/WebsocketContext';
 
 // Helper function to decode cursor
 function decodeCursor(cursorString: string): Cursor {

@@ -14,13 +14,17 @@ jest.mock('@base/hooks/useLabourClient', () => ({
     sendEndContractionCommand: jest.fn().mockResolvedValue({ success: true }),
     sendUpdateContractionCommand: jest.fn().mockResolvedValue({ success: true }),
     sendDeleteContractionCommand: jest.fn().mockResolvedValue({ success: true }),
-    sendPlanLabourCommand: jest.fn().mockResolvedValue({ success: true, data: { labour_id: 'test-id' } }),
+    sendPlanLabourCommand: jest
+      .fn()
+      .mockResolvedValue({ success: true, data: { labour_id: 'test-id' } }),
     sendCompleteLabourCommand: jest.fn().mockResolvedValue({ success: true }),
     sendPostLabourUpdateCommand: jest.fn().mockResolvedValue({ success: true }),
     getActiveLabour: jest.fn().mockResolvedValue({ success: true, data: null }),
     getLabour: jest.fn().mockResolvedValue({ success: true, data: {} }),
     getLabourHistory: jest.fn().mockResolvedValue({ success: true, data: [] }),
-    getContractions: jest.fn().mockResolvedValue({ success: true, data: { data: [], cursor: null } }),
+    getContractions: jest
+      .fn()
+      .mockResolvedValue({ success: true, data: { data: [], cursor: null } }),
   })),
 }));
 

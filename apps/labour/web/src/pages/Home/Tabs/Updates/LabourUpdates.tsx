@@ -5,8 +5,9 @@ import { useApiAuth } from '@base/hooks/useApiAuth';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { pluraliseName } from '@shared/utils';
 import { IconBook } from '@tabler/icons-react';
-import { ActionIcon, Image, ScrollArea } from '@mantine/core';
+import { ActionIcon, Image, ScrollArea, Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import image from './image.svg';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
@@ -17,77 +18,98 @@ import baseClasses from '@shared/shared-styles.module.css';
 
 interface LabourUpdatesProps {
   labour: LabourReadModel;
+  isSubscriberView?: boolean;
 }
 
 const MESSAGES = {
   SHARED_LABOUR_BEGUN: (firstName: string) => `Exciting news, ${firstName} has started labour!`,
   PRIVATE_LABOUR_BEGUN:
     "You're now tracking contractions! Use the announce button on this message to let your subscribers know that labour has started!",
+  OWNER_TITLE_ACTIVE: 'Share an update',
+  OWNER_TITLE_COMPLETED: 'Your labour updates',
+  OWNER_DESCRIPTION_ACTIVE:
+    'Share updates here to let your subscribers know how you are getting on. Click the book icon above for more info.',
+  OWNER_DESCRIPTION_COMPLETED:
+    'Here you can see the updates you made during your labour experience.',
+  OWNER_EMPTY_STATE: "You haven't posted any updates yet.",
+  SUBSCRIBER_TITLE: (possessiveName: string) => `${possessiveName} status updates`,
+  SUBSCRIBER_DESCRIPTION_ACTIVE: (firstName: string) =>
+    `Curious about how things are going? ${firstName} can update her status here, giving you a glimpse into her progress. Check in regularly to stay informed without needing to reach out directly.`,
+  SUBSCRIBER_DESCRIPTION_COMPLETED: (firstName: string) =>
+    `Here's where ${firstName} kept everyone in the loop during her labour. These were her in-the-moment thoughts and progress notes that you checked in on.`,
+  SUBSCRIBER_EMPTY_STATE: (firstName: string) => `${firstName} hasn't posted any updates yet.`,
 };
 
 const mapLabourUpdateToProps = (
   update: LabourUpdateReadModel,
   sharedLabourBegunMessage: string,
   privateLabourBegunMessage: string,
-  completed: boolean
+  completed: boolean,
+  isSubscriberView: boolean
 ): LabourUpdateProps => {
   const sentTime = new Date(update.created_at).toLocaleString().slice(0, 17).replace(',', ' at');
+  const baseProps = {
+    id: update.labour_update_id,
+    sentTime,
+    visibility: isSubscriberView ? '' : undefined,
+    showMenu: isSubscriberView ? false : undefined,
+    showFooter: !isSubscriberView,
+  };
+
   switch (update.labour_update_type) {
     case 'ANNOUNCEMENT':
       if (update.application_generated) {
         return {
-          id: update.labour_update_id,
-          sentTime,
+          ...baseProps,
           class: classes.privateNotePanel,
           badgeColor: '#ff8f00',
           badgeText: 'Fern Labour',
           text: sharedLabourBegunMessage,
-          visibility: '📡 Broadcast to subscribers',
+          visibility: isSubscriberView ? '' : '📡 Broadcast to subscribers',
           showMenu: false,
-          showFooter: true,
+          showFooter: !isSubscriberView,
         };
       }
       return {
-        id: update.labour_update_id,
-        sentTime,
+        ...baseProps,
         class: classes.announcementPanel,
-        badgeColor: 'var(--mantine-color-pink-6)',
+        badgeColor: isSubscriberView
+          ? 'var(--mantine-primary-color-6)'
+          : 'var(--mantine-color-pink-6)',
         badgeText: update.labour_update_type.split('_')[0],
         text: update.message,
-        visibility: '📡 Broadcast to subscribers',
+        visibility: isSubscriberView ? '' : '📡 Broadcast to subscribers',
         showMenu: false,
-        showFooter: true,
+        showFooter: !isSubscriberView,
       };
 
     case 'STATUS_UPDATE':
       return {
-        id: update.labour_update_id,
-        sentTime,
+        ...baseProps,
         class: classes.statusUpdatePanel,
         badgeColor: '#24968b',
         badgeText: update.labour_update_type.split('_')[0],
         text: update.message,
-        visibility: '👁️ Visible to subscribers',
-        showMenu: !completed,
-        showFooter: true,
+        visibility: isSubscriberView ? '' : '👁️ Visible to subscribers',
+        showMenu: isSubscriberView ? false : !completed,
+        showFooter: !isSubscriberView,
       };
 
     default:
       return {
-        id: update.labour_update_id,
-        sentTime,
+        ...baseProps,
         class: classes.privateNotePanel,
         badgeColor: '#ff8f00',
         badgeText: 'Fern Labour',
         text: privateLabourBegunMessage,
-        visibility: '🔒 Only visible to you',
-        showMenu: !completed,
-        showFooter: true,
+        visibility: isSubscriberView ? '' : '🔒 Only visible to you',
+        showMenu: isSubscriberView ? false : !completed,
+        showFooter: !isSubscriberView,
       };
   }
 };
 
-export function LabourUpdates({ labour }: LabourUpdatesProps) {
+export function LabourUpdates({ labour, isSubscriberView = false }: LabourUpdatesProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
   const { user } = useApiAuth();
@@ -99,7 +121,7 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
   });
 
-  const firstName = user?.given_name || '';
+  const firstName = isSubscriberView ? labour.mother_name.split(' ')[0] : user?.given_name || '';
   const completed = labour.end_time != null;
 
   const sharedLabourBegunMessage = useMemo(
@@ -126,20 +148,36 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
   }, []);
 
   const labourUpdateDisplay = useMemo(() => {
-    return labourUpdates.map((data) => {
+    // Filter out private notes for subscribers
+    const filteredUpdates = isSubscriberView
+      ? labourUpdates.filter(
+          (update) =>
+            update.labour_update_type === 'ANNOUNCEMENT' ||
+            update.labour_update_type === 'STATUS_UPDATE'
+        )
+      : labourUpdates;
+
+    return filteredUpdates.map((data) => {
       return (
         <LabourUpdate
           data={mapLabourUpdateToProps(
             data,
             sharedLabourBegunMessage,
             privateLabourBegunMessage,
-            completed
+            completed,
+            isSubscriberView
           )}
           key={data.labour_update_id}
         />
       );
     });
-  }, [labourUpdates, firstName, completed]);
+  }, [
+    labourUpdates,
+    sharedLabourBegunMessage,
+    privateLabourBegunMessage,
+    completed,
+    isSubscriberView,
+  ]);
 
   const prevLengthRef = useRef(labourUpdates.length);
 
@@ -156,47 +194,86 @@ export function LabourUpdates({ labour }: LabourUpdatesProps) {
     prevLengthRef.current = currentLength;
   }, [labourUpdates.length, scrollToBottom]);
 
-  const title = completed ? 'Your labour updates' : 'Share an update';
-  const description = completed
-    ? 'Here you can see the updates you made during your labour experience.'
-    : 'Share updates here to let your subscribers know how you are getting on. Click the book icon above for more info.';
+  const title = isSubscriberView
+    ? MESSAGES.SUBSCRIBER_TITLE(pluraliseName(firstName))
+    : completed
+      ? MESSAGES.OWNER_TITLE_COMPLETED
+      : MESSAGES.OWNER_TITLE_ACTIVE;
+
+  const description = isSubscriberView
+    ? completed
+      ? MESSAGES.SUBSCRIBER_DESCRIPTION_COMPLETED(firstName)
+      : MESSAGES.SUBSCRIBER_DESCRIPTION_ACTIVE(firstName)
+    : completed
+      ? MESSAGES.OWNER_DESCRIPTION_COMPLETED
+      : MESSAGES.OWNER_DESCRIPTION_ACTIVE;
+
+  const emptyStateMessage = isSubscriberView
+    ? MESSAGES.SUBSCRIBER_EMPTY_STATE(firstName)
+    : MESSAGES.OWNER_EMPTY_STATE;
 
   const hasUpdates = labourUpdateDisplay.length > 0;
-  const showEmptyState = !hasUpdates && !completed;
+  const showOwnerEmptyState = !hasUpdates && !completed && !isSubscriberView;
 
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
-        <div className={classes.titleRow}>
-          <div className={classes.title} style={{ paddingBottom: 0 }}>
-            <ResponsiveTitle title={title} />
-          </div>
-          <ActionIcon radius="xl" variant="light" size="xl" onClick={open}>
-            <IconBook />
-          </ActionIcon>
-          <LabourUpdatesHelpModal close={close} opened={opened} />
-        </div>
-        <div className={baseClasses.inner} style={{ paddingTop: 0, paddingBottom: 0 }}>
-          <div className={classes.content}>
-            <ResponsiveDescription description={description} marginTop={0} />
-            {hasUpdates && (
-              <ScrollArea.Autosize mt={20} mah="calc(100dvh - 370px)" viewportRef={viewport}>
-                <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
-              </ScrollArea.Autosize>
-            )}
-            {showEmptyState && (
-              <>
-                <div className={classes.imageFlexRow}>
-                  <Image src={image} className={classes.image} />
-                </div>
-                <ImportantText message="You haven't posted any updates yet." />
-              </>
-            )}
+        {isSubscriberView ? (
+          <>
+            <div className={baseClasses.inner}>
+              <div className={classes.content}>
+                <ResponsiveTitle title={title} />
+                <ResponsiveDescription description={description} marginTop={10} />
+                <Space h="lg" />
+                {hasUpdates ? (
+                  <>
+                    <ScrollArea.Autosize mah="calc(100dvh - 390px)" viewportRef={viewport}>
+                      <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
+                    </ScrollArea.Autosize>
+                    <Space h="lg" />
+                  </>
+                ) : (
+                  <ImportantText message={emptyStateMessage} />
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={classes.titleRow}>
+              <div className={classes.title} style={{ paddingBottom: 0 }}>
+                <ResponsiveTitle title={title} />
+              </div>
+              <ActionIcon radius="xl" variant="light" size="xl" onClick={open}>
+                <IconBook />
+              </ActionIcon>
+              <LabourUpdatesHelpModal close={close} opened={opened} />
+            </div>
+            <div className={baseClasses.inner} style={{ paddingTop: 0, paddingBottom: 0 }}>
+              <div className={classes.content}>
+                <ResponsiveDescription description={description} marginTop={0} />
+                {hasUpdates && (
+                  <ScrollArea.Autosize mt={20} mah="calc(100dvh - 370px)" viewportRef={viewport}>
+                    <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
+                  </ScrollArea.Autosize>
+                )}
+                {showOwnerEmptyState && (
+                  <>
+                    <div className={classes.imageFlexRow}>
+                      <Image src={image} className={classes.image} />
+                    </div>
+                    <ImportantText message={emptyStateMessage} />
+                  </>
+                )}
 
-            {/* Desktop controls - only show on larger screens */}
-            <div className={classes.desktopControls}>{!completed && <LabourUpdateControls />}</div>
-          </div>
-        </div>
+                {/* Desktop controls - only show on larger screens */}
+                <div className={classes.desktopControls}>
+                  {!completed && <LabourUpdateControls />}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

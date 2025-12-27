@@ -3,7 +3,6 @@ import 'fake-indexeddb/auto';
 
 import React from 'react';
 import * as apiAuthModule from '@base/hooks/useApiAuth';
-import * as useLabourClientModule from '@base/hooks/useLabourClient';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { clearAllData, db } from '../../offline/storage/database';
@@ -99,7 +98,9 @@ describe('useContractionData mapping', () => {
   });
 
   it('prevents updating an in-progress contraction (authenticated)', async () => {
-    const { result: startHook } = renderHook(() => useUpdateContractionV2(mockClient as any), { wrapper });
+    const { result: startHook } = renderHook(() => useUpdateContractionV2(mockClient as any), {
+      wrapper,
+    });
 
     const sub = 'user-abc';
     const labour = {

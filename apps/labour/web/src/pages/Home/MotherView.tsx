@@ -18,6 +18,8 @@ import { useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space } from '@mantine/core';
 import { CompletedLabourContainer } from '../CompletedLabour/Page';
+import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
+import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import { ManageLabour } from './Tabs/ManageLabour/Manage';
 import { SubscribersContainer } from './Tabs/ManageLabour/ManageSubscribers/ManageSubscribers';
 import Plan from './Tabs/ManageLabour/Plan/Plan';
@@ -25,8 +27,6 @@ import { Share } from './Tabs/Share/Share';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import { Contractions } from './Tabs/Track/Contractions';
 import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls';
-import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
-import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import baseClasses from '@shared/shared-styles.module.css';
 
 const TABS = [

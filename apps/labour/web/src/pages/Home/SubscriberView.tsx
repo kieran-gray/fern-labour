@@ -19,8 +19,8 @@ import { Center, Space } from '@mantine/core';
 import { PayWall } from './components/Paywall/PayWall';
 import { PendingApprovalView } from './PendingApprovalView';
 import Gifts from './Tabs/Gifts/Gifts';
-import { StatusUpdates } from './Tabs/SubscriberLabourUpdates/LabourUpdates';
-import { LabourStatistics } from './Tabs/SubscriberStatistics/LabourStatistics';
+import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
+import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import ContactMethods from './Tabs/SubscriptionDetails/ContactMethods';
 import LabourDetailsView from './Tabs/SubscriptionDetails/LabourDetails';
 import { ManageSubscriptions } from './Tabs/Subscriptions/ManageSubscriptions/ManageSubscriptions';
@@ -167,12 +167,12 @@ export const SubscriberView = () => {
         if (!labour) {
           return <ErrorContainer message="Select a subscription to view statistics" />;
         }
-        return <LabourStatistics labour={labour} />;
+        return <LabourStatistics labour={labour} isSubscriberView />;
       case 'updates':
         if (!labour) {
           return <ErrorContainer message="Select a subscription to view updates" />;
         }
-        return <StatusUpdates labour={labour} />;
+        return <LabourUpdates labour={labour} isSubscriberView />;
       case 'gifts':
         return <Gifts birthingPersonName={motherFirstName || ''} />;
       default:

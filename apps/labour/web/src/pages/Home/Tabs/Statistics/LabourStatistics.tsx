@@ -1,13 +1,30 @@
 import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service';
+import { useContractionsV2, useLabourV2Client } from '@base/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import { formatDurationHuman, formatTimeSeconds } from '@shared/utils';
+import { formatDurationHuman, formatTimeSeconds, pluraliseName } from '@shared/utils';
 import { Image, Space, Text } from '@mantine/core';
 import { LabourStatisticsTabs } from './LabourStatisticsTabs';
 import image from './statistics.svg';
 import classes from './LabourStatistics.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
+
+const MESSAGES = {
+  OWNER_TITLE: 'Your labour statistics',
+  OWNER_DESCRIPTION_ACTIVE:
+    'Here, you can view all of the statistics about your contractions. Useful when discussing labour progress with a midwife or healthcare provider.',
+  OWNER_DESCRIPTION_COMPLETED:
+    'Here, you can see all the statistics about your contractions during your labour journey.',
+  OWNER_EMPTY_STATE_ACTIVE: 'Not enough data yet, keep tracking.',
+  OWNER_EMPTY_STATE_COMPLETED: "You didn't track enough contractions to see statistics.",
+  SUBSCRIBER_TITLE: (possessiveName: string) => `${possessiveName} labour statistics`,
+  SUBSCRIBER_DESCRIPTION_ACTIVE: (possessiveName: string) =>
+    `Here, you can view all of the statistics about ${possessiveName} contractions.`,
+  SUBSCRIBER_DESCRIPTION_COMPLETED: (possessiveName: string) =>
+    `All the numbers and patterns from ${possessiveName} contractions during labour.`,
+  SUBSCRIBER_EMPTY_STATE: 'Not enough data yet.',
+};
 
 export interface LabourStatisticsData {
   contraction_count: number;
@@ -112,17 +129,24 @@ export function createLabourStatistics(contractions: ContractionReadModel[]): La
 
 interface LabourStatisticsProps {
   labour: LabourReadModel;
-  contractions: ContractionReadModel[];
+  contractions?: ContractionReadModel[];
   inContainer?: boolean;
+  isSubscriberView?: boolean;
 }
 
 export const LabourStatistics = ({
   labour,
-  contractions,
+  contractions: contractionsProp,
   inContainer = true,
+  isSubscriberView = false,
 }: LabourStatisticsProps) => {
+  const client = useLabourV2Client();
+  const { data: contractionsData } = useContractionsV2(client, labour.labour_id, 100);
+  const contractions =
+    contractionsProp !== undefined ? contractionsProp : contractionsData?.data || [];
   const labourStatistics = createLabourStatistics(contractions);
   const completed = labour.end_time !== null;
+  const motherName = isSubscriberView ? pluraliseName(labour.mother_name.split(' ')[0]) : '';
 
   const renderTimingInfo = () => (
     <div className={classes.statsTextContainer}>
@@ -156,16 +180,17 @@ export const LabourStatistics = ({
     </div>
   );
 
+  const emptyStateMessage = isSubscriberView
+    ? MESSAGES.SUBSCRIBER_EMPTY_STATE
+    : completed
+      ? MESSAGES.OWNER_EMPTY_STATE_COMPLETED
+      : MESSAGES.OWNER_EMPTY_STATE_ACTIVE;
+
   const renderStatisticsContent = () => (
     <>
       {renderTimingInfo()}
       <Space h="sm" />
-      {!completed && !labourStatistics.total && (
-        <ImportantText message="Not enough data yet, keep tracking." />
-      )}
-      {completed && !labourStatistics.total && (
-        <ImportantText message="You didn't track enough contractions to see statistics." />
-      )}
+      {!labourStatistics.total && <ImportantText message={emptyStateMessage} />}
       {labourStatistics.total && (
         <LabourStatisticsTabs
           labour={labour}
@@ -180,20 +205,23 @@ export const LabourStatistics = ({
     return renderStatisticsContent();
   }
 
-  const completedDescription =
-    'Here, you can see all the statistics about your contractions during your labour journey.';
-  const activeDescription =
-    'Here, you can view all of the statistics about your contractions. Useful when discussing labour progress with a midwife or healthcare provider.';
+  const title = isSubscriberView ? MESSAGES.SUBSCRIBER_TITLE(motherName) : MESSAGES.OWNER_TITLE;
+
+  const description = isSubscriberView
+    ? completed
+      ? MESSAGES.SUBSCRIBER_DESCRIPTION_COMPLETED(motherName)
+      : MESSAGES.SUBSCRIBER_DESCRIPTION_ACTIVE(motherName)
+    : completed
+      ? MESSAGES.OWNER_DESCRIPTION_COMPLETED
+      : MESSAGES.OWNER_DESCRIPTION_ACTIVE;
+
   return (
     <div className={baseClasses.root}>
       <div className={baseClasses.body}>
         <div className={baseClasses.inner}>
           <div className={classes.content}>
-            <ResponsiveTitle title="Your labour statistics" />
-            <ResponsiveDescription
-              description={completed ? completedDescription : activeDescription}
-              marginTop={10}
-            />
+            <ResponsiveTitle title={title} />
+            <ResponsiveDescription description={description} marginTop={10} />
             <div className={baseClasses.imageFlexRow}>
               <Image src={image} className={baseClasses.smallImage} />
             </div>
