@@ -1,18 +1,18 @@
-import { AppMode, useMode } from '@base/contexts/AppModeContext';
-import { LabourPage } from '@labour/Page';
+import { AppMode, useLabourSession } from '@base/contexts/LabourSessionContext';
+import { MotherView } from '@base/pages/Home/MotherView';
+import { SubscriberView } from '@base/pages/Home/SubscriberView';
 import { AppShell } from '@shared/AppShell';
-import { SubscriptionsPage } from '../Subscriptions/Page';
-import { SelectAppMode } from './SelectAppMode';
+import { SelectAppMode } from './components/SelectAppMode';
 
 export const HomePage = () => {
-  const { mode } = useMode();
+  const { mode } = useLabourSession();
 
   if (mode === AppMode.Birth) {
-    return <LabourPage />;
+    return <MotherView />;
   }
 
   if (mode === AppMode.Subscriber) {
-    return <SubscriptionsPage />;
+    return <SubscriberView />;
   }
 
   return (

@@ -1,4 +1,3 @@
-import { ModeProvider } from './contexts/AppModeContext';
 import { LabourSessionProvider } from './contexts/LabourSessionContext';
 import { WebSocketProvider } from './contexts/WebsocketContext';
 import { useWebSocketInvalidation } from './hooks/useWebSocketInvalidation';
@@ -13,9 +12,7 @@ export default function App() {
   return (
     <LabourSessionProvider>
       <WebSocketProvider>
-        <ModeProvider>
-          <AppWithWebSocket />
-        </ModeProvider>
+        <AppWithWebSocket />
       </WebSocketProvider>
     </LabourSessionProvider>
   );

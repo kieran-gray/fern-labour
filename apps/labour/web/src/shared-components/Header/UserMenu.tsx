@@ -1,6 +1,5 @@
 import { forwardRef, useState } from 'react';
-import { useLabourSession } from '@base/contexts';
-import { AppMode, useMode } from '@base/contexts/AppModeContext';
+import { AppMode, useLabourSession } from '@base/contexts';
 import { useClerkUser } from '@base/hooks/useClerkUser';
 import { useClerk } from '@clerk/clerk-react';
 import {
@@ -61,8 +60,7 @@ export function MobileUserMenu() {
   const { signOut, openUserProfile } = useClerk();
   const navigate = useNavigate();
   const pathname = window.location.pathname;
-  const { mode, setMode } = useMode();
-  const { clearSession } = useLabourSession();
+  const { mode, setMode } = useLabourSession();
   const switchToMode = mode === AppMode.Birth ? AppMode.Subscriber : AppMode.Birth;
   const { colorScheme, setColorScheme } = useMantineColorScheme();
 
@@ -109,7 +107,6 @@ export function MobileUserMenu() {
             className={classes.mainLink}
             onClick={() => {
               setMode(switchToMode);
-              clearSession();
               navigate('/');
             }}
             leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}

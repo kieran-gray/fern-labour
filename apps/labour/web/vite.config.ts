@@ -89,10 +89,7 @@ export default defineConfig({
       '@base': '/src',
       '@shared': '/src/shared-components',
       '@clients': '/src/clients',
-      '@labour': '/src/pages/Labour',
-      '@subscription': '/src/pages/Subscription',
-      '@subscribe': '/src/pages/Subscribe',
-      '@subscriptions': '/src/pages/Subscriptions',
+      '@home': '/src/pages/Home',
     },
   },
   build: {

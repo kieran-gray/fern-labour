@@ -1,6 +1,6 @@
+import image from '@base/pages/Home/Tabs/Subscriptions/ManageSubscriptions/image.svg';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import image from '@subscriptions/Components/ManageSubscriptions/image.svg';
 import { Image } from '@mantine/core';
 import { LabourHistoryTable } from './LabourHistoryTable/LabourHistoryTable';
 import classes from './LabourHistory.module.css';

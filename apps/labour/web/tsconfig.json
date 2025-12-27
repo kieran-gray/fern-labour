@@ -25,10 +25,7 @@
       "@base/*": ["*"],
       "@shared/*": ["shared-components/*"],
       "@clients/*": ["clients/*"],
-      "@labour/*": ["pages/Labour/*"],
-      "@subscription/*": ["pages/Subscription/*"],
-      "@subscribe/*": ["pages/Subscribe/*"],
-      "@subscriptions/*": ["pages/Subscriptions/*"],
+      "@home/*": ["pages/Home/*"]
     }
   },
   "include": ["src"],

@@ -1,68 +1,68 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { SubscriberStatus, SubscriptionStatusReadModel } from '@base/clients/labour_service/types';
 import { useApiAuth } from '@base/hooks/useApiAuth';
 
-export enum SessionRole {
-  Mother = 'mother',
-  Subscriber = 'subscriber',
-  BirthPartner = 'birth-partner',
+export enum AppMode {
+  Subscriber = 'Subscriber',
+  Birth = 'Birth',
 }
 
-export enum AccessLevel {
-  Full = 'full',
-  Partner = 'partner',
-  Viewer = 'viewer',
+export enum SubscriberSessionState {
+  NoSelection = 'no-selection',
+  PendingApproval = 'pending-approval',
+  Active = 'active',
 }
 
 export interface LabourSessionState {
   labourId: string | null;
-  subscriptionId: string | null;
-  role: SessionRole | null;
-  accessLevel: AccessLevel;
+  subscription: SubscriptionStatusReadModel | null;
+  mode: AppMode | null;
 }
 
 interface LabourSessionContextType extends LabourSessionState {
+  canViewLabour: boolean;
+  subscriberState: SubscriberSessionState;
+
   setLabourId: (labourId: string | null) => void;
-  setSubscriptionId: (subscriptionId: string | null) => void;
-  setRole: (role: SessionRole | null) => void; // TODO
-  startMotherSession: (labourId: string) => void;
-  startSubscriberSession: (subscriptionId: string) => void;
+  setMode: (mode: AppMode | null) => void;
+  selectSubscription: (subscription: SubscriptionStatusReadModel) => void;
+  updateSubscription: (subscription: SubscriptionStatusReadModel) => void;
+  clearSubscription: () => void;
   clearSession: () => void;
 }
 
 const LabourSessionContext = createContext<LabourSessionContextType | undefined>(undefined);
 
-function getAccessLevel(role: SessionRole | null): AccessLevel {
-  switch (role) {
-    case SessionRole.Mother:
-      return AccessLevel.Full;
-    case SessionRole.BirthPartner:
-      return AccessLevel.Partner;
-    case SessionRole.Subscriber:
-      return AccessLevel.Viewer;
-    default:
-      return AccessLevel.Viewer;
-  }
-}
-
 export const LabourSessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useApiAuth();
   const userId = user?.sub;
+
+  const [mode, setModeState] = useState<AppMode | null>(() => {
+    const stored = localStorage.getItem(`${userId}:appMode`);
+    return stored === AppMode.Birth || stored === AppMode.Subscriber ? stored : null;
+  });
 
   const [labourId, setLabourIdState] = useState<string | null>(() => {
     return localStorage.getItem(`${userId}:labourId`) || null;
   });
 
-  const [subscriptionId, setSubscriptionIdState] = useState<string | null>(() => {
-    return localStorage.getItem(`${userId}:subscriptionId`) || null;
-  });
-
-  const [role, setRoleState] = useState<SessionRole | null>(() => {
-    const stored = localStorage.getItem(`${userId}:sessionRole`);
-    if (stored && Object.values(SessionRole).includes(stored as SessionRole)) {
-      return stored as SessionRole;
+  const [subscription, setSubscriptionState] = useState<SubscriptionStatusReadModel | null>(() => {
+    const stored = localStorage.getItem(`${userId}:subscription`);
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return null;
+      }
     }
     return null;
   });
+
+  useEffect(() => {
+    if (userId) {
+      localStorage.setItem(`${userId}:appMode`, mode || '');
+    }
+  }, [mode, userId]);
 
   useEffect(() => {
     if (userId) {
@@ -72,68 +72,81 @@ export const LabourSessionProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (userId) {
-      localStorage.setItem(`${userId}:subscriptionId`, subscriptionId || '');
+      localStorage.setItem(
+        `${userId}:subscription`,
+        subscription ? JSON.stringify(subscription) : ''
+      );
     }
-  }, [subscriptionId, userId]);
+  }, [subscription, userId]);
 
-  useEffect(() => {
-    if (userId) {
-      localStorage.setItem(`${userId}:sessionRole`, role || '');
+  const subscriberState = useMemo((): SubscriberSessionState => {
+    if (!subscription) {
+      return SubscriberSessionState.NoSelection;
     }
-  }, [role, userId]);
-
-  useEffect(() => {
-    if (!role) {
-      if (labourId && !subscriptionId) {
-        setRoleState(SessionRole.Mother);
-      } else if (subscriptionId && !labourId) {
-        setRoleState(SessionRole.Subscriber);
-      }
+    if (subscription.status === SubscriberStatus.SUBSCRIBED) {
+      return SubscriberSessionState.Active;
     }
-  }, [labourId, subscriptionId, role]);
+    if (subscription.status === SubscriberStatus.REQUESTED) {
+      return SubscriberSessionState.PendingApproval;
+    }
+    // UNSUBSCRIBED, REMOVED, BLOCKED - treat as no selection
+    return SubscriberSessionState.NoSelection;
+  }, [subscription]);
 
-  const setLabourId = (id: string | null) => {
+  const canViewLabour = useMemo((): boolean => {
+    if (mode === AppMode.Birth) {
+      return labourId !== null;
+    }
+    if (mode === AppMode.Subscriber) {
+      return subscriberState === SubscriberSessionState.Active;
+    }
+    return false;
+  }, [mode, labourId, subscriberState]);
+
+  const setLabourId = useCallback((id: string | null) => {
     setLabourIdState(id);
-  };
+  }, []);
 
-  const setSubscriptionId = (id: string | null) => {
-    setSubscriptionIdState(id);
-  };
+  const setMode = useCallback((newMode: AppMode | null) => {
+    setModeState(newMode);
+    if (newMode === AppMode.Birth) {
+      setSubscriptionState(null);
+    } else if (newMode === AppMode.Subscriber) {
+      setLabourIdState(null);
+    }
+  }, []);
 
-  const setRole = (newRole: SessionRole | null) => {
-    setRoleState(newRole);
-  };
+  const selectSubscription = useCallback((sub: SubscriptionStatusReadModel) => {
+    setSubscriptionState(sub);
+    setLabourIdState(sub.labour_id);
+  }, []);
 
-  const startMotherSession = (id: string) => {
-    setLabourIdState(id);
-    setSubscriptionIdState(null);
-    setRoleState(SessionRole.Mother);
-  };
+  const updateSubscription = useCallback((sub: SubscriptionStatusReadModel) => {
+    setSubscriptionState(sub);
+  }, []);
 
-  const startSubscriberSession = (id: string) => {
-    setSubscriptionIdState(id);
+  const clearSubscription = useCallback(() => {
+    setSubscriptionState(null);
     setLabourIdState(null);
-    setRoleState(SessionRole.Subscriber);
-  };
+  }, []);
 
-  const clearSession = () => {
+  const clearSession = useCallback(() => {
     setLabourIdState(null);
-    setSubscriptionIdState(null);
-    setRoleState(null);
-  };
-
-  const accessLevel = getAccessLevel(role);
+    setSubscriptionState(null);
+    setModeState(null);
+  }, []);
 
   const value: LabourSessionContextType = {
     labourId,
-    subscriptionId,
-    role,
-    accessLevel,
+    subscription,
+    mode,
+    canViewLabour,
+    subscriberState,
     setLabourId,
-    setSubscriptionId,
-    setRole,
-    startMotherSession,
-    startSubscriberSession,
+    setMode,
+    selectSubscription,
+    updateSubscription,
+    clearSubscription,
     clearSession,
   };
 
