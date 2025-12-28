@@ -7,6 +7,7 @@ import {
   useBlockSubscriberV2,
   useRemoveSubscriberV2,
   useUnblockSubscriberV2,
+  useUpdateSubscriberRoleV2,
 } from '@base/hooks/useLabourData';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import {
@@ -41,6 +42,7 @@ export function ManageSubscriptionMenu({
   const removeSubscriberMutation = useRemoveSubscriberV2(client);
   const blockSubscriberMutation = useBlockSubscriberV2(client);
   const unblockSubscriberMutation = useUnblockSubscriberV2(client);
+  const updateRoleMutation = useUpdateSubscriberRoleV2(client);
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -55,11 +57,9 @@ export function ManageSubscriptionMenu({
     }
   };
 
-  const handleRoleChange = async (newRole: SubscriberRole) => {
+  const handleRoleChange = (newRole: SubscriberRole) => {
     setIsRoleModalOpen(false);
-    await client.updateSubscriberRole(labourId!, subscriptionId, newRole);
-    // Refresh the data to show updated role
-    window.location.reload();
+    updateRoleMutation.mutate({ labourId: labourId!, subscriptionId, role: newRole });
   };
 
   return (

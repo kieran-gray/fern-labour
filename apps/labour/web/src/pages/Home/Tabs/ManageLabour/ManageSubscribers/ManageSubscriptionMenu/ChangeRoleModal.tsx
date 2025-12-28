@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SubscriberRole } from '@base/clients/labour_service';
-import { IconHeart, IconUsers } from '@tabler/icons-react';
+import { IconEye, IconHeart, IconUsers } from '@tabler/icons-react';
 import { Button, Modal, Radio, Space, Stack, Text } from '@mantine/core';
 import { getRoleLabel } from '../SubscribersTable/RoleBadge';
 import classes from '@shared/Modal.module.css';
@@ -64,11 +64,25 @@ export function ChangeRoleModal({
             }
           />
           <Radio
-            value={SubscriberRole.FRIENDS_AND_FAMILY}
+            value={SubscriberRole.SUPPORT_PERSON}
+            label={
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <IconEye size={18} />
+                <Text fw={500}>{getRoleLabel(SubscriberRole.SUPPORT_PERSON)}</Text>
+              </div>
+            }
+            description={
+              <Text size="sm" c="dimmed">
+                Can view updates and statistics
+              </Text>
+            }
+          />
+          <Radio
+            value={SubscriberRole.LOVED_ONE}
             label={
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <IconUsers size={18} />
-                <Text fw={500}>{getRoleLabel(SubscriberRole.FRIENDS_AND_FAMILY)}</Text>
+                <Text fw={500}>{getRoleLabel(SubscriberRole.LOVED_ONE)}</Text>
               </div>
             }
             description={

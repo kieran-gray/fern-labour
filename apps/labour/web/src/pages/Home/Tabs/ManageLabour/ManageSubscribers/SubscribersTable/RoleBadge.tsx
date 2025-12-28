@@ -1,5 +1,5 @@
 import { SubscriberRole } from '@base/clients/labour_service';
-import { IconHeart, IconUsers } from '@tabler/icons-react';
+import { IconEye, IconHeart, IconUsers } from '@tabler/icons-react';
 import { Badge } from '@mantine/core';
 
 interface RoleBadgeProps {
@@ -35,9 +35,15 @@ function getRoleConfig(role: SubscriberRole) {
         color: 'pink',
         icon: <IconHeart size={14} />,
       };
-    case SubscriberRole.FRIENDS_AND_FAMILY:
+    case SubscriberRole.SUPPORT_PERSON:
       return {
-        label: 'Friends & Family',
+        label: 'Support Person',
+        color: 'grape',
+        icon: <IconEye size={14} />,
+      };
+    case SubscriberRole.LOVED_ONE:
+      return {
+        label: 'Loved One',
         color: 'blue',
         icon: <IconUsers size={14} />,
       };

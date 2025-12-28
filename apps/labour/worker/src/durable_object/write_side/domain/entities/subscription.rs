@@ -22,7 +22,7 @@ impl Subscription {
             id: subscription_id,
             labour_id,
             subscriber_id,
-            role: SubscriberRole::FRIENDS_AND_FAMILY,
+            role: SubscriberRole::LOVED_ONE,
             status: SubscriberStatus::REQUESTED,
             access_level: SubscriberAccessLevel::BASIC,
             contact_methods: vec![],

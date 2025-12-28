@@ -7,15 +7,18 @@ use strum::{EnumString, VariantNames};
 pub enum SubscriberRole {
     #[strum(serialize = "BIRTH_PARTNER", serialize = "birth_partner")]
     BIRTH_PARTNER,
-    #[strum(serialize = "FRIENDS_AND_FAMILY", serialize = "friends_and_family")]
-    FRIENDS_AND_FAMILY,
+    #[strum(serialize = "SUPPORT_PERSON", serialize = "support_person")]
+    SUPPORT_PERSON,
+    #[strum(serialize = "LOVED_ONE", serialize = "loved_one")]
+    LOVED_ONE,
 }
 
 impl std::fmt::Display for SubscriberRole {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             SubscriberRole::BIRTH_PARTNER => write!(f, "BIRTH_PARTNER"),
-            SubscriberRole::FRIENDS_AND_FAMILY => write!(f, "FRIENDS_AND_FAMILY"),
+            SubscriberRole::SUPPORT_PERSON => write!(f, "SUPPORT_PERSON"),
+            SubscriberRole::LOVED_ONE => write!(f, "LOVED_ONE"),
         }
     }
 }

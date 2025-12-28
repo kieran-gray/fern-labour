@@ -41,7 +41,7 @@ impl SubscriptionReadModelProjector {
                             e.subscription_id,
                             e.labour_id,
                             e.subscriber_id.clone(),
-                            SubscriberRole::FRIENDS_AND_FAMILY,
+                            SubscriberRole::LOVED_ONE,
                             SubscriberStatus::REQUESTED,
                             SubscriberAccessLevel::BASIC,
                             vec![],

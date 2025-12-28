@@ -46,6 +46,7 @@ impl Cursor for LabourUpdateReadModel {
         self.labour_update_id
     }
 
+    #[allow(clippy::misnamed_getters)]
     fn updated_at(&self) -> DateTime<Utc> {
         self.created_at
     }

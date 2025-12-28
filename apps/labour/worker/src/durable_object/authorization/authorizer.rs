@@ -177,7 +177,7 @@ mod tests {
             }
 
             // Update role if needed
-            if role != SubscriberRole::FRIENDS_AND_FAMILY {
+            if role != SubscriberRole::LOVED_ONE {
                 let update_role_cmd = LabourCommand::UpdateSubscriberRole(UpdateSubscriberRole {
                     labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
                     subscription_id,
@@ -259,7 +259,7 @@ mod tests {
         let aggregate = create_aggregate_with_subscriber(
             "mother-1",
             "subscriber-1",
-            SubscriberRole::FRIENDS_AND_FAMILY,
+            SubscriberRole::LOVED_ONE,
             SubscriberStatus::REQUESTED,
         );
         let principal = resolve_principal(&user, Some(&aggregate));
@@ -425,7 +425,7 @@ mod tests {
         let aggregate = create_aggregate_with_subscriber(
             "mother-1",
             "friend-1",
-            SubscriberRole::FRIENDS_AND_FAMILY,
+            SubscriberRole::LOVED_ONE,
             SubscriberStatus::SUBSCRIBED,
         );
         let principal = resolve_principal(&user, Some(&aggregate));
@@ -444,7 +444,7 @@ mod tests {
         let aggregate = create_aggregate_with_subscriber(
             "mother-1",
             "friend-1",
-            SubscriberRole::FRIENDS_AND_FAMILY,
+            SubscriberRole::LOVED_ONE,
             SubscriberStatus::SUBSCRIBED,
         );
         let principal = resolve_principal(&user, Some(&aggregate));
@@ -470,7 +470,7 @@ mod tests {
         let aggregate = create_aggregate_with_subscriber(
             "mother-1",
             "friend-1",
-            SubscriberRole::FRIENDS_AND_FAMILY,
+            SubscriberRole::LOVED_ONE,
             SubscriberStatus::SUBSCRIBED,
         );
         let principal = resolve_principal(&user, Some(&aggregate));
@@ -494,7 +494,7 @@ mod tests {
         let aggregate = create_aggregate_with_subscriber(
             "mother-1",
             "friend-1",
-            SubscriberRole::FRIENDS_AND_FAMILY,
+            SubscriberRole::LOVED_ONE,
             SubscriberStatus::SUBSCRIBED,
         );
         let principal = resolve_principal(&user, Some(&aggregate));
@@ -521,7 +521,7 @@ mod tests {
         let aggregate = create_aggregate_with_subscriber(
             "mother-1",
             "subscriber-1",
-            SubscriberRole::FRIENDS_AND_FAMILY,
+            SubscriberRole::LOVED_ONE,
             SubscriberStatus::REQUESTED,
         );
         let principal = resolve_principal(&user, Some(&aggregate));

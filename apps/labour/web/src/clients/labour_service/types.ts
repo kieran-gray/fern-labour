@@ -18,7 +18,8 @@ export enum SubscriberAccessLevel {
 
 export enum SubscriberRole {
   BIRTH_PARTNER = 'BIRTH_PARTNER',
-  FRIENDS_AND_FAMILY = 'FRIENDS_AND_FAMILY',
+  SUPPORT_PERSON = 'SUPPORT_PERSON',
+  LOVED_ONE = 'LOVED_ONE',
 }
 
 export enum SubscriberStatus {

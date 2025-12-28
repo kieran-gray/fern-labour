@@ -34,7 +34,7 @@ import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdat
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import baseClasses from '@shared/shared-styles.module.css';
 
-const BIRTH_PARTNER_TABS = [
+const FULL_ACCESS_TABS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
   { id: 'details', label: 'Details', icon: IconPencil },
   { id: 'updates', label: 'Updates', icon: IconMessage },
@@ -42,7 +42,15 @@ const BIRTH_PARTNER_TABS = [
   { id: 'stats', label: 'Stats', icon: IconChartHistogram },
 ] as const;
 
-const FRIENDS_AND_FAMILY_TABS = [
+const SUPPORT_PERSON_TABS = [
+  { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
+  { id: 'details', label: 'Details', icon: IconPencil },
+  { id: 'updates', label: 'Updates', icon: IconMessage },
+  { id: 'stats', label: 'Stats', icon: IconChartHistogram },
+  { id: 'gifts', label: 'Gifts', icon: IconShoppingBag },
+];
+
+const LOVED_ONE_TABS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
   { id: 'details', label: 'Details', icon: IconPencil },
   { id: 'updates', label: 'Updates', icon: IconMessage },
@@ -63,12 +71,22 @@ export const SubscriberView = () => {
   } = useLabourSession();
   const { isOnline } = useNetworkState();
 
-  const TABS =
-    subscriberState === SubscriberSessionState.Active
-      ? subscriberRole === SubscriberRole.BIRTH_PARTNER
-        ? BIRTH_PARTNER_TABS
-        : FRIENDS_AND_FAMILY_TABS
-      : LIMITED_TABS;
+  const getTabsForRole = () => {
+    if (subscriberState !== SubscriberSessionState.Active) {
+      return LIMITED_TABS;
+    }
+    switch (subscriberRole) {
+      case SubscriberRole.BIRTH_PARTNER:
+        return FULL_ACCESS_TABS;
+      case SubscriberRole.SUPPORT_PERSON:
+        return SUPPORT_PERSON_TABS;
+      case SubscriberRole.LOVED_ONE:
+      default:
+        return LOVED_ONE_TABS;
+    }
+  };
+
+  const TABS = getTabsForRole();
   const tabOrder = TABS.map((tab) => tab.id);
 
   const [activeTab, setActiveTab] = useState<string | null>('subscriptions');
@@ -107,8 +125,8 @@ export const SubscriberView = () => {
   const client = useLabourV2Client();
 
   const shouldFetchLabour = subscriberState === SubscriberSessionState.Active && labourId !== null;
-  const shouldFetchContractions =
-    subscriberRole === SubscriberRole.BIRTH_PARTNER && labourId !== null;
+  const isBirthPartner = subscriberRole === SubscriberRole.BIRTH_PARTNER;
+  const shouldFetchContractions = isBirthPartner && labourId !== null;
 
   const {
     isPending: isSubPending,
@@ -149,7 +167,7 @@ export const SubscriberView = () => {
   };
 
   const getFloatingControlsPadding = () => {
-    if (window.innerWidth >= 768 || completed || subscriberRole !== SubscriberRole.BIRTH_PARTNER) {
+    if (window.innerWidth >= 768 || completed || !isBirthPartner) {
       return '30px';
     }
     if (activeTab === 'track') {
@@ -272,8 +290,6 @@ export const SubscriberView = () => {
         return null;
     }
   };
-
-  const isBirthPartner = subscriberRole === SubscriberRole.BIRTH_PARTNER;
 
   return (
     <div {...swipeHandlers}>

@@ -294,6 +294,7 @@ function handleEvent(queryClient: ReturnType<typeof useQueryClient>, event: Labo
     case 'SubscriberUnblocked':
     case 'SubscriberRoleUpdated':
       queryClient.invalidateQueries({ queryKey: queryKeysV2.subscriptions.all });
+      queryClient.invalidateQueries({ queryKey: queryKeysV2.users.listByLabour(data.labour_id!) });
       break;
 
     case 'SubscriberNotificationMethodsUpdated':

@@ -43,6 +43,7 @@ impl Cursor for ContractionReadModel {
         self.contraction_id
     }
 
+    #[allow(clippy::misnamed_getters)]
     fn updated_at(&self) -> DateTime<Utc> {
         self.created_at
     }
