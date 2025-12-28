@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   LabourReadModel,
   LabourUpdateReadModel,
@@ -10,7 +10,7 @@ import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveD
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
 import { pluraliseName } from '@shared/utils';
 import { IconBook } from '@tabler/icons-react';
-import { ActionIcon, Image, ScrollArea, Space } from '@mantine/core';
+import { ActionIcon, Button, Image, ScrollArea, Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import image from './image.svg';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
@@ -130,16 +130,37 @@ export function LabourUpdates({
 }: LabourUpdatesProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [allLabourUpdates, setAllLabourUpdates] = useState<LabourUpdateReadModel[]>([]);
 
   const isOwnerView = !isSubscriberView || subscriberRole === SubscriberRole.BIRTH_PARTNER;
   const isBirthPartner = isSubscriberView && subscriberRole === SubscriberRole.BIRTH_PARTNER;
 
   const client = useLabourV2Client();
-  const { data: labourUpdatesData } = useLabourUpdatesV2(client, labour.labour_id, 20);
-  const labourUpdatesTemp = labourUpdatesData?.data || [];
-  const labourUpdates = [...labourUpdatesTemp].sort((a, b) => {
+  const { data: labourUpdatesData } = useLabourUpdatesV2(client, labour.labour_id, 20, cursor);
+
+  useEffect(() => {
+    if (labourUpdatesData?.data) {
+      if (cursor === null) {
+        setAllLabourUpdates(labourUpdatesData.data);
+      } else {
+        setAllLabourUpdates((prev) => [...prev, ...labourUpdatesData.data]);
+      }
+    }
+  }, [labourUpdatesData, cursor]);
+
+  const hasMore = labourUpdatesData?.has_more || false;
+  const nextCursor = labourUpdatesData?.next_cursor || null;
+
+  const labourUpdates = [...allLabourUpdates].sort((a, b) => {
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
   });
+
+  const handleLoadMore = () => {
+    if (nextCursor) {
+      setCursor(nextCursor);
+    }
+  };
 
   const motherFirstName = labour.mother_name.split(' ')[0];
   const completed = labour.end_time != null;
@@ -173,10 +194,10 @@ export function LabourUpdates({
     const filteredUpdates = isOwnerView
       ? labourUpdates
       : labourUpdates.filter(
-          (update) =>
-            update.labour_update_type === 'ANNOUNCEMENT' ||
-            update.labour_update_type === 'STATUS_UPDATE'
-        );
+        (update) =>
+          update.labour_update_type === 'ANNOUNCEMENT' ||
+          update.labour_update_type === 'STATUS_UPDATE'
+      );
 
     return filteredUpdates.map((data) => {
       return (
@@ -259,6 +280,11 @@ export function LabourUpdates({
                 <ResponsiveDescription description={description} marginTop={0} />
                 {hasUpdates && (
                   <ScrollArea.Autosize mt={20} mah="calc(100dvh - 370px)" viewportRef={viewport}>
+                    {hasMore && (
+                      <Button onClick={handleLoadMore} variant="light" mb="md" fullWidth>
+                        Load older updates
+                      </Button>
+                    )}
                     <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
                   </ScrollArea.Autosize>
                 )}
@@ -288,6 +314,11 @@ export function LabourUpdates({
                 {hasUpdates ? (
                   <>
                     <ScrollArea.Autosize mah="calc(100dvh - 390px)" viewportRef={viewport}>
+                      {hasMore && (
+                        <Button onClick={handleLoadMore} variant="light" mb="md" fullWidth>
+                          Load older updates
+                        </Button>
+                      )}
                       <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
                     </ScrollArea.Autosize>
                     <Space h="lg" />

@@ -34,7 +34,7 @@ impl SqlContractionRepository {
         self.sql
             .exec(
                 "CREATE INDEX IF NOT EXISTS idx_contractions_start_time
-                 ON contractions(start_time ASC)",
+                 ON contractions(start_time DESC)",
                 None,
             )
             .context("Failed to create start_time index")?;
@@ -95,14 +95,14 @@ impl SyncRepositoryTrait<ContractionReadModel> for SqlContractionRepository {
         let mut bindings = vec![];
 
         if let Some(cur) = cursor {
-            query.push_str(" WHERE updated_at < ?1 OR (updated_at = ?1 AND contraction_id < ?2)");
+            query.push_str(" WHERE start_time < ?1 OR (start_time = ?1 AND contraction_id < ?2)");
             bindings.push(cur.last_updated_at.to_rfc3339().into());
             bindings.push(cur.last_id.to_string().into());
         }
 
         let limit_param_index = bindings.len() + 1;
         query.push_str(&format!(
-            " ORDER BY start_time ASC LIMIT ?{}",
+            " ORDER BY start_time DESC, contraction_id DESC LIMIT ?{}",
             limit_param_index
         ));
 

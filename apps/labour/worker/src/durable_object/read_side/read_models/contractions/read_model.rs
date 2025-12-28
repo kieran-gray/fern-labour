@@ -44,7 +44,7 @@ impl Cursor for ContractionReadModel {
     }
 
     fn updated_at(&self) -> DateTime<Utc> {
-        self.updated_at
+        self.created_at
     }
 }
 

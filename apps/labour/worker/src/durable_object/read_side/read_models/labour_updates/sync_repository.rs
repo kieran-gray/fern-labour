@@ -33,11 +33,11 @@ impl SqlLabourUpdateRepository {
 
         self.sql
             .exec(
-                "CREATE INDEX IF NOT EXISTS idx_labour_updates_updated_at
-                 ON labour_updates(updated_at DESC)",
+                "CREATE INDEX IF NOT EXISTS idx_labour_updates_created_at
+                 ON labour_updates(created_at DESC)",
                 None,
             )
-            .context("Failed to create updated_at index")?;
+            .context("Failed to create created_at index")?;
 
         Ok(())
     }
@@ -95,14 +95,14 @@ impl SyncRepositoryTrait<LabourUpdateReadModel> for SqlLabourUpdateRepository {
         let mut bindings = vec![];
 
         if let Some(cur) = cursor {
-            query.push_str(" WHERE updated_at < ?1 OR (updated_at = ?1 AND labour_update_id < ?2)");
+            query.push_str(" WHERE created_at < ?1 OR (created_at = ?1 AND labour_update_id < ?2)");
             bindings.push(cur.last_updated_at.to_rfc3339().into());
             bindings.push(cur.last_id.to_string().into());
         }
 
         let limit_param_index = bindings.len() + 1;
         query.push_str(&format!(
-            " ORDER BY updated_at DESC, labour_update_id DESC LIMIT ?{}",
+            " ORDER BY created_at DESC, labour_update_id DESC LIMIT ?{}",
             limit_param_index
         ));
 

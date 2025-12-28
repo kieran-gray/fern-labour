@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LabourReadModel, SubscriberRole } from '@base/clients/labour_service/types';
 import { useContractionsV2, useLabourV2Client } from '@base/hooks';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
@@ -43,17 +43,38 @@ export function Contractions({
   subscriberRole,
 }: ContractionsProps) {
   const [opened, { open, close }] = useDisclosure(false);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [allContractions, setAllContractions] = useState<any[]>([]);
+
   const client = useLabourV2Client();
-  const { data: contractionsData } = useContractionsV2(client, labour.labour_id, 20);
+  const { data: contractionsData } = useContractionsV2(client, labour.labour_id, 20, cursor);
 
   const isBirthPartner = isSubscriberView && subscriberRole === SubscriberRole.BIRTH_PARTNER;
   const motherFirstName = labour.mother_name.split(' ')[0];
 
-  const contractions = contractionsData?.data || [];
+  useEffect(() => {
+    if (contractionsData?.data) {
+      if (cursor === null) {
+        setAllContractions(contractionsData.data);
+      } else {
+        setAllContractions((prev) => [...prev, ...contractionsData.data]);
+      }
+    }
+  }, [contractionsData, cursor]);
+
+  const contractions = allContractions;
+  const hasMore = contractionsData?.has_more || false;
+  const nextCursor = contractionsData?.next_cursor || null;
 
   const sortedContractions = [...contractions].sort((a, b) => {
     return new Date(a.duration.start_time).getTime() - new Date(b.duration.start_time).getTime();
   });
+
+  const handleLoadMore = () => {
+    if (nextCursor) {
+      setCursor(nextCursor);
+    }
+  };
 
   useEffect(() => {
     const main = document.getElementById('app-main');
@@ -112,6 +133,8 @@ export function Contractions({
                 <ContractionTimelineCustom
                   contractions={sortedContractions}
                   completed={completed}
+                  hasMore={hasMore}
+                  onLoadMore={handleLoadMore}
                 />
               )}
               {sortedContractions.length === 0 && !completed && (

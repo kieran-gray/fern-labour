@@ -47,7 +47,7 @@ impl Cursor for LabourUpdateReadModel {
     }
 
     fn updated_at(&self) -> DateTime<Utc> {
-        self.updated_at
+        self.created_at
     }
 }
 

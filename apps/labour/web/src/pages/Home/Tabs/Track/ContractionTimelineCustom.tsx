@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ContractionReadModel } from '@base/clients/labour_service/types';
 import { formatTimeMilliseconds, formatTimeSeconds } from '@shared/utils';
 import { IconActivityHeartbeat } from '@tabler/icons-react';
-import { ScrollArea, Text } from '@mantine/core';
+import { Button, ScrollArea, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { EditContractionModal } from './EditContractionModal';
 import classes from './ContractionTimelineCustom.module.css';
@@ -58,9 +58,13 @@ const calculateDurationSeconds = (startTime: string, endTime: string): number =>
 export default function ContractionTimelineCustom({
   contractions,
   completed,
+  hasMore,
+  onLoadMore,
 }: {
   contractions: ContractionReadModel[];
   completed: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
 }) {
   const viewport = useRef<HTMLDivElement>(null);
   const [opened, { open, close }] = useDisclosure(false);
@@ -207,6 +211,11 @@ export default function ContractionTimelineCustom({
       )}
       <ScrollArea.Autosize mah="calc(100dvh - 360px)" viewportRef={viewport} w="100%">
         <div className={classes.root}>
+          {hasMore && onLoadMore && (
+            <Button onClick={onLoadMore} variant="light" mb="md" fullWidth>
+              Load older contractions
+            </Button>
+          )}
           {sections.length === 0 && <Text ta="center">No contractions recorded yet</Text>}
           {sections.map((section) => (
             <div key={section.key} className={classes.daySection}>
