@@ -14,9 +14,7 @@ import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import App from './App';
 import { queryClient } from './config/index';
-import { SyncEngineProvider } from './offline/hooks/SyncEngineProvider';
 import { initializeQueryPersistence } from './offline/persistence/queryPersistence';
-import { initializeDatabase } from './offline/storage/database';
 import { ProtectedApp } from './shared-components/ProtectedApp';
 import { PWAUpdateHandler } from './shared-components/PWAUpdateHandler';
 import { theme } from './theme';
@@ -28,7 +26,6 @@ if (!PUBLISHABLE_KEY) {
 
 async function initializeOfflineInfrastructure() {
   try {
-    await initializeDatabase();
     await initializeQueryPersistence(queryClient);
   } catch (error) {
     // Continue without offline features
@@ -45,12 +42,10 @@ reactDom.createRoot(document.getElementById('root')!).render(
       <BrowserRouter basename="/">
         <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
           <QueryClientProvider client={queryClient}>
-            <SyncEngineProvider>
-              <ProtectedApp>
-                <PWAUpdateHandler />
-                <App />
-              </ProtectedApp>
-            </SyncEngineProvider>
+            <ProtectedApp>
+              <PWAUpdateHandler />
+              <App />
+            </ProtectedApp>
           </QueryClientProvider>
         </ClerkProvider>
       </BrowserRouter>

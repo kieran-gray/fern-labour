@@ -644,6 +644,7 @@ mod tests {
             // When
             let result = harness.when(LabourCommand::StartContraction(StartContraction {
                 labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
                 start_time: Utc::now(),
             }));
 
@@ -661,6 +662,7 @@ mod tests {
             // When
             let result = harness.when(LabourCommand::StartContraction(StartContraction {
                 labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
                 start_time: Utc::now(),
             }));
 
@@ -685,6 +687,7 @@ mod tests {
             // When
             let result = harness.when(LabourCommand::StartContraction(StartContraction {
                 labour_id: labour_id(),
+                contraction_id: Uuid::now_v7(),
                 start_time: Utc::now(),
             }));
 
@@ -713,6 +716,7 @@ mod tests {
             // When - end the contraction with low intensity
             let result = harness.when(LabourCommand::EndContraction(EndContraction {
                 labour_id: labour_id(),
+                contraction_id: active_contraction_id,
                 end_time: Utc::now(),
                 intensity: 5,
             }));
@@ -740,6 +744,7 @@ mod tests {
             // When - end the contraction meeting ACTIVE threshold
             let result = harness.when(LabourCommand::EndContraction(EndContraction {
                 labour_id: labour_id(),
+                contraction_id: active_contraction_id,
                 end_time: Utc::now() + chrono::Duration::minutes(1),
                 intensity: 7,
             }));
@@ -761,9 +766,10 @@ mod tests {
             let mut events = begun_labour_events();
             events.extend(contraction_events(4, 1.5, 8)); // intensity 8, duration 1.5 min
             // Add an active contraction
+            let active_contraction_id = Uuid::now_v7();
             events.push(LabourEvent::ContractionStarted(ContractionStarted {
                 labour_id: labour_id(),
-                contraction_id: Uuid::now_v7(),
+                contraction_id: active_contraction_id,
                 start_time: Utc::now(),
             }));
             let harness = AggregateTestHarness::given(events);
@@ -771,6 +777,7 @@ mod tests {
             // When - end the contraction meeting TRANSITION threshold
             let result = harness.when(LabourCommand::EndContraction(EndContraction {
                 labour_id: labour_id(),
+                contraction_id: active_contraction_id,
                 end_time: Utc::now() + chrono::Duration::seconds(90),
                 intensity: 8,
             }));
@@ -793,9 +800,10 @@ mod tests {
                 labour_phase: LabourPhase::ACTIVE,
             }));
             events.extend(contraction_events(4, 1.5, 8));
+            let active_contraction_id = Uuid::now_v7();
             events.push(LabourEvent::ContractionStarted(ContractionStarted {
                 labour_id: labour_id(),
-                contraction_id: Uuid::now_v7(),
+                contraction_id: active_contraction_id,
                 start_time: Utc::now(),
             }));
             let harness = AggregateTestHarness::given(events);
@@ -803,6 +811,7 @@ mod tests {
             // When
             let result = harness.when(LabourCommand::EndContraction(EndContraction {
                 labour_id: labour_id(),
+                contraction_id: active_contraction_id,
                 end_time: Utc::now() + chrono::Duration::seconds(90),
                 intensity: 9,
             }));
@@ -825,6 +834,8 @@ mod tests {
                 labour_phase: LabourPhase::TRANSITION,
             }));
             events.extend(contraction_events(4, 2.0, 9));
+            
+            let active_contraction_id = Uuid::now_v7();
             events.push(LabourEvent::ContractionStarted(ContractionStarted {
                 labour_id: labour_id(),
                 contraction_id: Uuid::now_v7(),
@@ -835,6 +846,7 @@ mod tests {
             // When
             let result = harness.when(LabourCommand::EndContraction(EndContraction {
                 labour_id: labour_id(),
+                contraction_id: active_contraction_id,
                 end_time: Utc::now() + chrono::Duration::minutes(2),
                 intensity: 9,
             }));
@@ -855,6 +867,8 @@ mod tests {
             }));
             // Add contractions that only meet ACTIVE threshold (intensity 6-7, duration 1.0 min)
             events.extend(contraction_events(4, 1.0, 6));
+            
+            let active_contraction_id = Uuid::now_v7();
             events.push(LabourEvent::ContractionStarted(ContractionStarted {
                 labour_id: labour_id(),
                 contraction_id: Uuid::now_v7(),
@@ -865,6 +879,7 @@ mod tests {
             // When - end contraction at ACTIVE level (below TRANSITION threshold)
             let result = harness.when(LabourCommand::EndContraction(EndContraction {
                 labour_id: labour_id(),
+                contraction_id: active_contraction_id,
                 end_time: Utc::now() + chrono::Duration::minutes(1),
                 intensity: 6,
             }));
@@ -886,6 +901,8 @@ mod tests {
             }));
             // Add contractions below ACTIVE threshold (intensity 4, duration 0.5 min)
             events.extend(contraction_events(4, 0.5, 4));
+            
+            let active_contraction_id = Uuid::now_v7();
             events.push(LabourEvent::ContractionStarted(ContractionStarted {
                 labour_id: labour_id(),
                 contraction_id: Uuid::now_v7(),
@@ -896,6 +913,7 @@ mod tests {
             // When - end contraction below all thresholds
             let result = harness.when(LabourCommand::EndContraction(EndContraction {
                 labour_id: labour_id(),
+                contraction_id: active_contraction_id,
                 end_time: Utc::now() + chrono::Duration::seconds(30),
                 intensity: 4,
             }));

@@ -42,6 +42,7 @@ mod tests {
     fn translates_contraction_command() {
         let api_cmd = ApiCommand::Contraction(ContractionCommand::StartContraction {
             labour_id: Uuid::now_v7(),
+            contraction_id: Uuid::now_v7(),
             start_time: Utc::now(),
         });
 

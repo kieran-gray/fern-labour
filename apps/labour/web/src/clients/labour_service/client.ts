@@ -183,12 +183,17 @@ export class LabourServiceClient {
 
   // Contraction Commands
 
-  async startContraction(labourId: string, startTime: Date): Promise<CommandResponse> {
+  async startContraction(
+    labourId: string,
+    startTime: Date,
+    contractionId: string
+  ): Promise<CommandResponse> {
     const command: ContractionCommand = {
       type: 'StartContraction',
       payload: {
         labour_id: labourId,
         start_time: startTime.toISOString(),
+        contraction_id: contractionId,
       },
     };
     return this.sendCommand({ type: 'Contraction', payload: command });
@@ -197,7 +202,8 @@ export class LabourServiceClient {
   async endContraction(
     labourId: string,
     endTime: Date,
-    intensity: number
+    intensity: number,
+    contractionId: string
   ): Promise<CommandResponse> {
     const command: ContractionCommand = {
       type: 'EndContraction',
@@ -205,6 +211,7 @@ export class LabourServiceClient {
         labour_id: labourId,
         end_time: endTime.toISOString(),
         intensity,
+        contraction_id: contractionId,
       },
     };
     return this.sendCommand({ type: 'Contraction', payload: command });

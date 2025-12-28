@@ -223,6 +223,7 @@ mod tests {
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
             labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
+            contraction_id: Uuid::now_v7(),
             start_time: Utc::now(),
         }));
 
@@ -339,6 +340,7 @@ mod tests {
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
             labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
+            contraction_id: Uuid::now_v7(),
             start_time: Utc::now(),
         }));
 
@@ -451,6 +453,7 @@ mod tests {
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
             labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
+            contraction_id: Uuid::now_v7(),
             start_time: Utc::now(),
         }));
 
@@ -545,6 +548,7 @@ mod tests {
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
             labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
+            contraction_id: Uuid::now_v7(),
             start_time: Utc::now(),
         }));
 
@@ -720,6 +724,7 @@ mod tests {
 
         let action = Action::Command(LabourCommand::StartContraction(StartContraction {
             labour_id: Uuid::parse_str(&aggregate.aggregate_id()).unwrap(),
+            contraction_id: Uuid::now_v7(),
             start_time: Utc::now(),
         }));
         let result = auth.authorize(&principal, &action, Some(&aggregate));

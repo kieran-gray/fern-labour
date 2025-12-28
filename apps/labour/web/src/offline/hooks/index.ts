@@ -1,15 +1,23 @@
-// Main exports for offline-first functionality
-export { useOfflineMutation, useOnlineMutation } from './useOfflineMutation';
-export { useSyncEngine, useSyncTrigger, useSyncIndicator } from './useSyncEngine';
-
-// Re-export utilities and types
-export { OutboxManager } from '../storage/outbox';
+// Offline functionality exports
 export { networkDetector, useNetworkState } from '../sync/networkDetector';
-export { syncEngine } from '../sync/syncEngine';
-export { initializeDatabase, clearAllData, getDatabaseStats } from '../storage/database';
 export { clearQueryPersistence, getQueryCacheStats } from '../persistence/queryPersistence';
+export { syncManager, useSyncState } from '../syncManager';
+export { SyncManagerInitializer } from '../SyncManagerInitializer';
+export {
+  enqueueCommand,
+  getPendingCommands,
+  removeCommand,
+  getPendingCount,
+  clearAllCommands,
+} from '../commandQueue';
+export {
+  useStartContractionOffline,
+  useEndContractionOffline,
+  useUpdateContractionOffline,
+  useDeleteContractionOffline,
+  generateContractionId,
+} from '../useOfflineContraction';
 
 // Export types for TypeScript support
-export type { OutboxEvent, SequenceCounter } from '../storage/database';
 export type { NetworkState } from '../sync/networkDetector';
-export type { EventType } from '../storage/outbox';
+export type { QueuedCommand } from '../commandQueue';

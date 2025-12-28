@@ -5,12 +5,14 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct StartContraction {
     pub labour_id: Uuid,
+    pub contraction_id: Uuid,
     pub start_time: DateTime<Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct EndContraction {
     pub labour_id: Uuid,
+    pub contraction_id: Uuid,
     pub end_time: DateTime<Utc>,
     pub intensity: u8,
 }

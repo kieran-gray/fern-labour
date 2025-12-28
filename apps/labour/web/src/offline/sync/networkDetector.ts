@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { offlineLogger } from '../utils/logger';
 
 /**
  * Network connectivity state
@@ -22,9 +21,7 @@ export function useNetworkState(): NetworkState {
   });
 
   const updateNetworkState = useCallback(() => {
-    const next = getNetworkState();
-    setNetworkState(next);
-    offlineLogger.info('network:update', next);
+    setNetworkState(getNetworkState());
   }, []);
 
   useEffect(() => {
@@ -216,7 +213,6 @@ export class NetworkDetector {
         // Swallow listener errors to avoid noisy logs in tests
       }
     });
-    offlineLogger.info('network:notify', state);
   }
 }
 

@@ -115,16 +115,21 @@ impl From<ContractionCommand> for LabourCommand {
             ContractionCommand::StartContraction {
                 labour_id,
                 start_time,
+                contraction_id,
+
             } => LabourCommand::StartContraction(StartContraction {
                 labour_id,
+                contraction_id,
                 start_time,
             }),
             ContractionCommand::EndContraction {
                 labour_id,
+                contraction_id,
                 end_time,
                 intensity,
             } => LabourCommand::EndContraction(EndContraction {
                 labour_id,
+                contraction_id,
                 end_time,
                 intensity,
             }),

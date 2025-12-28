@@ -1,7 +1,6 @@
 use chrono::Utc;
 use fern_labour_event_sourcing_rs::Aggregate;
 use fern_labour_labour_shared::value_objects::LabourPhase;
-use uuid::Uuid;
 
 use crate::durable_object::write_side::domain::{
     Labour, LabourError, LabourEvent,
@@ -48,7 +47,7 @@ pub fn handle_start_contraction(
 
     events.push(LabourEvent::ContractionStarted(ContractionStarted {
         labour_id: cmd.labour_id,
-        contraction_id: Uuid::now_v7(),
+        contraction_id: cmd.contraction_id,
         start_time: cmd.start_time,
     }));
 
@@ -69,15 +68,15 @@ pub fn handle_end_contraction(
         ));
     }
 
-    let Some(contraction) = labour.find_active_contraction() else {
+    if labour.find_contraction(cmd.contraction_id).is_none() {
         return Err(LabourError::InvalidCommand(
-            "Labour does not have an active contraction".to_string(),
+            "Contraction not found".to_string(),
         ));
     };
 
     let contraction_ended = LabourEvent::ContractionEnded(ContractionEnded {
         labour_id: cmd.labour_id,
-        contraction_id: contraction.id(),
+        contraction_id: cmd.contraction_id,
         end_time: cmd.end_time,
         intensity: cmd.intensity,
     });

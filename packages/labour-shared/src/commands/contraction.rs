@@ -7,10 +7,12 @@ use uuid::Uuid;
 pub enum ContractionCommand {
     StartContraction {
         labour_id: Uuid,
+        contraction_id: Uuid,
         start_time: DateTime<Utc>,
     },
     EndContraction {
         labour_id: Uuid,
+        contraction_id: Uuid,
         end_time: DateTime<Utc>,
         intensity: u8,
     },

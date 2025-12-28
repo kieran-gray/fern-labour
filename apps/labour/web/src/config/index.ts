@@ -24,16 +24,22 @@ export const queryClient = new QueryClient({
       networkMode: 'always',
     },
     mutations: {
+      // Pause mutations when offline, automatically retry when back online
+      networkMode: 'offlineFirst',
       retry: (failureCount, error: any) => {
-        if (error?.name === 'NetworkError' || !navigator.onLine) {
+        // Don't retry client errors (except timeout/rate limit)
+        if (error?.status >= 400 && error?.status < 500) {
+          if (error?.status === 408 || error?.status === 429) {
+            return failureCount < 3;
+          }
           return false;
         }
+        // Retry server errors
         if (error?.status >= 500) {
           return failureCount < 2;
         }
         return false;
       },
-      networkMode: 'always',
     },
   },
 });

@@ -264,14 +264,23 @@ export function useLabourUpdateByIdV2(
 
 /**
  * Hook for starting a contraction
+ * @deprecated Use useStartContractionOffline for offline support
  */
 export function useStartContractionV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
   const { isConnected } = useWebSocket();
 
   return useMutation({
-    mutationFn: async ({ labourId, startTime }: { labourId: string; startTime: Date }) => {
-      const response = await client.startContraction(labourId, startTime);
+    mutationFn: async ({
+      labourId,
+      startTime,
+      contractionId,
+    }: {
+      labourId: string;
+      startTime: Date;
+      contractionId: string;
+    }) => {
+      const response = await client.startContraction(labourId, startTime, contractionId);
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to start contraction');
@@ -301,6 +310,7 @@ export function useStartContractionV2(client: LabourServiceV2Client) {
 
 /**
  * Hook for ending a contraction
+ * @deprecated Use useEndContractionOffline for offline support
  */
 export function useEndContractionV2(client: LabourServiceV2Client) {
   const queryClient = useQueryClient();
@@ -311,12 +321,14 @@ export function useEndContractionV2(client: LabourServiceV2Client) {
       labourId,
       endTime,
       intensity,
+      contractionId,
     }: {
       labourId: string;
       endTime: Date;
       intensity: number;
+      contractionId: string;
     }) => {
-      const response = await client.endContraction(labourId, endTime, intensity);
+      const response = await client.endContraction(labourId, endTime, intensity, contractionId);
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to end contraction');

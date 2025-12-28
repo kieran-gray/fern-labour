@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useDeleteContractionV2, useLabourV2Client, useUpdateContractionV2 } from '@base/hooks';
+import { useLabourV2Client } from '@base/hooks';
+import { useDeleteContractionOffline, useUpdateContractionOffline } from '@base/offline/hooks';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
@@ -35,8 +36,8 @@ export const EditContractionModal = ({
   });
 
   const client = useLabourV2Client();
-  const deleteMutation = useDeleteContractionV2(client);
-  const updateMutation = useUpdateContractionV2(client);
+  const deleteMutation = useDeleteContractionOffline(client);
+  const updateMutation = useUpdateContractionOffline(client);
 
   const handleDeleteContraction = (contractionId: string) => {
     const payload = {
