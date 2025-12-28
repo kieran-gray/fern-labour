@@ -40,7 +40,7 @@ export default function SubscriptionRequestedModal({
             Your request to join a labour circle has been sent.
             <br />
             <br />
-            They will need to approve your request before you can view updates or messages.
+            They will need to approve your request before you can access their labour.
             <br />
             <br />
             You'll get an email as soon as you're approved, thanks for your patience! 💛

@@ -17,17 +17,18 @@ import {
   IconStopwatch,
   IconUsers,
 } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import { Space } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { PayWall } from './components/Paywall/PayWall';
-import { PendingApprovalView } from './PendingApprovalView';
 import Gifts from './Tabs/Gifts/Gifts';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import ContactMethods from './Tabs/SubscriptionDetails/ContactMethods';
 import LabourDetailsView from './Tabs/SubscriptionDetails/LabourDetails';
 import { ManageSubscriptions } from './Tabs/Subscriptions/ManageSubscriptions/ManageSubscriptions';
-import { InviteContainer } from './Tabs/Subscriptions/SubscriberInviteByEmail/InviteContainer';
+import { ShareFernLabour } from './Tabs/Subscriptions/ShareFernLabour/ShareFernLabour';
+import SubscriptionRequestedModal from './Tabs/Subscriptions/SubscriptionRequestedModal/SubscriptionRequestedModal';
 import { Contractions } from './Tabs/Track/Contractions';
 import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls';
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
@@ -61,15 +62,12 @@ const LIMITED_TABS = [{ id: 'subscriptions', label: 'Subscriptions', icon: IconU
 
 export const SubscriberView = () => {
   const navigate = useNavigate();
-  const {
-    labourId,
-    subscriberState,
-    subscriberRole,
-    clearSubscription,
-    clearSession,
-    updateSubscription,
-  } = useLabourSession();
+  const [searchParams] = useSearchParams();
+  const { labourId, subscriberState, subscriberRole, clearSession, updateSubscription } =
+    useLabourSession();
   const { isOnline } = useNetworkState();
+  const promptParam = searchParams.get('prompt');
+  const [modalOpened, { close: closeModal }] = useDisclosure(promptParam === 'requested');
 
   const getTabsForRole = () => {
     if (subscriberState !== SubscriberSessionState.Active) {
@@ -219,23 +217,11 @@ export const SubscriberView = () => {
   const renderTabPanel = (tabId: string) => {
     switch (tabId) {
       case 'subscriptions':
-        // Show pending approval view if subscription is pending
-        if (subscriberState === SubscriberSessionState.PendingApproval) {
-          return (
-            <>
-              <PendingApprovalView onCancel={clearSubscription} />
-              <Space h="xl" />
-              <ManageSubscriptions />
-              <Space h="xl" />
-              <InviteContainer />
-            </>
-          );
-        }
         return (
           <>
             <ManageSubscriptions />
             <Space h="xl" />
-            <InviteContainer />
+            <ShareFernLabour />
           </>
         );
       case 'details':
@@ -337,6 +323,7 @@ export const SubscriberView = () => {
           </>
         )}
       </AppShell>
+      <SubscriptionRequestedModal opened={modalOpened} close={closeModal} />
     </div>
   );
 };

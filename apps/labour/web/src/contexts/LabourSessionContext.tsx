@@ -117,12 +117,8 @@ export const LabourSessionProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const setMode = useCallback((newMode: AppMode | null) => {
+    clearSession();
     setModeState(newMode);
-    if (newMode === AppMode.Birth) {
-      setSubscriptionState(null);
-    } else if (newMode === AppMode.Subscriber) {
-      setLabourIdState(null);
-    }
   }, []);
 
   const selectSubscription = useCallback((sub: SubscriptionReadModel) => {
