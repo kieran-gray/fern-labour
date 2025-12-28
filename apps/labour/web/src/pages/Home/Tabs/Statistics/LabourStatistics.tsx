@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service';
-import { useContractionsV2, useLabourV2Client } from '@base/hooks';
+import { useLabourV2Client } from '@base/hooks';
+import { flattenContractions, useContractionsInfinite } from '@base/hooks/useInfiniteQueries';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -141,9 +143,22 @@ export const LabourStatistics = ({
   isSubscriberView = false,
 }: LabourStatisticsProps) => {
   const client = useLabourV2Client();
-  const { data: contractionsData } = useContractionsV2(client, labour.labour_id, 100);
-  const contractions =
-    contractionsProp !== undefined ? contractionsProp : contractionsData?.data || [];
+  const shouldFetch = contractionsProp === undefined;
+  const {
+    data: contractionsData,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useContractionsInfinite(client, shouldFetch ? labour.labour_id : null);
+
+  useEffect(() => {
+    if (shouldFetch && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [shouldFetch, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const contractions = contractionsProp ?? flattenContractions(contractionsData);
+  const isLoadingMore = shouldFetch && (hasNextPage || isFetchingNextPage);
   const labourStatistics = createLabourStatistics(contractions);
   const completed = labour.end_time !== null;
   const motherName = isSubscriberView ? pluraliseName(labour.mother_name.split(' ')[0]) : '';
@@ -190,7 +205,12 @@ export const LabourStatistics = ({
     <>
       {renderTimingInfo()}
       <Space h="sm" />
-      {!labourStatistics.total && <ImportantText message={emptyStateMessage} />}
+      {isLoadingMore && (
+        <Text size="sm" c="dimmed" ta="center" mb="sm">
+          Loading all contractions...
+        </Text>
+      )}
+      {!labourStatistics.total && !isLoadingMore && <ImportantText message={emptyStateMessage} />}
       {labourStatistics.total && (
         <LabourStatisticsTabs
           labour={labour}

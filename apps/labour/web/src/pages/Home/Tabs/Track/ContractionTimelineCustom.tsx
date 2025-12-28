@@ -7,6 +7,14 @@ import { useDisclosure } from '@mantine/hooks';
 import { EditContractionModal } from './EditContractionModal';
 import classes from './ContractionTimelineCustom.module.css';
 
+function usePrevious<T>(value: T): T | undefined {
+  const ref = useRef<T>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
 const DOTTED_LINE_FREQUENCY_GAP = 1800000; // 30 minutes
 
 export interface ContractionData {
@@ -60,24 +68,41 @@ export default function ContractionTimelineCustom({
   completed,
   hasMore,
   onLoadMore,
+  isLoadingMore,
 }: {
   contractions: ContractionReadModel[];
   completed: boolean;
   hasMore?: boolean;
   onLoadMore?: () => void;
+  isLoadingMore?: boolean;
 }) {
   const viewport = useRef<HTMLDivElement>(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [modalData, setModalData] = useState<ContractionData | null>(null);
+  const [hasInitiallyScrolled, setHasInitiallyScrolled] = useState(false);
 
   const isFinished = (c: ContractionReadModel) => c.duration.start_time !== c.duration.end_time;
   const gaps = useMemo(() => getTimeSinceLastStarted(contractions), [contractions]);
 
+  const newestContractionId =
+    contractions.length > 0 ? contractions[contractions.length - 1].contraction_id : null;
+  const prevNewestId = usePrevious(newestContractionId);
+
   useEffect(() => {
-    if (viewport.current) {
-      viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'auto' });
+    if (!viewport.current || contractions.length === 0) {
+      return;
     }
-  }, [contractions]);
+
+    const shouldScroll =
+      !hasInitiallyScrolled || (newestContractionId !== prevNewestId && prevNewestId !== undefined);
+
+    if (shouldScroll) {
+      viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'auto' });
+      if (!hasInitiallyScrolled) {
+        setHasInitiallyScrolled(true);
+      }
+    }
+  }, [contractions, newestContractionId, prevNewestId, hasInitiallyScrolled]);
 
   const formatClock = (iso: string) =>
     new Date(iso).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' });
@@ -212,8 +237,15 @@ export default function ContractionTimelineCustom({
       <ScrollArea.Autosize mah="calc(100dvh - 360px)" viewportRef={viewport} w="100%">
         <div className={classes.root}>
           {hasMore && onLoadMore && (
-            <Button onClick={onLoadMore} variant="light" mb="md" fullWidth>
-              Load older contractions
+            <Button
+              onClick={onLoadMore}
+              variant="light"
+              mb="md"
+              fullWidth
+              loading={isLoadingMore}
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? 'Loading...' : 'Load older contractions'}
             </Button>
           )}
           {sections.length === 0 && <Text ta="center">No contractions recorded yet</Text>}

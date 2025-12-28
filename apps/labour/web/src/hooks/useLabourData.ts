@@ -32,7 +32,7 @@ export function useCurrentLabourV2(client: LabourServiceV2Client, labourId: stri
 
   return useQuery({
     queryKey: labourId
-      ? queryKeysV2.labour.byId(labourId)
+      ? queryKeysV2.labour.detail(labourId)
       : queryKeysV2.labour.active(user?.sub || ''),
     queryFn: async () => {
       let targetLabourId = labourId;
@@ -71,7 +71,7 @@ export function useLabourByIdV2(client: LabourServiceV2Client, labourId: string 
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.labour.byId(labourId) : [],
+    queryKey: labourId ? queryKeysV2.labour.detail(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -146,7 +146,7 @@ export function useContractionsV2(
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.contractions.paginated(labourId, cursor) : [],
+    queryKey: labourId ? queryKeysV2.contractions.list(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -178,7 +178,7 @@ export function useContractionByIdV2(
 
   return useQuery({
     queryKey:
-      labourId && contractionId ? queryKeysV2.contractions.byId(labourId, contractionId) : [],
+      labourId && contractionId ? queryKeysV2.contractions.detail(labourId, contractionId) : [],
     queryFn: async () => {
       if (!labourId || !contractionId) {
         throw new Error('Labour ID and Contraction ID are required');
@@ -209,7 +209,7 @@ export function useLabourUpdatesV2(
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.labourUpdates.paginated(labourId, cursor) : [],
+    queryKey: labourId ? queryKeysV2.labourUpdates.list(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -241,7 +241,7 @@ export function useLabourUpdateByIdV2(
 
   return useQuery({
     queryKey:
-      labourId && labourUpdateId ? queryKeysV2.labourUpdates.byId(labourId, labourUpdateId) : [],
+      labourId && labourUpdateId ? queryKeysV2.labourUpdates.detail(labourId, labourUpdateId) : [],
     queryFn: async () => {
       if (!labourId || !labourUpdateId) {
         throw new Error('Labour ID and Labour Update ID are required');
@@ -279,16 +279,16 @@ export function useStartContractionV2(client: LabourServiceV2Client) {
 
       return response.data;
     },
-    onSuccess: (_, __) => {
+    onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.all,
+          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
         });
       }
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeysV2.contractions.all,
+        queryKey: queryKeysV2.contractions.infinite(variables.labourId),
       });
       notifications.show({
         ...ErrorNotification,
@@ -324,16 +324,16 @@ export function useEndContractionV2(client: LabourServiceV2Client) {
 
       return response.data;
     },
-    onSuccess: (_, __) => {
+    onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.all,
+          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
         });
       }
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeysV2.contractions.all,
+        queryKey: queryKeysV2.contractions.infinite(variables.labourId),
       });
       notifications.show({
         ...ErrorNotification,
@@ -370,7 +370,7 @@ export function useUpdateContractionV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
         });
       }
 
@@ -380,7 +380,10 @@ export function useUpdateContractionV2(client: LabourServiceV2Client) {
         message: 'Contraction updated',
       });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.contractions.infinite(variables.labourId),
+      });
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
@@ -416,7 +419,7 @@ export function useDeleteContractionV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
         });
       }
 
@@ -426,7 +429,10 @@ export function useDeleteContractionV2(client: LabourServiceV2Client) {
         message: 'Contraction deleted',
       });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.contractions.infinite(variables.labourId),
+      });
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
@@ -464,7 +470,7 @@ export function useUpdateLabourUpdateMessageV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
+          queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
         });
       }
 
@@ -474,7 +480,10 @@ export function useUpdateLabourUpdateMessageV2(client: LabourServiceV2Client) {
         message: 'Status update edited successfully',
       });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
+      });
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
@@ -516,7 +525,7 @@ export function useUpdateLabourUpdateTypeV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
+          queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
         });
       }
 
@@ -526,7 +535,10 @@ export function useUpdateLabourUpdateTypeV2(client: LabourServiceV2Client) {
         message: 'Status update edited successfully',
       });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
+      });
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
@@ -564,7 +576,7 @@ export function usePostLabourUpdateV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
+          queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
         });
       }
 
@@ -574,7 +586,10 @@ export function usePostLabourUpdateV2(client: LabourServiceV2Client) {
         message: 'Update posted successfully',
       });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
+      });
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
@@ -610,7 +625,7 @@ export function useDeleteLabourUpdateV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labourUpdates.byLabour(variables.labourId),
+          queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
         });
       }
 
@@ -620,7 +635,10 @@ export function useDeleteLabourUpdateV2(client: LabourServiceV2Client) {
         message: 'Update deleted successfully',
       });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
+      });
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
@@ -665,7 +683,7 @@ export function usePlanLabourV2(client: LabourServiceV2Client) {
 
       if (data.labour_id) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labour.byId(data.labour_id),
+          queryKey: queryKeysV2.labour.detail(data.labour_id),
         });
       }
 
@@ -720,7 +738,7 @@ export function useUpdateLabourPlanV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labour.byId(variables.labourId),
+          queryKey: queryKeysV2.labour.detail(variables.labourId),
         });
       }
 
@@ -760,7 +778,7 @@ export function useBeginLabourV2(client: LabourServiceV2Client) {
     onSuccess: (_, labourId) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labour.byId(labourId),
+          queryKey: queryKeysV2.labour.detail(labourId),
         });
       }
 
@@ -840,7 +858,7 @@ export function useDeleteLabourV2(client: LabourServiceV2Client) {
     onSuccess: (_, labourId) => {
       if (!isConnected) {
         queryClient.removeQueries({
-          queryKey: queryKeysV2.labour.byId(labourId),
+          queryKey: queryKeysV2.labour.detail(labourId),
         });
 
         queryClient.invalidateQueries({
@@ -899,7 +917,7 @@ export function useSubscriptionTokenV2(client: LabourServiceV2Client, labourId: 
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.subscriptionToken.byLabour(labourId) : [],
+    queryKey: labourId ? queryKeysV2.subscriptionToken.detail(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -925,7 +943,7 @@ export function useLabourSubscriptionsV2(client: LabourServiceV2Client, labourId
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.subscriptions.byLabour(labourId) : [],
+    queryKey: labourId ? queryKeysV2.subscriptions.listByLabour(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -948,7 +966,7 @@ export function useUserSubscriptionV2(client: LabourServiceV2Client, labourId: s
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.subscriptions.byLabourAndUser(labourId, user?.sub || '') : [],
+    queryKey: labourId ? queryKeysV2.subscriptions.userSubscription(labourId, user?.sub || '') : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -991,7 +1009,7 @@ export function useUserSubscriptionsV2(client: LabourServiceV2Client) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeysV2.subscriptions.byUser(user?.sub || ''),
+    queryKey: queryKeysV2.subscriptions.listByUser(user?.sub || ''),
     queryFn: async () => {
       const response = await client.getUserSubscriptions();
 
@@ -1014,7 +1032,7 @@ export function useUsersV2(client: LabourServiceV2Client, labourId: string | nul
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.users.byLabour(labourId) : [],
+    queryKey: labourId ? queryKeysV2.users.listByLabour(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -1055,7 +1073,7 @@ export function useRequestAccessV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 
@@ -1101,7 +1119,7 @@ export function useUnsubscribeV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 
@@ -1149,7 +1167,7 @@ export function useUpdateNotificationMethodsV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 
@@ -1197,7 +1215,7 @@ export function useUpdateAccessLevelV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 
@@ -1245,7 +1263,7 @@ export function useApproveSubscriberV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 
@@ -1291,7 +1309,7 @@ export function useRemoveSubscriberV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 
@@ -1337,7 +1355,7 @@ export function useBlockSubscriberV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 
@@ -1383,7 +1401,7 @@ export function useUnblockSubscriberV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 
@@ -1431,7 +1449,7 @@ export function useUpdateSubscriberRoleV2(client: LabourServiceV2Client) {
     onSuccess: (_, variables) => {
       if (!isConnected) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.byLabour(variables.labourId),
+          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
         });
       }
 

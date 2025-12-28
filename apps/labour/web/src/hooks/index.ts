@@ -9,3 +9,4 @@ export { useCreateCheckoutSessionV2 } from './usePaymentData';
 export { useLabourV2Client } from './useLabourClient';
 
 export * from './useLabourData';
+export * from './useInfiniteQueries';

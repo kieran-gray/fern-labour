@@ -49,7 +49,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
           console.log('[WebSocket] Connected');
           setIsConnected(true);
           wsRef.current = ws;
-          queryClient.invalidateQueries();
+          queryClient.invalidateQueries({ refetchType: 'active' });
         };
 
         ws.onmessage = (event) => {

@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SubscriberRole } from '@base/clients/labour_service';
 import { SubscriberSessionState, useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useLabourV2Client } from '@base/hooks';
-import {
-  useContractionsV2,
-  useLabourByIdV2,
-  useUserSubscriptionV2,
-} from '@base/hooks/useLabourData';
+import { flattenContractions, useContractionsInfinite } from '@base/hooks/useInfiniteQueries';
+import { useLabourByIdV2, useUserSubscriptionV2 } from '@base/hooks/useLabourData';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
 import { AppShell } from '@shared/AppShell';
 import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
@@ -126,12 +123,11 @@ export const SubscriberView = () => {
     error: labourError,
   } = useLabourByIdV2(client, shouldFetchLabour ? labourId : null);
 
-  const { data: contractionsData } = useContractionsV2(
+  const { data: contractionsData } = useContractionsInfinite(
     client,
-    shouldFetchContractions ? labourId : null,
-    20
+    shouldFetchContractions ? labourId : null
   );
-  const contractions = contractionsData?.data || [];
+  const contractions = useMemo(() => flattenContractions(contractionsData), [contractionsData]);
 
   const activeContraction = contractions.find(
     (contraction) => contraction.duration.start_time === contraction.duration.end_time

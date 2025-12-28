@@ -3,8 +3,8 @@ import { QueryClient } from '@tanstack/react-query';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: Infinity, // With websockets we can consider all queries to be up-to-date until invalidated by an event
-      gcTime: 24 * 60 * 60 * 1000,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
 
       retry: (failureCount, error: any) => {
         if (error?.status >= 400 && error?.status < 500) {
@@ -18,7 +18,7 @@ export const queryClient = new QueryClient({
 
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
 
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
       refetchOnMount: true,
       refetchOnReconnect: true,
       networkMode: 'always',

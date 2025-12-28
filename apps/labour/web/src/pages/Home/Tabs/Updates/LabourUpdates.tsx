@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   LabourReadModel,
   LabourUpdateReadModel,
   SubscriberRole,
 } from '@base/clients/labour_service';
-import { useLabourUpdatesV2, useLabourV2Client } from '@base/hooks';
+import { useLabourV2Client } from '@base/hooks';
+import { flattenLabourUpdates, useLabourUpdatesInfinite } from '@base/hooks/useInfiniteQueries';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -130,35 +131,21 @@ export function LabourUpdates({
 }: LabourUpdatesProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [allLabourUpdates, setAllLabourUpdates] = useState<LabourUpdateReadModel[]>([]);
 
   const isOwnerView = !isSubscriberView || subscriberRole === SubscriberRole.BIRTH_PARTNER;
   const isBirthPartner = isSubscriberView && subscriberRole === SubscriberRole.BIRTH_PARTNER;
 
   const client = useLabourV2Client();
-  const { data: labourUpdatesData } = useLabourUpdatesV2(client, labour.labour_id, 20, cursor);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useLabourUpdatesInfinite(
+    client,
+    labour.labour_id
+  );
 
-  useEffect(() => {
-    if (labourUpdatesData?.data) {
-      if (cursor === null) {
-        setAllLabourUpdates(labourUpdatesData.data);
-      } else {
-        setAllLabourUpdates((prev) => [...prev, ...labourUpdatesData.data]);
-      }
-    }
-  }, [labourUpdatesData, cursor]);
-
-  const hasMore = labourUpdatesData?.has_more || false;
-  const nextCursor = labourUpdatesData?.next_cursor || null;
-
-  const labourUpdates = [...allLabourUpdates].sort((a, b) => {
-    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-  });
+  const labourUpdates = useMemo(() => flattenLabourUpdates(data), [data]);
 
   const handleLoadMore = () => {
-    if (nextCursor) {
-      setCursor(nextCursor);
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
   };
 
@@ -194,10 +181,10 @@ export function LabourUpdates({
     const filteredUpdates = isOwnerView
       ? labourUpdates
       : labourUpdates.filter(
-        (update) =>
-          update.labour_update_type === 'ANNOUNCEMENT' ||
-          update.labour_update_type === 'STATUS_UPDATE'
-      );
+          (update) =>
+            update.labour_update_type === 'ANNOUNCEMENT' ||
+            update.labour_update_type === 'STATUS_UPDATE'
+        );
 
     return filteredUpdates.map((data) => {
       return (
@@ -215,20 +202,29 @@ export function LabourUpdates({
     });
   }, [labourUpdates, sharedLabourBegunMessage, privateLabourBegunMessage, completed, isOwnerView]);
 
-  const prevLengthRef = useRef(labourUpdates.length);
+  const newestUpdateId =
+    labourUpdates.length > 0 ? labourUpdates[labourUpdates.length - 1].labour_update_id : null;
+  const prevNewestIdRef = useRef<string | null>(null);
+  const hasInitiallyScrolledRef = useRef(false);
 
   useEffect(() => {
-    const currentLength = labourUpdates.length;
-    const prevLength = prevLengthRef.current;
-
-    if (currentLength > prevLength && prevLength > 0) {
-      scrollToBottom(true);
-    } else if (currentLength > 0) {
-      scrollToBottom(false);
+    if (labourUpdates.length === 0) {
+      return;
     }
 
-    prevLengthRef.current = currentLength;
-  }, [labourUpdates.length, scrollToBottom]);
+    const isInitialLoad = !hasInitiallyScrolledRef.current;
+    const hasNewUpdate =
+      newestUpdateId !== prevNewestIdRef.current && prevNewestIdRef.current !== null;
+
+    if (isInitialLoad) {
+      scrollToBottom(false);
+      hasInitiallyScrolledRef.current = true;
+    } else if (hasNewUpdate) {
+      scrollToBottom(true);
+    }
+
+    prevNewestIdRef.current = newestUpdateId;
+  }, [labourUpdates.length, newestUpdateId, scrollToBottom]);
 
   const title = !isSubscriberView
     ? completed
@@ -280,9 +276,16 @@ export function LabourUpdates({
                 <ResponsiveDescription description={description} marginTop={0} />
                 {hasUpdates && (
                   <ScrollArea.Autosize mt={20} mah="calc(100dvh - 370px)" viewportRef={viewport}>
-                    {hasMore && (
-                      <Button onClick={handleLoadMore} variant="light" mb="md" fullWidth>
-                        Load older updates
+                    {hasNextPage && (
+                      <Button
+                        onClick={handleLoadMore}
+                        variant="light"
+                        mb="md"
+                        fullWidth
+                        loading={isFetchingNextPage}
+                        disabled={isFetchingNextPage}
+                      >
+                        {isFetchingNextPage ? 'Loading...' : 'Load older updates'}
                       </Button>
                     )}
                     <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>
@@ -297,7 +300,6 @@ export function LabourUpdates({
                   </>
                 )}
 
-                {/* Desktop controls - only show on larger screens */}
                 <div className={classes.desktopControls}>
                   {!completed && <LabourUpdateControls />}
                 </div>
@@ -314,9 +316,16 @@ export function LabourUpdates({
                 {hasUpdates ? (
                   <>
                     <ScrollArea.Autosize mah="calc(100dvh - 390px)" viewportRef={viewport}>
-                      {hasMore && (
-                        <Button onClick={handleLoadMore} variant="light" mb="md" fullWidth>
-                          Load older updates
+                      {hasNextPage && (
+                        <Button
+                          onClick={handleLoadMore}
+                          variant="light"
+                          mb="md"
+                          fullWidth
+                          loading={isFetchingNextPage}
+                          disabled={isFetchingNextPage}
+                        >
+                          {isFetchingNextPage ? 'Loading...' : 'Load older updates'}
                         </Button>
                       )}
                       <div className={classes.statusUpdateContainer}>{labourUpdateDisplay}</div>

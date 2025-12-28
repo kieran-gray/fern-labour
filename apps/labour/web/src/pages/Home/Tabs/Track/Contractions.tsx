@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { LabourReadModel, SubscriberRole } from '@base/clients/labour_service/types';
-import { useContractionsV2, useLabourV2Client } from '@base/hooks';
+import { useLabourV2Client } from '@base/hooks';
+import { flattenContractions, useContractionsInfinite } from '@base/hooks/useInfiniteQueries';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
 import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
@@ -43,36 +44,21 @@ export function Contractions({
   subscriberRole,
 }: ContractionsProps) {
   const [opened, { open, close }] = useDisclosure(false);
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [allContractions, setAllContractions] = useState<any[]>([]);
 
   const client = useLabourV2Client();
-  const { data: contractionsData } = useContractionsV2(client, labour.labour_id, 20, cursor);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useContractionsInfinite(
+    client,
+    labour.labour_id
+  );
 
   const isBirthPartner = isSubscriberView && subscriberRole === SubscriberRole.BIRTH_PARTNER;
   const motherFirstName = labour.mother_name.split(' ')[0];
 
-  useEffect(() => {
-    if (contractionsData?.data) {
-      if (cursor === null) {
-        setAllContractions(contractionsData.data);
-      } else {
-        setAllContractions((prev) => [...prev, ...contractionsData.data]);
-      }
-    }
-  }, [contractionsData, cursor]);
-
-  const contractions = allContractions;
-  const hasMore = contractionsData?.has_more || false;
-  const nextCursor = contractionsData?.next_cursor || null;
-
-  const sortedContractions = [...contractions].sort((a, b) => {
-    return new Date(a.duration.start_time).getTime() - new Date(b.duration.start_time).getTime();
-  });
+  const sortedContractions = useMemo(() => flattenContractions(data), [data]);
 
   const handleLoadMore = () => {
-    if (nextCursor) {
-      setCursor(nextCursor);
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
   };
 
@@ -84,7 +70,7 @@ export function Contractions({
   }, [labour]);
 
   const completed = labour.end_time !== null;
-  const activeContraction = contractions.find(
+  const activeContraction = sortedContractions.find(
     (contraction) => contraction.duration.start_time === contraction.duration.end_time
   );
 
@@ -133,8 +119,9 @@ export function Contractions({
                 <ContractionTimelineCustom
                   contractions={sortedContractions}
                   completed={completed}
-                  hasMore={hasMore}
+                  hasMore={hasNextPage}
                   onLoadMore={handleLoadMore}
+                  isLoadingMore={isFetchingNextPage}
                 />
               )}
               {sortedContractions.length === 0 && !completed && (
