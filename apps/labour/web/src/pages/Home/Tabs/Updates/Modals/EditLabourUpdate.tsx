@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
-import { Button, Modal, Space, Textarea } from '@mantine/core';
+import { Button, Group, Modal, Stack, Textarea } from '@mantine/core';
 import classes from '@shared/Modal.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
@@ -37,40 +37,35 @@ export default function EditLabourUpdateModal({
       centered
       closeOnClickOutside
       onClose={() => onCancel()}
-      title="Edit Status Update"
+      title="Edit status update"
     >
-      <Space h="lg" />
-      <Textarea
-        label="Your status update"
-        placeholder="Enter your updated message..."
-        value={message}
-        onChange={handleMessageChange}
-        minRows={3}
-        maxRows={6}
-        radius="lg"
-        styles={{ label: { paddingLeft: 10 } }}
-        classNames={{ input: baseClasses.input, label: baseClasses.description }}
-        mb={20}
-        autosize
-      />
-      <div className={baseClasses.flexRowNoBP}>
-        <Button
-          style={{ flex: 1, marginRight: 5 }}
-          radius="lg"
-          variant="light"
-          onClick={() => onCancel()}
-        >
-          Cancel
-        </Button>
-        <Button
-          style={{ flex: 1, marginLeft: 5 }}
-          radius="lg"
-          onClick={() => onConfirm()}
-          disabled={message.trim() === ''}
-        >
-          Save Changes
-        </Button>
-      </div>
+      <Stack gap="md">
+        <Textarea
+          label="Your status update"
+          placeholder="Enter your updated message..."
+          value={message}
+          onChange={handleMessageChange}
+          minRows={3}
+          maxRows={6}
+          radius="md"
+          size="sm"
+          classNames={{ input: baseClasses.input, label: baseClasses.description }}
+          autosize
+        />
+        <Group justify="flex-end" gap="sm">
+          <Button size="sm" radius="md" variant="default" onClick={() => onCancel()}>
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            radius="md"
+            onClick={() => onConfirm()}
+            disabled={message.trim() === ''}
+          >
+            Save changes
+          </Button>
+        </Group>
+      </Stack>
     </Modal>
   );
 }

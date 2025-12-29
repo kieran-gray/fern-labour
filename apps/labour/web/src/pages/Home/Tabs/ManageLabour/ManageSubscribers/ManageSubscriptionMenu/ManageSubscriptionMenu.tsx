@@ -3,22 +3,12 @@ import { SubscriberRole } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useLabourV2Client } from '@base/hooks';
 import {
-  useApproveSubscriberV2,
   useBlockSubscriberV2,
   useRemoveSubscriberV2,
-  useUnblockSubscriberV2,
   useUpdateSubscriberRoleV2,
 } from '@base/hooks/useLabourData';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import {
-  IconBan,
-  IconCheck,
-  IconCircleCheck,
-  IconCircleMinus,
-  IconDots,
-  IconSwitchHorizontal,
-  IconX,
-} from '@tabler/icons-react';
+import { IconBan, IconCircleMinus, IconDots, IconSwitchHorizontal } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
 import { ChangeRoleModal } from './ChangeRoleModal';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -38,10 +28,8 @@ export function ManageSubscriptionMenu({
   const { labourId } = useLabourSession();
 
   const client = useLabourV2Client();
-  const approveSubscriberMutation = useApproveSubscriberV2(client);
   const removeSubscriberMutation = useRemoveSubscriberV2(client);
   const blockSubscriberMutation = useBlockSubscriberV2(client);
-  const unblockSubscriberMutation = useUnblockSubscriberV2(client);
   const updateRoleMutation = useUpdateSubscriberRoleV2(client);
 
   const handleCancel = () => {
@@ -71,29 +59,6 @@ export function ManageSubscriptionMenu({
           </ActionIcon>
         </Menu.Target>
         <Menu.Dropdown className={baseClasses.actionMenuDropdown}>
-          <Menu.Label className={baseClasses.actionMenuLabel}>Manage Subscriber</Menu.Label>
-          {status === 'requested' && (
-            <>
-              <Menu.Item
-                className={baseClasses.actionMenuOk}
-                leftSection={<IconCheck size={20} stroke={1.5} />}
-                onClick={() =>
-                  approveSubscriberMutation.mutate({ labourId: labourId!, subscriptionId })
-                }
-              >
-                Approve
-              </Menu.Item>
-              <Menu.Item
-                className={baseClasses.actionMenuDanger}
-                leftSection={<IconX size={20} stroke={1.5} />}
-                onClick={() =>
-                  removeSubscriberMutation.mutate({ labourId: labourId!, subscriptionId })
-                }
-              >
-                Reject
-              </Menu.Item>
-            </>
-          )}
           {status === 'subscribed' && (
             <>
               <Menu.Item
@@ -101,7 +66,7 @@ export function ManageSubscriptionMenu({
                 leftSection={<IconSwitchHorizontal size={20} stroke={1.5} />}
                 onClick={() => setIsRoleModalOpen(true)}
               >
-                Change Role
+                Change role
               </Menu.Item>
               <Menu.Item
                 className={baseClasses.actionMenuDanger}
@@ -115,29 +80,16 @@ export function ManageSubscriptionMenu({
               </Menu.Item>
             </>
           )}
-          {status !== 'blocked' && (
-            <Menu.Item
-              className={baseClasses.actionMenuDanger}
-              leftSection={<IconBan size={20} stroke={1.5} />}
-              onClick={() => {
-                setAction('block');
-                setIsModalOpen(true);
-              }}
-            >
-              Block
-            </Menu.Item>
-          )}
-          {status === 'blocked' && (
-            <Menu.Item
-              className={baseClasses.actionMenuOk}
-              leftSection={<IconCircleCheck size={20} stroke={1.5} />}
-              onClick={() =>
-                unblockSubscriberMutation.mutate({ labourId: labourId!, subscriptionId })
-              }
-            >
-              Unblock
-            </Menu.Item>
-          )}
+          <Menu.Item
+            className={baseClasses.actionMenuDanger}
+            leftSection={<IconBan size={20} stroke={1.5} />}
+            onClick={() => {
+              setAction('block');
+              setIsModalOpen(true);
+            }}
+          >
+            Block
+          </Menu.Item>
         </Menu.Dropdown>
       </Menu>
       <GenericConfirmModal

@@ -85,7 +85,6 @@ export const SubscribePage: React.FC = () => {
                       />
                       <Space w="xl" h="xl" />
                       <Button
-                        color="var(--mantine-primary-color-4)"
                         size="lg"
                         radius="lg"
                         variant="filled"

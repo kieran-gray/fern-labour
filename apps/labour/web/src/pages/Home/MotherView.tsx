@@ -25,7 +25,7 @@ import Plan from './Tabs/ManageLabour/Plan/Plan';
 import { Share } from './Tabs/Share/Share';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import { Contractions } from './Tabs/Track/Contractions';
-import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls';
+import { FloatingContractionControls } from './Tabs/Track/Controls/FloatingContractionControls';
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -161,7 +161,7 @@ export const MotherView = () => {
 
     if (activeTab === 'updates') {
       if (isUpdateControlsExpanded) {
-        return isOnline ? '265px' : '120px';
+        return isOnline ? '180px' : '120px';
       }
       return '55px';
     }
@@ -172,7 +172,7 @@ export const MotherView = () => {
       case 'details':
         return (
           <>
-            <ManageLabour activeContraction={activeContraction} />
+            <ManageLabour activeContraction={activeContraction} labour={labour} />
             <Space h="xl" />
             <SubscribersContainer />
           </>

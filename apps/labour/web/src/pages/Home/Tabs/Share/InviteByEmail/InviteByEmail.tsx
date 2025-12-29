@@ -75,7 +75,6 @@ export function InviteByEmail() {
               />
               <Space w="md" />
               <Button
-                color="var(--mantine-primary-color-4)"
                 variant="filled"
                 rightSection={<IconSend size={20} stroke={1.5} />}
                 radius="xl"
@@ -90,7 +89,6 @@ export function InviteByEmail() {
                 Send invite
               </Button>
               <Button
-                color="var(--mantine-primary-color-4)"
                 variant="filled"
                 rightSection={<IconSend size={20} stroke={1.5} />}
                 radius="xl"

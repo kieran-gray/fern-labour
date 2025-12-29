@@ -40,7 +40,6 @@ export function ChangeRoleModal({
       onClose={onCancel}
       title="Change Subscriber Role"
     >
-      <Space h="lg" />
       <Text className={classes.modalText}>Select the new role for this subscriber:</Text>
       <Space h="md" />
 

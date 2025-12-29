@@ -1,61 +1,43 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef } from 'react';
 import { AppMode, useLabourSession } from '@base/contexts';
 import { useClerkUser } from '@base/hooks/useClerkUser';
 import { useClerk } from '@clerk/clerk-react';
 import {
   IconArrowLeft,
+  IconChevronRight,
   IconHistory,
   IconHome,
   IconLogout,
   IconMessageCircleQuestion,
   IconMoon,
-  IconSettings,
   IconSun,
   IconSwitchHorizontal,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Avatar,
-  Button,
-  Group,
-  SegmentedControl,
-  Space,
-  Text,
-  UnstyledButton,
-  useMantineColorScheme,
-} from '@mantine/core';
+import { Avatar, Button, Group, Text, UnstyledButton, useMantineColorScheme } from '@mantine/core';
 import classes from './Header.module.css';
 
 interface UserButtonProps extends React.ComponentPropsWithoutRef<'button'> {
   name: string;
-  icon?: React.ReactNode;
 }
 
 export const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
-  ({ name, icon, ...others }: UserButtonProps, ref) => (
+  ({ name, ...others }: UserButtonProps, ref) => (
     <UnstyledButton ref={ref} className={classes.userButton} {...others}>
       <Group>
-        <Avatar
-          radius="xl"
-          color="light-dark(var(--mantine-color-dark-6), var(--mantine-color-gray-4))"
-        />
+        <Avatar radius="xl" />
         <div style={{ flex: 1 }}>
-          <Text
-            size="sm"
-            fw={500}
-            c="light-dark(var(--mantine-color-dark-2), var(--mantine-color-gray-3))"
-          >
+          <Text size="sm" fw={500}>
             {name}
           </Text>
         </div>
-        {icon}
+        <IconChevronRight size={16} className={classes.userButtonChevron} />
       </Group>
     </UnstyledButton>
   )
 );
 
 export function MobileUserMenu() {
-  const [section, setSection] = useState<'app' | 'account'>('app');
   const { user } = useClerkUser();
   const { signOut, openUserProfile } = useClerk();
   const navigate = useNavigate();
@@ -71,136 +53,89 @@ export function MobileUserMenu() {
       <IconSun size={16} stroke={1.5} />
     );
 
-  const appSettings = (
-    <Group>
-      <Space h="xs" />
-      <Button
-        key="theme"
-        className={classes.mainLink}
-        onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
-        leftSection={themeIcon}
-        size="md"
-        w="100%"
-        variant="transparent"
-      >
-        {colorScheme === 'light' ? 'Night Mode' : 'Day Mode'}
-      </Button>
-      {mode === null && pathname !== '/' && (
+  return (
+    <div className={classes.linksDrawer}>
+      <Group>
         <Button
-          key="home"
+          key="theme"
           className={classes.mainLink}
-          onClick={() => {
-            navigate('/');
-          }}
-          leftSection={<IconHome size={16} stroke={1.5} />}
+          onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
+          leftSection={themeIcon}
           size="md"
           w="100%"
           variant="transparent"
         >
-          Home
+          {colorScheme === 'light' ? 'Night mode' : 'Day mode'}
         </Button>
-      )}
-      {mode !== null && (
-        <>
+        {mode === null && pathname !== '/' && (
           <Button
-            key="update"
+            key="home"
             className={classes.mainLink}
             onClick={() => {
-              setMode(switchToMode);
               navigate('/');
             }}
-            leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}
+            leftSection={<IconHome size={16} stroke={1.5} />}
             size="md"
             w="100%"
             variant="transparent"
           >
-            Switch to {switchToMode} Mode
+            Home
           </Button>
-          {mode === AppMode.Birth && ['/history', '/contact'].includes(pathname) && (
+        )}
+        {mode !== null && (
+          <>
             <Button
-              key="history"
-              onClick={() => navigate('/')}
-              leftSection={<IconArrowLeft size={16} stroke={1.5} />}
+              key="update"
               className={classes.mainLink}
+              onClick={() => {
+                setMode(switchToMode);
+                navigate('/');
+              }}
+              leftSection={<IconSwitchHorizontal size={16} stroke={1.5} />}
               size="md"
               w="100%"
               variant="transparent"
             >
-              Go to your labour
+              {switchToMode === AppMode.Subscriber ? 'Support mode' : 'Birth mode'}
             </Button>
-          )}
-          {mode === AppMode.Birth && pathname !== '/history' && (
-            <Button
-              key="labour"
-              onClick={() => navigate('/history')}
-              className={classes.mainLink}
-              leftSection={<IconHistory size={16} stroke={1.5} />}
-              size="md"
-              w="100%"
-              variant="transparent"
-            >
-              Your Labour History
-            </Button>
-          )}
-        </>
-      )}
-    </Group>
-  );
-
-  const accountSettings = (
-    <>
-      <Group>
-        <Space h="xs" />
-        <Button
-          key="update"
-          className={classes.mainLink}
-          onClick={(event) => {
-            event.preventDefault();
-            openUserProfile();
-          }}
-          leftSection={<IconSettings size={16} stroke={1.5} />}
-          size="md"
-          w="100%"
-          variant="transparent"
-        >
-          Manage Account
-        </Button>
+            {mode === AppMode.Birth && ['/history', '/contact'].includes(pathname) && (
+              <Button
+                key="history"
+                onClick={() => navigate('/')}
+                leftSection={<IconArrowLeft size={16} stroke={1.5} />}
+                className={classes.mainLink}
+                size="md"
+                w="100%"
+                variant="transparent"
+              >
+                Go to your labour
+              </Button>
+            )}
+            {mode === AppMode.Birth && pathname !== '/history' && (
+              <Button
+                key="labour"
+                onClick={() => navigate('/history')}
+                className={classes.mainLink}
+                leftSection={<IconHistory size={16} stroke={1.5} />}
+                size="md"
+                w="100%"
+                variant="transparent"
+              >
+                Labour history
+              </Button>
+            )}
+          </>
+        )}
       </Group>
-    </>
-  );
 
-  const links = section === 'app' ? appSettings : accountSettings;
-
-  return (
-    <div className={classes.linksDrawer}>
-      <SegmentedControl
-        value={section}
-        onChange={(value: any) => setSection(value)}
-        transitionTimingFunction="ease"
-        fullWidth
-        data={[
-          { label: 'App', value: 'app' },
-          { label: 'Account Settings', value: 'account' },
-        ]}
-        radius="lg"
-        mt={0}
-        color="var(--mantine-primary-color-4)"
-        styles={{
-          root: {
-            backgroundColor:
-              'light-dark(var(--mantine-primary-color-1), var(--mantine-color-primary-8))',
-          },
-        }}
-      />
-
-      {links}
-
-      <div style={{ flexGrow: 1 }} />
       <div className={classes.footer}>
-        <UserButton name={user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? ''} />
+        <UserButton
+          name={user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? ''}
+          onClick={() => openUserProfile()}
+        />
         <Button
           key="logout"
-          className={classes.mainLink}
+          className={classes.logoutLink}
           onClick={(event) => {
             event.preventDefault();
             void signOut({ redirectUrl: window.location.origin });
@@ -221,9 +156,8 @@ export function MobileUserMenu() {
             size="md"
             w="100%"
             variant="transparent"
-            mt={10}
           >
-            Contact Us
+            Contact us
           </Button>
         )}
       </div>

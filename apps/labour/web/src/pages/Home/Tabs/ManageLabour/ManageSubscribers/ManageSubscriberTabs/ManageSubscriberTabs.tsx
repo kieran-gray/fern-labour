@@ -1,19 +1,19 @@
 import { SubscriptionReadModel, User } from '@base/clients/labour_service/types';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useLabourV2Client } from '@base/hooks';
-import { useLabourSubscriptionsV2, useUsersV2 } from '@base/hooks/useLabourData';
+import {
+  useApproveSubscriberV2,
+  useLabourSubscriptionsV2,
+  useRemoveSubscriberV2,
+  useUnblockSubscriberV2,
+  useUsersV2,
+} from '@base/hooks/useLabourData';
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconUserCheck, IconUserOff, IconUserQuestion } from '@tabler/icons-react';
-import { Tabs, Text } from '@mantine/core';
+import { Badge, Group, Tabs, Text } from '@mantine/core';
 import { SubscribersTable } from '../SubscribersTable/SubscribersTable';
 import baseClasses from '@shared/shared-styles.module.css';
-
-const TABS = [
-  { id: 'subscribed', label: 'Subscribed', icon: IconUserCheck, requiresPaid: true },
-  { id: 'requested', label: 'Requested', icon: IconUserQuestion },
-  { id: 'blocked', label: 'Blocked', icon: IconUserOff },
-] as const;
 
 export const ManageSubscribersTabs = () => {
   const { labourId } = useLabourSession();
@@ -25,6 +25,10 @@ export const ManageSubscribersTabs = () => {
     error,
   } = useLabourSubscriptionsV2(client, labourId!);
   const { isPending: usersPending, data: users = [] } = useUsersV2(client, labourId!);
+
+  const approveSubscriberMutation = useApproveSubscriberV2(client);
+  const removeSubscriberMutation = useRemoveSubscriberV2(client);
+  const unblockSubscriberMutation = useUnblockSubscriberV2(client);
 
   if (isPending || usersPending) {
     return (
@@ -72,36 +76,39 @@ export const ManageSubscribersTabs = () => {
     }
   });
 
-  const renderTabPanel = (tabId: string) => {
-    switch (tabId) {
-      case 'requested':
-        return (
-          <SubscribersTable
-            subscriptions={requestedSubscriptions}
-            subscriberById={subscriberById}
-            status="requested"
-          />
-        );
-      case 'subscribed':
-        return (
-          <SubscribersTable
-            subscriptions={activeSubscriptions}
-            subscriberById={subscriberById}
-            status="subscribed"
-          />
-        );
-      case 'blocked':
-        return (
-          <SubscribersTable
-            subscriptions={blockedSubscriptions}
-            subscriberById={subscriberById}
-            status="blocked"
-          />
-        );
-      default:
-        return null;
-    }
+  const handleApprove = (subscriptionId: string) => {
+    approveSubscriberMutation.mutate({ labourId: labourId!, subscriptionId });
   };
+
+  const handleReject = (subscriptionId: string) => {
+    removeSubscriberMutation.mutate({ labourId: labourId!, subscriptionId });
+  };
+
+  const handleUnblock = (subscriptionId: string) => {
+    unblockSubscriberMutation.mutate({ labourId: labourId!, subscriptionId });
+  };
+
+  const tabs = [
+    {
+      id: 'subscribed',
+      label: 'Active',
+      icon: IconUserCheck,
+      count: activeSubscriptions.length,
+    },
+    {
+      id: 'requested',
+      label: 'Requests',
+      icon: IconUserQuestion,
+      count: requestedSubscriptions.length,
+      highlight: requestedSubscriptions.length > 0,
+    },
+    {
+      id: 'blocked',
+      label: 'Blocked',
+      icon: IconUserOff,
+      count: blockedSubscriptions.length,
+    },
+  ];
 
   return (
     <Tabs
@@ -114,17 +121,48 @@ export const ManageSubscribersTabs = () => {
       }}
     >
       <Tabs.List grow>
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <Tabs.Tab key={id} value={id} leftSection={<Icon />}>
-            <Text className={baseClasses.navTabText}>{label}</Text>
+        {tabs.map(({ id, label, icon: Icon, count, highlight }) => (
+          <Tabs.Tab key={id} value={id} leftSection={<Icon size={18} />}>
+            <Group gap={6} wrap="nowrap">
+              <Text className={baseClasses.navTabText}>{label}</Text>
+              {count > 0 && (
+                <Badge
+                  size="sm"
+                  variant={highlight ? 'filled' : 'light'}
+                  color={highlight ? 'red' : 'gray'}
+                  circle
+                >
+                  {count}
+                </Badge>
+              )}
+            </Group>
           </Tabs.Tab>
         ))}
       </Tabs.List>
-      {TABS.map(({ id }) => (
-        <Tabs.Panel key={id} value={id}>
-          {renderTabPanel(id)}
-        </Tabs.Panel>
-      ))}
+      <Tabs.Panel value="subscribed">
+        <SubscribersTable
+          subscriptions={activeSubscriptions}
+          subscriberById={subscriberById}
+          status="subscribed"
+        />
+      </Tabs.Panel>
+      <Tabs.Panel value="requested">
+        <SubscribersTable
+          subscriptions={requestedSubscriptions}
+          subscriberById={subscriberById}
+          status="requested"
+          onApprove={handleApprove}
+          onReject={handleReject}
+        />
+      </Tabs.Panel>
+      <Tabs.Panel value="blocked">
+        <SubscribersTable
+          subscriptions={blockedSubscriptions}
+          subscriberById={subscriberById}
+          status="blocked"
+          onUnblock={handleUnblock}
+        />
+      </Tabs.Panel>
     </Tabs>
   );
 };

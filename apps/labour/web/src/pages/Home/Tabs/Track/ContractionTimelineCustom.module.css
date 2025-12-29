@@ -104,14 +104,6 @@
   letter-spacing: 0.2px;
 }
 
-/* .dayRule {
-  grid-column: 2 / 3;
-  height: 1px;
-  background: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-  opacity: 0.6;
-  margin-top: 6px;
-} */
-
 .railCell {
   position: relative;
   display: flex;
@@ -160,7 +152,7 @@
   font-weight: 900;
   font-size: 22px;
   user-select: none;
-  border: 2px solid rgba(255, 255, 255, 0.7);
+  border: 2px solid light-dark(rgba(255, 255, 255, 0.7), rgba(100, 100, 100, 0.7));
   box-shadow: inset 0 -8px 18px rgba(0, 0, 0, 0.08);
   position: relative;
   z-index: 2;

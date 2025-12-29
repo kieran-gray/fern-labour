@@ -12,20 +12,6 @@
   width: 100%;
 }
 
-.kicker {
-  display: inline-block;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: light-dark(var(--mantine-primary-color-7), var(--mantine-primary-color-3));
-  background-color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-4));
-  padding: 6px 10px;
-  border-radius: 999px;
-  width: fit-content;
-  margin-bottom: 4px;
-}
-
 .optionsRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -37,6 +23,7 @@
 }
 
 .modeTile {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -50,10 +37,15 @@
 
 .modeTile:hover {
   transform: translateY(-2px);
-  border-color: light-dark(var(--mantine-primary-color-4), var(--mantine-color-dark-5));
+  border-color: light-dark(var(--mantine-primary-color-2), var(--mantine-color-dark-5));
   box-shadow:
     light-dark(0 8px 14px -6px rgba(0, 0, 0, 0.12), 0 8px 14px -6px rgba(0, 0, 0, 0.28));
   background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-primary-3));
+}
+
+.modeTile:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .modeTile:focus-visible {
@@ -61,19 +53,27 @@
   outline-offset: 3px;
 }
 
-.tileHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .tileTitle {
-  font-weight: 800;
+  font-weight: 700;
   color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-1));
 }
 
 .tileSub {
   color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4));
+}
+
+.tileArrow {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  color: light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-5));
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.modeTile:hover .tileArrow {
+  opacity: 0.6;
+  transform: translateX(2px);
 }
 
 .trustRow {
@@ -140,18 +140,11 @@
   box-shadow: 0 6px 18px rgba(59, 130, 246, 0.18);
 }
 
-.primaryBadge,
-.supportBadge {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-}
-
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .primaryIcon,
-  .supportIcon {
+  .supportIcon,
+  .tileArrow {
     transition: none;
   }
 }

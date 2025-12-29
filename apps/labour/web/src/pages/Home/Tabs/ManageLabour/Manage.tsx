@@ -1,23 +1,210 @@
 import { useState } from 'react';
-import { ContractionReadModel } from '@base/clients/labour_service';
-import { Tabs } from '@mantine/core';
-import Complete from './Complete/Complete';
-import LabourDetails from './LabourDetails/LabourDetails';
+import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useCompleteLabourV2, useLabourV2Client } from '@base/hooks';
+import { ResponsiveDescription } from '@base/shared-components/ResponsiveDescription';
+import { ResponsiveTitle } from '@base/shared-components/ResponsiveTitle';
+import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { dueDateToGestationalAge } from '@shared/utils';
+import { IconConfetti, IconEdit, IconPencil } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Badge,
+  Button,
+  Card,
+  Divider,
+  Group,
+  Stack,
+  Text,
+  Textarea,
+  Title,
+  Tooltip,
+} from '@mantine/core';
+import { EditLabourModal } from './EditLabourModal';
+import classes from './Manage.module.css';
+import baseClasses from '@shared/shared-styles.module.css';
 
 export function ManageLabour({
   activeContraction,
+  labour,
 }: {
   activeContraction: ContractionReadModel | undefined;
+  labour: LabourReadModel | undefined;
 }) {
-  const [activeTab, setActiveTab] = useState<string | null>('details');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [labourNotes, setLabourNotes] = useState('');
+  const navigate = useNavigate();
+
+  const client = useLabourV2Client();
+  const completeLabourMutation = useCompleteLabourV2(client);
+  const { labourId, clearSession } = useLabourSession();
+
+  if (!labour) {
+    return null;
+  }
+
+  const isCompleted = labour.end_time !== null;
+  const hasActiveContraction = activeContraction !== undefined;
+
+  const currentPhase = isCompleted
+    ? 'Completed'
+    : labour.current_phase === 'PLANNED'
+      ? 'Not in labour'
+      : `In ${labour.current_phase} labour`;
+
+  const handleCompleteLabour = () => {
+    setIsCompleteModalOpen(false);
+    completeLabourMutation.mutate(
+      {
+        labourId: labourId!,
+        notes: labourNotes,
+      },
+      {
+        onSuccess: () => {
+          clearSession();
+          navigate('/completed');
+        },
+      }
+    );
+  };
+
   return (
-    <Tabs keepMounted={false} defaultValue={activeTab} value={activeTab}>
-      <Tabs.Panel value="details" pb="xs">
-        <LabourDetails setActiveTab={setActiveTab} />
-      </Tabs.Panel>
-      <Tabs.Panel value="complete" pb="xs">
-        <Complete activeContraction={activeContraction !== undefined} setActiveTab={setActiveTab} />
-      </Tabs.Panel>
-    </Tabs>
+    <div className={baseClasses.root}>
+      <div className={baseClasses.body}>
+        <Stack gap="lg" p="md">
+          {/* Header */}
+          <Group justify="space-between" align="flex-start">
+            <div>
+              <Title order={2} className={classes.title}>
+                {labour.labour_name || 'Your Labour'}
+              </Title>
+              <Text size="sm" c="dimmed" mt={4}>
+                {isCompleted ? 'Your completed labour journey' : 'Manage your labour details'}
+              </Text>
+            </div>
+            {!isCompleted && (
+              <Button
+                variant="light"
+                leftSection={<IconEdit size={16} />}
+                radius="xl"
+                onClick={() => setIsEditModalOpen(true)}
+              >
+                Edit
+              </Button>
+            )}
+          </Group>
+
+          {/* Info Badges */}
+          <Card padding="md" radius="lg" className={classes.infoCard}>
+            <Group gap="sm" wrap="wrap">
+              <Badge size="lg" variant="filled" className={classes.labourBadge}>
+                {currentPhase}
+              </Badge>
+              <Badge size="lg" variant="filled" className={classes.labourBadge}>
+                Due: {new Date(labour.due_date).toLocaleDateString()}
+              </Badge>
+              {!isCompleted && (
+                <Badge size="lg" variant="filled" className={classes.labourBadge}>
+                  {dueDateToGestationalAge(new Date(labour.due_date))}
+                </Badge>
+              )}
+              {isCompleted && labour.end_time && (
+                <Badge size="lg" variant="filled" className={classes.labourBadge}>
+                  Arrived: {new Date(labour.end_time).toLocaleDateString()}
+                </Badge>
+              )}
+              <Badge size="lg" variant="filled" className={classes.labourBadge}>
+                {labour.first_labour ? 'First baby' : 'Not first baby'}
+              </Badge>
+            </Group>
+          </Card>
+
+          {/* Closing Note (if completed) */}
+          {isCompleted && labour.notes && (
+            <Card padding="md" radius="lg" className={classes.noteCard}>
+              <Text size="sm" c="dimmed" mb="xs">
+                Your closing note
+              </Text>
+              <Text>{labour.notes}</Text>
+            </Card>
+          )}
+
+          {/* Complete Labour Section (if not completed) */}
+          {!isCompleted && (
+            <>
+              <Divider my="sm" />
+
+              <div>
+                <ResponsiveTitle title="Ready to complete your labour?" />
+                <ResponsiveDescription
+                  description="Add an optional closing note to share with your subscribers, then mark your labour as complete."
+                  marginTop={14}
+                />
+                <Textarea
+                  placeholder="Welcome to the world, little one! Everyone is healthy and happy."
+                  rightSection={<IconPencil size={16} stroke={1.5} />}
+                  radius="md"
+                  size="sm"
+                  mt="lg"
+                  minRows={3}
+                  value={labourNotes}
+                  onChange={(event) => setLabourNotes(event.currentTarget.value)}
+                  classNames={{
+                    input: baseClasses.input,
+                    section: baseClasses.section,
+                  }}
+                />
+
+                <Group justify="flex-end" mt="md">
+                  {hasActiveContraction ? (
+                    <Tooltip label="End your current contraction first">
+                      <Button
+                        data-disabled
+                        leftSection={<IconConfetti size={18} />}
+                        size="sm"
+                        radius="xl"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        Complete labour
+                      </Button>
+                    </Tooltip>
+                  ) : (
+                    <Button
+                      leftSection={<IconConfetti size={18} />}
+                      size="sm"
+                      radius="xl"
+                      onClick={() => setIsCompleteModalOpen(true)}
+                      loading={completeLabourMutation.isPending}
+                    >
+                      Complete labour
+                    </Button>
+                  )}
+                </Group>
+              </div>
+            </>
+          )}
+        </Stack>
+      </div>
+
+      {/* Edit Modal */}
+      <EditLabourModal
+        labour={labour}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
+
+      {/* Complete Confirmation Modal */}
+      <GenericConfirmModal
+        isOpen={isCompleteModalOpen}
+        title="Complete your labour?"
+        confirmText="Yes, complete"
+        message="This will mark your labour as complete and notify your subscribers."
+        onConfirm={handleCompleteLabour}
+        onCancel={() => setIsCompleteModalOpen(false)}
+        isLoading={completeLabourMutation.isPending}
+        isDangerous
+      />
+    </div>
   );
 }

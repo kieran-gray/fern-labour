@@ -1,6 +1,5 @@
-import { Button, Modal, Space, Text } from '@mantine/core';
+import { Button, Group, Modal, Stack, Text } from '@mantine/core';
 import classes from '@shared/Modal.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
 
 interface GenericConfirmModalProps {
   /** Whether the modal is open */
@@ -21,6 +20,8 @@ interface GenericConfirmModalProps {
   showCloseButton?: boolean;
   /** Whether clicking outside closes the modal */
   closeOnClickOutside?: boolean;
+  /** Whether the confirm action is loading */
+  isLoading?: boolean;
 }
 
 export function GenericConfirmModal({
@@ -33,6 +34,7 @@ export function GenericConfirmModal({
   isDangerous = false,
   showCloseButton = true,
   closeOnClickOutside = true,
+  isLoading = false,
 }: GenericConfirmModalProps) {
   return (
     <Modal
@@ -51,22 +53,23 @@ export function GenericConfirmModal({
       onClose={onCancel}
       title={title}
     >
-      <Space h="lg" />
-      <Text className={classes.modalText}>{message}</Text>
-      <Space h="md" />
-      <div className={baseClasses.flexRowNoBP}>
-        <Button style={{ flex: 1, marginRight: 5 }} variant="light" radius="lg" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          style={{ flex: 1, marginLeft: 5 }}
-          radius="lg"
-          color={isDangerous ? 'red' : undefined}
-          onClick={onConfirm}
-        >
-          {confirmText}
-        </Button>
-      </div>
+      <Stack gap="md">
+        <Text className={classes.modalText}>{message}</Text>
+        <Group gap="sm" justify="flex-end">
+          <Button variant="default" size="sm" radius="md" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            radius="md"
+            color={isDangerous ? 'red' : undefined}
+            onClick={onConfirm}
+            loading={isLoading}
+          >
+            {confirmText}
+          </Button>
+        </Group>
+      </Stack>
     </Modal>
   );
 }

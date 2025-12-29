@@ -114,7 +114,6 @@ export default function ContactMethodsForm({
               clearable
             />
             <Button
-              color="var(--mantine-primary-color-4)"
               leftSection={defaultIcon}
               variant="outline"
               radius="xl"
@@ -129,7 +128,6 @@ export default function ContactMethodsForm({
               Update Contact Methods
             </Button>
             <Button
-              color="var(--mantine-primary-color-4)"
               leftSection={defaultIcon}
               variant="outline"
               radius="xl"

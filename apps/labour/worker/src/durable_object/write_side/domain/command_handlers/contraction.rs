@@ -1,4 +1,3 @@
-use chrono::Utc;
 use fern_labour_event_sourcing_rs::Aggregate;
 use fern_labour_labour_shared::value_objects::LabourPhase;
 
@@ -41,7 +40,11 @@ pub fn handle_start_contraction(
     if current_phase == &LabourPhase::PLANNED {
         events.push(LabourEvent::LabourBegun(LabourBegun {
             labour_id: cmd.labour_id,
-            start_time: Utc::now(),
+            start_time: cmd.start_time,
+        }));
+        events.push(LabourEvent::LabourPhaseChanged(LabourPhaseChanged {
+            labour_id: cmd.labour_id,
+            labour_phase: LabourPhase::EARLY,
         }));
     }
 

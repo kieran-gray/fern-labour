@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { SubscriptionReadModel } from '@base/clients/labour_service/types';
 import { ImportantText } from '@base/shared-components/ImportantText/ImportantText';
-import { Avatar, Group, Table, Text } from '@mantine/core';
+import { IconBan, IconCheck, IconX } from '@tabler/icons-react';
+import { ActionIcon, Avatar, Card, Group, Stack, Text, Tooltip } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import { RoleBadge } from './RoleBadge';
 import classes from './SubscribersTable.module.css';
@@ -9,71 +11,145 @@ export function SubscribersTable({
   subscriptions,
   subscriberById,
   status,
+  onApprove,
+  onReject,
+  onUnblock,
 }: {
   subscriptions: SubscriptionReadModel[];
   subscriberById: { [k: string]: { id: string; firstName: string; lastName: string } };
   status: string;
+  onApprove?: (subscriptionId: string) => void;
+  onReject?: (subscriptionId: string) => void;
+  onUnblock?: (subscriptionId: string) => void;
 }) {
-  const rows = subscriptions.map((subscription) => {
-    const subscriber = subscriberById[subscription.subscriber_id];
-    return (
-      <Table.Tr key={subscription.subscription_id}>
-        <Table.Td>
-          <Group gap="sm" wrap="nowrap">
-            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-primary-color-5)" />
-            <>
-              <Text fz="sm" visibleFrom="xs" fw={500} className={classes.cropText}>
-                {subscriber.firstName} {subscriber.lastName}
-              </Text>
-              <Text fz="xs" hiddenFrom="xs" fw={500} className={classes.cropText}>
-                {subscriber.firstName} {subscriber.lastName}
-              </Text>
-            </>
-          </Group>
-        </Table.Td>
-        <Table.Td>
-          <RoleBadge role={subscription.role} />
-        </Table.Td>
-        <Table.Td>
-          <ManageSubscriptionMenu
-            subscriptionId={subscription.subscription_id}
-            status={status}
-            currentRole={subscription.role}
-          />
-        </Table.Td>
-      </Table.Tr>
-    );
-  });
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  if (rows.length > 0) {
+  if (subscriptions.length === 0) {
+    let message = '';
+    if (status === 'subscribed') {
+      message =
+        "You don't have any subscribers yet, share invites with loved ones in the invite tab.";
+    } else if (status === 'requested') {
+      message = "You don't have any subscriber requests.";
+    } else if (status === 'blocked') {
+      message = "You don't have any blocked subscribers.";
+    }
+
     return (
-      <Table.ScrollContainer minWidth={200} w="100%">
-        <Table verticalSpacing="sm" highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Subscriber</Table.Th>
-              <Table.Th>Role</Table.Th>
-              <Table.Th>Manage</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
+      <div style={{ marginTop: '10px' }}>
+        <ImportantText message={message} />
+      </div>
     );
   }
-  let message = undefined;
-  if (status === 'subscribed') {
-    message =
-      "You don't have any subscribers yet, share invites with loved ones in the invite tab.";
-  } else if (status === 'requested') {
-    message = "You don't have any subscriber requests.";
-  } else if (status === 'blocked') {
-    message = "You don't have any blocked subscribers.";
-  }
+
+  const handleAction = async (subscriptionId: string, action: () => void) => {
+    setLoadingId(subscriptionId);
+    try {
+      action();
+    } finally {
+      setLoadingId(null);
+    }
+  };
 
   return (
-    <div style={{ marginTop: '10px' }}>
-      <ImportantText message={message || ''} />
-    </div>
+    <Stack gap="sm" w="100%" mt="sm">
+      {subscriptions.map((subscription) => {
+        const subscriber = subscriberById[subscription.subscriber_id];
+        const isLoading = loadingId === subscription.subscription_id;
+
+        return (
+          <Card
+            key={subscription.subscription_id}
+            padding="md"
+            radius="lg"
+            className={classes.card}
+          >
+            <Group justify="space-between" wrap="nowrap">
+              <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+                <Avatar radius="xl" color="var(--mantine-primary-color-5)" />
+                <div style={{ minWidth: 0 }}>
+                  <Text fw={500} className={classes.cropText} size="sm">
+                    {subscriber.firstName} {subscriber.lastName}
+                  </Text>
+                  {status === 'subscribed' && <RoleBadge role={subscription.role} />}
+                </div>
+              </Group>
+
+              {/* Requested: Show inline Accept/Reject buttons */}
+              {status === 'requested' && (
+                <Group gap="xs" wrap="nowrap">
+                  <Tooltip label="Accept">
+                    <ActionIcon
+                      variant="light"
+                      color="green"
+                      size="lg"
+                      radius="xl"
+                      loading={isLoading}
+                      onClick={() =>
+                        handleAction(subscription.subscription_id, () =>
+                          onApprove?.(subscription.subscription_id)
+                        )
+                      }
+                    >
+                      <IconCheck size={18} />
+                    </ActionIcon>
+                  </Tooltip>
+                  <Tooltip label="Reject">
+                    <ActionIcon
+                      variant="light"
+                      color="red"
+                      size="lg"
+                      radius="xl"
+                      loading={isLoading}
+                      onClick={() =>
+                        handleAction(subscription.subscription_id, () =>
+                          onReject?.(subscription.subscription_id)
+                        )
+                      }
+                    >
+                      <IconX size={18} />
+                    </ActionIcon>
+                  </Tooltip>
+                  <ManageSubscriptionMenu
+                    subscriptionId={subscription.subscription_id}
+                    status={status}
+                    currentRole={subscription.role}
+                  />
+                </Group>
+              )}
+
+              {/* Blocked: Show inline Unblock button */}
+              {status === 'blocked' && (
+                <Tooltip label="Unblock">
+                  <ActionIcon
+                    variant="light"
+                    color="green"
+                    size="lg"
+                    radius="xl"
+                    loading={isLoading}
+                    onClick={() =>
+                      handleAction(subscription.subscription_id, () =>
+                        onUnblock?.(subscription.subscription_id)
+                      )
+                    }
+                  >
+                    <IconBan size={18} />
+                  </ActionIcon>
+                </Tooltip>
+              )}
+
+              {/* Subscribed: Show menu */}
+              {status === 'subscribed' && (
+                <ManageSubscriptionMenu
+                  subscriptionId={subscription.subscription_id}
+                  status={status}
+                  currentRole={subscription.role}
+                />
+              )}
+            </Group>
+          </Card>
+        );
+      })}
+    </Stack>
   );
 }

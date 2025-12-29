@@ -157,7 +157,6 @@ export default function Plan({ labour }: { labour: LabourReadModel | undefined }
           style={{ justifyContent: 'flex-end', marginTop: '15px' }}
         >
           <Button
-            color="var(--mantine-primary-color-4)"
             rightSection={icon}
             variant="filled"
             radius="xl"
@@ -174,7 +173,6 @@ export default function Plan({ labour }: { labour: LabourReadModel | undefined }
       )) || (
         <div className={classes.submitRow} style={{ justifyContent: 'space-between' }}>
           <Button
-            color="var(--mantine-primary-color-4)"
             leftSection={icon}
             variant="light"
             radius="xl"
@@ -188,7 +186,6 @@ export default function Plan({ labour }: { labour: LabourReadModel | undefined }
             Update labour plan
           </Button>
           <Button
-            color="var(--mantine-primary-color-4)"
             rightSection={<IconArrowRight size={18} stroke={1.5} />}
             variant="filled"
             radius="xl"

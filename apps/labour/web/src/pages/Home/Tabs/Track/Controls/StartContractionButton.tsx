@@ -4,7 +4,7 @@ import { useLabourV2Client } from '@base/hooks';
 import { generateContractionId, useStartContractionOffline } from '@base/offline/hooks';
 import { IconHourglassLow } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
-import { StopwatchHandle } from './Stopwatch/Stopwatch';
+import { StopwatchHandle } from '../Stopwatch/Stopwatch';
 
 export default function StartContractionButton({
   stopwatchRef,
@@ -35,7 +35,6 @@ export default function StartContractionButton({
       size="xl"
       variant="filled"
       loading={mutation.isPending}
-      color="var(--mantine-primary-color-4)"
       onClick={handleStartContraction}
     >
       Start Contraction

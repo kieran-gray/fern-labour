@@ -104,7 +104,6 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
           <div className={baseClasses.inner} style={{ paddingTop: 0 }}>
             <div className={classes.submitRow}>
               <Button
-                color="var(--mantine-primary-color-4)"
                 variant="filled"
                 radius="xl"
                 size="md"

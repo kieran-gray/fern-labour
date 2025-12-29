@@ -9,8 +9,8 @@ import { IconBook } from '@tabler/icons-react';
 import { ActionIcon, Image, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { AlertContainer } from './Alerts';
-import { ContractionControls } from './ContractionControls';
 import ContractionTimelineCustom from './ContractionTimelineCustom';
+import { ContractionControls } from './Controls/ContractionControls';
 import { ContractionsHelpModal } from './HelpModal';
 import image from './Track.svg';
 import classes from './Contractions.module.css';
@@ -73,6 +73,15 @@ export function Contractions({
   const activeContraction = sortedContractions.find(
     (contraction) => contraction.duration.start_time === contraction.duration.end_time
   );
+
+  useEffect(() => {
+    if (activeContraction) {
+      const main = document.getElementById('app-main');
+      if (main) {
+        main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+      }
+    }
+  }, [activeContraction?.contraction_id]);
 
   const title = isBirthPartner
     ? MESSAGES.BIRTH_PARTNER_TITLE(motherFirstName)

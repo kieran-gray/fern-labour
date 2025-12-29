@@ -301,6 +301,9 @@ function handleEvent(queryClient: ReturnType<typeof useQueryClient>, event: Labo
       queryClient.invalidateQueries({
         queryKey: queryKeysV2.subscriptions.listByLabour(data.labour_id!),
       });
+      queryClient.invalidateQueries({
+        queryKey: ['subscriptions', 'userSubscription', data.labour_id],
+      });
       break;
 
     case 'SubscriberApproved':

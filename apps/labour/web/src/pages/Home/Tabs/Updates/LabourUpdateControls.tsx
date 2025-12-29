@@ -4,20 +4,19 @@ import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useLabourV2Client, usePostLabourUpdateV2 } from '@base/hooks';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
-import { IconPencil, IconSend, IconSpeakerphone, IconWifiOff } from '@tabler/icons-react';
-import { Button, SegmentedControl, Text, Textarea } from '@mantine/core';
+import { IconSend, IconSpeakerphone, IconWifiOff } from '@tabler/icons-react';
+import { Button, Group, Switch, Text, Textarea } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
-import classes from './LabourUpdates.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function LabourUpdateControls() {
   const [message, setMessage] = useState('');
+  const [isAnnouncement, setIsAnnouncement] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [labourUpdateType, setLabourUpdateType] = useState<LabourUpdateType>(
-    LabourUpdateType.STATUS_UPDATE
-  );
   const { labourId } = useLabourSession();
   const { isOnline } = useNetworkState();
+  const isDesktop = useMediaQuery('(min-width: 48em)');
 
   const client = useLabourV2Client();
   const mutation = usePostLabourUpdateV2(client);
@@ -28,145 +27,93 @@ export function LabourUpdateControls() {
     }
   }, []);
 
-  const handleSubmitUpdate = (updateType: LabourUpdateType, message: string) => {
+  const handlePost = () => {
+    const updateType = isAnnouncement
+      ? LabourUpdateType.ANNOUNCEMENT
+      : LabourUpdateType.STATUS_UPDATE;
+
     mutation.mutate(
-      {
-        labourId: labourId!,
-        updateType,
-        message,
-      },
+      { labourId: labourId!, updateType, message },
       {
         onSuccess: () => {
           setMessage('');
+          setIsAnnouncement(false);
         },
       }
     );
   };
-  const handleConfirm = () => {
-    setIsModalOpen(false);
-    handleSubmitUpdate(labourUpdateType, message);
-  };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleSubmit = () => {
-    if (labourUpdateType === 'ANNOUNCEMENT') {
+  const handleSend = () => {
+    if (isAnnouncement) {
       setIsModalOpen(true);
     } else {
-      handleSubmitUpdate(labourUpdateType, message);
+      handlePost();
     }
+  };
+
+  const handleConfirmAnnouncement = () => {
+    setIsModalOpen(false);
+    handlePost();
   };
 
   if (!isOnline) {
     return (
-      <>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <IconWifiOff size={18} color="var(--mantine-primary-color-7)" />
-          <Text size="sm" fw={500} className={baseClasses.description}>
-            You are offline. Labour updates cannot be posted in offline mode.
-          </Text>
-        </div>
-      </>
+      <Group justify="center" gap="xs" py="xs">
+        <IconWifiOff size={18} color="var(--mantine-color-red-5)" />
+        <Text size="sm" c="dimmed">
+          <Text span fw={500} c="red.6">
+            Offline
+          </Text>{' '}
+          - updates paused
+        </Text>
+      </Group>
     );
   }
 
-  const buttonIcon =
-    labourUpdateType === 'STATUS_UPDATE' ? (
-      <IconSend size={18} stroke={1.5} />
-    ) : (
-      <IconSpeakerphone size={18} stroke={1.5} />
-    );
-
-  const buttonText =
-    labourUpdateType === 'STATUS_UPDATE' ? 'Post Status Update' : 'Make Announcement';
-
-  const buttonProps = {
-    variant: 'filled',
-    radius: 'xl',
-    type: 'submit',
-    disabled: !message,
-    loading: mutation.isPending,
-    className: classes.statusUpdateButton,
-    onClick: handleSubmit,
-    style: { minWidth: '200px' },
-  };
-
-  const inputIcon = <IconPencil size={18} stroke={1.5} />;
-
-  const inputProps = {
-    mt: 10,
-    radius: 'lg',
-    placeholder: "What's happening with your labour?",
-    value: message,
-  };
+  const hasMessage = message.trim().length > 0;
 
   return (
     <>
-      <SegmentedControl
-        value={labourUpdateType}
-        onChange={(value: any) => setLabourUpdateType(value)}
-        transitionTimingFunction="ease"
-        fullWidth
-        data={[
-          { label: 'Status Update', value: 'STATUS_UPDATE' },
-          { label: 'Announcement', value: 'ANNOUNCEMENT' },
-        ]}
+      <Textarea
+        placeholder={isAnnouncement ? 'Write your announcement...' : "What's happening?"}
+        value={message}
+        onChange={handleMessageChange}
+        size={isDesktop ? 'md' : 'sm'}
         radius="lg"
-        mt={20}
-        color="var(--mantine-primary-color-4)"
-      />
-      <Textarea
-        {...inputProps}
-        rightSection={inputIcon}
-        size="md"
-        visibleFrom="sm"
+        minRows={2}
+        autosize
         classNames={{
-          description: baseClasses.description,
           input: baseClasses.input,
-          section: baseClasses.section,
         }}
-        onChange={handleMessageChange}
       />
-      <Textarea
-        {...inputProps}
-        rightSection={inputIcon}
-        size="sm"
-        hiddenFrom="sm"
-        classNames={{
-          description: baseClasses.description,
-          input: baseClasses.input,
-          section: baseClasses.section,
-        }}
-        onChange={handleMessageChange}
-      />
-      <div className={classes.flexRow} style={{ marginTop: '10px' }}>
+
+      <Group justify="space-between" mt="xs" w="100%" wrap="nowrap">
+        <Switch
+          checked={isAnnouncement}
+          onChange={(event) => setIsAnnouncement(event.currentTarget.checked)}
+          color="pink"
+          size="xl"
+          thumbIcon={<IconSpeakerphone size={18} color="var(--mantine-color-pink-7)" />}
+        />
+
         <Button
-          {...buttonProps}
-          type="submit"
-          rightSection={buttonIcon}
-          size="lg"
-          visibleFrom="sm"
-          color="var(--mantine-primary-color-4)"
+          rightSection={<IconSend size={isDesktop ? 18 : 16} />}
+          radius="xl"
+          size={isDesktop ? 'md' : 'sm'}
+          variant="filled"
+          color={isAnnouncement ? 'pink' : undefined}
+          disabled={!hasMessage}
+          loading={mutation.isPending}
+          onClick={handleSend}
         >
-          {buttonText}
+          {isAnnouncement ? 'Announce' : 'Post'}
         </Button>
-        <Button
-          {...buttonProps}
-          type="submit"
-          rightSection={buttonIcon}
-          size="md"
-          hiddenFrom="sm"
-          color="var(--mantine-primary-color-4)"
-        >
-          {buttonText}
-        </Button>
-      </div>
+      </Group>
+
       <ConfirmAnnouncementModal
         message={message}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
+        onConfirm={handleConfirmAnnouncement}
+        onCancel={() => setIsModalOpen(false)}
         opened={isModalOpen}
       />
     </>

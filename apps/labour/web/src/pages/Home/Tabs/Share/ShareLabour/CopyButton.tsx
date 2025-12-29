@@ -50,7 +50,6 @@ export function CopyButton({ text, shareData }: CopyButtonProps) {
         events={{ hover: true, focus: false, touch: true }}
       >
         <Button
-          color="var(--mantine-primary-color-4)"
           variant="filled"
           rightSection={React.createElement(icon, { size: 20, stroke: 1.5 })}
           radius="xl"
@@ -75,7 +74,6 @@ export function CopyButton({ text, shareData }: CopyButtonProps) {
         events={{ hover: true, focus: false, touch: true }}
       >
         <Button
-          color="var(--mantine-primary-color-4)"
           variant="filled"
           rightSection={React.createElement(icon, { size: 18, stroke: 1.5 })}
           radius="xl"

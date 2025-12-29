@@ -1,13 +1,12 @@
 import { ContractionReadModel } from '@base/clients/labour_service';
 import { IconHourglassHigh, IconHourglassLow } from '@tabler/icons-react';
-import { Anchor, Button, List, Modal, Slider, Stack, Text, Title } from '@mantine/core';
+import { Anchor, Button, Group, List, Modal, Slider, Space, Stack, Text } from '@mantine/core';
 import { CallMidwifeAlert } from './Alerts/CallMidwifeAlert';
 import { GoToHospitalAlert } from './Alerts/GoToHospitalAlert';
 import { PrepareForHospitalAlert } from './Alerts/PrepareForHospital';
 import ContractionTimelineCustom from './ContractionTimelineCustom';
 import contractionClasses from './Contractions.module.css';
 import modalClasses from '@shared/Modal.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
 
 type CloseFunctionType = (...args: any[]) => void;
 
@@ -45,11 +44,12 @@ export const ContractionsHelpModal = ({
       updated_at: now.toISOString(),
     },
   ];
+
   return (
     <Modal
       opened={opened}
       onClose={close}
-      title="What's this?"
+      title="Contraction tracker guide"
       size="xl"
       transitionProps={{ transition: 'slide-left' }}
       overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
@@ -61,74 +61,28 @@ export const ContractionsHelpModal = ({
         close: modalClasses.closeButton,
       }}
     >
-      <div
-        className={baseClasses.inner}
-        style={{
-          flexDirection: 'column',
-          paddingLeft: '5px',
-          paddingRight: '5px',
-          color: 'light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))',
-        }}
-      >
-        <Title order={3} visibleFrom="md">
-          Tracking your contractions
-        </Title>
-        <Title order={4} mt="xs" hiddenFrom="md">
-          Tracking your contractions
-        </Title>
-        <Stack gap="xs" mt={10}>
-          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
-            Track contractions with two quick taps:
+      <Stack gap="md">
+        {/* How to track */}
+        <div className={modalClasses.helpSection}>
+          <Text className={modalClasses.helpSectionTitle}>How to track</Text>
+          <Text className={modalClasses.helpText} mb="sm">
+            Track contractions with two taps. You can also set the intensity while timing.
           </Text>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              flexDirection: 'column',
-            }}
-          >
-            <Button
-              leftSection={<IconHourglassLow size={25} />}
-              radius="xl"
-              size="lg"
-              variant="filled"
-              color="var(--mantine-primary-color-4)"
-              mt="xs"
-            >
+          <Stack align="center" gap="sm" mb="sm">
+            <Button leftSection={<IconHourglassLow size={20} />} radius="xl" size="md">
               Start Contraction
             </Button>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              flexDirection: 'column',
-            }}
-          >
             <Button
-              leftSection={<IconHourglassHigh size={25} />}
+              leftSection={<IconHourglassHigh size={20} />}
               radius="xl"
-              size="lg"
+              size="md"
               variant="outline"
-              mt="xs"
             >
               End Contraction
             </Button>
-          </div>
-          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
-            While timing, you can also set the intensity:
-          </Text>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              flexDirection: 'column',
-            }}
-          >
-            <Text ta="center" className={baseClasses.minorText}>
+          </Stack>
+          <Stack align="center" gap="xs" w="100%">
+            <Text className={modalClasses.helpText} size="xs">
               Your contraction intensity
             </Text>
             <Slider
@@ -137,222 +91,115 @@ export const ContractionsHelpModal = ({
                 markLabel: contractionClasses.markLabel,
                 track: contractionClasses.track,
               }}
-              color="var(--mantine-primary-color-4)"
-              size="lg"
+              size="md"
               radius="lg"
-              w="60%"
+              w="80%"
               min={0}
               max={10}
               step={1}
               defaultValue={5}
               marks={[
                 { value: 0, label: '0' },
-                { value: 5, label: 5 },
-                { value: 10, label: 10 },
+                { value: 5, label: '5' },
+                { value: 10, label: '10' },
               ]}
             />
-          </div>
-          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
-            You can always adjust intensity later by editing the contraction.
-          </Text>
-          <Text
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            mt="sm"
-          >
-            On the tracker, each contraction shows:
-          </Text>
-          <List
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            withPadding
-          >
-            <List.Item>The start time</List.Item>
-            <List.Item>
-              The frequency — time from the start of the previous contraction to the start of this
-              one
-            </List.Item>
-            <List.Item>The duration</List.Item>
-            <List.Item>Intensity (shown as a number inside each contraction)</List.Item>
+          </Stack>
+        </div>
+
+        {/* Reading the timeline */}
+        <div className={modalClasses.helpSection}>
+          <Text className={modalClasses.helpSectionTitle}>Reading the timeline</Text>
+          <List className={modalClasses.helpList} size="xs" withPadding spacing={4}>
+            <List.Item>Start time of each contraction</List.Item>
+            <List.Item>Frequency (time between starts)</List.Item>
+            <List.Item>Duration and intensity</List.Item>
           </List>
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
+          <Group justify="center" mt="sm">
             <ContractionTimelineCustom contractions={mockContractions} completed />
-          </div>
-        </Stack>
-        <Title order={3} mt="sm" visibleFrom="md">
-          Editing a contraction
-        </Title>
-        <Title order={4} mt="sm" hiddenFrom="md">
-          Editing a contraction
-        </Title>
-        <Stack gap={4} mt={10}>
-          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
-            To edit a contraction, tap it to open the editor.
+          </Group>
+          <Text className={modalClasses.helpText} size="xs" mt="sm">
+            Tap any contraction to edit or delete it.
           </Text>
-          <List
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            withPadding
-          >
-            <List.Item>Edit start time, end time, and intensity</List.Item>
-            <List.Item>Delete the contraction if needed</List.Item>
-          </List>
-        </Stack>
-        <Title order={3} mt="xl" visibleFrom="md">
-          When to go to the hospital
-        </Title>
-        <Title order={4} mt="xl" hiddenFrom="md">
-          When to go to the hospital
-        </Title>
-        <Stack gap="xs" mt={10}>
-          <Text
-            fw={500}
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-          >
-            The app monitors your contractions and alerts you when:
-          </Text>
-          <List
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            withPadding
-          >
-            <List.Item>
-              It's time to start preparing to go to the hospital
-              <div style={{ marginTop: 6 }}>
-                <PrepareForHospitalAlert onClose={() => {}} />
-              </div>
-            </List.Item>
-            <List.Item>
-              It's time to go to the hospital
-              <div style={{ marginTop: 6 }}>
-                <GoToHospitalAlert onClose={() => {}} />
-              </div>
-            </List.Item>
-          </List>
+        </div>
 
-          <Text
-            fw={500}
-            size="sm"
-            mt="xs"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-          >
-            First-time mothers
-          </Text>
-          <List
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            withPadding
-          >
-            <List.Item>
-              First alert: last 4 contractions are 3 minutes apart and last 1 minute each
-            </List.Item>
-            <List.Item>Second alert: pattern holds for 1 hour (3‑1‑1)</List.Item>
-          </List>
-
-          <Text
-            fw={500}
-            size="sm"
-            mt="xs"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-          >
-            Have given birth before
-          </Text>
-          <List
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            withPadding
-          >
-            <List.Item>
-              First alert: last 4 contractions are 5 minutes apart and last 1 minute each
-            </List.Item>
-            <List.Item>Second alert: pattern holds for 1 hour (5‑1‑1)</List.Item>
-          </List>
-
-          <Text
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            mt="xs"
-          >
-            You may not want to track continuously for an hour — consider going to hospital after
-            the first alert if advised.
+        {/* Hospital alerts */}
+        <div className={modalClasses.helpSection}>
+          <Text className={modalClasses.helpSectionTitle}>Hospital alerts</Text>
+          <Text className={modalClasses.helpText} mb="sm">
+            The app monitors your pattern and alerts you when it's time to prepare or go.
           </Text>
 
-          <Text
-            fw={500}
-            size="sm"
-            mt="xs"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-          >
-            Please always follow your healthcare provider’s specific guidance.
+          <Stack gap="xs">
+            <div>
+              <Text className={modalClasses.helpText} fw={500} mb={4}>
+                First-time mothers (3-1-1 rule)
+              </Text>
+              <List className={modalClasses.helpList} size="xs" withPadding spacing={2}>
+                <List.Item>Prepare: 4 contractions, 3 min apart, 1 min each</List.Item>
+                <List.Item>Go: pattern holds for 1 hour</List.Item>
+              </List>
+            </div>
+
+            <div>
+              <Text className={modalClasses.helpText} fw={500} mb={4}>
+                Have given birth before (5-1-1 rule)
+              </Text>
+              <List className={modalClasses.helpList} size="xs" withPadding spacing={2}>
+                <List.Item>Prepare: 4 contractions, 5 min apart, 1 min each</List.Item>
+                <List.Item>Go: pattern holds for 1 hour</List.Item>
+              </List>
+            </div>
+          </Stack>
+
+          <Stack gap="xs" mt="sm">
+            <PrepareForHospitalAlert onClose={() => {}} />
+            <GoToHospitalAlert onClose={() => {}} />
+          </Stack>
+        </div>
+
+        {/* When to call */}
+        <div className={modalClasses.helpSection}>
+          <Text className={modalClasses.helpSectionTitle}>When to call your midwife</Text>
+
+          <Text className={modalClasses.helpText} fw={500} mb={4}>
+            Call for guidance if:
           </Text>
-        </Stack>
-        <Title order={3} mt="xl" visibleFrom="md">
-          When to contact a midwife
-        </Title>
-        <Title order={4} mt="xl" hiddenFrom="md">
-          When to contact a midwife
-        </Title>
-        <Stack gap="xs" mt={10}>
-          <Text
-            fw={500}
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-          >
-            Call your midwife or maternity unit for guidance if:
-          </Text>
-          <List
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            withPadding
-          >
-            <List.Item>You think you’re in labour</List.Item>
-            <List.Item>You’re having regular contractions every 5 minutes or more often</List.Item>
+          <List className={modalClasses.helpList} size="xs" withPadding spacing={2} mb="sm">
+            <List.Item>You think you're in labour</List.Item>
+            <List.Item>Contractions are 5 minutes apart or less</List.Item>
             <List.Item>You're worried about anything</List.Item>
           </List>
 
-          <Text
-            fw={500}
-            size="sm"
-            mt="xs"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-          >
+          <Text className={modalClasses.helpText} fw={500} mb={4}>
             Call urgently if:
           </Text>
-          <List
-            size="sm"
-            c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-            withPadding
-          >
+          <List className={modalClasses.helpList} size="xs" withPadding spacing={2}>
             <List.Item>Your waters break</List.Item>
-            <List.Item>You have vaginal bleeding</List.Item>
-            <List.Item>Your baby is moving less than usual</List.Item>
-            <List.Item>You're under 37 weeks and think you might be in labour</List.Item>
-            <List.Item>Any contraction lasts longer than 2 minutes</List.Item>
-            <List.Item>You're having 6 or more contractions every 10 minutes</List.Item>
+            <List.Item>Vaginal bleeding</List.Item>
+            <List.Item>Baby moving less than usual</List.Item>
+            <List.Item>Under 37 weeks and may be in labour</List.Item>
+            <List.Item>Any contraction lasts over 2 minutes</List.Item>
+            <List.Item>6+ contractions every 10 minutes</List.Item>
           </List>
-          <Text size="sm" c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))">
-            The app will alert you if you should call based on the final two points above.
-          </Text>
+          <Space h="md" />
           <CallMidwifeAlert onClose={() => {}} />
+
           <Anchor
             href="https://www.nhs.uk/pregnancy/labour-and-birth/what-happens/the-stages-of-labour-and-birth/"
             target="_blank"
+            size="xs"
+            mt="xs"
           >
-            For additional information see this NHS page.
+            More info on the NHS website
           </Anchor>
-        </Stack>
-        <Text
-          mt={10}
-          size="sm"
-          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0))"
-        >
-          Please note: Fern Labour and the materials and information it contains are not intended
-          to, and do not constitute, medical or other health advice or diagnosis and should not be
-          used as such. You should always consult with a qualified physician or health professional
-          about your specific circumstances.
+        </div>
+
+        {/* Disclaimer */}
+        <Text className={modalClasses.helpText} size="xs" ta="center">
+          Fern Labour does not provide medical advice. Always consult your healthcare provider.
         </Text>
-      </div>
+      </Stack>
     </Modal>
   );
 };

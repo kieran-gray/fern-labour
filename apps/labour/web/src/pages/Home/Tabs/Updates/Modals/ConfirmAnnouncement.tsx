@@ -1,6 +1,5 @@
-import { Button, Modal, Space, Text } from '@mantine/core';
+import { Button, Group, Modal, Stack, Text } from '@mantine/core';
 import classes from '@shared/Modal.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
 
 export default function ConfirmAnnouncementModal({
   message,
@@ -26,38 +25,26 @@ export default function ConfirmAnnouncementModal({
       opened={opened}
       centered
       closeOnClickOutside
-      onClose={() => {
-        onCancel();
-      }}
-      title="Make Announcement?"
+      onClose={() => onCancel()}
+      title="Make announcement?"
     >
-      <Space h="lg" />
-      <Text className={classes.modalText}>Announcements can't be edited or deleted.</Text>
-      <div className={classes.modalInnerTextContainer}>
-        <Text className={classes.modalInnerText}>{message}</Text>
-      </div>
-      <Space h="md" />
-      <div className={baseClasses.flexRowNoBP}>
-        <Button
-          style={{ flex: 1, marginRight: 5 }}
-          radius="lg"
-          variant="light"
-          onClick={() => {
-            onCancel();
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          style={{ flex: 1, marginLeft: 5 }}
-          radius="lg"
-          onClick={() => {
-            onConfirm();
-          }}
-        >
-          Yes
-        </Button>
-      </div>
+      <Stack gap="md">
+        <Text className={classes.modalText}>
+          Announcements will be broadcast to any subscribers who have notifications enabled. The
+          message cannot be edited or deleted.
+        </Text>
+        <div className={classes.modalInnerTextContainer}>
+          <Text className={classes.modalInnerText}>{message}</Text>
+        </div>
+        <Group justify="flex-end" gap="sm">
+          <Button size="sm" radius="md" variant="default" onClick={() => onCancel()}>
+            Cancel
+          </Button>
+          <Button size="sm" radius="md" onClick={() => onConfirm()}>
+            Announce
+          </Button>
+        </Group>
+      </Stack>
     </Modal>
   );
 }

@@ -189,7 +189,6 @@ export function ContactUs() {
               <Group justify="flex-end" mt="md">
                 <Button
                   type="submit"
-                  color="var(--mantine-primary-color-4)"
                   variant="filled"
                   radius="lg"
                   disabled={isLoading || status.type !== ''}

@@ -30,7 +30,7 @@ import { ManageSubscriptions } from './Tabs/Subscriptions/ManageSubscriptions/Ma
 import { ShareFernLabour } from './Tabs/Subscriptions/ShareFernLabour/ShareFernLabour';
 import SubscriptionRequestedModal from './Tabs/Subscriptions/SubscriptionRequestedModal/SubscriptionRequestedModal';
 import { Contractions } from './Tabs/Track/Contractions';
-import { FloatingContractionControls } from './Tabs/Track/FloatingContractionControls';
+import { FloatingContractionControls } from './Tabs/Track/Controls/FloatingContractionControls';
 import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
 import baseClasses from '@shared/shared-styles.module.css';
@@ -177,7 +177,7 @@ export const SubscriberView = () => {
 
     if (activeTab === 'updates') {
       if (isUpdateControlsExpanded) {
-        return isOnline ? '265px' : '120px';
+        return isOnline ? '180px' : '120px';
       }
       return '55px';
     }

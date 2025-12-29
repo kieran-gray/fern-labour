@@ -281,6 +281,14 @@
     color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-1));
 }
 
+.actionMenuDefault {
+    color: light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-3));
+    
+    &:hover {
+        background-color: light-dark(var(--mantine-color-blue-0), var(--mantine-color-gray-7));
+    }
+}
+
 .actionMenuDanger {
     color: light-dark(red, var(--mantine-color-red-3));
     

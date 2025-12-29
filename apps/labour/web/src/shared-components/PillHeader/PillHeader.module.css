@@ -2,20 +2,12 @@
 .container {
   color: var(--mantine-color-white);
   background-color: light-dark(var(--mantine-color-primary-3), var(--mantine-color-primary-4));
-  border: 1px solid light-dark(var(--mantine-color-primary-4), var(--mantine-color-primary-2));
   z-index: 200;
   flex-shrink: 0;
   border-radius: 50px;
-  box-shadow: 
-    0 4px 12px light-dark(rgba(254, 82, 54, 0.15), rgba(254, 82, 54, 0.05)),
+  box-shadow:
+    0 4px 12px light-dark(rgba(254, 82, 54, 0.15), rgba(255, 255, 255, 0.05)),
     0 2px 4px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
-  transition: all 0.3s ease;
-
-  &:hover {
-    box-shadow: 
-      0 6px 16px light-dark(rgba(254, 82, 54, 0.2), rgba(254, 82, 54, 0.1)),
-      0 4px 8px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25));
-  }
 }
 
 /* Logo Section */
@@ -23,14 +15,8 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
   padding: 0.25rem 0.5rem;
   border-radius: 25px;
-
-  &:hover {
-    transform: scale(1.02);
-    background-color: light-dark(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  }
 }
 
 .icon {
@@ -39,7 +25,6 @@
   margin-right: 10px;
 
   @media (max-width: $mantine-breakpoint-sm) {
-    margin-left: 10px;
     width: 32px;
     height: 32px;
     margin-right: 8px;
@@ -76,6 +61,10 @@
   }
 }
 
+.userActionActive {
+  background-color: light-dark(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+}
+
 /* Mobile Drawer */
 .drawer {
   background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-3));
@@ -84,56 +73,63 @@
 
 .drawerBody {
   display: flex;
-  height: 85vh;
+  flex-direction: column;
+  height: calc(100vh - 60px);
   background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-3));
 }
 
-/* Navigation Menu */
-.navButton {
-  background-color: light-dark(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  border: 1px solid light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-  color: var(--mantine-color-white);
-  transition: all 0.2s ease;
-  font-weight: 600;
-
-  &:hover {
-    background-color: light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
-  }
+/* Navigation Items */
+.navGroup {
+  flex: 1;
+  justify-content: space-around;
+  overflow: hidden;
+  margin: 0 8px;
 }
 
-.menuDropdown {
-  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-gray-8));
-  border: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-gray-7));
-  border-radius: 1rem;
-  box-shadow: 
-    0 4px 12px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)),
-    0 2px 4px light-dark(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.menuItem {
-  color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-1));
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
+.navItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.75);
   font-weight: 500;
   transition: all 0.2s ease;
+  white-space: nowrap;
 
   &:hover {
-    background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-9));
-    color: light-dark(var(--mantine-color-primary-7), var(--mantine-color-primary-2));
+    color: var(--mantine-color-white);
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 
-.menuItemActive {
-  background-color: light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-8));
-  color: light-dark(var(--mantine-color-primary-8), var(--mantine-color-primary-1));
+.navItemActive {
+  color: var(--mantine-color-white);
+  background-color: rgba(255, 255, 255, 0.15);
   font-weight: 600;
+}
 
-  &:hover {
-    background-color: light-dark(var(--mantine-color-primary-2), var(--mantine-color-primary-7));
+.navItemIcon {
+  flex-shrink: 0;
+}
+
+.navItemLabel {
+  font-weight: inherit;
+  color: inherit;
+  transition: opacity 0.3s ease, max-width 0.3s ease;
+}
+
+@media (min-width: $mantine-breakpoint-sm) and (max-width: 900px) {
+  .navItemLabel {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .navItemActive .navItemLabel,
+  .navItem:hover .navItemLabel {
+    max-width: 150px;
+    opacity: 1;
   }
 }
 

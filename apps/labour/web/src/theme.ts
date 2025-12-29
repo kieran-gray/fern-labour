@@ -47,6 +47,7 @@ export const theme = createTheme({
   fontFamily: 'Quicksand, sans-serif',
   headings: { fontFamily: 'Poppins, sans-serif' },
   primaryColor: 'pink',
+  primaryShade: { light: 6, dark: 4 },
   autoContrast: true,
   colors: {
     peach: peachTheme,

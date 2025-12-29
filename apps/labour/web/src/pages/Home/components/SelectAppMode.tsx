@@ -1,8 +1,8 @@
 import { AppMode, useLabourSession } from '@base/contexts/LabourSessionContext';
 import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
-import { IconBabyCarriage, IconBulb, IconHeart } from '@tabler/icons-react';
+import { IconBabyCarriage, IconBulb, IconChevronRight, IconHeart } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import { Badge, Text, ThemeIcon, Title } from '@mantine/core';
+import { Text, ThemeIcon, Title } from '@mantine/core';
 import classes from './SelectAppMode.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
@@ -23,8 +23,7 @@ export function SelectAppMode() {
           <div className={baseClasses.inner}>
             <div className={classes.heroContent}>
               <div>
-                <div className={classes.kicker}>Welcome</div>
-                <Title order={2}>How would you like to start?</Title>
+                <Title order={2}>What brings you here today?</Title>
                 <ResponsiveDescription
                   description={
                     <>
@@ -51,26 +50,22 @@ export function SelectAppMode() {
                   }}
                   aria-describedby="expecting-sub"
                 >
-                  <div className={classes.tileHeader}>
-                    <ThemeIcon
-                      className={classes.primaryIcon}
-                      size={56}
-                      radius="xl"
-                      variant="light"
-                      color="pink"
-                    >
-                      <IconBabyCarriage size={30} />
-                    </ThemeIcon>
-                    <Badge className={classes.primaryBadge} variant="light" color="pink" size="sm">
-                      Expecting
-                    </Badge>
-                  </div>
+                  <ThemeIcon
+                    className={classes.primaryIcon}
+                    size={56}
+                    radius="xl"
+                    variant="light"
+                    color="pink"
+                  >
+                    <IconBabyCarriage size={30} />
+                  </ThemeIcon>
                   <Title order={3} className={classes.tileTitle}>
                     I'm expecting
                   </Title>
                   <Text size="sm" className={classes.tileSub} id="expecting-sub">
-                    Track contractions, invite family & friends, share updates.
+                    Track contractions, invite loved ones, share updates.
                   </Text>
+                  <IconChevronRight className={classes.tileArrow} size={20} />
                 </div>
 
                 {/* Supporting tile */}
@@ -87,29 +82,24 @@ export function SelectAppMode() {
                   }}
                   aria-describedby="supporting-sub"
                 >
-                  <div className={classes.tileHeader}>
-                    <ThemeIcon
-                      className={classes.supportIcon}
-                      size={56}
-                      radius="xl"
-                      variant="light"
-                      color="blue"
-                    >
-                      <IconHeart size={30} />
-                    </ThemeIcon>
-                    <Badge className={classes.supportBadge} variant="light" color="blue" size="sm">
-                      Supporting
-                    </Badge>
-                  </div>
+                  <ThemeIcon
+                    className={classes.supportIcon}
+                    size={56}
+                    radius="xl"
+                    variant="light"
+                    color="blue"
+                  >
+                    <IconHeart size={30} />
+                  </ThemeIcon>
                   <Title order={3} className={classes.tileTitle}>
                     I'm supporting
                   </Title>
                   <Text size="sm" className={classes.tileSub} id="supporting-sub">
                     Get timely updates and know how to help.
                   </Text>
+                  <IconChevronRight className={classes.tileArrow} size={20} />
                 </div>
               </div>
-
               <div className={classes.trustRow}>
                 <span className={classes.trustItem}>
                   <IconBulb className={classes.trustIcon} />

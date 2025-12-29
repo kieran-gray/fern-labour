@@ -4,7 +4,7 @@ import { formatTimeMilliseconds, formatTimeSeconds } from '@shared/utils';
 import { IconActivityHeartbeat } from '@tabler/icons-react';
 import { Button, ScrollArea, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { EditContractionModal } from './EditContractionModal';
+import { EditContractionModal } from './Controls/EditContractionModal';
 import classes from './ContractionTimelineCustom.module.css';
 
 function usePrevious<T>(value: T): T | undefined {

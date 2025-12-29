@@ -1,17 +1,16 @@
-import { IconChevronDown, IconSettings } from '@tabler/icons-react';
+import { IconMenu2 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import {
   ActionIcon,
   Burger,
-  Button,
   Container,
   Drawer,
   Flex,
   Group,
-  Menu,
   Text,
+  UnstyledButton,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { MobileUserMenu } from '../Header/UserMenu';
 import classes from './PillHeader.module.css';
 
@@ -29,9 +28,8 @@ interface PillHeaderProps {
 }
 
 export function PillHeader({ navItems, activeNav, onNavChange }: PillHeaderProps) {
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
-  const [menuOpened, { toggle: toggleMenu }] = useDisclosure(false);
+  const [drawerOpened, { toggle: toggleDrawer }] = useDisclosure(false);
+  const isMobile = useMediaQuery('(max-width: 48em)');
   const navigate = useNavigate();
 
   return (
@@ -49,18 +47,17 @@ export function PillHeader({ navItems, activeNav, onNavChange }: PillHeaderProps
         align="center"
         h="100%"
         style={{ overflow: 'hidden' }}
-        gap="lg"
         wrap="nowrap"
       >
         {/* Left: Burger + Logo */}
         <Group gap={0} style={{ flexShrink: 0 }}>
           <Burger
             size="sm"
-            opened={mobileOpened}
-            onClick={toggleMobile}
+            opened={drawerOpened}
+            onClick={toggleDrawer}
             hiddenFrom="sm"
             color="var(--mantine-color-white)"
-            title="Navigation Menu"
+            title="Menu"
           />
           <div onClick={() => navigate('/')} className={classes.logoContainer}>
             <img src="/logo/logo.svg" className={classes.icon} alt="Fern Logo" />
@@ -68,7 +65,7 @@ export function PillHeader({ navItems, activeNav, onNavChange }: PillHeaderProps
           </div>
         </Group>
 
-        {/* Mobile Drawer */}
+        {/* User Menu Drawer */}
         <Drawer
           size="xs"
           classNames={{
@@ -77,72 +74,32 @@ export function PillHeader({ navItems, activeNav, onNavChange }: PillHeaderProps
             body: classes.drawerBody,
           }}
           overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
-          position="left"
-          opened={mobileOpened}
-          onClose={toggleMobile}
+          position={isMobile ? 'left' : 'right'}
+          opened={drawerOpened}
+          onClose={toggleDrawer}
         >
           <MobileUserMenu />
         </Drawer>
 
-        {/* Desktop Drawer */}
-        <Drawer
-          size="xs"
-          classNames={{
-            content: classes.drawer,
-            header: classes.drawer,
-            body: classes.drawerBody,
-          }}
-          overlayProps={{ backgroundOpacity: 0.4, blur: 3 }}
-          position="right"
-          opened={desktopOpened}
-          onClose={toggleDesktop}
-        >
-          <MobileUserMenu />
-        </Drawer>
-
-        {/* Center: Navigation Menu (Desktop Only) */}
+        {/* Center: Navigation (Desktop Only) */}
         {navItems && navItems.length > 0 && (
-          <Group gap="md" style={{ flexShrink: 0 }} visibleFrom="sm">
-            <Menu
-              opened={menuOpened}
-              onChange={toggleMenu}
-              position="bottom"
-              withArrow
-              offset={5}
-              classNames={{
-                dropdown: classes.menuDropdown,
-                item: classes.menuItem,
-              }}
-            >
-              <Menu.Target>
-                <Button
-                  variant="subtle"
-                  color="white"
-                  size="sm"
-                  radius="xl"
-                  className={classes.navButton}
-                  rightSection={<IconChevronDown size={16} />}
-                >
-                  {navItems.find((item) => item.id === activeNav)?.label || 'Navigate'}
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {navItems.map(({ id, label, icon: Icon }) => (
-                  <Menu.Item
-                    key={id}
-                    leftSection={<Icon size={16} stroke={1.5} />}
-                    onClick={() => onNavChange?.(id)}
-                    className={activeNav === id ? classes.menuItemActive : ''}
-                  >
-                    {label}
-                  </Menu.Item>
-                ))}
-              </Menu.Dropdown>
-            </Menu>
+          <Group gap={4} visibleFrom="sm" className={classes.navGroup}>
+            {navItems.map(({ id, label, icon: Icon }) => (
+              <UnstyledButton
+                key={id}
+                className={`${classes.navItem} ${activeNav === id ? classes.navItemActive : ''}`}
+                onClick={() => onNavChange?.(id)}
+              >
+                <Icon size={18} className={classes.navItemIcon} />
+                <Text size="sm" className={classes.navItemLabel}>
+                  {label}
+                </Text>
+              </UnstyledButton>
+            ))}
           </Group>
         )}
 
-        {/* Right: Settings Button */}
+        {/* Right: Menu Button */}
         <Group gap="sm" style={{ flexShrink: 0 }}>
           <ActionIcon
             variant="subtle"
@@ -150,11 +107,11 @@ export function PillHeader({ navItems, activeNav, onNavChange }: PillHeaderProps
             size="lg"
             radius="xl"
             visibleFrom="sm"
-            className={classes.userAction}
-            onClick={toggleDesktop}
-            title="Options"
+            className={`${classes.userAction} ${drawerOpened ? classes.userActionActive : ''}`}
+            onClick={toggleDrawer}
+            title="Menu"
           >
-            <IconSettings size={20} />
+            <IconMenu2 size={20} />
           </ActionIcon>
         </Group>
       </Flex>

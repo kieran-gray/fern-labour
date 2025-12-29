@@ -3,13 +3,13 @@ import { useLabourSession } from '@base/contexts/LabourSessionContext';
 import { useLabourV2Client } from '@base/hooks';
 import { useDeleteContractionOffline, useUpdateContractionOffline } from '@base/offline/hooks';
 import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
+import { updateTime } from '@shared/utils/contractions';
 import { IconClock, IconTrash, IconUpload } from '@tabler/icons-react';
 import { Button, Modal, Slider, Space, Text } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { ContractionData } from './ContractionTimelineCustom';
-import { updateTime } from './UpdateTime';
-import classes from './Contractions.module.css';
+import { ContractionData } from '../ContractionTimelineCustom';
+import classes from '../Contractions.module.css';
 import modalClasses from '@shared/Modal.module.css';
 
 type CloseFunctionType = (...args: any[]) => void;
@@ -169,7 +169,6 @@ export const EditContractionModal = ({
               markLabel: classes.markLabel,
               track: classes.track,
             }}
-            color="var(--mantine-primary-color-4)"
             key={form.key('intensity')}
             size="xl"
             radius="lg"
@@ -187,7 +186,6 @@ export const EditContractionModal = ({
           <Space h="xl" />
           <div className={classes.flexRow}>
             <Button
-              color="var(--mantine-primary-color-5)"
               leftSection={<IconTrash />}
               variant="filled"
               radius="xl"
@@ -201,7 +199,6 @@ export const EditContractionModal = ({
               aria-label="Delete contraction"
             />
             <Button
-              color="var(--mantine-primary-color-4)"
               leftSection={<IconUpload />}
               variant="light"
               radius="xl"

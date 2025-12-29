@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import { ContractionReadModel } from '@base/clients/labour_service/types';
+import { StopwatchHandle } from '../Stopwatch/Stopwatch';
 import { ActiveContractionControls } from './ActiveContractionControls';
 import StartContractionButton from './StartContractionButton';
-import { StopwatchHandle } from './Stopwatch/Stopwatch';
 
 interface ContractionControlsProps {
   labourCompleted: boolean;

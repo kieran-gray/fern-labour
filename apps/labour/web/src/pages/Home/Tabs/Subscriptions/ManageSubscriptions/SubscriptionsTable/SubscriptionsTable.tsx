@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { useState } from 'react';
 import { SubscriptionStatusReadModel } from '@base/clients/labour_service/types';
 import { useLabourSession } from '@base/contexts';
 import { useLabourV2Client } from '@base/hooks';
@@ -6,13 +6,14 @@ import { useUserSubscribedLaboursV2, useUserSubscriptionsV2 } from '@base/hooks/
 import { ImportantText } from '@shared/ImportantText/ImportantText';
 import { PageLoadingIcon } from '@shared/PageLoading/Loading';
 import { IconArrowRight, IconX } from '@tabler/icons-react';
-import { Avatar, Button, Group, Table, Text } from '@mantine/core';
+import { Avatar, Button, Card, Group, Stack, Text } from '@mantine/core';
 import { ManageSubscriptionMenu } from '../ManageSubscriptionMenu/ManageSubscriptionMenu';
 import classes from './SubscriptionsTable.module.css';
 
 export function SubscriptionsTable() {
   const { subscription, selectSubscription, clearSubscription } = useLabourSession();
   const selectedSubscriptionId = subscription?.subscription_id;
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const client = useLabourV2Client();
   const { isPending, isError, data, error } = useUserSubscriptionsV2(client);
@@ -31,99 +32,75 @@ export function SubscriptionsTable() {
   }
 
   const toggleSubscription = async (sub: SubscriptionStatusReadModel) => {
-    if (selectedSubscriptionId === sub.subscription_id) {
-      clearSubscription();
-    } else {
-      const fullSubscription = await client.getUserSubscription(sub.labour_id);
-      if (fullSubscription.success && fullSubscription.data) {
-        selectSubscription(fullSubscription.data);
+    setLoadingId(sub.subscription_id);
+    try {
+      if (selectedSubscriptionId === sub.subscription_id) {
+        clearSubscription();
+      } else {
+        const fullSubscription = await client.getUserSubscription(sub.labour_id);
+        if (fullSubscription.success && fullSubscription.data) {
+          selectSubscription(fullSubscription.data);
+        }
       }
+    } finally {
+      setLoadingId(null);
     }
   };
-  const toggleButtonIcon = (subId: string) => {
-    return selectedSubscriptionId === subId ? (
-      <IconX size={18} stroke={1.5} />
-    ) : (
-      <IconArrowRight size={18} stroke={1.5} />
-    );
-  };
 
-  const rows: ReactElement[] = [];
+  const subscriptions = data.filter((sub) => sub.status === 'SUBSCRIBED');
 
-  data.forEach((sub) => {
-    if (sub.status !== 'SUBSCRIBED') {
-      return;
-    }
-
-    const labour = labours?.find((l) => l.labour_id === sub.labour_id);
-    const motherName = labour?.mother_name || 'Unknown';
-
-    rows.push(
-      <Table.Tr key={sub.subscription_id}>
-        <Table.Td>
-          <Group gap="sm" wrap="nowrap">
-            <Avatar visibleFrom="sm" radius="xl" color="var(--mantine-primary-color-5)" />
-            <>
-              <Text fw={500} className={classes.cropText} size="xs" hiddenFrom="xs">
-                {motherName}
-              </Text>
-              <Text fw={500} className={classes.cropText} size="sm" visibleFrom="xs">
-                {motherName}
-              </Text>
-            </>
-          </Group>
-        </Table.Td>
-        <Table.Td>
-          <Button
-            color="var(--mantine-primary-color-4)"
-            rightSection={toggleButtonIcon(sub.subscription_id)}
-            variant="light"
-            radius="xl"
-            size="md"
-            visibleFrom="sm"
-            className={classes.submitButton}
-            onClick={() => toggleSubscription(sub)}
-            type="submit"
-          >
-            {selectedSubscriptionId === sub.subscription_id ? 'Exit' : 'View'}
-          </Button>
-          <Button
-            color="var(--mantine-primary-color-4)"
-            rightSection={toggleButtonIcon(sub.subscription_id)}
-            variant="light"
-            radius="xl"
-            size="xs"
-            h={40}
-            hiddenFrom="sm"
-            className={classes.submitButton}
-            onClick={() => toggleSubscription(sub)}
-            type="submit"
-          >
-            {selectedSubscriptionId === sub.subscription_id ? 'Exit' : 'View'}
-          </Button>
-        </Table.Td>
-        <Table.Td>
-          <ManageSubscriptionMenu labourId={sub.labour_id} subscriptionId={sub.subscription_id} />
-        </Table.Td>
-      </Table.Tr>
-    );
-  });
-
-  if (rows.length > 0) {
-    return (
-      <Table.ScrollContainer minWidth={200} w="100%">
-        <Table verticalSpacing="sm" highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Mother</Table.Th>
-              <Table.Th>Labour</Table.Th>
-              <Table.Th>Manage</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
-    );
+  if (subscriptions.length === 0) {
+    return <ImportantText message="You don't have any subscriptions yet." />;
   }
-  return <ImportantText message="You don't have any subscriptions yet." />;
+
+  return (
+    <Stack gap="sm" w="100%">
+      {subscriptions.map((sub) => {
+        const labour = labours?.find((l) => l.labour_id === sub.labour_id);
+        const motherName = labour?.mother_name || 'Unknown';
+        const isSelected = selectedSubscriptionId === sub.subscription_id;
+        const isLoading = loadingId === sub.subscription_id;
+
+        return (
+          <Card
+            key={sub.subscription_id}
+            padding="md"
+            radius="lg"
+            className={`${classes.card} ${isSelected ? classes.cardSelected : ''}`}
+          >
+            <Group justify="space-between" wrap="nowrap">
+              <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+                <Avatar radius="xl" color="var(--mantine-primary-color-5)" />
+                <Text fw={500} className={classes.cropText} size="sm">
+                  {motherName}
+                </Text>
+              </Group>
+              <Group gap="xs" wrap="nowrap">
+                <Button
+                  rightSection={
+                    isSelected ? (
+                      <IconX size={16} stroke={1.5} />
+                    ) : (
+                      <IconArrowRight size={16} stroke={1.5} />
+                    )
+                  }
+                  variant={isSelected ? 'filled' : 'light'}
+                  radius="xl"
+                  size="sm"
+                  loading={isLoading}
+                  onClick={() => toggleSubscription(sub)}
+                >
+                  {isSelected ? 'Close' : 'View'}
+                </Button>
+                <ManageSubscriptionMenu
+                  labourId={sub.labour_id}
+                  subscriptionId={sub.subscription_id}
+                />
+              </Group>
+            </Group>
+          </Card>
+        );
+      })}
+    </Stack>
+  );
 }

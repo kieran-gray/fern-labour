@@ -38,7 +38,7 @@ initializeOfflineInfrastructure();
 reactDom.createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider theme={theme}>
-      <Notifications position="bottom-right" />
+      <Notifications position="top-center" mt={60} zIndex={199} />
       <BrowserRouter basename="/">
         <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
           <QueryClientProvider client={queryClient}>

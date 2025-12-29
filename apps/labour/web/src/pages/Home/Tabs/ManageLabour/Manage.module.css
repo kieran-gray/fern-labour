@@ -1,0 +1,18 @@
+.title {
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
+}
+
+.infoCard {
+  background-color: light-dark(var(--mantine-color-primary-0), var(--mantine-color-primary-4));
+  border: none;
+}
+
+.labourBadge {
+  color: var(--mantine-color-white);
+  background-color: light-dark(var(--mantine-primary-color-4), var(--mantine-primary-color-4));
+}
+
+.noteCard {
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+  border: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+}

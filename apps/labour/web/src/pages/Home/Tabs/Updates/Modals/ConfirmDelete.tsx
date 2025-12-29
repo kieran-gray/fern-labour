@@ -1,6 +1,5 @@
-import { Button, Modal, Space, Text } from '@mantine/core';
+import { Button, Group, Modal, Stack, Text } from '@mantine/core';
 import classes from '@shared/Modal.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
 
 export default function ConfirmDeleteModal({
   onConfirm,
@@ -24,35 +23,20 @@ export default function ConfirmDeleteModal({
       opened={opened}
       centered
       closeOnClickOutside
-      onClose={() => {
-        onCancel();
-      }}
+      onClose={() => onCancel()}
       title="Delete status update?"
     >
-      <Space h="lg" />
-      <Text className={classes.modalText}>This can't be undone.</Text>
-      <Space h="md" />
-      <div className={baseClasses.flexRowNoBP}>
-        <Button
-          style={{ flex: 1, marginRight: 5 }}
-          radius="lg"
-          variant="light"
-          onClick={() => {
-            onCancel();
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          style={{ flex: 1, marginLeft: 5 }}
-          radius="lg"
-          onClick={() => {
-            onConfirm();
-          }}
-        >
-          Yes
-        </Button>
-      </div>
+      <Stack gap="md">
+        <Text className={classes.modalText}>This can't be undone.</Text>
+        <Group justify="flex-end" gap="sm">
+          <Button size="sm" radius="md" variant="default" onClick={() => onCancel()}>
+            Cancel
+          </Button>
+          <Button size="sm" radius="md" color="red" onClick={() => onConfirm()}>
+            Delete
+          </Button>
+        </Group>
+      </Stack>
     </Modal>
   );
 }

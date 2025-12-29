@@ -1,9 +1,9 @@
 import { RefObject, useEffect, useState } from 'react';
 import { ContractionReadModel } from '@base/clients/labour_service/types';
 import { Slider, Space, Text } from '@mantine/core';
+import Stopwatch, { StopwatchHandle } from '../Stopwatch/Stopwatch';
 import EndContractionButton from './EndContractionButton';
-import Stopwatch, { StopwatchHandle } from './Stopwatch/Stopwatch';
-import classes from './Contractions.module.css';
+import classes from '../Contractions.module.css';
 import baseClasses from '@shared/shared-styles.module.css';
 
 export function ActiveContractionControls({
@@ -42,7 +42,6 @@ export function ActiveContractionControls({
           markLabel: classes.markLabel,
           track: classes.track,
         }}
-        color="var(--mantine-primary-color-4)"
         size="xl"
         radius="lg"
         min={0}
