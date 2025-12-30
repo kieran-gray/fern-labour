@@ -1,14 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { SubscriberRole } from '@base/clients/labour_service';
 import { SubscriberSessionState, useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useLabourV2Client } from '@base/hooks';
+import { useLabourClient } from '@base/hooks';
 import { flattenContractions, useContractionsInfinite } from '@base/hooks/useInfiniteQueries';
-import { useLabourByIdV2, useUserSubscriptionV2 } from '@base/hooks/useLabourData';
+import { useLabourById, useUserSubscription } from '@base/hooks/useLabourData';
+import {
+  getFloatingControlsPadding,
+  scrollMainToBottom,
+  useSwipeableNavigation,
+} from '@base/hooks/useSwipeableNavigation';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
-import { AppShell } from '@shared/AppShell';
-import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
-import { PageLoading } from '@shared/PageLoading/PageLoading';
-import { pluraliseName } from '@shared/utils';
+import { AppShell } from '@components/AppShell';
+import { ErrorContainer } from '@components/ErrorContainer/ErrorContainer';
+import { FloatingPanel } from '@components/FloatingPanel';
+import { PageLoading } from '@components/PageLoading/PageLoading';
+import { pluraliseName } from '@lib';
 import {
   IconChartHistogram,
   IconMessage,
@@ -18,22 +24,21 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSwipeable } from 'react-swipeable';
 import { Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { LabourPageShell } from './components/LabourPageShell';
 import { PayWall } from './components/Paywall/PayWall';
 import Gifts from './Tabs/Gifts/Gifts';
+import { ManageSubscriptions } from './Tabs/MySubscriptions/MySubscriptions';
+import { ShareFernLabour } from './Tabs/MySubscriptions/ShareFernLabour';
+import SubscriptionRequestedModal from './Tabs/MySubscriptions/SubscriptionRequestedModal';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
 import ContactMethods from './Tabs/SubscriptionDetails/ContactMethods';
 import LabourDetailsView from './Tabs/SubscriptionDetails/LabourDetails';
-import { ManageSubscriptions } from './Tabs/Subscriptions/ManageSubscriptions/ManageSubscriptions';
-import { ShareFernLabour } from './Tabs/Subscriptions/ShareFernLabour/ShareFernLabour';
-import SubscriptionRequestedModal from './Tabs/Subscriptions/SubscriptionRequestedModal/SubscriptionRequestedModal';
+import { ContractionControls } from './Tabs/Track/ContractionControls';
 import { Contractions } from './Tabs/Track/Contractions';
-import { FloatingContractionControls } from './Tabs/Track/Controls/FloatingContractionControls';
-import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
+import { LabourUpdateControls } from './Tabs/Updates/LabourUpdateControls';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
-import baseClasses from '@shared/shared-styles.module.css';
 
 const FULL_ACCESS_TABS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: IconUsers },
@@ -97,30 +102,13 @@ export const SubscriberView = () => {
     }
   }, [subscriberState, activeTab]);
 
-  const swipeHandlers = useSwipeable({
-    onSwipedRight: () => {
-      if (activeTab) {
-        const tabIndex = tabOrder.indexOf(activeTab as (typeof tabOrder)[number]);
-        if (tabIndex > 0) {
-          setActiveTab(tabOrder[tabIndex - 1]);
-        }
-      }
-    },
-    onSwipedLeft: () => {
-      if (activeTab) {
-        const tabIndex = tabOrder.indexOf(activeTab as (typeof tabOrder)[number]);
-        if (tabIndex < tabOrder.length - 1) {
-          setActiveTab(tabOrder[tabIndex + 1]);
-        }
-      }
-    },
-    delta: 10,
-    swipeDuration: 250,
-    trackTouch: true,
-    preventScrollOnSwipe: true,
+  const swipeHandlers = useSwipeableNavigation({
+    activeTab,
+    tabOrder,
+    setActiveTab,
   });
 
-  const client = useLabourV2Client();
+  const client = useLabourClient();
 
   const shouldFetchLabour = subscriberState === SubscriberSessionState.Active && labourId !== null;
   const isBirthPartner = subscriberRole === SubscriberRole.BIRTH_PARTNER;
@@ -131,13 +119,13 @@ export const SubscriberView = () => {
     isError: isSubError,
     data: subscriptionData,
     error: subError,
-  } = useUserSubscriptionV2(client, shouldFetchLabour ? labourId : null);
+  } = useUserSubscription(client, shouldFetchLabour ? labourId : null);
   const {
     isPending: isLabourPending,
     isError: isLabourError,
     data: labour,
     error: labourError,
-  } = useLabourByIdV2(client, shouldFetchLabour ? labourId : null);
+  } = useLabourById(client, shouldFetchLabour ? labourId : null);
 
   const { data: contractionsData } = useContractionsInfinite(
     client,
@@ -157,32 +145,15 @@ export const SubscriberView = () => {
 
   const completed = labour?.end_time !== null;
 
-  const scrollMainToBottom = (smooth: boolean = true) => {
-    const main = document.getElementById('app-main');
-    if (main) {
-      main.scrollTo({ top: main.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
-    }
-  };
-
-  const getFloatingControlsPadding = () => {
-    if (window.innerWidth >= 768 || completed || !isBirthPartner) {
-      return '30px';
-    }
-    if (activeTab === 'track') {
-      if (!isContractionControlsExpanded) {
-        return '50px';
-      }
-      return activeContraction ? '350px' : '140px';
-    }
-
-    if (activeTab === 'updates') {
-      if (isUpdateControlsExpanded) {
-        return isOnline ? '180px' : '120px';
-      }
-      return '55px';
-    }
-    return '30px';
-  };
+  const bottomPadding = getFloatingControlsPadding({
+    activeTab,
+    completed: completed || false,
+    isContractionControlsExpanded,
+    isUpdateControlsExpanded,
+    hasActiveContraction: !!activeContraction,
+    isOnline,
+    disabled: !isBirthPartner,
+  });
 
   const isPending = shouldFetchLabour && (isSubPending || isLabourPending);
   const isError = isSubError || isLabourError;
@@ -278,52 +249,49 @@ export const SubscriberView = () => {
   };
 
   return (
-    <div {...swipeHandlers}>
-      <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
-        <div
-          className={baseClasses.flexPageColumn}
-          style={{ paddingBottom: getFloatingControlsPadding() }}
-        >
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            {renderTabPanel(activeTab || 'subscriptions')}
-          </div>
-        </div>
+    <>
+      <LabourPageShell
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        tabs={TABS}
+        swipeHandlers={swipeHandlers}
+        bottomPadding={bottomPadding}
+        floatingPanels={
+          isBirthPartner && labour ? (
+            <>
+              <FloatingPanel
+                visible={activeTab === 'track' && !completed}
+                onToggle={(expanded) => {
+                  setIsContractionControlsExpanded(expanded);
+                  if (expanded) {
+                    setTimeout(() => scrollMainToBottom(true), 50);
+                  }
+                }}
+              >
+                <ContractionControls
+                  labourCompleted={completed || false}
+                  activeContraction={activeContraction}
+                />
+              </FloatingPanel>
 
-        {isBirthPartner && labour && (
-          <>
-            <FloatingContractionControls
-              labourCompleted={completed || false}
-              activeContraction={activeContraction}
-              activeTab={activeTab}
-              onToggle={(expanded) => {
-                setIsContractionControlsExpanded(expanded);
-                if (expanded) {
-                  setTimeout(() => scrollMainToBottom(true), 50);
-                }
-              }}
-            />
-
-            <FloatingLabourUpdateControls
-              labour={labour}
-              activeTab={activeTab}
-              onToggle={(expanded) => {
-                setIsUpdateControlsExpanded(expanded);
-                if (expanded) {
-                  setTimeout(() => scrollMainToBottom(true), 50);
-                }
-              }}
-            />
-          </>
-        )}
-      </AppShell>
+              <FloatingPanel
+                visible={activeTab === 'updates' && !completed}
+                onToggle={(expanded) => {
+                  setIsUpdateControlsExpanded(expanded);
+                  if (expanded) {
+                    setTimeout(() => scrollMainToBottom(true), 50);
+                  }
+                }}
+              >
+                <LabourUpdateControls />
+              </FloatingPanel>
+            </>
+          ) : undefined
+        }
+      >
+        {renderTabPanel(activeTab || 'subscriptions')}
+      </LabourPageShell>
       <SubscriptionRequestedModal opened={modalOpened} close={closeModal} />
-    </div>
+    </>
   );
 };

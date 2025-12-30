@@ -3,11 +3,11 @@
  * Queues commands when offline and applies optimistic updates
  */
 
-import type { LabourServiceV2Client } from '@base/clients/labour_service';
+import type { LabourServiceClient } from '@base/clients/labour_service';
 import { useWebSocket } from '@base/contexts/WebsocketContext';
-import { queryKeysV2 } from '@base/hooks/queryKeys';
+import { queryKeys } from '@base/hooks/queryKeys';
 import { uuidv7 } from '@base/lib/uuid';
-import { Error as ErrorNotification, Success } from '@shared/Notifications';
+import { Error as ErrorNotification, Success } from '@components/Notifications';
 import { useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { enqueueCommand } from './commandQueue';
@@ -28,7 +28,7 @@ interface ContractionPage {
  * Hook for starting a contraction with offline support
  * Generates a UUID v7 for the contraction that will be used for all subsequent operations
  */
-export function useStartContractionOffline(client: LabourServiceV2Client) {
+export function useStartContractionOffline(client: LabourServiceClient) {
   const queryClient = useQueryClient();
   const { isConnected } = useWebSocket();
 
@@ -72,12 +72,12 @@ export function useStartContractionOffline(client: LabourServiceV2Client) {
     onMutate: async ({ labourId, startTime, contractionId }) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({
-        queryKey: queryKeysV2.contractions.infinite(labourId),
+        queryKey: queryKeys.contractions.infinite(labourId),
       });
 
       // Snapshot previous value
       const previousData = queryClient.getQueryData<InfiniteData<ContractionPage>>(
-        queryKeysV2.contractions.infinite(labourId)
+        queryKeys.contractions.infinite(labourId)
       );
 
       // Optimistically add the new contraction with the real UUID
@@ -93,7 +93,7 @@ export function useStartContractionOffline(client: LabourServiceV2Client) {
       };
 
       queryClient.setQueryData<InfiniteData<ContractionPage>>(
-        queryKeysV2.contractions.infinite(labourId),
+        queryKeys.contractions.infinite(labourId),
         (old) => {
           if (!old) {
             return old;
@@ -120,7 +120,7 @@ export function useStartContractionOffline(client: LabourServiceV2Client) {
       // Rollback on error
       if (context?.previousData) {
         queryClient.setQueryData(
-          queryKeysV2.contractions.infinite(variables.labourId),
+          queryKeys.contractions.infinite(variables.labourId),
           context.previousData
         );
       }
@@ -142,7 +142,7 @@ export function useStartContractionOffline(client: LabourServiceV2Client) {
       // If websocket not connected, invalidate to get fresh data
       if (!isConnected && !result.offline) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
+          queryKey: queryKeys.contractions.infinite(variables.labourId),
         });
       }
     },
@@ -159,7 +159,7 @@ export function generateContractionId(): string {
 /**
  * Hook for ending a contraction with offline support
  */
-export function useEndContractionOffline(client: LabourServiceV2Client) {
+export function useEndContractionOffline(client: LabourServiceClient) {
   const queryClient = useQueryClient();
   const { isConnected } = useWebSocket();
 
@@ -203,16 +203,16 @@ export function useEndContractionOffline(client: LabourServiceV2Client) {
 
     onMutate: async ({ labourId, endTime, intensity, contractionId }) => {
       await queryClient.cancelQueries({
-        queryKey: queryKeysV2.contractions.infinite(labourId),
+        queryKey: queryKeys.contractions.infinite(labourId),
       });
 
       const previousData = queryClient.getQueryData<InfiniteData<ContractionPage>>(
-        queryKeysV2.contractions.infinite(labourId)
+        queryKeys.contractions.infinite(labourId)
       );
 
       // Find and update the contraction by ID
       queryClient.setQueryData<InfiniteData<ContractionPage>>(
-        queryKeysV2.contractions.infinite(labourId),
+        queryKeys.contractions.infinite(labourId),
         (old) => {
           if (!old) {
             return old;
@@ -245,7 +245,7 @@ export function useEndContractionOffline(client: LabourServiceV2Client) {
     onError: (error: Error, variables, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(
-          queryKeysV2.contractions.infinite(variables.labourId),
+          queryKeys.contractions.infinite(variables.labourId),
           context.previousData
         );
       }
@@ -266,7 +266,7 @@ export function useEndContractionOffline(client: LabourServiceV2Client) {
       }
       if (!isConnected && !result.offline) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
+          queryKey: queryKeys.contractions.infinite(variables.labourId),
         });
       }
     },
@@ -276,7 +276,7 @@ export function useEndContractionOffline(client: LabourServiceV2Client) {
 /**
  * Hook for updating a contraction with offline support
  */
-export function useUpdateContractionOffline(client: LabourServiceV2Client) {
+export function useUpdateContractionOffline(client: LabourServiceClient) {
   const queryClient = useQueryClient();
   const { isConnected } = useWebSocket();
 
@@ -317,15 +317,15 @@ export function useUpdateContractionOffline(client: LabourServiceV2Client) {
 
     onMutate: async (params) => {
       await queryClient.cancelQueries({
-        queryKey: queryKeysV2.contractions.infinite(params.labourId),
+        queryKey: queryKeys.contractions.infinite(params.labourId),
       });
 
       const previousData = queryClient.getQueryData<InfiniteData<ContractionPage>>(
-        queryKeysV2.contractions.infinite(params.labourId)
+        queryKeys.contractions.infinite(params.labourId)
       );
 
       queryClient.setQueryData<InfiniteData<ContractionPage>>(
-        queryKeysV2.contractions.infinite(params.labourId),
+        queryKeys.contractions.infinite(params.labourId),
         (old) => {
           if (!old) {
             return old;
@@ -358,7 +358,7 @@ export function useUpdateContractionOffline(client: LabourServiceV2Client) {
     onError: (error: Error, variables, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(
-          queryKeysV2.contractions.infinite(variables.labourId),
+          queryKeys.contractions.infinite(variables.labourId),
           context.previousData
         );
       }
@@ -385,7 +385,7 @@ export function useUpdateContractionOffline(client: LabourServiceV2Client) {
       }
       if (!isConnected && !result.offline) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
+          queryKey: queryKeys.contractions.infinite(variables.labourId),
         });
       }
     },
@@ -395,7 +395,7 @@ export function useUpdateContractionOffline(client: LabourServiceV2Client) {
 /**
  * Hook for deleting a contraction with offline support
  */
-export function useDeleteContractionOffline(client: LabourServiceV2Client) {
+export function useDeleteContractionOffline(client: LabourServiceClient) {
   const queryClient = useQueryClient();
   const { isConnected } = useWebSocket();
 
@@ -433,15 +433,15 @@ export function useDeleteContractionOffline(client: LabourServiceV2Client) {
 
     onMutate: async ({ labourId, contractionId }) => {
       await queryClient.cancelQueries({
-        queryKey: queryKeysV2.contractions.infinite(labourId),
+        queryKey: queryKeys.contractions.infinite(labourId),
       });
 
       const previousData = queryClient.getQueryData<InfiniteData<ContractionPage>>(
-        queryKeysV2.contractions.infinite(labourId)
+        queryKeys.contractions.infinite(labourId)
       );
 
       queryClient.setQueryData<InfiniteData<ContractionPage>>(
-        queryKeysV2.contractions.infinite(labourId),
+        queryKeys.contractions.infinite(labourId),
         (old) => {
           if (!old) {
             return old;
@@ -462,7 +462,7 @@ export function useDeleteContractionOffline(client: LabourServiceV2Client) {
     onError: (error: Error, variables, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(
-          queryKeysV2.contractions.infinite(variables.labourId),
+          queryKeys.contractions.infinite(variables.labourId),
           context.previousData
         );
       }
@@ -489,7 +489,7 @@ export function useDeleteContractionOffline(client: LabourServiceV2Client) {
       }
       if (!isConnected && !result.offline) {
         queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
+          queryKey: queryKeys.contractions.infinite(variables.labourId),
         });
       }
     },

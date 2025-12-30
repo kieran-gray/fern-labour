@@ -1,18 +1,18 @@
 import { useLabourSession } from '@base/contexts';
-import { useCreateCheckoutSessionV2, useLabourV2Client } from '@base/hooks';
-import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { useCreateCheckoutSession, useLabourClient } from '@base/hooks';
+import { ResponsiveDescription } from '@components/ResponsiveDescription';
+import { ResponsiveTitle } from '@components/ResponsiveTitle';
 import { IconArrowUp } from '@tabler/icons-react';
 import { Button, Image, Text } from '@mantine/core';
 import image from './ShareMore.svg';
 import classes from './PayWall.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 export const PayWall = () => {
   const { subscription } = useLabourSession();
   const subscriptionId = subscription?.subscription_id;
-  const client = useLabourV2Client();
-  const createCheckout = useCreateCheckoutSessionV2(client);
+  const client = useLabourClient();
+  const createCheckout = useCreateCheckoutSession(client);
 
   const handleUpgrade = () => {
     const baseUrl = window.location.href.split('?')[0];

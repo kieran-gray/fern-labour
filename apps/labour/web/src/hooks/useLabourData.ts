@@ -1,39 +1,38 @@
 /**
- * V2 Labour Data Hooks
+ *  Labour Data Hooks
  * Uses the new Cloudflare Workers API with CQRS pattern
  */
 
-import type { Cursor, LabourServiceV2Client, LabourUpdateType } from '@base/clients/labour_service';
+import type {
+  LabourServiceClient,
+  LabourUpdateType,
+  SubscriberAccessLevel,
+  SubscriberContactMethod,
+  SubscriberRole,
+} from '@base/clients/labour_service';
 import { useWebSocket } from '@base/contexts/WebsocketContext';
 import { NotFoundError } from '@base/lib/errors';
-import { Error as ErrorNotification, Success } from '@shared/Notifications';
+import { Error as ErrorNotification, Success } from '@components/Notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
-import { queryKeysV2 } from './queryKeys';
+import { createMutation, createSimpleMutation } from './createMutation';
+import { queryKeys } from './queryKeys';
 import { useApiAuth } from './useApiAuth';
 
-// Helper function to decode cursor
-function decodeCursor(cursorString: string): Cursor {
-  try {
-    const decoded = atob(cursorString);
-    const [updatedAt, id] = decoded.split('|');
-    return { id, updated_at: updatedAt };
-  } catch {
-    throw new Error('Invalid cursor format');
-  }
-}
+// =============================================================================
+// Query Hooks
+// =============================================================================
 
 /**
  * Hook to get labour by ID or active
- * Always returns full LabourReadModel
  */
-export function useCurrentLabourV2(client: LabourServiceV2Client, labourId: string | null) {
+export function useCurrentLabour(client: LabourServiceClient, labourId: string | null) {
   const { user } = useApiAuth();
 
   return useQuery({
     queryKey: labourId
-      ? queryKeysV2.labour.detail(labourId)
-      : queryKeysV2.labour.active(user?.sub || ''),
+      ? queryKeys.labour.detail(labourId)
+      : queryKeys.labour.active(user?.sub || ''),
     queryFn: async () => {
       let targetLabourId = labourId;
 
@@ -67,11 +66,11 @@ export function useCurrentLabourV2(client: LabourServiceV2Client, labourId: stri
 /**
  * Hook to get labour by ID
  */
-export function useLabourByIdV2(client: LabourServiceV2Client, labourId: string | null) {
+export function useLabourById(client: LabourServiceClient, labourId: string | null) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.labour.detail(labourId) : [],
+    queryKey: labourId ? queryKeys.labour.detail(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -93,11 +92,11 @@ export function useLabourByIdV2(client: LabourServiceV2Client, labourId: string 
 /**
  * Hook to get labour history
  */
-export function useLabourHistoryV2(client: LabourServiceV2Client) {
+export function useLabourHistory(client: LabourServiceClient) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeysV2.labour.history(user?.sub || ''),
+    queryKey: queryKeys.labour.history(user?.sub || ''),
     queryFn: async () => {
       const response = await client.getLabourHistory();
 
@@ -115,11 +114,11 @@ export function useLabourHistoryV2(client: LabourServiceV2Client) {
 /**
  * Hook to get active labour
  */
-export function useActiveLabourV2(client: LabourServiceV2Client) {
+export function useActiveLabour(client: LabourServiceClient) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeysV2.labour.active(user?.sub || ''),
+    queryKey: queryKeys.labour.active(user?.sub || ''),
     queryFn: async () => {
       const response = await client.getActiveLabour();
 
@@ -135,801 +134,13 @@ export function useActiveLabourV2(client: LabourServiceV2Client) {
 }
 
 /**
- * Hook to get paginated contractions
- */
-export function useContractionsV2(
-  client: LabourServiceV2Client,
-  labourId: string | null,
-  limit: number = 20,
-  cursor: string | null = null
-) {
-  const { user } = useApiAuth();
-
-  return useQuery({
-    queryKey: labourId ? queryKeysV2.contractions.list(labourId) : [],
-    queryFn: async () => {
-      if (!labourId) {
-        throw new Error('Labour ID is required');
-      }
-
-      const decodedCursor = cursor ? decodeCursor(cursor) : undefined;
-      const response = await client.getContractions(labourId, limit, decodedCursor);
-
-      if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to load contractions');
-      }
-
-      return response.data;
-    },
-    enabled: !!labourId && !!user?.sub,
-    retry: 0,
-  });
-}
-
-/**
- * Hook to get a single contraction by ID
- */
-export function useContractionByIdV2(
-  client: LabourServiceV2Client,
-  labourId: string | null,
-  contractionId: string | null
-) {
-  const { user } = useApiAuth();
-
-  return useQuery({
-    queryKey:
-      labourId && contractionId ? queryKeysV2.contractions.detail(labourId, contractionId) : [],
-    queryFn: async () => {
-      if (!labourId || !contractionId) {
-        throw new Error('Labour ID and Contraction ID are required');
-      }
-
-      const response = await client.getContractionById(labourId, contractionId);
-
-      if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to load contraction');
-      }
-
-      return response.data.data[0] || null;
-    },
-    enabled: !!labourId && !!contractionId && !!user?.sub,
-    retry: 0,
-  });
-}
-
-/**
- * Hook to get paginated labour updates
- */
-export function useLabourUpdatesV2(
-  client: LabourServiceV2Client,
-  labourId: string | null,
-  limit: number = 20,
-  cursor: string | null = null
-) {
-  const { user } = useApiAuth();
-
-  return useQuery({
-    queryKey: labourId ? queryKeysV2.labourUpdates.list(labourId) : [],
-    queryFn: async () => {
-      if (!labourId) {
-        throw new Error('Labour ID is required');
-      }
-
-      const decodedCursor = cursor ? decodeCursor(cursor) : undefined;
-      const response = await client.getLabourUpdates(labourId, limit, decodedCursor);
-
-      if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to load labour updates');
-      }
-
-      return response.data;
-    },
-    enabled: !!labourId && !!user?.sub,
-    retry: 0,
-  });
-}
-
-/**
- * Hook to get a single labour update by ID
- */
-export function useLabourUpdateByIdV2(
-  client: LabourServiceV2Client,
-  labourId: string | null,
-  labourUpdateId: string | null
-) {
-  const { user } = useApiAuth();
-
-  return useQuery({
-    queryKey:
-      labourId && labourUpdateId ? queryKeysV2.labourUpdates.detail(labourId, labourUpdateId) : [],
-    queryFn: async () => {
-      if (!labourId || !labourUpdateId) {
-        throw new Error('Labour ID and Labour Update ID are required');
-      }
-
-      const response = await client.getLabourUpdateById(labourId, labourUpdateId);
-
-      if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to load labour update');
-      }
-
-      return response.data.data[0] || null;
-    },
-    enabled: !!labourId && !!labourUpdateId && !!user?.sub,
-    retry: 0,
-  });
-}
-
-// Mutation Hooks
-
-/**
- * Hook for starting a contraction
- * @deprecated Use useStartContractionOffline for offline support
- */
-export function useStartContractionV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      startTime,
-      contractionId,
-    }: {
-      labourId: string;
-      startTime: Date;
-      contractionId: string;
-    }) => {
-      const response = await client.startContraction(labourId, startTime, contractionId);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to start contraction');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
-        });
-      }
-    },
-    onError: (error: Error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.contractions.infinite(variables.labourId),
-      });
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to start contraction: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for ending a contraction
- * @deprecated Use useEndContractionOffline for offline support
- */
-export function useEndContractionV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      endTime,
-      intensity,
-      contractionId,
-    }: {
-      labourId: string;
-      endTime: Date;
-      intensity: number;
-      contractionId: string;
-    }) => {
-      const response = await client.endContraction(labourId, endTime, intensity, contractionId);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to end contraction');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
-        });
-      }
-    },
-    onError: (error: Error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.contractions.infinite(variables.labourId),
-      });
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to end contraction: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for updating a contraction
- */
-export function useUpdateContractionV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async (params: {
-      labourId: string;
-      contractionId: string;
-      startTime?: Date;
-      endTime?: Date;
-      intensity?: number;
-    }) => {
-      const response = await client.updateContraction(params);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to update contraction');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Contraction updated',
-      });
-    },
-    onError: (error: Error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.contractions.infinite(variables.labourId),
-      });
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to update contraction: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for deleting a contraction
- */
-export function useDeleteContractionV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      contractionId,
-    }: {
-      labourId: string;
-      contractionId: string;
-    }) => {
-      const response = await client.deleteContraction(labourId, contractionId);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to delete contraction');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.contractions.infinite(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Contraction deleted',
-      });
-    },
-    onError: (error: Error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.contractions.infinite(variables.labourId),
-      });
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to delete contraction: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for updating a labour update message
- */
-export function useUpdateLabourUpdateMessageV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      labourUpdateId,
-      message,
-    }: {
-      labourId: string;
-      labourUpdateId: string;
-      message: string;
-    }) => {
-      const response = await client.updateLabourUpdateMessage(labourId, labourUpdateId, message);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to update labour update type');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Status update edited successfully',
-      });
-    },
-    onError: (error: Error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
-      });
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to edit status update: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for updating a labour update type
- */
-export function useUpdateLabourUpdateTypeV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      labourUpdateId,
-      labourUpdateType,
-    }: {
-      labourId: string;
-      labourUpdateId: string;
-      labourUpdateType: LabourUpdateType;
-    }) => {
-      const response = await client.updateLabourUpdateType(
-        labourId,
-        labourUpdateId,
-        labourUpdateType
-      );
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to update labour update type');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Status update edited successfully',
-      });
-    },
-    onError: (error: Error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
-      });
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to edit status update: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for posting a labour update
- */
-export function usePostLabourUpdateV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      updateType,
-      message,
-    }: {
-      labourId: string;
-      updateType: LabourUpdateType;
-      message: string;
-    }) => {
-      const response = await client.postLabourUpdate(labourId, updateType, message);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to post labour update');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Update posted successfully',
-      });
-    },
-    onError: (error: Error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
-      });
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to post update: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for deleting a labour update
- */
-export function useDeleteLabourUpdateV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      labourUpdateId,
-    }: {
-      labourId: string;
-      labourUpdateId: string;
-    }) => {
-      const response = await client.deleteLabourUpdate(labourId, labourUpdateId);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to delete labour update');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Update deleted successfully',
-      });
-    },
-    onError: (error: Error, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labourUpdates.infinite(variables.labourId),
-      });
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to delete update: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for planning a new labour
- */
-export function usePlanLabourV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      firstLabour,
-      dueDate,
-      labourName,
-    }: {
-      firstLabour: boolean;
-      dueDate: Date;
-      labourName?: string;
-    }) => {
-      const response = await client.planLabour({
-        firstLabour,
-        dueDate,
-        labourName,
-      });
-
-      if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to plan labour');
-      }
-
-      return response.data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeysV2.labour.all,
-      });
-
-      if (data.labour_id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labour.detail(data.labour_id),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Labour planned successfully',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to plan labour: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for updating labour plan
- */
-export function useUpdateLabourPlanV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      firstLabour,
-      dueDate,
-      labourName,
-    }: {
-      labourId: string;
-      firstLabour: boolean;
-      dueDate: Date;
-      labourName?: string;
-    }) => {
-      const response = await client.updateLabourPlan({
-        labourId,
-        firstLabour,
-        dueDate,
-        labourName,
-      });
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to update labour plan');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labour.detail(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Labour plan updated successfully',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to update labour plan: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for beginning labour
- */
-export function useBeginLabourV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async (labourId: string) => {
-      const response = await client.beginLabour(labourId);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to begin labour');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, labourId) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labour.detail(labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Labour has begun',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to begin labour: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for completing labour
- */
-export function useCompleteLabourV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({ labourId, notes }: { labourId: string; notes: string }) => {
-      const response = await client.completeLabour({ labourId, notes });
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to complete labour');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, __) => {
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Labour completed successfully',
-      });
-
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labour.all,
-        });
-      }
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to complete labour: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for deleting labour
- */
-export function useDeleteLabourV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async (labourId: string) => {
-      const response = await client.deleteLabour(labourId);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to delete labour');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, labourId) => {
-      if (!isConnected) {
-        queryClient.removeQueries({
-          queryKey: queryKeysV2.labour.detail(labourId),
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.labour.all,
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Labour deleted successfully',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to delete labour: ${error.message}`,
-      });
-    },
-  });
-}
-
-export function useSendLabourInviteV2(client: LabourServiceV2Client) {
-  return useMutation({
-    mutationFn: async ({ labourId, email }: { labourId: string; email: string }) => {
-      const response = await client.sendLabourInvite(labourId, email);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to send labour invite');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, __) => {
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Invite sent successfully',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to send invite: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
  * Hook for fetching subscription token
  */
-export function useSubscriptionTokenV2(client: LabourServiceV2Client, labourId: string | null) {
+export function useSubscriptionToken(client: LabourServiceClient, labourId: string | null) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.subscriptionToken.detail(labourId) : [],
+    queryKey: labourId ? queryKeys.subscriptionToken.detail(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -951,11 +162,11 @@ export function useSubscriptionTokenV2(client: LabourServiceV2Client, labourId: 
 /**
  * Hook for fetching subscriptions
  */
-export function useLabourSubscriptionsV2(client: LabourServiceV2Client, labourId: string | null) {
+export function useLabourSubscriptions(client: LabourServiceClient, labourId: string | null) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.subscriptions.listByLabour(labourId) : [],
+    queryKey: labourId ? queryKeys.subscriptions.listByLabour(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -974,11 +185,11 @@ export function useLabourSubscriptionsV2(client: LabourServiceV2Client, labourId
   });
 }
 
-export function useUserSubscriptionV2(client: LabourServiceV2Client, labourId: string | null) {
+export function useUserSubscription(client: LabourServiceClient, labourId: string | null) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.subscriptions.userSubscription(labourId, user?.sub || '') : [],
+    queryKey: labourId ? queryKeys.subscriptions.userSubscription(labourId, user?.sub || '') : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -997,11 +208,11 @@ export function useUserSubscriptionV2(client: LabourServiceV2Client, labourId: s
   });
 }
 
-export function useUserSubscribedLaboursV2(client: LabourServiceV2Client) {
+export function useUserSubscribedLabours(client: LabourServiceClient) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeysV2.labour.history(user?.sub || ''), // TODO
+    queryKey: queryKeys.subscriptions.listByUser(user?.sub || ''),
     queryFn: async () => {
       const response = await client.getSubscribedLabours();
 
@@ -1017,11 +228,11 @@ export function useUserSubscribedLaboursV2(client: LabourServiceV2Client) {
   });
 }
 
-export function useUserSubscriptionsV2(client: LabourServiceV2Client) {
+export function useUserSubscriptions(client: LabourServiceClient) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeysV2.subscriptions.listByUser(user?.sub || ''),
+    queryKey: queryKeys.subscriptions.listByUser(user?.sub || ''),
     queryFn: async () => {
       const response = await client.getUserSubscriptions();
 
@@ -1040,11 +251,11 @@ export function useUserSubscriptionsV2(client: LabourServiceV2Client) {
 /**
  * Hook for fetching users
  */
-export function useUsersV2(client: LabourServiceV2Client, labourId: string | null) {
+export function useUsers(client: LabourServiceClient, labourId: string | null) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: labourId ? queryKeysV2.users.listByLabour(labourId) : [],
+    queryKey: labourId ? queryKeys.users.listByLabour(labourId) : [],
     queryFn: async () => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -1063,420 +274,357 @@ export function useUsersV2(client: LabourServiceV2Client, labourId: string | nul
   });
 }
 
-// Subscriber Command Hooks (Self-service)
+// =============================================================================
+// Contraction Mutations
+// =============================================================================
 
-/**
- * Hook for requesting access to a labour
- */
-export function useRequestAccessV2(client: LabourServiceV2Client) {
+export const useUpdateContraction = createMutation<{
+  labourId: string;
+  contractionId: string;
+  startTime?: Date;
+  endTime?: Date;
+  intensity?: number;
+}>({
+  mutationFn: (client, params) => client.updateContraction(params),
+  getInvalidationKey: ({ labourId }) => queryKeys.contractions.infinite(labourId),
+  invalidateOnError: true,
+  successMessage: 'Contraction updated',
+  errorMessage: 'Failed to update contraction',
+});
+
+export const useDeleteContraction = createMutation<{
+  labourId: string;
+  contractionId: string;
+}>({
+  mutationFn: (client, { labourId, contractionId }) =>
+    client.deleteContraction(labourId, contractionId),
+  getInvalidationKey: ({ labourId }) => queryKeys.contractions.infinite(labourId),
+  invalidateOnError: true,
+  successMessage: 'Contraction deleted',
+  errorMessage: 'Failed to delete contraction',
+});
+
+// =============================================================================
+// Labour Update Mutations
+// =============================================================================
+
+export const useUpdateLabourUpdateMessage = createMutation<{
+  labourId: string;
+  labourUpdateId: string;
+  message: string;
+}>({
+  mutationFn: (client, { labourId, labourUpdateId, message }) =>
+    client.updateLabourUpdateMessage(labourId, labourUpdateId, message),
+  getInvalidationKey: ({ labourId }) => queryKeys.labourUpdates.infinite(labourId),
+  invalidateOnError: true,
+  successMessage: 'Status update edited successfully',
+  errorMessage: 'Failed to edit status update',
+});
+
+export const useUpdateLabourUpdateType = createMutation<{
+  labourId: string;
+  labourUpdateId: string;
+  labourUpdateType: LabourUpdateType;
+}>({
+  mutationFn: (client, { labourId, labourUpdateId, labourUpdateType }) =>
+    client.updateLabourUpdateType(labourId, labourUpdateId, labourUpdateType),
+  getInvalidationKey: ({ labourId }) => queryKeys.labourUpdates.infinite(labourId),
+  invalidateOnError: true,
+  successMessage: 'Status update edited successfully',
+  errorMessage: 'Failed to edit status update',
+});
+
+export const usePostLabourUpdate = createMutation<{
+  labourId: string;
+  updateType: LabourUpdateType;
+  message: string;
+}>({
+  mutationFn: (client, { labourId, updateType, message }) =>
+    client.postLabourUpdate(labourId, updateType, message),
+  getInvalidationKey: ({ labourId }) => queryKeys.labourUpdates.infinite(labourId),
+  invalidateOnError: true,
+  successMessage: 'Update posted successfully',
+  errorMessage: 'Failed to post update',
+});
+
+export const useDeleteLabourUpdate = createMutation<{
+  labourId: string;
+  labourUpdateId: string;
+}>({
+  mutationFn: (client, { labourId, labourUpdateId }) =>
+    client.deleteLabourUpdate(labourId, labourUpdateId),
+  getInvalidationKey: ({ labourId }) => queryKeys.labourUpdates.infinite(labourId),
+  invalidateOnError: true,
+  successMessage: 'Update deleted successfully',
+  errorMessage: 'Failed to delete update',
+});
+
+// =============================================================================
+// Labour Mutations
+// =============================================================================
+
+export const useUpdateLabourPlan = createMutation<{
+  labourId: string;
+  firstLabour: boolean;
+  dueDate: Date;
+  labourName?: string;
+}>({
+  mutationFn: (client, params) => client.updateLabourPlan(params),
+  getInvalidationKey: ({ labourId }) => queryKeys.labour.detail(labourId),
+  invalidateOnError: false,
+  successMessage: 'Labour plan updated successfully',
+  errorMessage: 'Failed to update labour plan',
+});
+
+export const useBeginLabour = createMutation<string>({
+  mutationFn: (client, labourId) => client.beginLabour(labourId),
+  getInvalidationKey: (labourId) => queryKeys.labour.detail(labourId),
+  invalidateOnError: false,
+  successMessage: 'Labour has begun',
+  errorMessage: 'Failed to begin labour',
+});
+
+export const useSendLabourInvite = createSimpleMutation<{
+  labourId: string;
+  email: string;
+}>({
+  mutationFn: (client, { labourId, email }) => client.sendLabourInvite(labourId, email),
+  successMessage: 'Invite sent successfully',
+  errorMessage: 'Failed to send invite',
+});
+
+// Special case: invalidates based on response data
+export function usePlanLabour(client: LabourServiceClient) {
   const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({ labourId, token }: { labourId: string; token: string }) => {
-      const response = await client.requestAccess(labourId, token);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to request access');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Access requested successfully',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to request access: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for unsubscribing from a labour
- */
-export function useUnsubscribeV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      subscriptionId,
-    }: {
-      labourId: string;
-      subscriptionId: string;
-    }) => {
-      const response = await client.unsubscribe(labourId, subscriptionId);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to unsubscribe');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Unsubscribed successfully',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to unsubscribe: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for updating notification methods
- */
-export function useUpdateNotificationMethodsV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      subscriptionId,
-      methods,
-    }: {
-      labourId: string;
-      subscriptionId: string;
-      methods: import('@base/clients/labour_service').SubscriberContactMethod[];
-    }) => {
-      const response = await client.updateNotificationMethods(labourId, subscriptionId, methods);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to update notification methods');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Notification methods updated',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to update notification methods: ${error.message}`,
-      });
-    },
-  });
-}
-
-/**
- * Hook for updating access level
- */
-export function useUpdateAccessLevelV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
 
   return useMutation({
     mutationFn: async ({
-      labourId,
-      subscriptionId,
-      accessLevel,
+      firstLabour,
+      dueDate,
+      labourName,
     }: {
-      labourId: string;
-      subscriptionId: string;
-      accessLevel: import('@base/clients/labour_service').SubscriberAccessLevel;
+      firstLabour: boolean;
+      dueDate: Date;
+      labourName?: string;
     }) => {
-      const response = await client.updateAccessLevel(labourId, subscriptionId, accessLevel);
+      const response = await client.planLabour({ firstLabour, dueDate, labourName });
 
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to update access level');
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to plan labour');
       }
 
       return response.data;
     },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.labour.all });
+
+      if (data.labour_id) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.detail(data.labour_id) });
       }
 
       notifications.show({
         ...Success,
         title: 'Success',
-        message: 'Access level updated',
+        message: 'Labour planned successfully',
       });
     },
     onError: (error: Error) => {
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
-        message: `Failed to update access level: ${error.message}`,
+        message: `Failed to plan labour: ${error.message}`,
       });
     },
   });
 }
 
-// Subscription Command Hooks (Admin/Owner)
-
-/**
- * Hook for approving a subscriber
- */
-export function useApproveSubscriberV2(client: LabourServiceV2Client) {
+// Special case: invalidates labour.all
+export function useCompleteLabour(client: LabourServiceClient) {
   const queryClient = useQueryClient();
   const { isConnected } = useWebSocket();
 
   return useMutation({
-    mutationFn: async ({
-      labourId,
-      subscriptionId,
-    }: {
-      labourId: string;
-      subscriptionId: string;
-    }) => {
-      const response = await client.approveSubscriber(labourId, subscriptionId);
+    mutationFn: async ({ labourId, notes }: { labourId: string; notes: string }) => {
+      const response = await client.completeLabour({ labourId, notes });
 
       if (!response.success) {
-        throw new Error(response.error || 'Failed to approve subscriber');
+        throw new Error(response.error || 'Failed to complete labour');
       }
 
       return response.data;
     },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
-      }
-
+    onSuccess: () => {
       notifications.show({
         ...Success,
         title: 'Success',
-        message: 'Subscriber approved',
+        message: 'Labour completed successfully',
       });
+
+      if (!isConnected) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.all });
+      }
     },
     onError: (error: Error) => {
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
-        message: `Failed to approve subscriber: ${error.message}`,
+        message: `Failed to complete labour: ${error.message}`,
       });
     },
   });
 }
 
-/**
- * Hook for removing a subscriber
- */
-export function useRemoveSubscriberV2(client: LabourServiceV2Client) {
+// Special case: does removeQueries + invalidateQueries
+export function useDeleteLabour(client: LabourServiceClient) {
   const queryClient = useQueryClient();
   const { isConnected } = useWebSocket();
 
   return useMutation({
-    mutationFn: async ({
-      labourId,
-      subscriptionId,
-    }: {
-      labourId: string;
-      subscriptionId: string;
-    }) => {
-      const response = await client.removeSubscriber(labourId, subscriptionId);
+    mutationFn: async (labourId: string) => {
+      const response = await client.deleteLabour(labourId);
 
       if (!response.success) {
-        throw new Error(response.error || 'Failed to remove subscriber');
+        throw new Error(response.error || 'Failed to delete labour');
       }
 
       return response.data;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_, labourId) => {
       if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
+        queryClient.removeQueries({ queryKey: queryKeys.labour.detail(labourId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.labour.all });
       }
 
       notifications.show({
         ...Success,
         title: 'Success',
-        message: 'Subscriber removed',
+        message: 'Labour deleted successfully',
       });
     },
     onError: (error: Error) => {
       notifications.show({
         ...ErrorNotification,
         title: 'Error',
-        message: `Failed to remove subscriber: ${error.message}`,
+        message: `Failed to delete labour: ${error.message}`,
       });
     },
   });
 }
 
-/**
- * Hook for blocking a subscriber
- */
-export function useBlockSubscriberV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
+// =============================================================================
+// Subscriber Self-Service Mutations
+// =============================================================================
 
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      subscriptionId,
-    }: {
-      labourId: string;
-      subscriptionId: string;
-    }) => {
-      const response = await client.blockSubscriber(labourId, subscriptionId);
+export const useRequestAccess = createMutation<{
+  labourId: string;
+  token: string;
+}>({
+  mutationFn: (client, { labourId, token }) => client.requestAccess(labourId, token),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Access requested successfully',
+  errorMessage: 'Failed to request access',
+});
 
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to block subscriber');
-      }
+export const useUnsubscribe = createMutation<{
+  labourId: string;
+  subscriptionId: string;
+}>({
+  mutationFn: (client, { labourId, subscriptionId }) =>
+    client.unsubscribe(labourId, subscriptionId),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Unsubscribed successfully',
+  errorMessage: 'Failed to unsubscribe',
+});
 
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
-      }
+export const useUpdateNotificationMethods = createMutation<{
+  labourId: string;
+  subscriptionId: string;
+  methods: SubscriberContactMethod[];
+}>({
+  mutationFn: (client, { labourId, subscriptionId, methods }) =>
+    client.updateNotificationMethods(labourId, subscriptionId, methods),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Notification methods updated',
+  errorMessage: 'Failed to update notification methods',
+});
 
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Subscriber blocked',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to block subscriber: ${error.message}`,
-      });
-    },
-  });
-}
+export const useUpdateAccessLevel = createMutation<{
+  labourId: string;
+  subscriptionId: string;
+  accessLevel: SubscriberAccessLevel;
+}>({
+  mutationFn: (client, { labourId, subscriptionId, accessLevel }) =>
+    client.updateAccessLevel(labourId, subscriptionId, accessLevel),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Access level updated',
+  errorMessage: 'Failed to update access level',
+});
 
-/**
- * Hook for unblocking a subscriber
- */
-export function useUnblockSubscriberV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
+// =============================================================================
+// Subscription Admin Mutations
+// =============================================================================
 
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      subscriptionId,
-    }: {
-      labourId: string;
-      subscriptionId: string;
-    }) => {
-      const response = await client.unblockSubscriber(labourId, subscriptionId);
+export const useApproveSubscriber = createMutation<{
+  labourId: string;
+  subscriptionId: string;
+}>({
+  mutationFn: (client, { labourId, subscriptionId }) =>
+    client.approveSubscriber(labourId, subscriptionId),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Subscriber approved',
+  errorMessage: 'Failed to approve subscriber',
+});
 
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to unblock subscriber');
-      }
+export const useRemoveSubscriber = createMutation<{
+  labourId: string;
+  subscriptionId: string;
+}>({
+  mutationFn: (client, { labourId, subscriptionId }) =>
+    client.removeSubscriber(labourId, subscriptionId),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Subscriber removed',
+  errorMessage: 'Failed to remove subscriber',
+});
 
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
-      }
+export const useBlockSubscriber = createMutation<{
+  labourId: string;
+  subscriptionId: string;
+}>({
+  mutationFn: (client, { labourId, subscriptionId }) =>
+    client.blockSubscriber(labourId, subscriptionId),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Subscriber blocked',
+  errorMessage: 'Failed to block subscriber',
+});
 
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Subscriber unblocked',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to unblock subscriber: ${error.message}`,
-      });
-    },
-  });
-}
+export const useUnblockSubscriber = createMutation<{
+  labourId: string;
+  subscriptionId: string;
+}>({
+  mutationFn: (client, { labourId, subscriptionId }) =>
+    client.unblockSubscriber(labourId, subscriptionId),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Subscriber unblocked',
+  errorMessage: 'Failed to unblock subscriber',
+});
 
-/**
- * Hook for updating subscriber role
- */
-export function useUpdateSubscriberRoleV2(client: LabourServiceV2Client) {
-  const queryClient = useQueryClient();
-  const { isConnected } = useWebSocket();
-
-  return useMutation({
-    mutationFn: async ({
-      labourId,
-      subscriptionId,
-      role,
-    }: {
-      labourId: string;
-      subscriptionId: string;
-      role: import('@base/clients/labour_service').SubscriberRole;
-    }) => {
-      const response = await client.updateSubscriberRole(labourId, subscriptionId, role);
-
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to update subscriber role');
-      }
-
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      if (!isConnected) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeysV2.subscriptions.listByLabour(variables.labourId),
-        });
-      }
-
-      notifications.show({
-        ...Success,
-        title: 'Success',
-        message: 'Subscriber role updated',
-      });
-    },
-    onError: (error: Error) => {
-      notifications.show({
-        ...ErrorNotification,
-        title: 'Error',
-        message: `Failed to update subscriber role: ${error.message}`,
-      });
-    },
-  });
-}
+export const useUpdateSubscriberRole = createMutation<{
+  labourId: string;
+  subscriptionId: string;
+  role: SubscriberRole;
+}>({
+  mutationFn: (client, { labourId, subscriptionId, role }) =>
+    client.updateSubscriberRole(labourId, subscriptionId, role),
+  getInvalidationKey: ({ labourId }) => queryKeys.subscriptions.listByLabour(labourId),
+  invalidateOnError: false,
+  successMessage: 'Subscriber role updated',
+  errorMessage: 'Failed to update subscriber role',
+});

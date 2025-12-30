@@ -1,6 +1,6 @@
-import { AppShell } from '@shared/AppShell';
-import { LabourHistory } from './Components/LabourHistory/LabourHistory';
-import baseClasses from '@shared/shared-styles.module.css';
+import { AppShell } from '@components/AppShell';
+import { LabourHistory } from './LabourHistory';
+import baseClasses from '@components/shared-styles.module.css';
 
 export const LabourHistoryPage = () => {
   return (

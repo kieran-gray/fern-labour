@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useCompleteLabourV2, useLabourV2Client } from '@base/hooks';
-import { ResponsiveDescription } from '@base/shared-components/ResponsiveDescription';
-import { ResponsiveTitle } from '@base/shared-components/ResponsiveTitle';
-import { GenericConfirmModal } from '@shared/GenericConfirmModal/GenericConfirmModal';
-import { dueDateToGestationalAge } from '@shared/utils';
+import { useCompleteLabour, useLabourClient } from '@base/hooks';
+import { GenericConfirmModal } from '@components/GenericConfirmModal';
+import { ResponsiveDescription } from '@components/ResponsiveDescription';
+import { ResponsiveTitle } from '@components/ResponsiveTitle';
+import { dueDateToGestationalAge } from '@lib';
 import { IconConfetti, IconEdit, IconPencil } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -22,7 +22,7 @@ import {
 } from '@mantine/core';
 import { EditLabourModal } from './EditLabourModal';
 import classes from './Manage.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 export function ManageLabour({
   activeContraction,
@@ -36,8 +36,8 @@ export function ManageLabour({
   const [labourNotes, setLabourNotes] = useState('');
   const navigate = useNavigate();
 
-  const client = useLabourV2Client();
-  const completeLabourMutation = useCompleteLabourV2(client);
+  const client = useLabourClient();
+  const completeLabourMutation = useCompleteLabour(client);
   const { labourId, clearSession } = useLabourSession();
 
   if (!labour) {

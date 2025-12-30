@@ -1,9 +1,13 @@
+use std::rc::Rc;
+
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
-use fern_labour_labour_shared::value_objects::LabourPhase;
-use tracing::warn;
+use tracing::{debug, info, warn};
 
-use fern_labour_event_sourcing_rs::{AsyncProjector, AsyncRepositoryTrait, EventEnvelope};
+use fern_labour_event_sourcing_rs::{
+    AsyncRepositoryTrait, CacheExt, CacheTrait, CachedReadModelState, EventEnvelope,
+    IncrementalAsyncProjector,
+};
 
 use crate::durable_object::{
     read_side::read_models::labour_status::read_model::LabourStatusReadModel,
@@ -12,6 +16,7 @@ use crate::durable_object::{
 
 pub struct LabourStatusReadModelProjector {
     name: String,
+    cache_key: String,
     repository: Box<dyn AsyncRepositoryTrait<LabourStatusReadModel>>,
 }
 
@@ -19,11 +24,12 @@ impl LabourStatusReadModelProjector {
     pub fn create(repository: Box<dyn AsyncRepositoryTrait<LabourStatusReadModel>>) -> Self {
         Self {
             name: "LabourStatusReadModelProjector".to_string(),
+            cache_key: "read_model_cache:LabourStatusReadModelProjector".to_string(),
             repository,
         }
     }
 
-    async fn project_event(
+    fn project_event(
         &self,
         model: Option<LabourStatusReadModel>,
         envelope: &EventEnvelope<LabourEvent>,
@@ -47,53 +53,83 @@ impl LabourStatusReadModelProjector {
                 labour.updated_at = timestamp;
                 Some(labour)
             }
-
-            LabourEvent::LabourBegun(_) => {
+            LabourEvent::LabourPhaseChanged(e) => {
                 let mut labour = model?;
-                labour.current_phase = LabourPhase::EARLY;
+                labour.current_phase = e.labour_phase.clone();
                 labour.updated_at = timestamp;
                 Some(labour)
             }
 
-            LabourEvent::LabourCompleted(_) => {
-                let mut labour = model?;
-                labour.current_phase = LabourPhase::COMPLETE;
-                labour.updated_at = timestamp;
-                Some(labour)
-            }
-
-            LabourEvent::LabourDeleted(e) => {
-                if let Err(err) = self.repository.delete(e.labour_id).await {
-                    warn!("Failed to delete LabourStatusReadModel: {err}")
-                }
-                None
-            }
+            LabourEvent::LabourDeleted(_) => None,
             _ => model,
         }
     }
 }
 
 #[async_trait(?Send)]
-impl AsyncProjector<LabourEvent> for LabourStatusReadModelProjector {
+impl IncrementalAsyncProjector<LabourEvent> for LabourStatusReadModelProjector {
     fn name(&self) -> &str {
         &self.name
     }
 
-    async fn project_batch(&self, events: &[EventEnvelope<LabourEvent>]) -> Result<()> {
+    fn get_cached_sequence(&self, cache: &Rc<dyn CacheTrait>) -> i64 {
+        cache
+            .get::<CachedReadModelState<LabourStatusReadModel>>(self.cache_key.clone())
+            .ok()
+            .flatten()
+            .map(|s| s.sequence)
+            .unwrap_or(0)
+    }
+
+    async fn process(
+        &self,
+        cache: &Rc<dyn CacheTrait>,
+        events: &[EventEnvelope<LabourEvent>],
+        max_sequence: i64,
+    ) -> Result<()> {
+        let cached_state: CachedReadModelState<LabourStatusReadModel> = cache
+            .get(self.cache_key.clone())
+            .ok()
+            .flatten()
+            .unwrap_or_else(CachedReadModelState::empty);
+
         if events.is_empty() {
+            debug!(projector = %self.name, "No new events to process");
             return Ok(());
         }
 
-        let mut final_model = None;
-        for envelope in events.iter() {
-            final_model = self.project_event(final_model, envelope).await;
+        let before = cached_state.model.clone();
+        let mut current_model = cached_state.model;
+
+        for envelope in events {
+            current_model = self.project_event(current_model, envelope);
         }
 
-        if let Some(model) = final_model {
-            self.repository
-                .overwrite(&model)
-                .await
-                .map_err(|err| anyhow!("Failed to persist LabourStatusReadModel: {err}"))?;
+        if before != current_model {
+            match (&before, &current_model) {
+                (Some(old_model), None) => {
+                    info!(projector = %self.name, "Model deleted, removing from D1");
+                    self.repository
+                        .delete(old_model.labour_id)
+                        .await
+                        .map_err(|e| anyhow!("Failed to delete: {e}"))?;
+                }
+                (_, Some(new_model)) => {
+                    info!(projector = %self.name, "Model changed, persisting to D1");
+                    self.repository
+                        .overwrite(new_model)
+                        .await
+                        .map_err(|e| anyhow!("Failed to persist: {e}"))?;
+                }
+                (None, None) => {}
+            }
+        } else {
+            debug!(projector = %self.name, "Model unchanged, skipping D1 write");
+        }
+
+        let new_state = CachedReadModelState::new(max_sequence, current_model);
+        if let Err(e) = cache.set(self.cache_key.clone(), &new_state) {
+            warn!(projector = %self.name, error = %e, "Failed to update cache");
         }
 
         Ok(())

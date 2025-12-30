@@ -13,13 +13,13 @@
 import type {
   ContractionReadModel,
   Cursor,
-  LabourServiceV2Client,
+  LabourServiceClient,
   LabourUpdateReadModel,
   PaginatedResponse,
 } from '@base/clients/labour_service';
 import { useWebSocket } from '@base/contexts/WebsocketContext';
 import { InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { queryKeysV2 } from './queryKeys';
+import { queryKeys } from './queryKeys';
 import { useApiAuth } from './useApiAuth';
 
 // Constants
@@ -46,7 +46,7 @@ function decodeCursor(cursorString: string): Cursor {
  * - Ready for WebSocket cache updates via setQueryData
  */
 export function useContractionsInfinite(
-  client: LabourServiceV2Client,
+  client: LabourServiceClient,
   labourId: string | null,
   pageSize: number = DEFAULT_PAGE_SIZE
 ) {
@@ -54,7 +54,7 @@ export function useContractionsInfinite(
   const { isConnected } = useWebSocket();
 
   return useInfiniteQuery({
-    queryKey: labourId ? queryKeysV2.contractions.infinite(labourId) : [],
+    queryKey: labourId ? queryKeys.contractions.infinite(labourId) : [],
     queryFn: async ({ pageParam }) => {
       if (!labourId) {
         throw new Error('Labour ID is required');
@@ -81,7 +81,7 @@ export function useContractionsInfinite(
  * Hook to get paginated labour updates using infinite query
  */
 export function useLabourUpdatesInfinite(
-  client: LabourServiceV2Client,
+  client: LabourServiceClient,
   labourId: string | null,
   pageSize: number = DEFAULT_PAGE_SIZE
 ) {
@@ -89,7 +89,7 @@ export function useLabourUpdatesInfinite(
   const { isConnected } = useWebSocket();
 
   return useInfiniteQuery({
-    queryKey: labourId ? queryKeysV2.labourUpdates.infinite(labourId) : [],
+    queryKey: labourId ? queryKeys.labourUpdates.infinite(labourId) : [],
     queryFn: async ({ pageParam }) => {
       if (!labourId) {
         throw new Error('Labour ID is required');

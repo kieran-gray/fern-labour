@@ -1,1 +1,0 @@
-export { ResponsiveDescription } from './ResponsiveDescription';

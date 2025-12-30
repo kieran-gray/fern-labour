@@ -1,12 +1,12 @@
 import { AppMode, useLabourSession } from '@base/contexts';
-import { useLabourV2Client, useRequestAccessV2 } from '@base/hooks';
-import { AppShell } from '@shared/AppShell';
+import { useLabourClient, useRequestAccess } from '@base/hooks';
+import { AppShell } from '@components/AppShell';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button, Group, Image, PinInput, Space, Text, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import image from './protected.svg';
 import classes from './Form.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 const SUBSCRIBER_TOKEN_LENGTH = 5;
 
@@ -32,8 +32,8 @@ export const SubscribePage: React.FC = () => {
     },
   });
 
-  const client = useLabourV2Client();
-  const mutation = useRequestAccessV2(client);
+  const client = useLabourClient();
+  const mutation = useRequestAccess(client);
 
   const handleSubscribeTo = (values: typeof form.values) => {
     const requestBody = { labourId, token: values.token };

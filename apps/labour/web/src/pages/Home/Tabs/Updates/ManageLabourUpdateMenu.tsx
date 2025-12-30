@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { LabourUpdateType } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useLabourV2Client } from '@base/hooks';
+import { useLabourClient } from '@base/hooks';
 import {
-  useDeleteLabourUpdateV2,
-  useUpdateLabourUpdateMessageV2,
-  useUpdateLabourUpdateTypeV2,
+  useDeleteLabourUpdate,
+  useUpdateLabourUpdateMessage,
+  useUpdateLabourUpdateType,
 } from '@base/hooks/useLabourData';
-import { Error } from '@shared/Notifications';
+import { Error } from '@components/Notifications';
 import { IconDots, IconPencil, IconSpeakerphone, IconTrash } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -15,7 +15,7 @@ import { notifications } from '@mantine/notifications';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
 import ConfirmDeleteModal from './Modals/ConfirmDelete';
 import EditLabourUpdateModal from './Modals/EditLabourUpdate';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 interface ManageLabourUpdateMenuProps {
   statusUpdateId: string;
@@ -32,10 +32,10 @@ export function ManageLabourUpdateMenu({
   const [editMessage, setEditMessage] = useState(currentMessage);
   const { labourId } = useLabourSession();
 
-  const client = useLabourV2Client();
-  const updateTypeMutation = useUpdateLabourUpdateTypeV2(client);
-  const updateMessageMutation = useUpdateLabourUpdateMessageV2(client);
-  const deleteMutation = useDeleteLabourUpdateV2(client);
+  const client = useLabourClient();
+  const updateTypeMutation = useUpdateLabourUpdateType(client);
+  const updateMessageMutation = useUpdateLabourUpdateMessage(client);
+  const deleteMutation = useDeleteLabourUpdate(client);
 
   const handleEditStatusUdpate = async (newMessage: string) => {
     const requestBody = {

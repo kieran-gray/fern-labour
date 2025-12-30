@@ -2,7 +2,7 @@ pub mod authorization;
 pub mod exceptions;
 pub mod http;
 pub mod read_side;
-pub mod state;
+pub mod setup;
 pub mod websocket;
 pub mod write_side;
 
@@ -16,7 +16,7 @@ use worker::{
 use crate::durable_object::{
     http::router::route_request,
     read_side::query_handler::QueryHandler,
-    state::AggregateServices,
+    setup::state::LabourRoomServices,
     websocket::{
         middleware::extract_auth_context_from_websocket,
         routes::upgrade_connection,
@@ -28,16 +28,16 @@ use crate::durable_object::{
 };
 
 #[durable_object]
-pub struct LabourAggregate {
+pub struct LabourRoom {
     state: State,
     _env: Env,
-    pub(crate) services: AggregateServices,
+    pub(crate) services: LabourRoomServices,
     alarm_manager: AlarmManager,
 }
 
-impl DurableObject for LabourAggregate {
+impl DurableObject for LabourRoom {
     fn new(state: State, env: Env) -> Self {
-        let services = match AggregateServices::from_worker_state(&state, &env) {
+        let services = match LabourRoomServices::from_worker_state(&state, &env) {
             Ok(s) => s,
             Err(err) => panic!("{}", err),
         };

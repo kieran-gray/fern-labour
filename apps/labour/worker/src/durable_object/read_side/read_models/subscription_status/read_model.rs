@@ -7,7 +7,7 @@ use fern_labour_labour_shared::value_objects::subscriber::status::SubscriberStat
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SubscriptionStatusReadModel {
     pub subscription_id: Uuid,
     pub labour_id: Uuid,

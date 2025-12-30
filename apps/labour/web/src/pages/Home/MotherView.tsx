@@ -1,13 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useLabourV2Client } from '@base/hooks';
+import { useLabourClient } from '@base/hooks';
 import { flattenContractions, useContractionsInfinite } from '@base/hooks/useInfiniteQueries';
-import { useCurrentLabourV2 } from '@base/hooks/useLabourData';
+import { useCurrentLabour } from '@base/hooks/useLabourData';
+import {
+  getFloatingControlsPadding,
+  scrollMainToBottom,
+  useSwipeableNavigation,
+} from '@base/hooks/useSwipeableNavigation';
 import { NotFoundError, PermissionDenied } from '@base/lib/errors';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
-import { AppShell } from '@shared/AppShell';
-import { ErrorContainer } from '@shared/ErrorContainer/ErrorContainer';
-import { PageLoading } from '@shared/PageLoading/PageLoading';
+import { AppShell } from '@components/AppShell';
+import { ErrorContainer } from '@components/ErrorContainer/ErrorContainer';
+import { FloatingPanel } from '@components/FloatingPanel';
+import { PageLoading } from '@components/PageLoading/PageLoading';
 import {
   IconChartHistogram,
   IconMessage,
@@ -16,19 +22,19 @@ import {
   IconStopwatch,
 } from '@tabler/icons-react';
 import { useSearchParams } from 'react-router-dom';
-import { useSwipeable } from 'react-swipeable';
 import { Space } from '@mantine/core';
 import { CompletedLabourContainer } from '../CompletedLabour/Page';
+import { LabourPageShell } from './components/LabourPageShell';
 import { ManageLabour } from './Tabs/ManageLabour/Manage';
-import { SubscribersContainer } from './Tabs/ManageLabour/ManageSubscribers/ManageSubscribers';
-import Plan from './Tabs/ManageLabour/Plan/Plan';
+import Plan from './Tabs/ManageLabour/Plan';
+import { SubscribersContainer } from './Tabs/ManageLabour/SubscribersContainer';
 import { Share } from './Tabs/Share/Share';
 import { LabourStatistics } from './Tabs/Statistics/LabourStatistics';
+import { ContractionControls } from './Tabs/Track/ContractionControls';
 import { Contractions } from './Tabs/Track/Contractions';
-import { FloatingContractionControls } from './Tabs/Track/Controls/FloatingContractionControls';
-import { FloatingLabourUpdateControls } from './Tabs/Updates/FloatingLabourUpdateControls';
+import { LabourUpdateControls } from './Tabs/Updates/LabourUpdateControls';
 import { LabourUpdates } from './Tabs/Updates/LabourUpdates';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 const TABS = [
   { id: 'details', label: 'Manage', icon: IconSettings },
@@ -50,40 +56,16 @@ export const MotherView = () => {
   const [isUpdateControlsExpanded, setIsUpdateControlsExpanded] = useState(true);
   const [isContractionControlsExpanded, setIsContractionControlsExpanded] = useState(true);
 
-  const scrollMainToBottom = (smooth: boolean = true) => {
-    const main = document.getElementById('app-main');
-    if (main) {
-      main.scrollTo({ top: main.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
-    }
-  };
-
-  const swipeHandlers = useSwipeable({
-    onSwipedRight: () => {
-      if (activeTab) {
-        const tabIndex = tabOrder.indexOf(activeTab as (typeof tabOrder)[number]);
-        if (tabIndex > 0) {
-          setActiveTab(tabOrder[tabIndex - 1]);
-        }
-      }
-    },
-    onSwipedLeft: () => {
-      if (activeTab) {
-        const tabIndex = tabOrder.indexOf(activeTab as (typeof tabOrder)[number]);
-        if (tabIndex < tabOrder.length - 1) {
-          setActiveTab(tabOrder[tabIndex + 1]);
-        }
-      }
-    },
-    delta: 10,
-    swipeDuration: 250,
-    trackTouch: true,
-    preventScrollOnSwipe: true,
+  const swipeHandlers = useSwipeableNavigation({
+    activeTab,
+    tabOrder,
+    setActiveTab,
   });
 
   const currentLabourId = labourId || labourIdParam;
 
-  const client = useLabourV2Client();
-  const { isPending, isError, data: labour, error } = useCurrentLabourV2(client, currentLabourId);
+  const client = useLabourClient();
+  const { isPending, isError, data: labour, error } = useCurrentLabour(client, currentLabourId);
   const { data: contractionsData } = useContractionsInfinite(client, currentLabourId);
   const contractions = useMemo(() => flattenContractions(contractionsData), [contractionsData]);
 
@@ -148,24 +130,14 @@ export const MotherView = () => {
     (contraction) => contraction.duration.start_time === contraction.duration.end_time
   );
 
-  const getFloatingControlsPadding = () => {
-    if (window.innerWidth >= 768 || completed) {
-      return '30px';
-    }
-    if (activeTab === 'track') {
-      if (!isContractionControlsExpanded) {
-        return '50px';
-      }
-      return activeContraction ? '350px' : '140px';
-    }
-
-    if (activeTab === 'updates') {
-      if (isUpdateControlsExpanded) {
-        return isOnline ? '180px' : '120px';
-      }
-      return '55px';
-    }
-  };
+  const bottomPadding = getFloatingControlsPadding({
+    activeTab,
+    completed,
+    isContractionControlsExpanded,
+    isUpdateControlsExpanded,
+    hasActiveContraction: !!activeContraction,
+    isOnline,
+  });
 
   const renderTabPanel = (tabId: string) => {
     switch (tabId) {
@@ -191,47 +163,44 @@ export const MotherView = () => {
   };
 
   return (
-    <div {...swipeHandlers}>
-      <AppShell navItems={TABS} activeNav={activeTab} onNavChange={setActiveTab}>
-        <div
-          className={baseClasses.flexPageColumn}
-          style={{ paddingBottom: getFloatingControlsPadding() }}
-        >
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+    <LabourPageShell
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      tabs={TABS}
+      swipeHandlers={swipeHandlers}
+      bottomPadding={bottomPadding}
+      floatingPanels={
+        <>
+          <FloatingPanel
+            visible={activeTab === 'track' && !completed}
+            onToggle={(expanded) => {
+              setIsContractionControlsExpanded(expanded);
+              if (expanded) {
+                setTimeout(() => scrollMainToBottom(true), 50);
+              }
             }}
           >
-            {renderTabPanel(activeTab || 'track')}
-          </div>
-        </div>
+            <ContractionControls
+              labourCompleted={completed}
+              activeContraction={activeContraction}
+            />
+          </FloatingPanel>
 
-        <FloatingContractionControls
-          labourCompleted={completed}
-          activeContraction={activeContraction}
-          activeTab={activeTab}
-          onToggle={(expanded) => {
-            setIsContractionControlsExpanded(expanded);
-            if (expanded) {
-              setTimeout(() => scrollMainToBottom(true), 50);
-            }
-          }}
-        />
-
-        <FloatingLabourUpdateControls
-          labour={labour}
-          activeTab={activeTab}
-          onToggle={(expanded) => {
-            setIsUpdateControlsExpanded(expanded);
-            if (expanded) {
-              setTimeout(() => scrollMainToBottom(true), 50);
-            }
-          }}
-        />
-      </AppShell>
-    </div>
+          <FloatingPanel
+            visible={activeTab === 'updates' && !completed}
+            onToggle={(expanded) => {
+              setIsUpdateControlsExpanded(expanded);
+              if (expanded) {
+                setTimeout(() => scrollMainToBottom(true), 50);
+              }
+            }}
+          >
+            <LabourUpdateControls />
+          </FloatingPanel>
+        </>
+      }
+    >
+      {renderTabPanel(activeTab || 'track')}
+    </LabourPageShell>
   );
 };

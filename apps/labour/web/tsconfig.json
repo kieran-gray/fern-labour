@@ -23,7 +23,9 @@
     "baseUrl": "src",
     "paths": {
       "@base/*": ["*"],
-      "@shared/*": ["shared-components/*"],
+      "@components/*": ["components/*"],
+      "@lib/*": ["lib/*"],
+      "@lib": ["lib/index.ts"],
       "@clients/*": ["clients/*"],
       "@home/*": ["pages/Home/*"]
     }

@@ -1,0 +1,90 @@
+.card {
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-3));
+  border: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  border-color: light-dark(var(--mantine-color-primary-2), var(--mantine-color-primary-7));
+}
+
+.cardSelected {
+  border-color: light-dark(var(--mantine-color-primary-4), var(--mantine-color-primary-6));
+  box-shadow: 0 0 0 1px light-dark(var(--mantine-color-primary-1), var(--mantine-color-primary-6));
+}
+
+.cropText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-1));
+}
+
+.loadingContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--mantine-spacing-xl);
+}
+
+.avatar {
+  flex-shrink: 0;
+}
+
+.badge {
+  flex-shrink: 0;
+}
+
+.actions {
+  flex-shrink: 0;
+}
+
+/* Date display - show full date by default, short on small screens */
+.dateFull {
+  display: block;
+  white-space: nowrap;
+}
+
+.dateShort {
+  display: none;
+  white-space: nowrap;
+}
+
+/* View button - show full button by default, compact on small screens */
+.viewButtonFull {
+  display: flex;
+}
+
+.viewButtonCompact {
+  display: none;
+}
+
+/* Medium screens (< 576px): Switch to short date */
+@media (max-width: $mantine-breakpoint-xs) {
+  .dateFull {
+    display: none;
+  }
+
+  .dateShort {
+    display: block;
+  }
+}
+
+/* Small screens (< 480px): Switch to icon button */
+@media (max-width: 480px) {
+  .viewButtonFull {
+    display: none;
+  }
+
+  .viewButtonCompact {
+    display: flex;
+  }
+}
+
+/* Very small screens (< 360px): Hide avatar */
+@media (max-width: 360px) {
+  .avatar {
+    display: none;
+  }
+}

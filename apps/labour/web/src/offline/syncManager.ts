@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import type { LabourServiceV2Client } from '@base/clients/labour_service';
+import type { LabourServiceClient } from '@base/clients/labour_service';
 import { getPendingCommands, getPendingCount, removeCommand } from './commandQueue';
 import { networkDetector } from './sync/networkDetector';
 
@@ -19,7 +19,7 @@ interface SyncState {
 type SyncListener = (state: SyncState) => void;
 
 class SyncManager {
-  private client: LabourServiceV2Client | null = null;
+  private client: LabourServiceClient | null = null;
   private isSyncing = false;
   private listeners = new Set<SyncListener>();
   private state: SyncState = { status: 'idle', pendingCount: 0 };
@@ -28,7 +28,7 @@ class SyncManager {
    * Initialize the sync manager with a client
    * Must be called before sync can happen
    */
-  initialize(client: LabourServiceV2Client) {
+  initialize(client: LabourServiceClient) {
     this.client = client;
 
     // Listen for network changes

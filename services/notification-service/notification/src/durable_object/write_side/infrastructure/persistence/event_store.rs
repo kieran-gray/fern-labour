@@ -102,4 +102,20 @@ impl EventStoreTrait for SqlEventStore {
 
         Ok(rows)
     }
+
+    fn max_sequence(&self) -> Result<Option<i64>> {
+        #[derive(Deserialize)]
+        struct MaxSequenceResult {
+            max_seq: Option<i64>,
+        }
+
+        let result = self
+            .sql
+            .exec("SELECT MAX(sequence) as max_seq FROM events", None)
+            .context("Failed to query max sequence")?
+            .one::<MaxSequenceResult>()
+            .context("Failed to parse max sequence result")?;
+
+        Ok(result.max_seq)
+    }
 }

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ContractionReadModel } from '@base/clients/labour_service/types';
-import { formatTimeMilliseconds, formatTimeSeconds } from '@shared/utils';
+import { formatTimeMilliseconds, formatTimeSeconds } from '@lib';
 import { IconActivityHeartbeat } from '@tabler/icons-react';
 import { Button, ScrollArea, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { EditContractionModal } from './Controls/EditContractionModal';
+import { EditContractionModal } from './EditContractionModal';
 import classes from './ContractionTimelineCustom.module.css';
 
 function usePrevious<T>(value: T): T | undefined {

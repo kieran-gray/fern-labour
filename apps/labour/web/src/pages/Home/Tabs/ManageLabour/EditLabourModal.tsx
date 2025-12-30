@@ -1,12 +1,12 @@
 import { LabourReadModel } from '@base/clients/labour_service';
-import { useLabourV2Client, useUpdateLabourPlanV2 } from '@base/hooks';
-import { validateLabourName } from '@base/shared-components/utils';
+import { useLabourClient, useUpdateLabourPlan } from '@base/hooks';
+import { validateLabourName } from '@lib';
 import { IconCalendar, IconPencil } from '@tabler/icons-react';
 import { Button, Group, Modal, Radio, Stack, TextInput } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import modalClasses from '@shared/Modal.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import modalClasses from '@components/Modal.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 interface EditLabourModalProps {
   labour: LabourReadModel;
@@ -15,8 +15,8 @@ interface EditLabourModalProps {
 }
 
 export function EditLabourModal({ labour, isOpen, onClose }: EditLabourModalProps) {
-  const client = useLabourV2Client();
-  const updateLabourMutation = useUpdateLabourPlanV2(client);
+  const client = useLabourClient();
+  const updateLabourMutation = useUpdateLabourPlan(client);
 
   const form = useForm({
     mode: 'uncontrolled',

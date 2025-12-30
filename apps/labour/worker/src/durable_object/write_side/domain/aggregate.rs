@@ -834,7 +834,7 @@ mod tests {
                 labour_phase: LabourPhase::TRANSITION,
             }));
             events.extend(contraction_events(4, 2.0, 9));
-            
+
             let active_contraction_id = Uuid::now_v7();
             events.push(LabourEvent::ContractionStarted(ContractionStarted {
                 labour_id: labour_id(),
@@ -867,7 +867,7 @@ mod tests {
             }));
             // Add contractions that only meet ACTIVE threshold (intensity 6-7, duration 1.0 min)
             events.extend(contraction_events(4, 1.0, 6));
-            
+
             let active_contraction_id = Uuid::now_v7();
             events.push(LabourEvent::ContractionStarted(ContractionStarted {
                 labour_id: labour_id(),
@@ -901,7 +901,7 @@ mod tests {
             }));
             // Add contractions below ACTIVE threshold (intensity 4, duration 0.5 min)
             events.extend(contraction_events(4, 0.5, 4));
-            
+
             let active_contraction_id = Uuid::now_v7();
             events.push(LabourEvent::ContractionStarted(ContractionStarted {
                 labour_id: labour_id(),

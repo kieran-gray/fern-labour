@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import 'core-js/actual/structured-clone';
 
 jest.mock('@base/hooks/useLabourClient', () => ({
-  useLabourV2Client: jest.fn(() => ({
+  useLabourClient: jest.fn(() => ({
     startContraction: jest.fn().mockResolvedValue({ success: true }),
     endContraction: jest.fn().mockResolvedValue({ success: true }),
     updateContraction: jest.fn().mockResolvedValue({ success: true }),
@@ -10,15 +10,6 @@ jest.mock('@base/hooks/useLabourClient', () => ({
     planLabour: jest.fn().mockResolvedValue({ success: true, data: { labour_id: 'test-id' } }),
     completeLabour: jest.fn().mockResolvedValue({ success: true }),
     postLabourUpdate: jest.fn().mockResolvedValue({ success: true }),
-    sendStartContractionCommand: jest.fn().mockResolvedValue({ success: true }),
-    sendEndContractionCommand: jest.fn().mockResolvedValue({ success: true }),
-    sendUpdateContractionCommand: jest.fn().mockResolvedValue({ success: true }),
-    sendDeleteContractionCommand: jest.fn().mockResolvedValue({ success: true }),
-    sendPlanLabourCommand: jest
-      .fn()
-      .mockResolvedValue({ success: true, data: { labour_id: 'test-id' } }),
-    sendCompleteLabourCommand: jest.fn().mockResolvedValue({ success: true }),
-    sendPostLabourUpdateCommand: jest.fn().mockResolvedValue({ success: true }),
     getActiveLabour: jest.fn().mockResolvedValue({ success: true, data: null }),
     getLabour: jest.fn().mockResolvedValue({ success: true, data: {} }),
     getLabourHistory: jest.fn().mockResolvedValue({ success: true, data: [] }),

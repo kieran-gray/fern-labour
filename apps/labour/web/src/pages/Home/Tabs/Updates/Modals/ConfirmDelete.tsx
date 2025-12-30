@@ -1,5 +1,5 @@
 import { Button, Group, Modal, Stack, Text } from '@mantine/core';
-import classes from '@shared/Modal.module.css';
+import classes from '@components/Modal.module.css';
 
 export default function ConfirmDeleteModal({
   onConfirm,

@@ -8,20 +8,20 @@ use crate::durable_object::{
             labour::handle_labour_domain_command, query::handle_query,
         },
     },
-    state::AggregateServices,
+    setup::state::LabourRoomServices,
 };
 
 pub struct RequestContext<'a> {
-    pub data: &'a AggregateServices,
+    pub data: &'a LabourRoomServices,
 }
 
 impl<'a> RequestContext<'a> {
-    pub fn new(data: &'a AggregateServices) -> Self {
+    pub fn new(data: &'a LabourRoomServices) -> Self {
         Self { data }
     }
 }
 
-pub async fn route_request(req: Request, services: &AggregateServices) -> Result<Response> {
+pub async fn route_request(req: Request, services: &LabourRoomServices) -> Result<Response> {
     let method = req.method();
     let path = req.path();
     let ctx = RequestContext::new(services);

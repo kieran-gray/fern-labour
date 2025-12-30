@@ -1,0 +1,75 @@
+import { RefObject, useRef } from 'react';
+import { ContractionReadModel } from '@base/clients/labour_service/types';
+import { useLabourSession } from '@base/contexts/LabourSessionContext';
+import { useLabourClient } from '@base/hooks';
+import { generateContractionId, useStartContractionOffline } from '@base/offline/hooks';
+import { IconHourglassLow } from '@tabler/icons-react';
+import { Button } from '@mantine/core';
+import { ActiveContractionControls } from './ActiveContractionControls';
+import { StopwatchHandle } from './Stopwatch';
+
+function StartContractionButton({ stopwatchRef }: { stopwatchRef: RefObject<StopwatchHandle> }) {
+  const { labourId } = useLabourSession();
+  const client = useLabourClient();
+  const mutation = useStartContractionOffline(client);
+
+  const handleStartContraction = () => {
+    stopwatchRef.current?.start();
+
+    const contractionId = generateContractionId();
+    mutation.mutate({
+      labourId: labourId!,
+      startTime: new Date(),
+      contractionId,
+    });
+  };
+
+  const icon = <IconHourglassLow size={25} />;
+
+  return (
+    <Button
+      leftSection={icon}
+      radius="xl"
+      size="xl"
+      variant="filled"
+      loading={mutation.isPending}
+      onClick={handleStartContraction}
+    >
+      Start Contraction
+    </Button>
+  );
+}
+
+interface ContractionControlsProps {
+  labourCompleted: boolean;
+  activeContraction: ContractionReadModel | undefined;
+}
+
+export function ContractionControls({
+  labourCompleted,
+  activeContraction,
+}: ContractionControlsProps) {
+  const stopwatchRef = useRef<StopwatchHandle>(null);
+  // Don't show controls if labour is completed
+  if (labourCompleted) {
+    return null;
+  }
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <div style={{ width: '100%', maxWidth: '600px' }}>
+        {activeContraction ? (
+          <ActiveContractionControls
+            stopwatchRef={stopwatchRef}
+            activeContraction={activeContraction}
+            disabled={false}
+          />
+        ) : (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <StartContractionButton stopwatchRef={stopwatchRef} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

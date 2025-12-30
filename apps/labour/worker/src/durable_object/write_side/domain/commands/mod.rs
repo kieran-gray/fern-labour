@@ -116,7 +116,6 @@ impl From<ContractionCommand> for LabourCommand {
                 labour_id,
                 start_time,
                 contraction_id,
-
             } => LabourCommand::StartContraction(StartContraction {
                 labour_id,
                 contraction_id,

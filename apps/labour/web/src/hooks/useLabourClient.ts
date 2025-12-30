@@ -1,19 +1,19 @@
 /**
- * Hook to create and configure the Labour Service V2 Client
+ * Hook to create and configure the Labour Service Client
  */
 
 import { useMemo } from 'react';
-import { LabourServiceV2Client } from '@base/clients/labour_service';
+import { LabourServiceClient } from '@base/clients/labour_service';
 import { useWebSocket } from '@base/contexts/WebsocketContext';
 import { useAuth } from '@clerk/clerk-react';
 
-export function useLabourV2Client() {
+export function useLabourClient() {
   const { getToken } = useAuth();
   const websocket = useWebSocket();
 
   return useMemo(
     () =>
-      new LabourServiceV2Client({
+      new LabourServiceClient({
         baseUrl: import.meta.env.VITE_LABOUR_SERVICE_URL || '',
         getAccessToken: async () => {
           try {

@@ -1,11 +1,11 @@
-import { ResponsiveTitle } from '@base/shared-components/ResponsiveTitle';
-import { AppShell } from '@shared/AppShell';
+import { AppShell } from '@components/AppShell';
+import { ResponsiveTitle } from '@components/ResponsiveTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button, Image, Mark, Space, Text } from '@mantine/core';
-import { ShareFernLabour } from '../Home/Tabs/Subscriptions/ShareFernLabour/ShareFernLabour';
+import { ShareFernLabour } from '../Home/Tabs/MySubscriptions/ShareFernLabour';
 import image from './thanks.svg';
 import classes from './CompletedLabour.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 export const CompletedLabourContainer: React.FC = () => {
   const navigate = useNavigate();

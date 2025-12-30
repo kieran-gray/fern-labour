@@ -1,4 +1,4 @@
-import { formatTimeSeconds } from '@shared/utils';
+import { formatTimeSeconds } from '@lib';
 import { Table } from '@mantine/core';
 import { LabourStatisticsData } from './LabourStatistics';
 import classes from './LabourStatistics.module.css';

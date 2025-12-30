@@ -13,10 +13,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import App from './App';
+import { ProtectedApp } from './components/ProtectedApp';
+import { PWAUpdateHandler } from './components/PWAUpdateHandler';
 import { queryClient } from './config/index';
 import { initializeQueryPersistence } from './offline/persistence/queryPersistence';
-import { ProtectedApp } from './shared-components/ProtectedApp';
-import { PWAUpdateHandler } from './shared-components/PWAUpdateHandler';
 import { theme } from './theme';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;

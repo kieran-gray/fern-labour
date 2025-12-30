@@ -4,11 +4,11 @@
  */
 
 import { useEffect } from 'react';
-import { useLabourV2Client } from '@base/hooks/useLabourClient';
+import { useLabourClient } from '@base/hooks/useLabourClient';
 import { syncManager } from './syncManager';
 
 export function SyncManagerInitializer() {
-  const client = useLabourV2Client();
+  const client = useLabourClient();
 
   useEffect(() => {
     syncManager.initialize(client);

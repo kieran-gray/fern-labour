@@ -1,6 +1,6 @@
-import { AppShell } from '@shared/AppShell';
-import { ContactUs } from './ContactUs/ContactUs';
-import baseClasses from '@shared/shared-styles.module.css';
+import { AppShell } from '@components/AppShell';
+import { ContactUs } from './ContactUs';
+import baseClasses from '@components/shared-styles.module.css';
 
 export const ContactPage = () => {
   return (

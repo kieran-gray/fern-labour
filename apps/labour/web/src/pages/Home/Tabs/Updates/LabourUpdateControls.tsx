@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react';
 import { LabourUpdateType } from '@base/clients/labour_service';
 import { useLabourSession } from '@base/contexts/LabourSessionContext';
-import { useLabourV2Client, usePostLabourUpdateV2 } from '@base/hooks';
+import { useLabourClient, usePostLabourUpdate } from '@base/hooks';
 import { LABOUR_UPDATE_MAX_LENGTH } from '@base/lib/constants';
 import { useNetworkState } from '@base/offline/sync/networkDetector';
 import { IconSend, IconSpeakerphone, IconWifiOff } from '@tabler/icons-react';
 import { Button, Group, Switch, Text, Textarea } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import ConfirmAnnouncementModal from './Modals/ConfirmAnnouncement';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 export function LabourUpdateControls() {
   const [message, setMessage] = useState('');
@@ -18,8 +18,8 @@ export function LabourUpdateControls() {
   const { isOnline } = useNetworkState();
   const isDesktop = useMediaQuery('(min-width: 48em)');
 
-  const client = useLabourV2Client();
-  const mutation = usePostLabourUpdateV2(client);
+  const client = useLabourClient();
+  const mutation = usePostLabourUpdate(client);
 
   const handleMessageChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (event.currentTarget.value.length <= LABOUR_UPDATE_MAX_LENGTH) {

@@ -1,45 +1,70 @@
-use std::{collections::HashMap, rc::Rc};
+use std::rc::Rc;
 
 use anyhow::{Context, Result, anyhow};
-use futures::future::try_join_all;
-use tracing::{debug, info};
+use tracing::{debug, info, warn};
 
 use fern_labour_event_sourcing_rs::{
-    AsyncProjector, EventEnvelope, EventEnvelopeAdapter, EventStoreTrait,
+    CacheTrait, EventEnvelope, EventEnvelopeAdapter, EventStoreTrait, IncrementalAsyncProjector,
 };
 
 use crate::durable_object::write_side::domain::LabourEvent;
 
 pub struct AsyncProjectionProcessor {
     event_store: Rc<dyn EventStoreTrait>,
-    projectors: HashMap<String, Box<dyn AsyncProjector<LabourEvent>>>,
+    cache: Rc<dyn CacheTrait>,
+    projectors: Vec<Box<dyn IncrementalAsyncProjector<LabourEvent>>>,
+    default_batch_size: i64,
 }
 
 impl AsyncProjectionProcessor {
     pub fn create(
         event_store: Rc<dyn EventStoreTrait>,
-        projectors: Vec<Box<dyn AsyncProjector<LabourEvent>>>,
+        cache: Rc<dyn CacheTrait>,
+        projectors: Vec<Box<dyn IncrementalAsyncProjector<LabourEvent>>>,
+        default_batch_size: i64,
     ) -> Self {
-        let projector_map: HashMap<String, Box<dyn AsyncProjector<LabourEvent>>> = projectors
-            .into_iter()
-            .map(|proj| (proj.name().to_string(), proj))
-            .collect();
         Self {
             event_store,
-            projectors: projector_map,
+            cache,
+            projectors,
+            default_batch_size,
         }
     }
 
+    fn get_min_cached_sequence(&self) -> i64 {
+        self.projectors
+            .iter()
+            .map(|p| p.get_cached_sequence(&self.cache))
+            .min()
+            .unwrap_or(0)
+    }
+
     pub async fn process_projections(&self) -> Result<()> {
-        debug!("Starting projection processing");
+        debug!("Starting async projection processing");
+
+        let Some(max_sequence) = self.event_store.max_sequence()? else {
+            debug!("No events in store");
+            return Ok(());
+        };
+
+        let min_cached_sequence = self.get_min_cached_sequence();
+
+        if min_cached_sequence >= max_sequence {
+            debug!(
+                min_cached_sequence = min_cached_sequence,
+                max_sequence = max_sequence,
+                "All projectors are up to date, skipping"
+            );
+            return Ok(());
+        }
 
         let stored_events = self
             .event_store
-            .load()
-            .context("Failed to load events from store")?;
+            .events_since(min_cached_sequence, self.default_batch_size)
+            .context("Failed to fetch events since checkpoint")?;
 
         if stored_events.is_empty() {
-            debug!("No events to project");
+            debug!("No new events to process");
             return Ok(());
         }
 
@@ -48,25 +73,36 @@ impl AsyncProjectionProcessor {
             .map(|stored| stored.to_envelope())
             .collect::<Result<Vec<_>>>()?;
 
-        let event_count = envelopes.len();
         debug!(
-            event_count = event_count,
-            "Processing events through projectors"
+            event_count = envelopes.len(),
+            min_cached_sequence = min_cached_sequence,
+            max_sequence = max_sequence,
+            "Processing events through incremental projectors"
         );
 
-        let futures: Vec<_> = self
-            .projectors
-            .values()
-            .map(|projector| projector.project_batch(&envelopes))
-            .collect();
-
-        try_join_all(futures)
-            .await
-            .map_err(|err| anyhow!("Failed to project events: {err}"))?;
+        for projector in &self.projectors {
+            if let Err(e) = projector
+                .process(&self.cache, &envelopes, max_sequence)
+                .await
+            {
+                warn!(
+                    projector = %projector.name(),
+                    error = %e,
+                    "Failed to process projector"
+                );
+                return Err(anyhow!(
+                    "Failed to process projector {}: {}",
+                    projector.name(),
+                    e
+                ));
+            }
+        }
 
         info!(
-            events_processed = event_count,
-            "Projection processing completed"
+            projector_count = self.projectors.len(),
+            events_loaded = envelopes.len(),
+            max_sequence = max_sequence,
+            "Async projection processing completed"
         );
 
         Ok(())

@@ -11,8 +11,6 @@ use fern_labour_event_sourcing_rs::{
 
 use crate::durable_object::write_side::domain::LabourEvent;
 
-const DEFAULT_BATCH_SIZE: i64 = 100;
-
 pub struct SyncProjectionProcessor {
     event_store: Rc<dyn EventStoreTrait>,
     checkpoint_repository: Box<dyn CheckpointRepository>,
@@ -25,6 +23,7 @@ impl SyncProjectionProcessor {
         event_store: Rc<dyn EventStoreTrait>,
         checkpoint_repository: Box<dyn CheckpointRepository>,
         projectors: Vec<Box<dyn SyncProjector<LabourEvent>>>,
+        default_batch_size: i64,
     ) -> Self {
         let projector_map: HashMap<String, Box<dyn SyncProjector<LabourEvent>>> = projectors
             .into_iter()
@@ -35,7 +34,7 @@ impl SyncProjectionProcessor {
             event_store,
             checkpoint_repository,
             projectors: projector_map,
-            batch_size: DEFAULT_BATCH_SIZE,
+            batch_size: default_batch_size,
         }
     }
 

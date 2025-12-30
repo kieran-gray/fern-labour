@@ -1,5 +1,5 @@
 // updateTime.test.ts
-import { updateTime } from '../../../../shared-components/utils/contractions';
+import { updateTime } from '@lib/calculations';
 
 describe('updateTime', () => {
   describe('day boundary crossings', () => {

@@ -16,25 +16,29 @@ pub struct ProcessManager<E: EffectExecutor> {
     executor: E,
     event_store: Rc<dyn EventStoreTrait>,
     aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
+    default_batch_size: i64,
+    max_retry_attempts: i64,
 }
 
 impl<E> ProcessManager<E>
 where
     E: EffectExecutor,
 {
-    const MAX_RETRY_ATTEMPTS: i64 = 6;
-
     pub fn new(
         ledger: EffectLedger,
         executor: E,
         event_store: Rc<dyn EventStoreTrait>,
         aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
+        default_batch_size: i64,
+        max_retry_attempts: i64,
     ) -> Self {
         Self {
             ledger,
             executor,
             event_store,
             aggregate_repository,
+            default_batch_size,
+            max_retry_attempts,
         }
     }
 
@@ -42,7 +46,7 @@ where
         let last_sequence = self.ledger.get_last_processed_sequence()?;
         let events = self
             .event_store
-            .events_since(last_sequence, 100)
+            .events_since(last_sequence, self.default_batch_size)
             .context("Failed to load events since last processed sequence")?;
 
         if events.is_empty() {
@@ -95,7 +99,7 @@ where
     pub async fn dispatch_pending_effects(&self) -> Result<()> {
         let pending = self
             .ledger
-            .get_pending_effects(Self::MAX_RETRY_ATTEMPTS)
+            .get_pending_effects(self.max_retry_attempts)
             .context("Failed to get pending effects")?;
 
         if pending.is_empty() {
@@ -127,7 +131,7 @@ where
                 Err(e) => {
                     had_failure = true;
 
-                    let exhausted = record.attempts + 1 >= Self::MAX_RETRY_ATTEMPTS;
+                    let exhausted = record.attempts + 1 >= self.max_retry_attempts;
                     self.ledger
                         .mark_failed(&record.effect_id, &e.to_string(), exhausted)
                         .context("Failed to mark effect as failed")?;
@@ -135,9 +139,7 @@ where
                     if exhausted {
                         error!(
                             "Effect {} failed after {} attempts: {}",
-                            record.effect_id,
-                            Self::MAX_RETRY_ATTEMPTS,
-                            e
+                            record.effect_id, self.max_retry_attempts, e
                         );
                     } else {
                         info!(
@@ -165,6 +167,6 @@ where
     }
 
     pub fn has_pending_work(&self) -> Result<bool> {
-        self.ledger.has_pending_effects(Self::MAX_RETRY_ATTEMPTS)
+        self.ledger.has_pending_effects(self.max_retry_attempts)
     }
 }

@@ -1,13 +1,13 @@
 /**
- * Labour Service V2 Client
+ * Labour Service Client
  *
- * TypeScript client for the V2 Cloudflare Workers Labour API.
+ * TypeScript client for the Cloudflare Workers Labour API.
  * This client is manually maintained based on the Rust command definitions
  * in packages/labour-shared/src/commands/
  */
 
-export { LabourServiceClient as LabourServiceV2Client } from './client';
-export type { LabourServiceConfig as LabourServiceV2Config } from './client';
+export { LabourServiceClient } from './client';
+export type { LabourServiceConfig } from './client';
 
 export {
   SubscriberContactMethod,

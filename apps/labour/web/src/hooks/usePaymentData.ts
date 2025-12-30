@@ -1,10 +1,10 @@
-import type { LabourServiceV2Client } from '@base/clients/labour_service';
-import { Error as ErrorNotification } from '@shared/Notifications';
+import type { LabourServiceClient } from '@base/clients/labour_service';
+import { Error as ErrorNotification } from '@components/Notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
-import { queryKeysV2 } from './queryKeys';
+import { queryKeys } from './queryKeys';
 
-export function useCreateCheckoutSessionV2(client: LabourServiceV2Client) {
+export function useCreateCheckoutSession(client: LabourServiceClient) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -31,7 +31,7 @@ export function useCreateCheckoutSessionV2(client: LabourServiceV2Client) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeysV2.subscriptions.all,
+        queryKey: queryKeys.subscriptions.all,
       });
 
       window.location.href = data.url;

@@ -1,10 +1,10 @@
 import { AppMode, useLabourSession } from '@base/contexts/LabourSessionContext';
-import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
+import { ResponsiveDescription } from '@components/ResponsiveDescription';
 import { IconBabyCarriage, IconBulb, IconChevronRight, IconHeart } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Text, ThemeIcon, Title } from '@mantine/core';
 import classes from './SelectAppMode.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 export function SelectAppMode() {
   const navigate = useNavigate();

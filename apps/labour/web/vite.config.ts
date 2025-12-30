@@ -87,7 +87,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@base': '/src',
-      '@shared': '/src/shared-components',
+      '@components': '/src/components',
+      '@lib': '/src/lib',
       '@clients': '/src/clients',
       '@home': '/src/pages/Home',
     },

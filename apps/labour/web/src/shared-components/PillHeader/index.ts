@@ -1,1 +1,0 @@
-export { PillHeader } from './PillHeader';

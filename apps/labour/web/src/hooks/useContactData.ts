@@ -1,5 +1,5 @@
 import type { CreateContactMessageRequest } from '@clients/contact_service';
-import { Error as ErrorNotification, Success } from '@shared/Notifications';
+import { Error as ErrorNotification, Success } from '@components/Notifications';
 import { useMutation } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { useContactClient } from './useContactClient';

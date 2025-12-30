@@ -15,7 +15,7 @@ use super::read_models::{
 use crate::durable_object::{
     authorization::{Action, Authorizer, QueryAction, resolve_principal},
     http::utils::{build_paginated_response, decode_cursor},
-    state::ReadModel,
+    setup::state::ReadModel,
 };
 
 pub struct QueryHandler<'a> {

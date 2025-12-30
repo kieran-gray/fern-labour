@@ -63,4 +63,5 @@ pub trait EventStoreTrait: Send + Sync {
     ) -> Result<AppendResult>;
     fn load(&self) -> Result<Vec<StoredEventRow>>;
     fn events_since(&self, sequence: i64, limit: i64) -> Result<Vec<StoredEventRow>>;
+    fn max_sequence(&self) -> Result<Option<i64>>;
 }

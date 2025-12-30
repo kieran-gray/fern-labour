@@ -1,15 +1,15 @@
 import { SubscriptionReadModel } from '@base/clients/labour_service';
 import { useApiAuth } from '@base/hooks/useApiAuth';
 import { useClerkUser } from '@base/hooks/useClerkUser';
-import { ImportantText } from '@shared/ImportantText/ImportantText';
-import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { ImportantText } from '@components/ImportantText';
+import { ResponsiveDescription } from '@components/ResponsiveDescription';
+import { ResponsiveTitle } from '@components/ResponsiveTitle';
 import { useSearchParams } from 'react-router-dom';
 import { Badge, Button, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import ContactMethodsForm from './ContactMethodsForm';
-import classes from './ContactMethodsForm.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import ContactMethodsModal from './ContactMethodsModal';
+import classes from './ContactMethodsModal.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 export function warnNoNumberSet(
   contactMethods: string[],
@@ -119,7 +119,7 @@ export default function ContactMethods({ subscription }: { subscription: Subscri
           </div>
         </div>
       </div>
-      <ContactMethodsForm
+      <ContactMethodsModal
         subscription={subscription}
         opened={opened || prompt === 'contactMethods'}
         close={close}

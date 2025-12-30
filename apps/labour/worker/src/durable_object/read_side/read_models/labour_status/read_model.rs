@@ -7,7 +7,7 @@ use fern_labour_labour_shared::value_objects::LabourPhase;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LabourStatusReadModel {
     pub labour_id: Uuid,
     pub mother_id: String,

@@ -1,7 +1,7 @@
 import { AppMode, useLabourSession } from '@base/contexts/LabourSessionContext';
 import { MotherView } from '@base/pages/Home/MotherView';
 import { SubscriberView } from '@base/pages/Home/SubscriberView';
-import { AppShell } from '@shared/AppShell';
+import { AppShell } from '@components/AppShell';
 import { SelectAppMode } from './components/SelectAppMode';
 
 export const HomePage = () => {

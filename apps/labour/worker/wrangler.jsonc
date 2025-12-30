@@ -49,8 +49,8 @@
   "durable_objects": {
     "bindings": [
       {
-        "name": "LABOUR_AGGREGATE",
-        "class_name": "LabourAggregate"
+        "name": "LABOUR_ROOM",
+        "class_name": "LabourRoom"
       }
     ]
   },
@@ -58,13 +58,14 @@
     {
       "tag": "v1",
       "new_sqlite_classes": [
-        "LabourAggregate"
+        "LabourRoom"
       ]
     }
   ],
   "vars": {
     "ENVIRONMENT": "production",
     "ALLOWED_ORIGINS": "",
+    "PUBLIC_URL": "https://track.fernlabour.com",
     "AUTH_ENABLED": "true"
   },
   "env": {
@@ -89,8 +90,8 @@
       "durable_objects": {
         "bindings": [
           {
-            "name": "LABOUR_AGGREGATE",
-            "class_name": "LabourAggregate"
+            "name": "LABOUR_ROOM",
+            "class_name": "LabourRoom"
           }
         ]
       },
@@ -98,7 +99,7 @@
         {
           "tag": "v1",
           "new_sqlite_classes": [
-            "LabourAggregate"
+            "LabourRoom"
           ]
         }
       ],
@@ -106,6 +107,7 @@
         "ENVIRONMENT": "dev",
         "ALLOWED_ORIGINS": "",
         "AUTH_ENABLED": "true",
+        "PUBLIC_URL": "https://track.fernlabour.com",
         "SUBSCRIPTION_TOKEN_SALT": "changeme"
       }
     }

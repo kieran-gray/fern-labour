@@ -1,11 +1,11 @@
-import { AppShell } from '@shared/AppShell';
-import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { AppShell } from '@components/AppShell';
+import { ResponsiveDescription } from '@components/ResponsiveDescription';
+import { ResponsiveTitle } from '@components/ResponsiveTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button, Image } from '@mantine/core';
 import image from './notFound.svg';
 import classes from './Image.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 export const NotFoundPage: React.FC = () => {
   const navigate = useNavigate();

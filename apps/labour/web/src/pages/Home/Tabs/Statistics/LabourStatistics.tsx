@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
 import { ContractionReadModel, LabourReadModel } from '@base/clients/labour_service';
-import { useLabourV2Client } from '@base/hooks';
+import { useLabourClient } from '@base/hooks';
 import { flattenContractions, useContractionsInfinite } from '@base/hooks/useInfiniteQueries';
-import { ImportantText } from '@shared/ImportantText/ImportantText';
-import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import { formatDurationHuman, formatTimeSeconds, pluraliseName } from '@shared/utils';
+import { ImportantText } from '@components/ImportantText';
+import { ResponsiveDescription } from '@components/ResponsiveDescription';
+import { ResponsiveTitle } from '@components/ResponsiveTitle';
+import { formatDurationHuman, formatTimeSeconds, pluraliseName } from '@lib';
 import { Image, Space, Text } from '@mantine/core';
 import { LabourStatisticsTabs } from './LabourStatisticsTabs';
 import image from './statistics.svg';
 import classes from './LabourStatistics.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 const MESSAGES = {
   OWNER_TITLE: 'Your labour statistics',
@@ -142,7 +142,7 @@ export const LabourStatistics = ({
   inContainer = true,
   isSubscriberView = false,
 }: LabourStatisticsProps) => {
-  const client = useLabourV2Client();
+  const client = useLabourClient();
   const shouldFetch = contractionsProp === undefined;
   const {
     data: contractionsData,

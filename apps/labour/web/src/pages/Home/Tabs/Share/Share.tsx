@@ -1,7 +1,7 @@
 import { Space } from '@mantine/core';
-import { InviteByEmail } from './InviteByEmail/InviteByEmail';
-import { ShareLabour } from './ShareLabour/ShareLabour';
-import baseClasses from '@shared/shared-styles.module.css';
+import { InviteByEmail } from './InviteByEmail';
+import { ShareLabour } from './ShareLabour';
+import baseClasses from '@components/shared-styles.module.css';
 
 export function Share() {
   return (

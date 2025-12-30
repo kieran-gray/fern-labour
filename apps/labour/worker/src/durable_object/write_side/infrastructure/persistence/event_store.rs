@@ -100,10 +100,8 @@ impl EventStoreTrait for SqlEventStore {
 
         Ok(rows)
     }
-}
 
-impl SqlEventStore {
-    pub fn max_sequence(&self) -> Result<Option<i64>> {
+    fn max_sequence(&self) -> Result<Option<i64>> {
         #[derive(Deserialize)]
         struct MaxSequenceResult {
             max_seq: Option<i64>,

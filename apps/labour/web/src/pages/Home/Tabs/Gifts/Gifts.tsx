@@ -1,8 +1,8 @@
 import { giftAds } from '@base/config/giftAds';
-import { ImportantText } from '@shared/ImportantText/ImportantText';
-import { PageContainerContentBottom } from '@shared/PageContainer/PageContainer';
-import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
+import { ImportantText } from '@components/ImportantText';
+import { PageContainerContentBottom } from '@components/PageContainer/PageContainer';
+import { ResponsiveDescription } from '@components/ResponsiveDescription';
+import { ResponsiveTitle } from '@components/ResponsiveTitle';
 import { Badge, Box, Button, Flex, Image, Text } from '@mantine/core';
 import dbhf_main from './ads/dbhf/main.jpg';
 import etta_loves_main from './ads/etta-loves/img6-1699887317359.png';
@@ -12,7 +12,7 @@ import pure_earth_collection_main from './ads/pureearthcollection/main.jpg';
 import thortful_main from './ads/thortful/Thortful_cover_photo.webp';
 import zello_main from './ads/zello/main.jpg';
 import image from './Gifts.svg';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 const adImages: Record<string, { mobile: string; desktop: string }> = {
   my1styears: { mobile: my1styears_main, desktop: my1styears_desktop },

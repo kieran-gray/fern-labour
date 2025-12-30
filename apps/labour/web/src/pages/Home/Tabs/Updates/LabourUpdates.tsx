@@ -4,21 +4,21 @@ import {
   LabourUpdateReadModel,
   SubscriberRole,
 } from '@base/clients/labour_service';
-import { useLabourV2Client } from '@base/hooks';
+import { useLabourClient } from '@base/hooks';
 import { flattenLabourUpdates, useLabourUpdatesInfinite } from '@base/hooks/useInfiniteQueries';
-import { ImportantText } from '@shared/ImportantText/ImportantText';
-import { ResponsiveDescription } from '@shared/ResponsiveDescription/ResponsiveDescription';
-import { ResponsiveTitle } from '@shared/ResponsiveTitle/ResponsiveTitle';
-import { pluraliseName } from '@shared/utils';
+import { ImportantText } from '@components/ImportantText';
+import { ResponsiveDescription } from '@components/ResponsiveDescription';
+import { ResponsiveTitle } from '@components/ResponsiveTitle';
+import { pluraliseName } from '@lib';
 import { IconBook } from '@tabler/icons-react';
 import { ActionIcon, Button, Image, ScrollArea, Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import image from './image.svg';
 import { LabourUpdate, LabourUpdateProps } from './LabourUpdate';
 import { LabourUpdateControls } from './LabourUpdateControls';
 import { LabourUpdatesHelpModal } from './Modals/HelpModal';
+import image from './updates.svg';
 import classes from './LabourUpdates.module.css';
-import baseClasses from '@shared/shared-styles.module.css';
+import baseClasses from '@components/shared-styles.module.css';
 
 interface LabourUpdatesProps {
   labour: LabourReadModel;
@@ -135,7 +135,7 @@ export function LabourUpdates({
   const isOwnerView = !isSubscriberView || subscriberRole === SubscriberRole.BIRTH_PARTNER;
   const isBirthPartner = isSubscriberView && subscriberRole === SubscriberRole.BIRTH_PARTNER;
 
-  const client = useLabourV2Client();
+  const client = useLabourClient();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useLabourUpdatesInfinite(
     client,
     labour.labour_id
