@@ -25,14 +25,12 @@ use crate::{
         },
         write_side::{
             application::{
-                AdminCommandProcessor, PolicyEngine,
+                AdminCommandProcessor,
                 command_processors::{NotificationCommandProcessor, ServiceCommandProcessor},
             },
             domain::NotificationEvent,
-            infrastructure::{
-                PolicyApplicationTracker, SqlEventStore,
-                event_reaction_processor::EventReactionProcessor,
-            },
+            infrastructure::SqlEventStore,
+            process_manager::{EffectLedger, NotificationEffectExecutor, ProcessManager},
         },
     },
     read_models::{
@@ -51,7 +49,7 @@ pub struct ReadModel {
 }
 
 pub struct AsyncProcessors {
-    pub event_processor: EventReactionProcessor,
+    pub process_manager: ProcessManager<NotificationEffectExecutor>,
     pub projection_processor: ProjectionProcessor,
 }
 
@@ -143,31 +141,31 @@ impl AggregateServices {
             vec![notification_detail_projector, notification_status_projector];
         let projection_processor = ProjectionProcessor::create(event_store.clone(), projectors);
 
-        let policy_application_tracker = PolicyApplicationTracker::create(sql.clone());
-        policy_application_tracker
-            .init_schema()
-            .context("Event processing tracker initialization failed")?;
-
-        let policy_engine = PolicyEngine::new();
-
         let generation_client = Self::create_generation_client(env)?;
         let dispatch_client = Self::create_dispatch_client(env)?;
         let service_command_processor =
             ServiceCommandProcessor::create(command_bus, generation_client, dispatch_client);
 
-        let repository = Box::new(AggregateRepository::new(event_store.clone()));
-        let notification_command_processor = NotificationCommandProcessor::new(repository);
+        let aggregate_repository = Rc::new(AggregateRepository::new(event_store.clone()));
+        let notification_command_processor = NotificationCommandProcessor::new(Box::new(
+            AggregateRepository::new(event_store.clone()),
+        ));
 
-        let event_processor = EventReactionProcessor::create(
-            event_store,
-            policy_application_tracker,
-            policy_engine,
-            notification_command_processor,
+        let executor = NotificationEffectExecutor::new(
             service_command_processor,
+            notification_command_processor,
         );
 
+        let ledger = EffectLedger::create(sql.clone());
+        ledger
+            .init_schema()
+            .context("Effect ledger initialization failed")?;
+
+        let process_manager =
+            ProcessManager::new(ledger, executor, event_store, aggregate_repository, 100, 3);
+
         Ok(AsyncProcessors {
-            event_processor,
+            process_manager,
             projection_processor,
         })
     }

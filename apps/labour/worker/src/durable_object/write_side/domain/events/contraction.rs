@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use fern_labour_event_sourcing_rs::{Event, impl_labour_event};
+use fern_labour_event_sourcing_rs::{Event, impl_event};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -33,7 +33,7 @@ pub struct ContractionDeleted {
     pub contraction_id: Uuid,
 }
 
-impl_labour_event!(ContractionStarted, labour_id);
-impl_labour_event!(ContractionEnded, labour_id);
-impl_labour_event!(ContractionUpdated, labour_id);
-impl_labour_event!(ContractionDeleted, labour_id);
+impl_event!(ContractionStarted, labour_id);
+impl_event!(ContractionEnded, labour_id);
+impl_event!(ContractionUpdated, labour_id);
+impl_event!(ContractionDeleted, labour_id);

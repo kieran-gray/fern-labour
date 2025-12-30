@@ -7,7 +7,7 @@ use fern_labour_event_sourcing_rs::{
 };
 
 use crate::durable_object::write_side::{
-    domain::{Labour, LabourEvent},
+    domain::{Notification, NotificationEvent},
     process_manager::{executor::EffectExecutor, ledger::EffectLedger, types::Effect},
 };
 
@@ -15,7 +15,7 @@ pub struct ProcessManager<E: EffectExecutor> {
     ledger: EffectLedger,
     executor: E,
     event_store: Rc<dyn EventStoreTrait>,
-    aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
+    aggregate_repository: Rc<dyn AggregateRepositoryTrait<Notification>>,
     default_batch_size: i64,
     max_retry_attempts: i64,
 }
@@ -28,7 +28,7 @@ where
         ledger: EffectLedger,
         executor: E,
         event_store: Rc<dyn EventStoreTrait>,
-        aggregate_repository: Rc<dyn AggregateRepositoryTrait<Labour>>,
+        aggregate_repository: Rc<dyn AggregateRepositoryTrait<Notification>>,
         default_batch_size: i64,
         max_retry_attempts: i64,
     ) -> Self {
@@ -58,8 +58,6 @@ where
             return Ok(());
         };
 
-        // TODO: think about what could happen if we are processing an event against an
-        // aggregate that is more up-to-date.
         for event_row in events {
             let sequence = event_row.sequence;
             let stored = StoredEvent {
@@ -68,17 +66,12 @@ where
                 event_data: event_row.event_data.clone(),
                 event_version: event_row.event_version,
             };
-            let event = LabourEvent::from_stored_event(stored);
+            let event = NotificationEvent::from_stored_event(stored);
 
             let ctx = PolicyContext::new(&aggregate_state, sequence);
             let effects = match &event {
-                LabourEvent::LabourPlanned(e) => e.apply_policies(&ctx),
-                LabourEvent::LabourCompleted(e) => e.apply_policies(&ctx),
-                LabourEvent::LabourUpdatePosted(e) => e.apply_policies(&ctx),
-                LabourEvent::SubscriberApproved(e) => e.apply_policies(&ctx),
-                LabourEvent::SubscriberRequested(e) => e.apply_policies(&ctx),
-                LabourEvent::LabourInviteSent(e) => e.apply_policies(&ctx),
-                LabourEvent::LabourUpdateTypeUpdated(e) => e.apply_policies(&ctx),
+                NotificationEvent::NotificationRequested(e) => e.apply_policies(&ctx),
+                NotificationEvent::RenderedContentStored(e) => e.apply_policies(&ctx),
                 _ => vec![],
             };
 
@@ -177,15 +170,14 @@ where
 
     pub fn has_pending_events(&self) -> Result<bool> {
         let last_processed = self.ledger.get_last_processed_sequence()?;
-        let pending_events = self
-            .event_store
+        let pending_events = self.event_store
             .events_since(last_processed, 1)
             .map(|events| !events.is_empty())
             .unwrap_or(false);
         Ok(pending_events)
     }
 
-    pub fn has_pending_work(&self) -> Result<bool> {
+    pub fn has_pending_effects(&self) -> Result<bool> {
         self.ledger.has_pending_effects(self.max_retry_attempts)
     }
 }

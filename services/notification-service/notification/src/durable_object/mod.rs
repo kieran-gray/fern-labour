@@ -8,7 +8,7 @@ use tracing::{error, info};
 use worker::{DurableObject, Env, Request, Response, Result, State, durable_object};
 
 use crate::durable_object::{
-    api::RequestDto, exceptions::IntoWorkerResponse, state::AggregateServices,
+    api::RequestDto, state::AggregateServices,
     write_side::infrastructure::alarm_manager::AlarmManager,
 };
 
@@ -107,18 +107,22 @@ impl DurableObject for NotificationAggregate {
         // These futures could be processed concurrently. However, if the notification is high priority
         // we want to wait until all event processing is completed before projecting.
         // This ensures that the read models show the most up-to-date changes after processing is over.
-        let event_result = services.event_processor.process_events().await;
-        let proj_result = services.projection_processor.process_projections().await;
-
-        match (proj_result, event_result) {
-            (Ok(_), Ok(_)) => {
-                info!("All async operations completed successfully");
-                Response::empty()
-            }
-            (Err(e), _) | (_, Err(e)) => {
-                error!(error = %e, "Error in async processing");
-                Ok(e.into_response())
-            }
+        let process_manager_result = services.process_manager.on_alarm().await;
+        if let Err(ref e) = process_manager_result {
+            error!(error = %e, "Error in process manager alarm handling");
         }
+
+        let projection_result = services.projection_processor.process_projections().await;
+        if let Err(ref e) = projection_result {
+            error!(error = %e, "Error in projection processing");
+        }
+
+        if process_manager_result.is_err() || projection_result.is_err() {
+            return Err(worker::Error::RustError(
+                "Error in alarm handling".to_string(),
+            ));
+        }
+
+        Response::empty()
     }
 }

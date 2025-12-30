@@ -32,40 +32,35 @@ impl NotificationDetailProjector {
         let timestamp = metadata.timestamp;
 
         match event {
-            NotificationEvent::NotificationRequested {
-                channel,
-                destination,
-                template_data,
-                ..
-            } if model.is_none() => Some(NotificationDetail::new(
-                metadata.aggregate_id,
-                metadata.user_id.clone(),
-                channel.to_string(),
-                destination.to_string(),
-                template_data.template().to_string(),
-                timestamp,
-            )),
+            NotificationEvent::NotificationRequested(e) if model.is_none() => {
+                Some(NotificationDetail::new(
+                    metadata.aggregate_id,
+                    metadata.user_id.clone(),
+                    e.channel.to_string(),
+                    e.destination.to_string(),
+                    e.template_data.template().to_string(),
+                    timestamp,
+                ))
+            }
 
-            NotificationEvent::RenderedContentStored {
-                rendered_content, ..
-            } => {
+            NotificationEvent::RenderedContentStored(e) => {
                 let mut detail = model?;
                 detail.status = "RENDERED".to_string();
-                detail.rendered_content = Some(rendered_content.clone());
+                detail.rendered_content = Some(e.rendered_content.clone());
                 detail.updated_at = timestamp;
                 Some(detail)
             }
 
-            NotificationEvent::NotificationDispatched { external_id, .. } => {
+            NotificationEvent::NotificationDispatched(e) => {
                 let mut detail = model?;
                 detail.status = "SENT".to_string();
-                detail.external_id = external_id.clone();
+                detail.external_id = e.external_id.clone();
                 detail.dispatched_at = Some(timestamp);
                 detail.updated_at = timestamp;
                 Some(detail)
             }
 
-            NotificationEvent::NotificationDelivered { .. } => {
+            NotificationEvent::NotificationDelivered(_) => {
                 let mut detail = model?;
                 detail.status = "DELIVERED".to_string();
                 detail.delivered_at = Some(timestamp);
@@ -73,7 +68,7 @@ impl NotificationDetailProjector {
                 Some(detail)
             }
 
-            NotificationEvent::NotificationDeliveryFailed { .. } => {
+            NotificationEvent::NotificationDeliveryFailed(_) => {
                 let mut detail = model?;
                 detail.status = "FAILED".to_string();
                 detail.failed_at = Some(timestamp);

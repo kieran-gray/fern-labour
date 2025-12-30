@@ -1,4 +1,4 @@
-use fern_labour_event_sourcing_rs::{Event, impl_labour_event};
+use fern_labour_event_sourcing_rs::{Event, impl_event};
 use fern_labour_labour_shared::value_objects::{
     SubscriberAccessLevel, SubscriberContactMethod, SubscriberRole,
 };
@@ -63,12 +63,12 @@ pub struct SubscriberRoleUpdated {
     pub role: SubscriberRole,
 }
 
-impl_labour_event!(SubscriberRequested, labour_id);
-impl_labour_event!(SubscriberUnsubscribed, labour_id);
-impl_labour_event!(SubscriberNotificationMethodsUpdated, labour_id);
-impl_labour_event!(SubscriberAccessLevelUpdated, labour_id);
-impl_labour_event!(SubscriberApproved, labour_id);
-impl_labour_event!(SubscriberRemoved, labour_id);
-impl_labour_event!(SubscriberBlocked, labour_id);
-impl_labour_event!(SubscriberUnblocked, labour_id);
-impl_labour_event!(SubscriberRoleUpdated, labour_id);
+impl_event!(SubscriberRequested, labour_id);
+impl_event!(SubscriberUnsubscribed, labour_id);
+impl_event!(SubscriberNotificationMethodsUpdated, labour_id);
+impl_event!(SubscriberAccessLevelUpdated, labour_id);
+impl_event!(SubscriberApproved, labour_id);
+impl_event!(SubscriberRemoved, labour_id);
+impl_event!(SubscriberBlocked, labour_id);
+impl_event!(SubscriberUnblocked, labour_id);
+impl_event!(SubscriberRoleUpdated, labour_id);

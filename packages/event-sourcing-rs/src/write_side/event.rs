@@ -63,7 +63,7 @@ pub trait EventEnvelopeAdapter<E: Event> {
 }
 
 #[macro_export]
-macro_rules! impl_labour_event {
+macro_rules! impl_event {
     ($name:ident, $id_field:ident) => {
         impl Event for $name {
             fn aggregate_id(&self) -> Uuid {

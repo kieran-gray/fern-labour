@@ -11,6 +11,10 @@ use fern_labour_event_sourcing_rs::Aggregate;
 
 use crate::durable_object::write_side::domain::{
     NotificationCommand, NotificationError, NotificationEvent,
+    events::notification::{
+        NotificationDelivered, NotificationDeliveryFailed, NotificationDispatched,
+        NotificationRequested, RenderedContentStored,
+    },
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -84,38 +88,29 @@ impl Aggregate for Notification {
 
     fn apply(&mut self, event: &Self::Event) {
         match event {
-            NotificationEvent::NotificationRequested {
-                notification_id,
-                channel,
-                destination,
-                template_data,
-                metadata,
-                priority,
-            } => {
-                self.id = *notification_id;
-                self.channel = channel.clone();
-                self.destination = destination.clone();
-                self.template_data = template_data.clone();
-                self.metadata = metadata.clone();
-                self.priority = *priority;
+            NotificationEvent::NotificationRequested(e) => {
+                self.id = e.notification_id;
+                self.channel = e.channel.clone();
+                self.destination = e.destination.clone();
+                self.template_data = e.template_data.clone();
+                self.metadata = e.metadata.clone();
+                self.priority = e.priority;
                 self.status = NotificationStatus::REQUESTED;
             }
-            NotificationEvent::RenderedContentStored {
-                rendered_content, ..
-            } => {
-                self.rendered_content = Some(rendered_content.clone());
+            NotificationEvent::RenderedContentStored(e) => {
+                self.rendered_content = Some(e.rendered_content.clone());
                 self.status = NotificationStatus::RENDERED;
             }
-            NotificationEvent::NotificationDispatched { external_id, .. } => {
-                self.external_id = external_id.clone();
+            NotificationEvent::NotificationDispatched(e) => {
+                self.external_id = e.external_id.clone();
                 self.status = NotificationStatus::SENT;
             }
-            NotificationEvent::NotificationDelivered { .. } => {
+            NotificationEvent::NotificationDelivered(_) => {
                 self.status = NotificationStatus::DELIVERED;
             }
-            NotificationEvent::NotificationDeliveryFailed { reason, .. } => {
+            NotificationEvent::NotificationDeliveryFailed(e) => {
                 self.status = NotificationStatus::FAILED;
-                self.failure_reason = reason.clone();
+                self.failure_reason = e.reason.clone();
             }
         }
     }
@@ -144,14 +139,16 @@ impl Aggregate for Notification {
                     )));
                 }
 
-                vec![NotificationEvent::NotificationRequested {
-                    notification_id,
-                    channel: channel.clone(),
-                    destination,
-                    template_data: template_data.clone(),
-                    metadata,
-                    priority,
-                }]
+                vec![NotificationEvent::NotificationRequested(
+                    NotificationRequested {
+                        notification_id,
+                        channel: channel.clone(),
+                        destination,
+                        template_data: template_data.clone(),
+                        metadata,
+                        priority,
+                    },
+                )]
             }
             NotificationCommand::StoreRenderedContent {
                 notification_id,
@@ -173,10 +170,12 @@ impl Aggregate for Notification {
                     ));
                 }
 
-                vec![NotificationEvent::RenderedContentStored {
-                    notification_id,
-                    rendered_content: rendered_content.clone(),
-                }]
+                vec![NotificationEvent::RenderedContentStored(
+                    RenderedContentStored {
+                        notification_id,
+                        rendered_content: rendered_content.clone(),
+                    },
+                )]
             }
             NotificationCommand::MarkAsDispatched {
                 notification_id,
@@ -194,10 +193,12 @@ impl Aggregate for Notification {
                     ));
                 }
 
-                vec![NotificationEvent::NotificationDispatched {
-                    notification_id,
-                    external_id,
-                }]
+                vec![NotificationEvent::NotificationDispatched(
+                    NotificationDispatched {
+                        notification_id,
+                        external_id,
+                    },
+                )]
             }
             NotificationCommand::MarkAsDelivered { notification_id } => {
                 let Some(notification) = &state else {
@@ -216,10 +217,12 @@ impl Aggregate for Notification {
                     ));
                 };
 
-                vec![NotificationEvent::NotificationDelivered {
-                    notification_id,
-                    external_id,
-                }]
+                vec![NotificationEvent::NotificationDelivered(
+                    NotificationDelivered {
+                        notification_id,
+                        external_id,
+                    },
+                )]
             }
             NotificationCommand::MarkAsFailed {
                 notification_id,
@@ -241,11 +244,13 @@ impl Aggregate for Notification {
                     ));
                 }
 
-                vec![NotificationEvent::NotificationDeliveryFailed {
-                    notification_id,
-                    external_id,
-                    reason,
-                }]
+                vec![NotificationEvent::NotificationDeliveryFailed(
+                    NotificationDeliveryFailed {
+                        notification_id,
+                        external_id,
+                        reason,
+                    },
+                )]
             }
         };
         Ok(events)
@@ -253,21 +258,14 @@ impl Aggregate for Notification {
 
     fn from_events(events: &[Self::Event]) -> Option<Self> {
         let mut notification = match events.first() {
-            Some(NotificationEvent::NotificationRequested {
-                notification_id,
-                channel,
-                destination,
-                template_data,
-                metadata,
-                priority,
-            }) => Notification {
-                id: *notification_id,
+            Some(NotificationEvent::NotificationRequested(e)) => Notification {
+                id: e.notification_id,
                 status: NotificationStatus::REQUESTED,
-                channel: channel.clone(),
-                destination: destination.clone(),
-                template_data: template_data.clone(),
-                metadata: metadata.clone(),
-                priority: *priority,
+                channel: e.channel.clone(),
+                destination: e.destination.clone(),
+                template_data: e.template_data.clone(),
+                metadata: e.metadata.clone(),
+                priority: e.priority,
                 external_id: None,
                 rendered_content: None,
                 failure_reason: None,
@@ -452,10 +450,10 @@ mod tests {
         assert_eq!(events.len(), 1);
         assert!(matches!(
             events[0],
-            NotificationEvent::NotificationDispatched {
+            NotificationEvent::NotificationDispatched(NotificationDispatched {
                 external_id: Some(_),
                 ..
-            }
+            })
         ));
     }
 
@@ -650,25 +648,25 @@ mod tests {
         let data = create_test_data();
 
         let events = vec![
-            NotificationEvent::NotificationRequested {
+            NotificationEvent::NotificationRequested(NotificationRequested {
                 notification_id,
                 channel: NotificationChannel::EMAIL,
                 destination: create_test_destination(),
                 template_data: data.clone(),
                 metadata: None,
                 priority: NotificationPriority::default(),
-            },
-            NotificationEvent::RenderedContentStored {
+            }),
+            NotificationEvent::RenderedContentStored(RenderedContentStored {
                 notification_id,
                 rendered_content: RenderedContent::Email {
                     subject: "Test Subject".into(),
                     html_body: "<h1>TestBody</h1>".into(),
                 },
-            },
-            NotificationEvent::NotificationDispatched {
+            }),
+            NotificationEvent::NotificationDispatched(NotificationDispatched {
                 notification_id,
                 external_id: Some("ext-123".to_string()),
-            },
+            }),
         ];
 
         let notification = Notification::from_events(&events).unwrap();
@@ -705,13 +703,15 @@ mod tests {
             failure_reason: None,
         };
 
-        notification.apply(&NotificationEvent::RenderedContentStored {
-            notification_id,
-            rendered_content: RenderedContent::Email {
-                subject: "Test Subject".into(),
-                html_body: "<h1>TestBody</h1>".into(),
+        notification.apply(&NotificationEvent::RenderedContentStored(
+            RenderedContentStored {
+                notification_id,
+                rendered_content: RenderedContent::Email {
+                    subject: "Test Subject".into(),
+                    html_body: "<h1>TestBody</h1>".into(),
+                },
             },
-        });
+        ));
         assert_eq!(
             notification.rendered_content(),
             Some(&RenderedContent::Email {
@@ -720,17 +720,21 @@ mod tests {
             })
         );
 
-        notification.apply(&NotificationEvent::NotificationDispatched {
-            notification_id,
-            external_id: Some("ext-123".to_string()),
-        });
+        notification.apply(&NotificationEvent::NotificationDispatched(
+            NotificationDispatched {
+                notification_id,
+                external_id: Some("ext-123".to_string()),
+            },
+        ));
         assert_eq!(notification.status(), &NotificationStatus::SENT);
         assert_eq!(notification.external_id(), Some(&"ext-123".to_string()));
 
-        notification.apply(&NotificationEvent::NotificationDelivered {
-            notification_id,
-            external_id: "ext-123".to_string(),
-        });
+        notification.apply(&NotificationEvent::NotificationDelivered(
+            NotificationDelivered {
+                notification_id,
+                external_id: "ext-123".to_string(),
+            },
+        ));
         assert_eq!(notification.status(), &NotificationStatus::DELIVERED);
     }
 }

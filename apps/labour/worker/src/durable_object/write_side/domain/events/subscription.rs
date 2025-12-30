@@ -1,4 +1,4 @@
-use fern_labour_event_sourcing_rs::{Event, impl_labour_event};
+use fern_labour_event_sourcing_rs::{Event, impl_event};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -9,4 +9,4 @@ pub struct SubscriptionTokenSet {
     pub token: String,
 }
 
-impl_labour_event!(SubscriptionTokenSet, labour_id);
+impl_event!(SubscriptionTokenSet, labour_id);

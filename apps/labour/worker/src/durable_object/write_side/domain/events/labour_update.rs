@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use fern_labour_event_sourcing_rs::{Event, impl_labour_event};
+use fern_labour_event_sourcing_rs::{Event, impl_event};
 use fern_labour_labour_shared::value_objects::LabourUpdateType;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -34,7 +34,7 @@ pub struct LabourUpdateDeleted {
     pub labour_update_id: Uuid,
 }
 
-impl_labour_event!(LabourUpdatePosted, labour_id);
-impl_labour_event!(LabourUpdateMessageUpdated, labour_id);
-impl_labour_event!(LabourUpdateTypeUpdated, labour_id);
-impl_labour_event!(LabourUpdateDeleted, labour_id);
+impl_event!(LabourUpdatePosted, labour_id);
+impl_event!(LabourUpdateMessageUpdated, labour_id);
+impl_event!(LabourUpdateTypeUpdated, labour_id);
+impl_event!(LabourUpdateDeleted, labour_id);
