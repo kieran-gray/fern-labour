@@ -22,11 +22,7 @@ fn render_content_on_request(
             channel: ctx.state.channel().clone(),
             template_data: event.template_data.clone(),
         },
-        idempotency_key: IdempotencyKey::for_command(
-            event.notification_id,
-            ctx.sequence,
-            "render",
-        ),
+        idempotency_key: IdempotencyKey::for_command(event.notification_id, ctx.sequence, "render"),
         priority: ctx.state.priority() == &NotificationPriority::High,
     }]
 }

@@ -86,9 +86,9 @@ where
         let mut results = Vec::new();
         for event in events {
             let stored: StoredEvent = event.clone().into_stored_event();
-            let result = self
-                .event_store
-                .append(stored.aggregate_id.clone(), stored, user_id.clone())?;
+            let result =
+                self.event_store
+                    .append(stored.aggregate_id.clone(), stored, user_id.clone())?;
             results.push(result);
         }
         Ok(results)
@@ -103,9 +103,9 @@ where
         let mut envelopes = Vec::new();
         for event in events {
             let stored: StoredEvent = event.clone().into_stored_event();
-            let result = self
-                .event_store
-                .append(stored.aggregate_id.clone(), stored, user_id.clone())?;
+            let result =
+                self.event_store
+                    .append(stored.aggregate_id.clone(), stored, user_id.clone())?;
             envelopes.push(EventEnvelope::enrich(
                 event.clone(),
                 &result,

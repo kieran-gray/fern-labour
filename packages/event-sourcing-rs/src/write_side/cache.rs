@@ -27,14 +27,16 @@ pub trait CacheTrait {
 
 pub trait CacheExt: CacheTrait {
     fn set<T: Serialize>(&self, key: String, value: &T) -> Result<(), CacheError> {
-        let bytes = serde_json::to_vec(value).map_err(|err| CacheError::WriteError(err.to_string()))?;
+        let bytes =
+            serde_json::to_vec(value).map_err(|err| CacheError::WriteError(err.to_string()))?;
         self.set_bytes(key, bytes)
     }
 
     fn get<T: DeserializeOwned>(&self, key: String) -> Result<Option<T>, CacheError> {
         match self.get_bytes(key)? {
             Some(bytes) => {
-                let val = serde_json::from_slice(&bytes).map_err(|err| CacheError::ReadError(err.to_string()))?;
+                let val = serde_json::from_slice(&bytes)
+                    .map_err(|err| CacheError::ReadError(err.to_string()))?;
                 Ok(Some(val))
             }
             None => Ok(None),

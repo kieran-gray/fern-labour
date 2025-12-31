@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use fern_labour_notifications_shared::value_objects::NotificationChannel;
 use tracing::info;
@@ -9,11 +9,11 @@ use crate::{
     setup::config::TwilioConfig,
 };
 
-pub struct TwilioSmsNotificationGateway {
+pub struct TwilioWhatsappNotificationGateway {
     client: TwilioClient,
 }
 
-impl TwilioSmsNotificationGateway {
+impl TwilioWhatsappNotificationGateway {
     pub fn create(twilio_config: &TwilioConfig) -> Self {
         Self {
             client: TwilioClient::new(twilio_config),
@@ -22,9 +22,9 @@ impl TwilioSmsNotificationGateway {
 }
 
 #[async_trait(?Send)]
-impl NotificationGatewayTrait for TwilioSmsNotificationGateway {
+impl NotificationGatewayTrait for TwilioWhatsappNotificationGateway {
     fn channel(&self) -> NotificationChannel {
-        NotificationChannel::SMS
+        NotificationChannel::WHATSAPP
     }
 
     fn provider(&self) -> &str {
@@ -32,9 +32,14 @@ impl NotificationGatewayTrait for TwilioSmsNotificationGateway {
     }
 
     async fn dispatch(&self, context: &DispatchContext) -> Result<Option<String>> {
+        let Some(template_sid) = context.content.subject() else {
+            return Err(anyhow!("No Template SID found"));
+        };
+
         let form_data = form_urlencoded::Serializer::new(String::new())
-            .append_pair("To", context.destination.as_str())
-            .append_pair("Body", context.content.body())
+            .append_pair("To", &format!("whatsapp:{}", context.destination.as_str()))
+            .append_pair("ContentSid", template_sid)
+            .append_pair("ContentVariables", context.content.body())
             .append_pair("MessagingServiceSid", self.client.messaging_service_sid())
             .finish();
 
@@ -46,7 +51,7 @@ impl NotificationGatewayTrait for TwilioSmsNotificationGateway {
         info!(
             notification_id = %context.notification_id,
             message_sid = %message_sid,
-            "Successfully sent SMS via Twilio"
+            "Successfully sent WhatsApp via Twilio"
         );
 
         Ok(Some(message_sid))

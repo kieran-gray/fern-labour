@@ -15,9 +15,6 @@ pub trait HasPolicies<A: 'static, R: 'static>: Sized + 'static {
     fn policies() -> &'static [PolicyFn<Self, A, R>];
 
     fn apply_policies(&self, ctx: &PolicyContext<'_, A>) -> Vec<R> {
-        Self::policies()
-            .iter()
-            .flat_map(|f| f(self, ctx))
-            .collect()
+        Self::policies().iter().flat_map(|f| f(self, ctx)).collect()
     }
 }

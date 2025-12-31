@@ -170,7 +170,8 @@ where
 
     pub fn has_pending_events(&self) -> Result<bool> {
         let last_processed = self.ledger.get_last_processed_sequence()?;
-        let pending_events = self.event_store
+        let pending_events = self
+            .event_store
             .events_since(last_processed, 1)
             .map(|events| !events.is_empty())
             .unwrap_or(false);

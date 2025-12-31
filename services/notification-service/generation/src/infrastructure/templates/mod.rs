@@ -1,6 +1,7 @@
 pub mod email_templates;
 pub mod sms_templates;
 pub mod template;
+pub mod whatsapp_templates;
 
 pub use email_templates::contact_us::{ContactUsBodyTemplate, ContactUsSubjectTemplate};
 pub use email_templates::labour_announcement::{

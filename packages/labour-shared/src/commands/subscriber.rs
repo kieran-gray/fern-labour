@@ -6,7 +6,10 @@ use crate::value_objects::{SubscriberAccessLevel, SubscriberContactMethod};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "payload")]
 pub enum SubscriberCommand {
-    RequestAccess { labour_id: Uuid, token: String },
+    RequestAccess {
+        labour_id: Uuid,
+        token: String,
+    },
 
     Unsubscribe {
         labour_id: Uuid,

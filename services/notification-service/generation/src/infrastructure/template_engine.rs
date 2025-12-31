@@ -5,10 +5,7 @@ use tinytemplate::TinyTemplate;
 
 use crate::{
     application::{exceptions::AppError, template_engine::TemplateEngineTrait},
-    infrastructure::templates::{
-        self, LabourAnnouncementTemplate, LabourBegunTemplate, LabourCompletedTemplate,
-        LabourCompletedWithNoteTemplate, LabourUpdateTemplate, template::TemplateTrait,
-    },
+    infrastructure::templates::{self, template::TemplateTrait},
 };
 
 #[derive(Default)]
@@ -77,8 +74,8 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                 NotificationChannel::SMS => Err(AppError::ValidationError(format!(
                     "Template not found for channel {channel}"
                 ))),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
+                NotificationChannel::WHATSAPP => Err(AppError::ValidationError(format!(
+                    "Template not found for channel {channel}"
                 ))),
             },
             data @ NotificationTemplateData::LabourAnnouncementData { .. } => match channel {
@@ -93,11 +90,12 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                     )?,
                 }),
                 NotificationChannel::SMS => Ok(RenderedContent::Sms {
-                    body: self.render_body::<LabourAnnouncementTemplate>(data.template(), &data)?,
+                    body: self.render_body::<templates::sms_templates::labour_announcement::LabourAnnouncementTemplate>(data.template(), &data)?,
                 }),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
-                ))),
+                NotificationChannel::WHATSAPP => Ok(RenderedContent::WhatsApp {
+                    template_sid: self.render_subject::<templates::whatsapp_templates::labour_announcement::LabourAnnouncementTemplateSid>(data.template(), &data)?,
+                    content_variables: self.render_body::<templates::whatsapp_templates::labour_announcement::LabourAnnouncementContentVariablesTemplate>(data.template(), &data)?,
+                }),
             },
             data @ NotificationTemplateData::LabourBegunData { .. } => match channel {
                 NotificationChannel::EMAIL => Ok(RenderedContent::Email {
@@ -111,11 +109,12 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                     )?,
                 }),
                 NotificationChannel::SMS => Ok(RenderedContent::Sms {
-                    body: self.render_body::<LabourBegunTemplate>(data.template(), &data)?,
+                    body: self.render_body::<templates::sms_templates::labour_begun::LabourBegunTemplate>(data.template(), &data)?,
                 }),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
-                ))),
+                NotificationChannel::WHATSAPP => Ok(RenderedContent::WhatsApp {
+                    template_sid: self.render_subject::<templates::whatsapp_templates::labour_begun::LabourBegunTemplateSid>(data.template(), &data)?,
+                    content_variables: self.render_body::<templates::whatsapp_templates::labour_begun::LabourBegunContentVariablesTemplate>(data.template(), &data)?,
+                }),
             },
             data @ NotificationTemplateData::LabourCompletedData { .. } => match channel {
                 NotificationChannel::EMAIL => Ok(RenderedContent::Email {
@@ -129,11 +128,12 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                     )?,
                 }),
                 NotificationChannel::SMS => Ok(RenderedContent::Sms {
-                    body: self.render_body::<LabourCompletedTemplate>(data.template(), &data)?,
+                    body: self.render_body::<templates::sms_templates::labour_completed::LabourCompletedTemplate>(data.template(), &data)?,
                 }),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
-                ))),
+                NotificationChannel::WHATSAPP => Ok(RenderedContent::WhatsApp {
+                    template_sid: self.render_subject::<templates::whatsapp_templates::labour_completed::LabourCompletedTemplateSid>(data.template(), &data)?,
+                    content_variables: self.render_body::<templates::whatsapp_templates::labour_completed::LabourCompletedContentVariablesTemplate>(data.template(), &data)?,
+                }),
             },
             data @ NotificationTemplateData::LabourCompletedWithNoteData { .. } => match channel {
                 NotificationChannel::EMAIL => Ok(RenderedContent::Email {
@@ -149,11 +149,12 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                 }),
                 NotificationChannel::SMS => Ok(RenderedContent::Sms {
                     body: self
-                        .render_body::<LabourCompletedWithNoteTemplate>(data.template(), &data)?,
+                        .render_body::<templates::sms_templates::labour_completed_with_note::LabourCompletedWithNoteTemplate>(data.template(), &data)?,
                 }),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
-                ))),
+                NotificationChannel::WHATSAPP => Ok(RenderedContent::WhatsApp {
+                    template_sid: self.render_subject::<templates::whatsapp_templates::labour_completed_with_note::LabourCompletedWithNoteTemplateSid>(data.template(), &data)?,
+                    content_variables: self.render_body::<templates::whatsapp_templates::labour_completed_with_note::LabourCompletedWithNoteContentVariablesTemplate>(data.template(), &data)?,
+                }),
             },
             data @ NotificationTemplateData::LabourUpdateData { .. } => match channel {
                 NotificationChannel::EMAIL => Ok(RenderedContent::Email {
@@ -167,10 +168,10 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                     )?,
                 }),
                 NotificationChannel::SMS => Ok(RenderedContent::Sms {
-                    body: self.render_body::<LabourUpdateTemplate>(data.template(), &data)?,
+                    body: self.render_body::<templates::sms_templates::labour_update::LabourUpdateTemplate>(data.template(), &data)?,
                 }),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
+                NotificationChannel::WHATSAPP => Err(AppError::ValidationError(format!(
+                    "Template not found for channel {channel}"
                 ))),
             },
             data @ NotificationTemplateData::LabourInviteData { .. } => match channel {
@@ -187,8 +188,8 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                 NotificationChannel::SMS => Err(AppError::ValidationError(format!(
                     "Template not found for channel {channel}"
                 ))),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
+                NotificationChannel::WHATSAPP => Err(AppError::ValidationError(format!(
+                    "Template not found for channel {channel}"
                 ))),
             },
             data @ NotificationTemplateData::SubscriberInviteData { .. } => match channel {
@@ -205,8 +206,8 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                 NotificationChannel::SMS => Err(AppError::ValidationError(format!(
                     "Template not found for channel {channel}"
                 ))),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
+                NotificationChannel::WHATSAPP => Err(AppError::ValidationError(format!(
+                    "Template not found for channel {channel}"
                 ))),
             },
             data @ NotificationTemplateData::SubscriberRequestedData { .. } => match channel {
@@ -223,8 +224,8 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                 NotificationChannel::SMS => Err(AppError::ValidationError(format!(
                     "Template not found for channel {channel}"
                 ))),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
+                NotificationChannel::WHATSAPP => Err(AppError::ValidationError(format!(
+                    "Template not found for channel {channel}"
                 ))),
             },
             data @ NotificationTemplateData::SubscriberApprovedData { .. } => match channel {
@@ -241,8 +242,8 @@ impl TemplateEngineTrait for TinyTemplateEngine {
                 NotificationChannel::SMS => Err(AppError::ValidationError(format!(
                     "Template not found for channel {channel}"
                 ))),
-                _ => Err(AppError::ValidationError(format!(
-                    "Unknown channel {channel}"
+                NotificationChannel::WHATSAPP => Err(AppError::ValidationError(format!(
+                    "Template not found for channel {channel}"
                 ))),
             },
         }

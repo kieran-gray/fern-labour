@@ -17,6 +17,7 @@ use crate::{
         ResendEmailNotificationGateway, ResendStatusTranslator, ResendWebhookVerifier,
         SendgridEmailNotificationGateway, SendgridStatusTranslator, SendgridWebhookVerifier,
         TwilioSmsNotificationGateway, TwilioStatusTranslator, TwilioWebhookVerifier,
+        TwilioWhatsappNotificationGateway,
         persistence::repository::D1TrackedNotificationRepository,
     },
     setup::config::Config,
@@ -53,6 +54,7 @@ impl AppState {
         if config.twilio.is_some() {
             let config = config.twilio.clone().unwrap();
             gateways.push(Box::new(TwilioSmsNotificationGateway::create(&config)));
+            gateways.push(Box::new(TwilioWhatsappNotificationGateway::create(&config)));
             verifiers.push(Box::new(TwilioWebhookVerifier::create(
                 config.auth_token.clone(),
                 config.webhook_url.clone(),
