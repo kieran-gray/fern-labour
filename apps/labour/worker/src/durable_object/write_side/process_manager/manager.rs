@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use std::rc::Rc;
-use tracing::{debug, error, info, warn};
+use tracing::{error, info, warn};
 
 use fern_labour_event_sourcing_rs::{
     AggregateRepositoryTrait, EventStoreTrait, HasPolicies, PolicyContext, StoredEvent,
@@ -164,15 +164,8 @@ where
 
     pub async fn on_alarm(&self) -> Result<()> {
         info!("Process manager alarm triggered");
-        loop {
-            if let Ok(false) = self.has_pending_events() {
-                debug!("No events to process");
-                break;
-            }
-            self.process_new_events()?;
-            self.dispatch_pending_effects().await?;
-        }
-        Ok(())
+        self.process_new_events()?;
+        self.dispatch_pending_effects().await
     }
 
     pub fn has_pending_events(&self) -> Result<bool> {

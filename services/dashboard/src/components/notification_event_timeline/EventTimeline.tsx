@@ -10,7 +10,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Event } from "./EventTypes";
+import type { Event, EventsResponse } from "./EventTypes";
 
 interface EventTimelineProps {
   notificationId: string;
@@ -34,8 +34,13 @@ export const EventTimeline = ({ notificationId }: EventTimelineProps) => {
         throw new Error("Failed to fetch notification events");
       }
 
-      const data = await response.json();
-      setEvents(data);
+      const data: EventsResponse = await response.json();
+
+      const eventsArray = Object.values(data).sort(
+        (a, b) => a.metadata.sequence - b.metadata.sequence,
+      );
+
+      setEvents(eventsArray);
     } catch (err) {
       console.error("Error fetching notification events:", err);
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -58,89 +63,85 @@ export const EventTimeline = ({ notificationId }: EventTimelineProps) => {
   };
 
   const getEventInfo = (event: Event) => {
-    if ("NotificationRequested" in event.event) {
-      const data = event.event.NotificationRequested;
-      return {
-        label: "NOTIFICATION_REQUESTED",
-        code: "REQ",
-        icon: <FileText className="size-5" />,
-        color: "text-cp-orange",
-        bgColor: "bg-cp-orange",
-        borderColor: "border-cp-orange",
-        details: [
-          { label: "CHANNEL", value: data.channel.toUpperCase() },
-          {
-            label: "DESTINATION",
-            value: `${data.destination.type.toUpperCase()}: ${
-              data.destination.value
-            }`,
-          },
-          { label: "TEMPLATE", value: data.template_data.type.toUpperCase() },
-        ],
-      };
-    }
+    const { type, data } = event.event;
 
-    if ("RenderedContentStored" in event.event) {
-      const data = event.event.RenderedContentStored;
-      const contentType = Object.keys(data.rendered_content)[0] || "Unknown";
-      return {
-        label: "CONTENT_RENDERED",
-        code: "RND",
-        icon: <FileCode className="size-5" />,
-        color: "text-cp-gray",
-        bgColor: "bg-cp-gray",
-        borderColor: "border-cp-gray",
-        details: [{ label: "CONTENT_TYPE", value: contentType.toUpperCase() }],
-      };
-    }
+    switch (type) {
+      case "NotificationRequested":
+        return {
+          label: "NOTIFICATION_REQUESTED",
+          code: "REQ",
+          icon: <FileText className="size-5" />,
+          color: "text-cp-orange",
+          bgColor: "bg-cp-orange",
+          borderColor: "border-cp-orange",
+          details: [
+            { label: "CHANNEL", value: data.channel.toUpperCase() },
+            {
+              label: "DESTINATION",
+              value: `${data.destination.type.toUpperCase()}: ${data.destination.value}`,
+            },
+            { label: "TEMPLATE", value: data.template_data.type.toUpperCase() },
+          ],
+        };
 
-    if ("NotificationDispatched" in event.event) {
-      const data = event.event.NotificationDispatched;
-      return {
-        label: "NOTIFICATION_DISPATCHED",
-        code: "DSP",
-        icon: <Send className="size-5" />,
-        color: "text-cp-blue",
-        bgColor: "bg-cp-blue",
-        borderColor: "border-cp-blue",
-        details: [{ label: "EXTERNAL_ID", value: data.external_id }],
-      };
-    }
+      case "RenderedContentStored": {
+        const contentType =
+          Object.keys(data.rendered_content)[0] || "Unknown";
+        return {
+          label: "CONTENT_RENDERED",
+          code: "RND",
+          icon: <FileCode className="size-5" />,
+          color: "text-cp-gray",
+          bgColor: "bg-cp-gray",
+          borderColor: "border-cp-gray",
+          details: [{ label: "CONTENT_TYPE", value: contentType.toUpperCase() }],
+        };
+      }
 
-    if ("NotificationDelivered" in event.event) {
-      return {
-        label: "NOTIFICATION_DELIVERED",
-        code: "DEL",
-        icon: <CheckCircle2 className="size-5" />,
-        color: "text-cp-green",
-        bgColor: "bg-cp-green",
-        borderColor: "border-cp-green",
-        details: [],
-      };
-    }
+      case "NotificationDispatched":
+        return {
+          label: "NOTIFICATION_DISPATCHED",
+          code: "DSP",
+          icon: <Send className="size-5" />,
+          color: "text-cp-blue",
+          bgColor: "bg-cp-blue",
+          borderColor: "border-cp-blue",
+          details: [{ label: "EXTERNAL_ID", value: data.external_id }],
+        };
 
-    if ("NotificationFailed" in event.event) {
-      const data = event.event.NotificationFailed;
-      return {
-        label: "NOTIFICATION_FAILED",
-        code: "ERR",
-        icon: <XCircle className="size-5" />,
-        color: "text-red-600",
-        bgColor: "bg-red-600",
-        borderColor: "border-red-600",
-        details: [{ label: "ERROR", value: data.error }],
-      };
-    }
+      case "NotificationDelivered":
+        return {
+          label: "NOTIFICATION_DELIVERED",
+          code: "DEL",
+          icon: <CheckCircle2 className="size-5" />,
+          color: "text-cp-green",
+          bgColor: "bg-cp-green",
+          borderColor: "border-cp-green",
+          details: [],
+        };
 
-    return {
-      label: "UNKNOWN_EVENT",
-      code: "UNK",
-      icon: <Activity className="size-5" />,
-      color: "text-cp-charcoal",
-      bgColor: "bg-cp-charcoal",
-      borderColor: "border-cp-charcoal",
-      details: [],
-    };
+      case "NotificationFailed":
+        return {
+          label: "NOTIFICATION_FAILED",
+          code: "ERR",
+          icon: <XCircle className="size-5" />,
+          color: "text-red-600",
+          bgColor: "bg-red-600",
+          borderColor: "border-red-600",
+          details: [{ label: "ERROR", value: data.error }],
+        };
+
+      default:
+        return {
+          label: "UNKNOWN_EVENT",
+          code: "UNK",
+          icon: <Activity className="size-5" />,
+          color: "text-cp-charcoal",
+          bgColor: "bg-cp-charcoal",
+          borderColor: "border-cp-charcoal",
+          details: [],
+        };
+    }
   };
 
   return (
