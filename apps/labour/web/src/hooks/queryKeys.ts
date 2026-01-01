@@ -19,6 +19,8 @@ export const queryKeys = {
     detail: (labourId: string) => [...queryKeys.labour.details(), labourId] as const,
     history: (userId: string) =>
       [...queryKeys.labour.lists(), { userId, type: 'history' }] as const,
+    subscribedLabours: (userId: string) =>
+      [...queryKeys.labour.lists(), { userId, type: 'subscribed' }] as const,
     active: (userId: string) => [...queryKeys.labour.all, 'active', userId] as const,
   },
 

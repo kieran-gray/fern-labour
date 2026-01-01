@@ -76,6 +76,7 @@
 
 .content {
   max-width: 470px;
+  flex-grow: 1;
 
   @media (max-width: $mantine-breakpoint-md) {
     max-width: 100%;

@@ -212,7 +212,7 @@ export function useUserSubscribedLabours(client: LabourServiceClient) {
   const { user } = useApiAuth();
 
   return useQuery({
-    queryKey: queryKeys.subscriptions.listByUser(user?.sub || ''),
+    queryKey: queryKeys.labour.subscribedLabours(user?.sub || ''),
     queryFn: async () => {
       const response = await client.getSubscribedLabours();
 

@@ -8,7 +8,7 @@ use worker::{Request, Response, RouteContext};
 use crate::{
     api_worker::{
         AppState,
-        api::{exceptions::ApiError, schemas::requests::PlanLabourDTO},
+        api::{exceptions::ApiError, schemas::requests::PlanLabourRequest},
     },
     durable_object::read_side::read_models::labour_status::LabourStatusReadModelQueryHandler,
 };
@@ -24,7 +24,7 @@ pub async fn handle_plan_labour(
     cors_context: CorsContext,
     user: User,
 ) -> worker::Result<Response> {
-    let request_dto: PlanLabourDTO = match req.json().await {
+    let request_dto: PlanLabourRequest = match req.json().await {
         Ok(dto) => dto,
         Err(e) => {
             error!(user_id = %user.user_id, error = ?e, "Failed to parse request body");

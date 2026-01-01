@@ -10,6 +10,7 @@ export default {
     '^@subscription/(.*)$': '<rootDir>/src/pages/Subscription/$1',
     '^@subscribe/(.*)$': '<rootDir>/src/pages/Subscribe/$1',
     '^@subscriptions/(.*)$': '<rootDir>/src/pages/Subscriptions/$1',
+    '^@lib/(.*)$': '<rootDir>/src/lib/$1',
   },
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',

@@ -115,8 +115,8 @@ impl NotificationGatewayTrait for SesEmailNotificationGateway {
             },
         };
 
-        let payload = serde_json::to_string(&request_body)
-            .context("Failed to serialize email request")?;
+        let payload =
+            serde_json::to_string(&request_body).context("Failed to serialize email request")?;
 
         let path = "/v2/email/outbound-emails";
         let url = format!("https://{}{}", self.host, path);

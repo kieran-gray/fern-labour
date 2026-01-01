@@ -14,10 +14,6 @@
     "port": 8001
   },
   "workers_dev": false,
-  "route": {
-    "pattern": "notifications.fern-labour.com",
-    "custom_domain": true
-  },
   "placement": {
     "mode": "smart"
   },
@@ -67,13 +63,13 @@
     "producers": [
       {
         "binding": "NOTIFICATION_COMMAND_BUS",
-        "queue": "command-bus"
+        "queue": "fern-labour-notification-command-bus"
       }
     ],
     "consumers": [
       {
-        "queue": "command-bus",
-        "dead_letter_queue": "command-bus-dlq"
+        "queue": "fern-labour-notification-command-bus",
+        "dead_letter_queue": "fern-labour-notification-command-bus-dlq"
       }
     ]
   },
@@ -138,13 +134,13 @@
         "producers": [
           {
             "binding": "NOTIFICATION_COMMAND_BUS",
-            "queue": "command-bus"
+            "queue": "fern-labour-notification-command-bus"
           }
         ],
         "consumers": [
           {
-            "queue": "command-bus",
-            "dead_letter_queue": "command-bus-dlq"
+            "queue": "fern-labour-notification-command-bus",
+            "dead_letter_queue": "fern-labour-notification-command-bus-dlq"
           }
         ]
       },

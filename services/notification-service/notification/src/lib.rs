@@ -69,7 +69,7 @@ pub async fn main(message_batch: MessageBatch<String>, env: Env, _ctx: Context) 
         };
 
         match message_batch.queue().as_str() {
-            "command-bus" => {
+            "fern-labour-notification-command-bus" => {
                 for message in message_batch.messages()? {
                     let envelope: CommandEnvelope<QueueMessage> =
                         match serde_json::from_str(message.body()) {

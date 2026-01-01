@@ -49,13 +49,12 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          VITE_LABOUR_SERVICE_URL: ${{ vars.LABOUR_SERVICE_URL }}
-          VITE_CONTACT_SERVICE_URL: ${{ vars.CONTACT_SERVICE_URL }}
-          VITE_KEYCLOAK_AUTHORITY: ${{ vars.VITE_KEYCLOAK_AUTHORITY }}
-          VITE_KEYCLOAK_METADATA_URL: ${{ vars.VITE_KEYCLOAK_METADATA_URL }}
-          VITE_KEYCLOAK_CLIENT_ID: ${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
+          VITE_LABOUR_SERVICE_URL: ${{ vars.LABOUR_WORKER_URL }}
+          VITE_LABOUR_SERVICE_WEBSOCKET: ${{ vars.LABOUR_WORKER_WEBSOCKET }}
+          VITE_CONTACT_SERVICE_URL: ${{ vars.CONTACT_WORKER_URL }}
           VITE_POST_LOGOUT_REDIRECT: ${{ vars.MARKETING_URL }}
           VITE_CLOUDFLARE_SITEKEY: ${{ vars.CLOUDFLARE_SITEKEY }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ vars.LABOUR_APP_CLERK_PUBLIC_KEY }}
 
       - name: Upload build artifacts
         if: success()

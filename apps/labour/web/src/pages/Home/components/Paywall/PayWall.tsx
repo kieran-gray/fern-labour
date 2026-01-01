@@ -54,10 +54,10 @@ export const PayWall = () => {
               variant="filled"
               radius="xl"
               size="lg"
-              disabled={createCheckout.isPending}
+              disabled={createCheckout.isPending || true}
               onClick={handleUpgrade}
             >
-              Upgrade now
+              Temporarily Disabled
             </Button>
             <Text mt={15} size="xs" className={baseClasses.description}>
               *SMS messages are only supported for UK (+44) phone numbers{' '}

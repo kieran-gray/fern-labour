@@ -64,12 +64,7 @@ impl AwsSigV4Signer {
 
         let canonical_request = format!(
             "{}\n{}\n{}\n{}\n{}\n{}",
-            method,
-            path,
-            "",
-            canonical_headers,
-            signed_headers,
-            payload_hash
+            method, path, "", canonical_headers, signed_headers, payload_hash
         );
 
         let canonical_request_hash = hex_sha256(canonical_request.as_bytes());
@@ -182,9 +177,11 @@ mod tests {
         );
 
         assert!(signed.authorization.starts_with("AWS4-HMAC-SHA256"));
-        assert!(signed
-            .authorization
-            .contains("Credential=AKIAIOSFODNN7EXAMPLE/20230101/eu-west-2/ses/aws4_request"));
+        assert!(
+            signed
+                .authorization
+                .contains("Credential=AKIAIOSFODNN7EXAMPLE/20230101/eu-west-2/ses/aws4_request")
+        );
         assert_eq!(signed.x_amz_date, "20230101T120000Z");
     }
 }

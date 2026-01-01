@@ -44,9 +44,9 @@
         "name": "Cloudflare"
       },
       "clerk": {
-        "issuer_url": "https://humane-treefrog-17.clerk.accounts.dev/",
+        "issuer_url": "https://clerk.fernlabour.com/",
         "jwks_path": ".well-known/jwks.json",
-        "audience": null,
+        "audience": "",
         "name": "Clerk"
       }
     }

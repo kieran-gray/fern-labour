@@ -28,7 +28,7 @@
     "producers": [
       {
         "binding": "NOTIFICATION_COMMAND_BUS",
-        "queue": "command-bus"
+        "queue": "fern-labour-notification-command-bus"
       }
     ]
   },
@@ -46,7 +46,7 @@
         "producers": [
           {
             "binding": "NOTIFICATION_COMMAND_BUS",
-            "queue": "command-bus"
+            "queue": "fern-labour-notification-command-bus"
           }
         ]
       },

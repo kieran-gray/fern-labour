@@ -14,7 +14,11 @@ use crate::{
         },
     },
     infrastructure::{
-        ResendEmailNotificationGateway, ResendStatusTranslator, ResendWebhookVerifier, SendgridEmailNotificationGateway, SendgridStatusTranslator, SendgridWebhookVerifier, SesEmailNotificationGateway, TwilioSmsNotificationGateway, TwilioStatusTranslator, TwilioWebhookVerifier, TwilioWhatsappNotificationGateway, persistence::repository::D1TrackedNotificationRepository
+        ResendEmailNotificationGateway, ResendStatusTranslator, ResendWebhookVerifier,
+        SendgridEmailNotificationGateway, SendgridStatusTranslator, SendgridWebhookVerifier,
+        SesEmailNotificationGateway, TwilioSmsNotificationGateway, TwilioStatusTranslator,
+        TwilioWebhookVerifier, TwilioWhatsappNotificationGateway,
+        persistence::repository::D1TrackedNotificationRepository,
     },
     setup::config::Config,
 };
@@ -48,8 +52,12 @@ impl AppState {
         let mut translators: Vec<Box<dyn ProviderStatusTranslator>> = vec![];
 
         if let Some(ref twilio_config) = config.twilio {
-            gateways.push(Box::new(TwilioSmsNotificationGateway::create(twilio_config)));
-            gateways.push(Box::new(TwilioWhatsappNotificationGateway::create(twilio_config)));
+            gateways.push(Box::new(TwilioSmsNotificationGateway::create(
+                twilio_config,
+            )));
+            gateways.push(Box::new(TwilioWhatsappNotificationGateway::create(
+                twilio_config,
+            )));
             verifiers.push(Box::new(TwilioWebhookVerifier::create(
                 twilio_config.auth_token.clone(),
                 twilio_config.webhook_url.clone(),
@@ -60,13 +68,17 @@ impl AppState {
         if let Some(ref ses_config) = config.ses {
             gateways.push(Box::new(SesEmailNotificationGateway::create(ses_config)));
         } else if let Some(ref resend_config) = config.resend {
-            gateways.push(Box::new(ResendEmailNotificationGateway::create(resend_config)));
+            gateways.push(Box::new(ResendEmailNotificationGateway::create(
+                resend_config,
+            )));
             verifiers.push(Box::new(ResendWebhookVerifier::create(
                 resend_config.webhook_signing_secret.clone(),
             )));
             translators.push(Box::new(ResendStatusTranslator));
         } else if let Some(ref sendgrid_config) = config.sendgrid {
-            gateways.push(Box::new(SendgridEmailNotificationGateway::create(sendgrid_config)));
+            gateways.push(Box::new(SendgridEmailNotificationGateway::create(
+                sendgrid_config,
+            )));
             verifiers.push(Box::new(SendgridWebhookVerifier::create(
                 sendgrid_config.webhook_verification_key.clone(),
             )));

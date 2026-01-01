@@ -15,7 +15,7 @@
   },
   "workers_dev": false,
   "route": {
-    "pattern": "track.fernlabour.com",
+    "pattern": "labour-api.fernlabour.com",
     "custom_domain": true
   },
   "placement": {
@@ -64,8 +64,8 @@
   ],
   "vars": {
     "ENVIRONMENT": "production",
-    "ALLOWED_ORIGINS": "",
-    "PUBLIC_URL": "https://track.fernlabour.com",
+    "ALLOWED_ORIGINS": "https://app.fernlabour.com,https://admin.fernlabour.com",
+    "PUBLIC_URL": "https://app.fernlabour.com",
     "AUTH_ENABLED": "true"
   },
   "env": {
@@ -107,7 +107,7 @@
         "ENVIRONMENT": "dev",
         "ALLOWED_ORIGINS": "",
         "AUTH_ENABLED": "true",
-        "PUBLIC_URL": "https://track.fernlabour.com",
+        "PUBLIC_URL": "https://app.fernlabour.com",
         "SUBSCRIPTION_TOKEN_SALT": "changeme"
       }
     }

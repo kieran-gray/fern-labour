@@ -6,13 +6,13 @@ use uuid::Uuid;
 use crate::durable_object::write_side::domain::LabourCommand;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PlanLabourDTO {
+pub struct PlanLabourRequest {
     pub first_labour: bool,
     pub due_date: DateTime<Utc>,
     pub labour_name: Option<String>,
 }
 
-impl PlanLabourDTO {
+impl PlanLabourRequest {
     pub fn into_domain(self, labour_id: Uuid, user: &User) -> LabourCommand {
         use crate::durable_object::write_side::domain::commands::labour::PlanLabour;
 

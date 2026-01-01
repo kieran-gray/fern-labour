@@ -163,6 +163,17 @@ export function ManageLabour({
                         data-disabled
                         leftSection={<IconConfetti size={18} />}
                         size="sm"
+                        hiddenFrom="sm"
+                        radius="xl"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        Complete labour
+                      </Button>
+                      <Button
+                        data-disabled
+                        leftSection={<IconConfetti size={18} />}
+                        size="md"
+                        visibleFrom="sm"
                         radius="xl"
                         onClick={(e) => e.preventDefault()}
                       >
@@ -170,15 +181,28 @@ export function ManageLabour({
                       </Button>
                     </Tooltip>
                   ) : (
-                    <Button
-                      leftSection={<IconConfetti size={18} />}
-                      size="sm"
-                      radius="xl"
-                      onClick={() => setIsCompleteModalOpen(true)}
-                      loading={completeLabourMutation.isPending}
-                    >
-                      Complete labour
-                    </Button>
+                    <>
+                      <Button
+                        leftSection={<IconConfetti size={18} />}
+                        size="md"
+                        hiddenFrom="sm"
+                        radius="xl"
+                        onClick={() => setIsCompleteModalOpen(true)}
+                        loading={completeLabourMutation.isPending}
+                      >
+                        Complete labour
+                      </Button>
+                      <Button
+                        leftSection={<IconConfetti size={18} />}
+                        size="lg"
+                        visibleFrom="sm"
+                        radius="xl"
+                        onClick={() => setIsCompleteModalOpen(true)}
+                        loading={completeLabourMutation.isPending}
+                      >
+                        Complete labour
+                      </Button>
+                    </>
                   )}
                 </Group>
               </div>
