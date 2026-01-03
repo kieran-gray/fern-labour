@@ -113,3 +113,14 @@ def test_cannot_update_application_generated_message(sample_labour: Labour):
             labour_update_id=labour_update.id_,
             message="test",
         )
+
+
+def test_can_update_application_generated_type(sample_labour: Labour):
+    labour = BeginLabourService().begin_labour(sample_labour)  # 1 labour update is generated here
+    labour_update = labour.labour_updates[0]
+
+    labour = UpdateLabourUpdateService().update_labour_type(
+        labour=labour,
+        labour_update_id=labour_update.id_,
+        labour_update_type=LabourUpdateType.ANNOUNCEMENT,
+    )

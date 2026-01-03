@@ -38,7 +38,7 @@ class LabourBegun(DomainEvent):
         data = {
             "labour_id": labour_id,
             "birthing_person_id": labour.birthing_person_id.value,
-            "start_time": start_time,
+            "start_time": start_time.isoformat(),
         }
         return super().create(
             aggregate_id=labour_id,
